@@ -104,7 +104,7 @@ export function evaluate(input: ReportInput): Criterion[] {
   const { stats, node, cf } = input;
   const records = cf.records ?? [];
   const ok = (r: CfRecord) => r.status === 200;
-  const load = records.find((r) => r.route === '/load');
+  const loads = records.filter((r) => r.route === '/load');
   const coldAll = records.filter((r) => r.route === '/load' && !r.warmup);
   const coldLoads = coldAll.filter((r) => ok(r) && typeof r.loadMs === 'number');
   const solves = records.filter((r) => r.route === '/solve' && ok(r));
@@ -122,7 +122,8 @@ export function evaluate(input: ReportInput): Criterion[] {
     detail: `${int(stats.binBytes)} bytes, ${int(stats.counts.afterDedup)} palavras`,
   });
 
-  const loadRejected = Boolean(cf.loadError) || !load || !ok(load);
+  // BENCH-01 AC 5: any /load the Cloudflare rejected, warm-up or cold, fails the memory criterion.
+  const loadRejected = Boolean(cf.loadError) || !loads.length || !loads.every(ok);
   criteria.push({
     name: 'Memória com o dicionário carregado',
     value: loadRejected ? `${fmt(node.memoryMb)} MB (Node); carga rejeitada na Cloudflare` : `${fmt(node.memoryMb)} MB`,

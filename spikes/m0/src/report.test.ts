@@ -101,6 +101,20 @@ describe('M0 results report', () => {
     expect(verdict).toBe('FALHA');
     expect(value).toContain('carga rejeitada');
     expect(detail).toContain('Exceeded Memory Limit');
+    // A good warm-up does not hide a cold /load the Cloudflare rejected, even without loadError.
+    const base = input();
+    const coldRejected = buildReport({
+      ...base,
+      cf: {
+        ...base.cf,
+        records: base.cf.records!.map((r, i) =>
+          i === 1 ? { route: '/load', seed: null, status: 503, wallMs: 900, cpuMs: 4, serverWallMs: 90, warmup: false } : r,
+        ),
+      },
+    });
+    const cold = criteriaRows(coldRejected).get('Memória com o dicionário carregado')!;
+    expect(cold[3]).toBe('FALHA');
+    expect(cold[1]).toContain('carga rejeitada');
     // The same Node reading passes when the Cloudflare load succeeds.
     expect(criteriaRows(buildReport(input())).get('Memória com o dicionário carregado')![3]).toBe('PASSA');
   });
