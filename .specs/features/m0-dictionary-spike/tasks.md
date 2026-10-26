@@ -420,10 +420,13 @@ T13 → T14 → T15
 
 **Done when**:
 
-- [ ] `spikes/m0/results/cf.json` com 5 registros de carga a frio, além das 100 resoluções e 20 gerações
-- [ ] `spikes/m0/results/node.json` refeito com o dicionário corrigido
-- [ ] O Worker `bwords-m0-spike` não existe mais na conta
-- [ ] Gate check passes: `npx tsc -b; npx vitest run`
+- [x] `spikes/m0/results/cf.json` com 5 registros de carga a frio, além das 100 resoluções e 20 gerações
+- [x] `spikes/m0/results/node.json` refeito com o dicionário corrigido
+- [x] O Worker `bwords-m0-spike` não existe mais na conta
+- [x] Gate check passes: `npx tsc -b; npx vitest run`
+- desvio: o `worker.ts` também mudou (`?do=<nome>` escolhe o Durable Object), porque sem isso não há como mandar cada carga a frio para um DO novo; as resoluções e gerações rodam no DO do aquecimento, já carregado
+
+**Status**: ✅ Complete
 
 **Tests**: none
 **Gate**: build

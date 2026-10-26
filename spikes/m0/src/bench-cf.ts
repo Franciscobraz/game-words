@@ -1,8 +1,9 @@
 /**
  * Cloudflare benchmark (M0 spike, disposable; deploy authorized by D1).
  *
- * Publishes `bwords-m0-spike`, listens to `wrangler tail --format json`, sends one cold `/load`,
- * 100 `/solve` and 20 `/generate` requests (one operation each), pairs each request with its tail
+ * Publishes `bwords-m0-spike`, listens to `wrangler tail --format json`, sends one `/load` that warms
+ * the dictionary asset, 5 cold `/load` (each on a new Durable Object), then 100 `/solve` and 20
+ * `/generate` on the warmed-up DO (one operation each), pairs each request with its tail
  * events to read the CPU time Cloudflare reports, and writes `results/cf.json`. The Worker is removed
  * with `wrangler delete` in a `finally`, whatever happened before, and its absence is checked.
  */
@@ -22,6 +23,11 @@ const WRANGLER = join(dirname(require.resolve('wrangler/package.json')), 'bin', 
 const ms = (n: number) => Math.round(n * 100) / 100;
 const PACE_MS = 1100;
 const MAX_RETRIES = 3;
+const COLD_LOADS = 5;
+/** Extra gap before each cold load, on top of PACE_MS. */
+const COLD_GAP_MS = 3000;
+/** DO that warms the asset and then serves every /solve and /generate, already loaded. */
+const WARM_DO = 'warm';
 
 interface CmdResult {
   code: number | null;
@@ -89,6 +95,9 @@ interface RequestRecord {
   attempt: number;
   route: string;
   seed: number | null;
+  /** Durable Object name (`?do=`). */
+  do: string;
+  warmup: boolean;
   status: number;
   wallMs: number;
   body: Record<string, unknown>;
@@ -126,24 +135,30 @@ async function main() {
     await sleep(3000);
     result.tailBanner = tailLog.trim().slice(0, 300);
 
-    const plan: { route: string; seed: number | null }[] = [
-      { route: '/load', seed: null },
-      ...SOLVE_SEEDS.map((seed) => ({ route: '/solve', seed })),
-      ...GENERATE_SEEDS.map((seed) => ({ route: '/generate', seed })),
+    // 1 warm-up /load (puts the asset in Cloudflare's cache), 5 cold /load on new DOs, then the
+    // solves and generations on the warm-up DO, which already holds the dictionary.
+    const runId = Date.now().toString(36);
+    const plan: { route: string; seed: number | null; do: string; warmup: boolean }[] = [
+      { route: '/load', seed: null, do: WARM_DO, warmup: true },
+      ...Array.from({ length: COLD_LOADS }, (_, i) => ({ route: '/load', seed: null, do: `cold-${runId}-${i + 1}`, warmup: false })),
+      ...SOLVE_SEEDS.map((seed) => ({ route: '/solve', seed, do: WARM_DO, warmup: false })),
+      ...GENERATE_SEEDS.map((seed) => ({ route: '/generate', seed, do: WARM_DO, warmup: false })),
     ];
+    const isCold = (r: number) => plan[r]!.route === '/load' && !plan[r]!.warmup;
     const tagOf = (e: TailEvent) => new URL(e.event?.request?.url ?? 'http://x/').searchParams.get('r');
     const eventsFor = (tag: string) => tailEvents.filter((e) => tagOf(e) === tag);
 
     // `wrangler tail` samples when events arrive faster than ~1/s, so requests are paced and a
     // request whose events never arrived is sent again (same seed, same operation) with a new tag.
-    // The cold /load cannot be repeated: it goes first, before the tail has any backlog.
+    // A cold /load retried goes to yet another new DO, so it stays cold.
     let lastStart = 0;
     const send = async (r: number, attempt: number): Promise<RequestRecord> => {
       const step = plan[r]!;
       const tag = attempt === 0 ? String(r) : `${r}.${attempt}`;
-      await sleep(Math.max(0, lastStart + PACE_MS - Date.now()));
+      const doName = isCold(r) && attempt > 0 ? `${step.do}.${attempt}` : step.do;
+      await sleep(Math.max(0, lastStart + PACE_MS + (isCold(r) ? COLD_GAP_MS : 0) - Date.now()));
       lastStart = Date.now();
-      const target = `${url}${step.route}?r=${tag}${step.seed === null ? '' : `&seed=${step.seed}`}`;
+      const target = `${url}${step.route}?r=${tag}&do=${doName}${step.seed === null ? '' : `&seed=${step.seed}`}`;
       const t = performance.now();
       const res = await fetch(target);
       const text = await res.text();
@@ -154,18 +169,18 @@ async function main() {
       } catch {
         body = { raw: text.slice(0, 500) };
       }
-      return { r, tag, attempt, route: step.route, seed: step.seed, status: res.status, wallMs, body };
+      return { r, tag, attempt, route: step.route, seed: step.seed, do: doName, warmup: step.warmup, status: res.status, wallMs, body };
     };
     const hasDoEvent = (q: RequestRecord) => eventsFor(q.tag).some((e) => typeof e.cpuTime === 'number' && e.executionModel === 'durableObject');
 
     const requests: RequestRecord[] = [];
     for (let r = 0; r < plan.length; r++) {
       requests.push(await send(r, 0));
-      if (r === 0) console.log(`/load -> ${requests[0]!.status} ${JSON.stringify(requests[0]!.body)}`);
+      if (plan[r]!.route === '/load') console.log(`/load ${requests[r]!.do} -> ${requests[r]!.status} ${JSON.stringify(requests[r]!.body)}`);
       if (r % 20 === 0) console.log(`sent ${r + 1}/${plan.length}, tail events ${tailEvents.length}`);
     }
-    const load = requests[0]!;
-    if (load.status !== 200) result.loadError = `HTTP ${load.status}: ${JSON.stringify(load.body).slice(0, 500)}`;
+    const failedLoad = requests.find((q) => q.route === '/load' && q.status !== 200);
+    if (failedLoad) result.loadError = `HTTP ${failedLoad.status}: ${JSON.stringify(failedLoad.body).slice(0, 500)}`;
 
     const settle = async (pending: () => boolean, maxMs: number) => {
       const by = Date.now() + maxMs;
@@ -173,7 +188,7 @@ async function main() {
     };
     await settle(() => requests.some((q) => !hasDoEvent(q)), 30_000);
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-      const missing = requests.filter((q) => q.r > 0 && !hasDoEvent(q));
+      const missing = requests.filter((q) => !plan[q.r]!.warmup && !hasDoEvent(q));
       if (missing.length === 0) break;
       console.log(`retry ${attempt}: ${missing.length} requests without a tail event`);
       for (const q of missing) requests[q.r] = await send(q.r, attempt);
@@ -196,6 +211,8 @@ async function main() {
         attempt: q.attempt,
         route: q.route,
         seed: q.seed,
+        do: q.do,
+        warmup: q.warmup,
         status: q.status,
         wallMs: q.wallMs,
         cpuMs: doEvent?.cpuTime ?? null,

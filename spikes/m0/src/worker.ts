@@ -3,6 +3,7 @@
  * assets and runs exactly one operation per request, so each request's CPU time measures one thing.
  *
  *   /load            loads the dictionary (cold on the first request) and reports the load wall time
+ *   ?do=NAME         routes to the Durable Object named NAME (default "m0")
  *   /solve?seed=N    solves one seeded random 6x6 board
  *   /generate?seed=N generates one playable 6x6 board
  */
@@ -64,6 +65,8 @@ export class SpikeDO extends DurableObject<Env> {
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    return env.SPIKE.get(env.SPIKE.idFromName('m0')).fetch(request);
+    // `?do=<name>` picks the Durable Object, so each cold load can hit a fresh instance.
+    const name = new URL(request.url).searchParams.get('do') ?? 'm0';
+    return env.SPIKE.get(env.SPIKE.idFromName(name)).fetch(request);
   },
 } satisfies ExportedHandler<Env>;
