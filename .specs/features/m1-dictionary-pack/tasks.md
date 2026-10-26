@@ -207,14 +207,16 @@ T13 → T14 → T15
 
 **Done when**:
 
-- [ ] Testes cobrem SPELL-01 AC 1 (ordem e distinção), 2 e 3
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: 55 tests pass (no silent deletions)
+- [x] Testes cobrem SPELL-01 AC 1 (ordem e distinção), 2 e 3
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: 55 tests pass (no silent deletions)
 
 **Tests**: unit
 **Gate**: quick
 
 **Commit**: `feat(core): compact display spellings map`
+
+**Status**: ✅ Complete
 
 ---
 
