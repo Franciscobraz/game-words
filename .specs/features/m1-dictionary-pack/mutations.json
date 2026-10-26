@@ -1,0 +1,23 @@
+[
+  {
+    "file": "tools/dict-build/src/cleanup.ts",
+    "old": "{ ar: 'á', er: 'ê', or: 'ô' }",
+    "new": "{ ar: 'á' }",
+    "proof": "npx vitest run tools/dict-build/src/cleanup.test.ts -t \"drops enclitic-only forms\"",
+    "label": "C14: enclitic infinitive fragments only for -ar (drop -er -> ê and -or -> ô)"
+  },
+  {
+    "file": "packages/core/src/generator.ts",
+    "old": "    [0, -1], [-1, 0], [-1, -1], [-1, 1],\n",
+    "new": "    // reverse directions removed\n",
+    "proof": "npx vitest run packages/core/src/generator.test.ts -t \"rejects boards with straight-line profanity\"",
+    "label": "C25: straight-line profanity scanned in one direction only (reverse directions removed)"
+  },
+  {
+    "file": "tools/play/src/main.tsx",
+    "old": "[pack, board, minLength, filterProfanity],",
+    "new": "[pack, board, minLength],",
+    "proof": "npx playwright test tools/play/e2e/play.spec.ts -g \"recomputes on option change\"",
+    "label": "C56: solutions memo ignores the profanity filter (stale on toggle)"
+  }
+]
