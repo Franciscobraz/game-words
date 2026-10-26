@@ -9,7 +9,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 ---
 
 **Design**: inline - decisões de arquitetura abaixo, sem `design.md`
-**Status**: Approved
+**Status**: Done
 **Approved**: 2026-10-26 - user: "execute cada fase, pare, me mostre o resultado e me pergunte antes de executar a proxima fase"
 **Mutations**: 3
 **Build**: `npx tsc -b; npx vitest run; npx playwright test`

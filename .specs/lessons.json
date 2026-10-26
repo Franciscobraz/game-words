@@ -3,7 +3,7 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 7,
+  "next_id": 8,
   "lessons": [
     {
       "id": "L-001",
@@ -112,6 +112,24 @@
       ],
       "created": "2026-10-26T21:14:24Z",
       "last_seen": "2026-10-26T21:14:24Z"
+    },
+    {
+      "id": "L-007",
+      "key": "surviving_mutant::give every branch of a lookup table its own fixture case",
+      "text": "Give every branch of a lookup table its own fixture case",
+      "signal": "surviving_mutant",
+      "scope": "dict-build",
+      "status": "candidate",
+      "features": [
+        "m1-dictionary-pack"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "tools/dict-build/src/cleanup.ts (C14, CLEAN-01 AC 2) (dict-build)"
+      ],
+      "created": "2026-10-26T23:49:25Z",
+      "last_seen": "2026-10-26T23:49:25Z"
     }
   ]
 }

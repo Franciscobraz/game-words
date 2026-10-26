@@ -1,8 +1,8 @@
 # m1-dictionary-pack proofs
 
-**HEAD**: 8366dd6
+**HEAD**: c694f1b
 **Tree**: clean
-**Result**: 64 pass, 0 fail; mutations 0 killed, 0 not
+**Result**: 64 pass, 0 fail; mutations 3 killed, 0 not
 
 | Check | Proof | Ran | Passed | Result |
 | --- | --- | --- | --- | --- |
@@ -70,3 +70,11 @@
 | Build | `npx tsc -b` | - | - | pass |
 | Build | `npx vitest run` | - | - | pass |
 | Build | `npx playwright test` | - | - | pass |
+
+## Mutations
+
+| Mutation | Location | Killed |
+| --- | --- | --- |
+| C14: enclitic infinitive fragments only for -ar (drop -er -> ê and -or -> ô) | `tools\dict-build\src\cleanup.ts:56` | yes |
+| C25: straight-line profanity scanned in one direction only (reverse directions removed) | `packages\core\src\generator.ts:78` | yes |
+| C56: solutions memo ignores the profanity filter (stale on toggle) | `tools\play\src\main.tsx:60` | yes |

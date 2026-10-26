@@ -50,6 +50,12 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - evidence: tasks.md Handoff Walked (C28-C33, C40) (specs)
 - last seen: 2026-10-26T21:14:24Z
 
+### L-007 - Give every branch of a lookup table its own fixture case
+- signal: `surviving_mutant` · recurrence: 1 feature(s) · scope: `dict-build` · harmful: 0
+- features: m1-dictionary-pack
+- evidence: tools/dict-build/src/cleanup.ts (C14, CLEAN-01 AC 2) (dict-build)
+- last seen: 2026-10-26T23:49:25Z
+
 ## Quarantined (failed when applied - ignore)
 
 A confirmed lesson that recurred alongside failure. Kept for the maintainer to review.

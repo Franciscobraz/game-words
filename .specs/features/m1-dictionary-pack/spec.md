@@ -254,16 +254,16 @@ O marco 0 provou que o dicionário pt-BR completo cabe e roda rápido na Cloudfl
 
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
-| PACK-01 | P1: Pacote de idioma (AC 1-5) | Tasks | Pending |
-| LIST-01 | P1: Listas editáveis (AC 1-7) | Tasks | Pending |
-| CLEAN-01 | P1: Limpeza do VERO (AC 1-3) | Tasks | Pending |
-| FREQ-01 | P1: Palavras comuns (AC 1-4) | Tasks | Pending |
-| PROF-01 | P1: Palavrões (AC 1-7) | Tasks | Pending |
-| SPELL-01 | P1: Grafias de exibição (AC 1-4) | Tasks | Pending |
-| SCORE-01 | P1: Validação e pontuação (AC 1-9) | Tasks | Pending |
-| LONG-01 | P1: Maior palavra possível (AC 1-5) | Tasks | Pending |
-| CAL-01 | P1: Calibração do gerador (AC 1-4) | Tasks | Pending |
-| PLAY-01 | P2: Página de jogo solo (AC 1-10) | Tasks | Pending |
+| PACK-01 | P1: Pacote de idioma (AC 1-5) | Tasks | Verified |
+| LIST-01 | P1: Listas editáveis (AC 1-7) | Tasks | Verified |
+| CLEAN-01 | P1: Limpeza do VERO (AC 1-3) | Tasks | Verified |
+| FREQ-01 | P1: Palavras comuns (AC 1-4) | Tasks | Verified |
+| PROF-01 | P1: Palavrões (AC 1-7) | Tasks | Verified |
+| SPELL-01 | P1: Grafias de exibição (AC 1-4) | Tasks | Verified |
+| SCORE-01 | P1: Validação e pontuação (AC 1-9) | Tasks | Verified |
+| LONG-01 | P1: Maior palavra possível (AC 1-5) | Tasks | Verified |
+| CAL-01 | P1: Calibração do gerador (AC 1-4) | Tasks | Verified |
+| PLAY-01 | P2: Página de jogo solo (AC 1-10) | Tasks | Verified |
 
 **Coverage:** 10 total, 0 mapped to tasks, 10 unmapped ⚠️ (mapeados na fase Tasks)
 
