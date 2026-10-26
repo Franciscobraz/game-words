@@ -8,15 +8,15 @@
   },
   {
     "file": "spikes/m0/src/report.ts",
-    "old": "!r.warmup && ok(r)",
-    "new": "ok(r)",
+    "old": "r.route === '/load' && !r.warmup",
+    "new": "r.route === '/load'",
     "proof": "npx vitest run spikes/m0/src/report.test.ts -t \"uses the median of five cold loads\"",
     "label": "C42 - warm-up /load counted as a cold sample"
   },
   {
     "file": "spikes/m0/src/report.ts",
-    "old": "loadMs !== null && loadMs <= 500",
-    "new": "loadMs !== null && loadMs < 500",
+    "old": "loadMs <= 500 ?",
+    "new": "loadMs < 500 ?",
     "proof": "npx vitest run spikes/m0/src/report.test.ts -t \"passes every D3 criterion with a value exactly at the limit\"",
     "label": "C42 - cold-load limit <= 500 -> < 500"
   }

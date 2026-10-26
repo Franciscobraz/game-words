@@ -1,8 +1,8 @@
 # m0-dictionary-spike proofs
 
-**HEAD**: 2dba6a1
+**HEAD**: f0cec9e
 **Tree**: clean
-**Result**: 44 pass, 0 fail; mutations 0 killed, 0 not
+**Result**: 48 pass, 0 fail; mutations 0 killed, 1 not
 
 | Check | Proof | Ran | Passed | Result |
 | --- | --- | --- | --- | --- |
@@ -34,8 +34,8 @@
 | C26 | `npx vitest run packages/core/src/generator.test.ts -t "returns the same board for the same seed"` | 1 | 1 | pass |
 | C27 | `npx vitest run packages/core/src/generator.test.ts -t "throws after 200 attempts"` | 1 | 1 | pass |
 | C28 | `walk - spikes/m0/results/cf.json mostra o registro /load com loadMs e status 200` | - | - | pass (Walked) |
-| C29 | `walk - spikes/m0/results/cf.json tem 121 registros com rota e semente` | - | - | pass (Walked) |
-| C30 | `walk - todos os 121 registros de cf.json têm cpuMs numérico` | - | - | pass (Walked) |
+| C29 | `walk - spikes/m0/results/cf.json tem 126 registros com rota e semente` | - | - | pass (Walked) |
+| C30 | `walk - todos os 126 registros de cf.json têm cpuMs numérico` | - | - | pass (Walked) |
 | C31 | `walk - spikes/m0/results/node.json tem heapUsedMb` | - | - | pass (Walked) |
 | C32 | `npx vitest run spikes/m0/src/report.test.ts -t "marks memory as FAIL when the load was rejected"` | 1 | 1 | pass |
 | C33 | `walk - npx wrangler deployments list --name bwords-m0-spike responde que o Worker não existe` | - | - | pass (Walked) |
@@ -48,5 +48,15 @@
 | C40 | `walk - pt-BR.stats.json registra peakHeapMb < 1024` | - | - | pass (Walked) |
 | C41 | `npx vitest run tools/dict-build/src/flags.test.ts -t "keeps utf-8 flags that share a first byte apart"` | 1 | 1 | pass |
 | C42 | `npx vitest run spikes/m0/src/report.test.ts -t "uses the median of five cold loads"` | 1 | 1 | pass |
+| C43 | `npx vitest run spikes/m0/src/report.test.ts -t "passes every D3 criterion with a value exactly at the limit"` | 1 | 1 | pass |
+| C44 | `npx vitest run spikes/m0/src/report.test.ts -t "fails the cold load without five valid cold samples"` | 1 | 1 | pass |
+| C45 | `npx vitest run packages/core/src/lang/ptBR.test.ts -t "classifies decomposed"` | 1 | 1 | pass |
+| C46 | `npx vitest run packages/core/src/generator.test.ts -t "throws a clear error when the weights leave too few let` | 1 | 1 | pass |
 | Build | `npx tsc -b` | - | - | pass |
 | Build | `npx vitest run` | - | - | pass |
+
+## Mutations
+
+| Mutation | Location | Killed |
+| --- | --- | --- |
+| spec refused | `  mutation 3: loadMs !== null && loadMs <= 500 occurs 0 times in spikes/m0/src` | no |
