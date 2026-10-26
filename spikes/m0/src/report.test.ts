@@ -171,6 +171,28 @@ describe('M0 results report', () => {
     expect(slow[3]).toBe('FALHA');
   });
 
+  test('passes every D3 criterion with a value exactly at the limit', () => {
+    const base = input({ memoryMb: 64, binBytes: 10 * 2 ** 20 });
+    const records: CfRecord[] = [
+      { route: '/load', seed: null, status: 200, wallMs: 9000, cpuMs: 4, serverWallMs: 800, loadMs: 760, warmup: true },
+      ...Array.from({ length: 5 }, (): CfRecord => ({
+        route: '/load', seed: null, status: 200, wallMs: 800, cpuMs: 3, serverWallMs: 510, loadMs: 500, warmup: false,
+      })),
+      ...Array.from({ length: 100 }, (_, i): CfRecord => ({
+        route: '/solve', seed: i + 1, status: 200, wallMs: 150, cpuMs: 50, serverWallMs: 51,
+      })),
+      ...Array.from({ length: 20 }, (_, i): CfRecord => ({
+        route: '/generate', seed: i + 1, status: 200, wallMs: 1200, cpuMs: 12, serverWallMs: 1000, attempts: 1,
+      })),
+    ];
+    const rows = criteriaRows(buildReport({ ...base, cf: { ...base.cf, records } }));
+    expect(rows.get('Tamanho do binário')!.slice(1, 4)).toEqual(['10 MB', '≤ 10 MB', 'PASSA']);
+    expect(rows.get('Memória com o dicionário carregado')!.slice(1, 4)).toEqual(['64 MB', '≤ 64 MB', 'PASSA']);
+    expect(rows.get('Carga a frio')!.slice(1, 4)).toEqual(['500 ms (mediana de 5)', '≤ 500 ms', 'PASSA']);
+    expect(rows.get('Solver 6x6 (p95)')!.slice(1, 4)).toEqual(['50 ms de CPU', '≤ 50 ms de CPU', 'PASSA']);
+    expect(rows.get('Geração 6x6')!.slice(1, 4)).toEqual(['1.000 ms (p95)', '≤ 1 s', 'PASSA']);
+  });
+
   test('records the VERO commit and the worker removal', async () => {
     const md = await readReport();
     const source = JSON.parse(await readFile(new URL('../../../tools/dict-build/source.json', import.meta.url), 'utf8')) as {
