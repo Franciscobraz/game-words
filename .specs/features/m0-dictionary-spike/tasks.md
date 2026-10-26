@@ -9,7 +9,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 ---
 
 **Design**: inline - decisões de arquitetura registradas abaixo, sem `design.md`
-**Status**: Approved
+**Status**: Done
 **Approved**: 2026-10-26 - user: "execute com os sub agents para nao estourar o contexto dessa aba mas peça para o subagent retornar um resumo do que foi feito"
 **Mutations**: 3
 **Build**: `npx tsc -b; npx vitest run`

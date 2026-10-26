@@ -1,6 +1,6 @@
 # m0-dictionary-spike proofs
 
-**HEAD**: c55c9af
+**HEAD**: db44c99
 **Tree**: clean
 **Result**: 48 pass, 0 fail; mutations 3 killed, 0 not
 

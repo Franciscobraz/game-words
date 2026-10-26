@@ -1,0 +1,117 @@
+{
+  "schema": 1,
+  "promote_threshold": 2,
+  "window_days": 45,
+  "quarantine_threshold": 2,
+  "next_id": 7,
+  "lessons": [
+    {
+      "id": "L-001",
+      "key": "surviving_mutant::test every inclusive limit with a value exactly at the limit",
+      "text": "Test every inclusive limit with a value exactly at the limit",
+      "signal": "surviving_mutant",
+      "scope": "thresholds",
+      "status": "candidate",
+      "features": [
+        "m0-dictionary-spike"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "spikes/m0/src/report.ts:145 (C42) (thresholds)"
+      ],
+      "created": "2026-10-26T21:14:23Z",
+      "last_seen": "2026-10-26T21:14:23Z"
+    },
+    {
+      "id": "L-002",
+      "key": "ac_gap::fail a measurement verdict when the required sample count is not met instead of dropping invalid samples",
+      "text": "Fail a measurement verdict when the required sample count is not met instead of dropping invalid samples",
+      "signal": "ac_gap",
+      "scope": "benchmarks",
+      "status": "candidate",
+      "features": [
+        "m0-dictionary-spike"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "spikes/m0/src/report.ts:108 (BENCH-01 AC 7) (benchmarks)"
+      ],
+      "created": "2026-10-26T21:14:23Z",
+      "last_seen": "2026-10-26T21:14:23Z"
+    },
+    {
+      "id": "L-003",
+      "key": "ac_gap::judge a failure condition over every matching record not only the first one",
+      "text": "Judge a failure condition over every matching record, not only the first one",
+      "signal": "ac_gap",
+      "scope": "benchmarks",
+      "status": "candidate",
+      "features": [
+        "m0-dictionary-spike"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "spikes/m0/src/report.ts:126 (BENCH-01 AC 5) (benchmarks)"
+      ],
+      "created": "2026-10-26T21:14:24Z",
+      "last_seen": "2026-10-26T21:14:24Z"
+    },
+    {
+      "id": "L-004",
+      "key": "ac_gap::validate weighted draw inputs so an exhausted pool raises a clear error instead of an out of range pick",
+      "text": "Validate weighted-draw inputs so an exhausted pool raises a clear error instead of an out-of-range pick",
+      "signal": "ac_gap",
+      "scope": "core",
+      "status": "candidate",
+      "features": [
+        "m0-dictionary-spike"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "packages/core/src/generator.ts (GEN-01 AC 6) (core)"
+      ],
+      "created": "2026-10-26T21:14:24Z",
+      "last_seen": "2026-10-26T21:14:24Z"
+    },
+    {
+      "id": "L-005",
+      "key": "ac_gap::normalize text to nfc before character class checks",
+      "text": "Normalize text to NFC before character-class checks",
+      "signal": "ac_gap",
+      "scope": "lang",
+      "status": "candidate",
+      "features": [
+        "m0-dictionary-spike"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "packages/core/src/lang/ptBR.ts (DICT-02 AC 4-5) (lang)"
+      ],
+      "created": "2026-10-26T21:14:24Z",
+      "last_seen": "2026-10-26T21:14:24Z"
+    },
+    {
+      "id": "L-006",
+      "key": "spec_precision_gap::record each walk proof on the walked line when it is done and update its expected counts when the spec changes",
+      "text": "Record each walk proof on the Walked line when it is done and update its expected counts when the spec changes",
+      "signal": "spec_precision_gap",
+      "scope": "specs",
+      "status": "candidate",
+      "features": [
+        "m0-dictionary-spike"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "tasks.md Handoff Walked (C28-C33, C40) (specs)"
+      ],
+      "created": "2026-10-26T21:14:24Z",
+      "last_seen": "2026-10-26T21:14:24Z"
+    }
+  ]
+}

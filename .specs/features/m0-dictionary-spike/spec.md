@@ -179,14 +179,14 @@ O BWords valida palavras e gera tabuleiros no servidor, dentro de um Durable Obj
 
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
-| DICT-01 | P1: Build do dicionário (AC 1-2, 11) | Tasks | Pending |
-| DICT-02 | P1: Build do dicionário (AC 3-7) | Tasks | Pending |
-| DICT-03 | P1: Build do dicionário (AC 8-10) | Tasks | Pending |
-| LOOK-01 | P1: Consulta ao dicionário (AC 1-4) | Tasks | Pending |
-| SOLV-01 | P1: Solver (AC 1-5) | Tasks | Pending |
-| GEN-01 | P1: Gerador de tabuleiros (AC 1-6) | Tasks | Pending |
-| BENCH-01 | P1: Medição na Cloudflare (AC 1-7) | Tasks | Pending |
-| REP-01 | P1: Relatório de resultados (AC 1-5) | Tasks | Pending |
+| DICT-01 | P1: Build do dicionário (AC 1-2, 11) | Tasks | Verified |
+| DICT-02 | P1: Build do dicionário (AC 3-7) | Tasks | Verified |
+| DICT-03 | P1: Build do dicionário (AC 8-10) | Tasks | Verified |
+| LOOK-01 | P1: Consulta ao dicionário (AC 1-4) | Tasks | Verified |
+| SOLV-01 | P1: Solver (AC 1-5) | Tasks | Verified |
+| GEN-01 | P1: Gerador de tabuleiros (AC 1-6) | Tasks | Verified |
+| BENCH-01 | P1: Medição na Cloudflare (AC 1-7) | Tasks | Verified |
+| REP-01 | P1: Relatório de resultados (AC 1-5) | Tasks | Verified |
 
 **Coverage:** 8 total, 0 mapped to tasks, 8 unmapped ⚠️ (mapeados na fase Tasks)
 
