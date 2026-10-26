@@ -134,14 +134,16 @@ T13 → T14 → T15
 
 **Done when**:
 
-- [ ] Testes cobrem LIST-01 AC 1, 4 e 6
-- [ ] Gate check passes: `npx vitest run`
-- [ ] Test count: 47 tests pass (no silent deletions)
+- [x] Testes cobrem LIST-01 AC 1, 4 e 6
+- [x] Gate check passes: `npx vitest run`
+- [x] Test count: 47 tests pass (no silent deletions)
 
 **Tests**: integration
 **Gate**: full
 
 **Commit**: `feat(dict-build): extra and blocklist word lists`
+
+**Status**: ✅ Complete
 
 ---
 
