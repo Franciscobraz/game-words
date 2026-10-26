@@ -1,0 +1,649 @@
+{
+  "node": "v24.18.0",
+  "gcSettled": true,
+  "binBytes": 2414708,
+  "words": 11581890,
+  "heapUsedMb": 8.3,
+  "heapUsedDeltaMb": 0.1,
+  "arrayBuffersMb": 2.4,
+  "memoryMb": 10.7,
+  "rssMb": 66.6,
+  "loadMs": 1.52,
+  "solve": {
+    "count": 100,
+    "p50Ms": 1.69,
+    "p95Ms": 3.2,
+    "maxMs": 6.82,
+    "runs": [
+      {
+        "seed": 1,
+        "ms": 4.96,
+        "words": 2084
+      },
+      {
+        "seed": 2,
+        "ms": 6.82,
+        "words": 2181
+      },
+      {
+        "seed": 3,
+        "ms": 2.36,
+        "words": 1497
+      },
+      {
+        "seed": 4,
+        "ms": 1.88,
+        "words": 1754
+      },
+      {
+        "seed": 5,
+        "ms": 3.17,
+        "words": 3137
+      },
+      {
+        "seed": 6,
+        "ms": 1.12,
+        "words": 1027
+      },
+      {
+        "seed": 7,
+        "ms": 0.85,
+        "words": 753
+      },
+      {
+        "seed": 8,
+        "ms": 3.09,
+        "words": 2606
+      },
+      {
+        "seed": 9,
+        "ms": 4.65,
+        "words": 4350
+      },
+      {
+        "seed": 10,
+        "ms": 2.34,
+        "words": 2026
+      },
+      {
+        "seed": 11,
+        "ms": 1.33,
+        "words": 1567
+      },
+      {
+        "seed": 12,
+        "ms": 2.31,
+        "words": 1765
+      },
+      {
+        "seed": 13,
+        "ms": 1.4,
+        "words": 1171
+      },
+      {
+        "seed": 14,
+        "ms": 0.98,
+        "words": 929
+      },
+      {
+        "seed": 15,
+        "ms": 1.68,
+        "words": 2100
+      },
+      {
+        "seed": 16,
+        "ms": 1.55,
+        "words": 2287
+      },
+      {
+        "seed": 17,
+        "ms": 2.79,
+        "words": 2619
+      },
+      {
+        "seed": 18,
+        "ms": 3.2,
+        "words": 3528
+      },
+      {
+        "seed": 19,
+        "ms": 1.74,
+        "words": 1288
+      },
+      {
+        "seed": 20,
+        "ms": 1.26,
+        "words": 1102
+      },
+      {
+        "seed": 21,
+        "ms": 1.24,
+        "words": 1186
+      },
+      {
+        "seed": 22,
+        "ms": 2.54,
+        "words": 1779
+      },
+      {
+        "seed": 23,
+        "ms": 0.79,
+        "words": 877
+      },
+      {
+        "seed": 24,
+        "ms": 1.75,
+        "words": 1746
+      },
+      {
+        "seed": 25,
+        "ms": 1.68,
+        "words": 1505
+      },
+      {
+        "seed": 26,
+        "ms": 2.58,
+        "words": 1826
+      },
+      {
+        "seed": 27,
+        "ms": 1.51,
+        "words": 1872
+      },
+      {
+        "seed": 28,
+        "ms": 1.79,
+        "words": 2349
+      },
+      {
+        "seed": 29,
+        "ms": 1.39,
+        "words": 1061
+      },
+      {
+        "seed": 30,
+        "ms": 1.46,
+        "words": 1182
+      },
+      {
+        "seed": 31,
+        "ms": 2.45,
+        "words": 2783
+      },
+      {
+        "seed": 32,
+        "ms": 1.54,
+        "words": 1423
+      },
+      {
+        "seed": 33,
+        "ms": 2.2,
+        "words": 2593
+      },
+      {
+        "seed": 34,
+        "ms": 1.22,
+        "words": 1544
+      },
+      {
+        "seed": 35,
+        "ms": 2.08,
+        "words": 2252
+      },
+      {
+        "seed": 36,
+        "ms": 1.09,
+        "words": 1203
+      },
+      {
+        "seed": 37,
+        "ms": 3.94,
+        "words": 4573
+      },
+      {
+        "seed": 38,
+        "ms": 1.79,
+        "words": 2658
+      },
+      {
+        "seed": 39,
+        "ms": 1.99,
+        "words": 1988
+      },
+      {
+        "seed": 40,
+        "ms": 1.13,
+        "words": 941
+      },
+      {
+        "seed": 41,
+        "ms": 1.82,
+        "words": 2548
+      },
+      {
+        "seed": 42,
+        "ms": 2.99,
+        "words": 4334
+      },
+      {
+        "seed": 43,
+        "ms": 1.5,
+        "words": 1864
+      },
+      {
+        "seed": 44,
+        "ms": 2.38,
+        "words": 3023
+      },
+      {
+        "seed": 45,
+        "ms": 2.44,
+        "words": 2323
+      },
+      {
+        "seed": 46,
+        "ms": 0.82,
+        "words": 801
+      },
+      {
+        "seed": 47,
+        "ms": 0.45,
+        "words": 363
+      },
+      {
+        "seed": 48,
+        "ms": 2.54,
+        "words": 2219
+      },
+      {
+        "seed": 49,
+        "ms": 1.36,
+        "words": 1747
+      },
+      {
+        "seed": 50,
+        "ms": 0.74,
+        "words": 588
+      },
+      {
+        "seed": 51,
+        "ms": 1.34,
+        "words": 1616
+      },
+      {
+        "seed": 52,
+        "ms": 2.68,
+        "words": 3435
+      },
+      {
+        "seed": 53,
+        "ms": 1.39,
+        "words": 1475
+      },
+      {
+        "seed": 54,
+        "ms": 1.46,
+        "words": 1726
+      },
+      {
+        "seed": 55,
+        "ms": 1.77,
+        "words": 2131
+      },
+      {
+        "seed": 56,
+        "ms": 1.39,
+        "words": 1626
+      },
+      {
+        "seed": 57,
+        "ms": 0.74,
+        "words": 912
+      },
+      {
+        "seed": 58,
+        "ms": 2.99,
+        "words": 4579
+      },
+      {
+        "seed": 59,
+        "ms": 1.06,
+        "words": 1011
+      },
+      {
+        "seed": 60,
+        "ms": 1.04,
+        "words": 1009
+      },
+      {
+        "seed": 61,
+        "ms": 1.2,
+        "words": 1001
+      },
+      {
+        "seed": 62,
+        "ms": 1.76,
+        "words": 1994
+      },
+      {
+        "seed": 63,
+        "ms": 1.46,
+        "words": 1432
+      },
+      {
+        "seed": 64,
+        "ms": 3.04,
+        "words": 2749
+      },
+      {
+        "seed": 65,
+        "ms": 4.09,
+        "words": 3895
+      },
+      {
+        "seed": 66,
+        "ms": 1.15,
+        "words": 1296
+      },
+      {
+        "seed": 67,
+        "ms": 1.57,
+        "words": 2210
+      },
+      {
+        "seed": 68,
+        "ms": 1.39,
+        "words": 1363
+      },
+      {
+        "seed": 69,
+        "ms": 2.04,
+        "words": 2442
+      },
+      {
+        "seed": 70,
+        "ms": 2.01,
+        "words": 2258
+      },
+      {
+        "seed": 71,
+        "ms": 1.71,
+        "words": 2240
+      },
+      {
+        "seed": 72,
+        "ms": 2.16,
+        "words": 2223
+      },
+      {
+        "seed": 73,
+        "ms": 2.12,
+        "words": 2439
+      },
+      {
+        "seed": 74,
+        "ms": 1.89,
+        "words": 2571
+      },
+      {
+        "seed": 75,
+        "ms": 2.47,
+        "words": 2737
+      },
+      {
+        "seed": 76,
+        "ms": 1.49,
+        "words": 2033
+      },
+      {
+        "seed": 77,
+        "ms": 2.6,
+        "words": 2872
+      },
+      {
+        "seed": 78,
+        "ms": 0.87,
+        "words": 814
+      },
+      {
+        "seed": 79,
+        "ms": 2.02,
+        "words": 2136
+      },
+      {
+        "seed": 80,
+        "ms": 1.4,
+        "words": 1745
+      },
+      {
+        "seed": 81,
+        "ms": 0.81,
+        "words": 718
+      },
+      {
+        "seed": 82,
+        "ms": 1.04,
+        "words": 925
+      },
+      {
+        "seed": 83,
+        "ms": 1.58,
+        "words": 1629
+      },
+      {
+        "seed": 84,
+        "ms": 2.19,
+        "words": 2238
+      },
+      {
+        "seed": 85,
+        "ms": 1.29,
+        "words": 1358
+      },
+      {
+        "seed": 86,
+        "ms": 2.53,
+        "words": 2965
+      },
+      {
+        "seed": 87,
+        "ms": 1.36,
+        "words": 1124
+      },
+      {
+        "seed": 88,
+        "ms": 1.91,
+        "words": 3195
+      },
+      {
+        "seed": 89,
+        "ms": 1.99,
+        "words": 2012
+      },
+      {
+        "seed": 90,
+        "ms": 1.95,
+        "words": 2567
+      },
+      {
+        "seed": 91,
+        "ms": 1.36,
+        "words": 1692
+      },
+      {
+        "seed": 92,
+        "ms": 2.15,
+        "words": 3024
+      },
+      {
+        "seed": 93,
+        "ms": 1.08,
+        "words": 1513
+      },
+      {
+        "seed": 94,
+        "ms": 2.02,
+        "words": 2199
+      },
+      {
+        "seed": 95,
+        "ms": 1.9,
+        "words": 2129
+      },
+      {
+        "seed": 96,
+        "ms": 1.04,
+        "words": 1335
+      },
+      {
+        "seed": 97,
+        "ms": 1.54,
+        "words": 1849
+      },
+      {
+        "seed": 98,
+        "ms": 1.61,
+        "words": 2076
+      },
+      {
+        "seed": 99,
+        "ms": 1.69,
+        "words": 1777
+      },
+      {
+        "seed": 100,
+        "ms": 1.52,
+        "words": 1458
+      }
+    ]
+  },
+  "generate": {
+    "count": 20,
+    "p50Ms": 1.65,
+    "p95Ms": 3.19,
+    "maxMs": 4.37,
+    "meanAttempts": 1,
+    "runs": [
+      {
+        "seed": 1,
+        "ms": 2.3,
+        "attempts": 1,
+        "words": 2084
+      },
+      {
+        "seed": 2,
+        "ms": 2.53,
+        "attempts": 1,
+        "words": 2181
+      },
+      {
+        "seed": 3,
+        "ms": 1.28,
+        "attempts": 1,
+        "words": 1497
+      },
+      {
+        "seed": 4,
+        "ms": 1.45,
+        "attempts": 1,
+        "words": 1754
+      },
+      {
+        "seed": 5,
+        "ms": 3.19,
+        "attempts": 1,
+        "words": 3137
+      },
+      {
+        "seed": 6,
+        "ms": 1.03,
+        "attempts": 1,
+        "words": 1027
+      },
+      {
+        "seed": 7,
+        "ms": 0.7,
+        "attempts": 1,
+        "words": 753
+      },
+      {
+        "seed": 8,
+        "ms": 2.98,
+        "attempts": 1,
+        "words": 2606
+      },
+      {
+        "seed": 9,
+        "ms": 4.37,
+        "attempts": 1,
+        "words": 4350
+      },
+      {
+        "seed": 10,
+        "ms": 2.06,
+        "attempts": 1,
+        "words": 2026
+      },
+      {
+        "seed": 11,
+        "ms": 1.3,
+        "attempts": 1,
+        "words": 1567
+      },
+      {
+        "seed": 12,
+        "ms": 2.27,
+        "attempts": 1,
+        "words": 1765
+      },
+      {
+        "seed": 13,
+        "ms": 1.3,
+        "attempts": 1,
+        "words": 1171
+      },
+      {
+        "seed": 14,
+        "ms": 0.95,
+        "attempts": 1,
+        "words": 929
+      },
+      {
+        "seed": 15,
+        "ms": 1.72,
+        "attempts": 1,
+        "words": 2100
+      },
+      {
+        "seed": 16,
+        "ms": 1.49,
+        "attempts": 1,
+        "words": 2287
+      },
+      {
+        "seed": 17,
+        "ms": 2.76,
+        "attempts": 1,
+        "words": 2619
+      },
+      {
+        "seed": 18,
+        "ms": 2.97,
+        "attempts": 1,
+        "words": 3528
+      },
+      {
+        "seed": 19,
+        "ms": 1.65,
+        "attempts": 1,
+        "words": 1288
+      },
+      {
+        "seed": 20,
+        "ms": 1.24,
+        "attempts": 1,
+        "words": 1102
+      }
+    ]
+  }
+}

@@ -317,8 +317,10 @@ T9 → T10 → T11 → T12
 
 **Done when**:
 
-- [ ] `spikes/m0/results/node.json` gerado com heap, carga, p50/p95 do solver e p50/p95 da geração
-- [ ] Gate check passes: `npx tsc -b; npx vitest run`
+- [x] `spikes/m0/results/node.json` gerado com heap, carga, p50/p95 do solver e p50/p95 da geração
+- [x] Gate check passes: `npx tsc -b; npx vitest run`
+
+**Status**: ✅ Complete
 
 **Tests**: none
 **Gate**: build

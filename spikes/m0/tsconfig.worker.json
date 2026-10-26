@@ -6,6 +6,6 @@
     "tsBuildInfoFile": "../../node_modules/.cache/tsc/spike-m0-worker.tsbuildinfo",
     "types": ["@cloudflare/workers-types"]
   },
-  "files": ["src/worker.ts"],
+  "files": ["src/worker.ts", "src/boards.ts"],
   "references": [{ "path": "../../packages/core" }]
 }
