@@ -322,15 +322,17 @@ T13 → T14 → T15
 
 **Done when**:
 
-- [ ] Os testes existentes do gerador continuam passando, adaptados só na assinatura, sem enfraquecer nenhuma asserção
-- [ ] Testes novos cobrem CAL-01 AC 2 e 4 e PROF-01 AC 6
-- [ ] Gate check passes: `npx tsc -b; npx vitest run`
-- [ ] Test count: 79 tests pass (no silent deletions)
+- [x] Os testes existentes do gerador continuam passando, adaptados só na assinatura, sem enfraquecer nenhuma asserção
+- [x] Testes novos cobrem CAL-01 AC 2 e 4 e PROF-01 AC 6
+- [x] Gate check passes: `npx tsc -b; npx vitest run`
+- [x] Test count: 79 tests pass (no silent deletions)
 
 **Tests**: unit
 **Gate**: build
 
 **Commit**: `feat(core): common-word minimum and profanity-safe generator`
+
+**Status**: ✅ Complete
 
 ---
 

@@ -1,18 +1,30 @@
-import type { Dawg } from './dawg.ts';
-import { solve } from './solver.ts';
+import type { LanguagePack } from './pack.ts';
+import { type Board, boardTiles } from './solver.ts';
+import { boardSolutions } from './validate.ts';
 
 export const MAX_COPIES_PER_LETTER = 4;
 export const MAX_ATTEMPTS = 200;
 export const MIN_WORDS: Readonly<Record<number, number>> = { 4: 40, 5: 80, 6: 120 };
 const MIN_WORD_LENGTH = 3;
+/** Shortest profanity, in letters, that the generator keeps out of straight lines. */
+export const MIN_STRAIGHT_PROFANITY = 4;
 const Q = 16;
 
 export interface GeneratedBoard {
   board: string[][];
   /** Number of boards drawn until one met the minimum, including the accepted one. */
   attempts: number;
-  /** Words of 3+ letters the solver finds on the board. */
+  /** Valid words of 3+ letters on the board (profanity excluded while the filter is on). */
   wordCount: number;
+  /** Valid common words of 3+ letters on the board (profanity excluded while the filter is on). */
+  commonCount: number;
+}
+
+export interface GenerateOptions {
+  /** Default true. Profanity does not count, and boards with straight-line profanity are redrawn. */
+  filterProfanity?: boolean;
+  /** Minimum valid common words. Default `pack.meta.minCommonWords[size]`, or 0 when the meta has none. */
+  minCommonWords?: number;
 }
 
 /** mulberry32: small seeded PRNG returning floats in [0, 1). */
@@ -57,19 +69,51 @@ function drawBoard(size: number, rng: () => number, weights: Float64Array): stri
   return board;
 }
 
+/** Whether a profane word of 4+ letters reads in a straight line (row, column or diagonal, either way). */
+export function hasStraightLineProfanity(board: Board, pack: LanguagePack): boolean {
+  const tiles = boardTiles(board);
+  const n = board.length;
+  const directions = [
+    [0, 1], [1, 0], [1, 1], [1, -1],
+    [0, -1], [-1, 0], [-1, -1], [-1, 1],
+  ] as const;
+  for (let start = 0; start < tiles.length; start++) {
+    for (const [dr, dc] of directions) {
+      let r = Math.floor(start / n);
+      let c = start % n;
+      let word = '';
+      while (r >= 0 && r < n && c >= 0 && c < n) {
+        for (const l of tiles[r * n + c]!) word += String.fromCharCode(97 + l);
+        if (word.length >= MIN_STRAIGHT_PROFANITY && pack.isProfane(word)) return true;
+        r += dr;
+        c += dc;
+      }
+    }
+  }
+  return false;
+}
+
 /**
  * Draws boards with letters weighted by the dictionary header, at most 4 copies per letter
- * and Q only as "qu", until the solver finds the minimum word count for the size.
- * The same seed and dictionary always give the same board.
+ * and Q only as "qu", until one has the minimum word count for the size and the minimum
+ * common word count, and (with the profanity filter on) no straight-line profanity.
+ * The same seed, pack and options always give the same board.
  */
-export function generateBoard(size: number, seed: number, dawg: Dawg): GeneratedBoard {
+export function generateBoard(size: number, seed: number, pack: LanguagePack, options: GenerateOptions = {}): GeneratedBoard {
   const min = MIN_WORDS[size];
   if (min === undefined) throw new Error(`Invalid board size ${size}: expected 4, 5 or 6`);
+  const filterProfanity = options.filterProfanity ?? true;
+  const minCommon = options.minCommonWords ?? pack.meta.minCommonWords[size] ?? 0;
   const rng = mulberry32(seed);
   for (let attempts = 1; attempts <= MAX_ATTEMPTS; attempts++) {
-    const board = drawBoard(size, rng, dawg.letterWeights);
-    const wordCount = solve(board, dawg, MIN_WORD_LENGTH).size;
-    if (wordCount >= min) return { board, attempts, wordCount };
+    const board = drawBoard(size, rng, pack.dict.letterWeights);
+    if (filterProfanity && hasStraightLineProfanity(board, pack)) continue;
+    const { words, common } = boardSolutions(board, pack, { minLength: MIN_WORD_LENGTH, filterProfanity });
+    if (words.size >= min && common.size >= minCommon) {
+      return { board, attempts, wordCount: words.size, commonCount: common.size };
+    }
   }
-  throw new Error(`No ${size}x${size} board with ${min}+ words after ${MAX_ATTEMPTS} attempts (seed ${seed})`);
+  throw new Error(
+    `No ${size}x${size} board with ${min}+ words and ${minCommon}+ common words after ${MAX_ATTEMPTS} attempts (seed ${seed})`,
+  );
 }

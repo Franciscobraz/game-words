@@ -8,7 +8,7 @@
  *   /generate?seed=N generates one playable 6x6 board
  */
 import { DurableObject } from 'cloudflare:workers';
-import { Dawg, generateBoard, solve } from '@bwords/core';
+import { Dawg, LanguagePack, buildDawg, buildSpellings, generateBoard, solve } from '@bwords/core';
 import { BOARD_SIZE, randomBoard } from './boards.ts';
 
 interface Env {
@@ -18,8 +18,21 @@ interface Env {
 
 const DICT_URL = 'https://assets.local/pt-BR.dict.bin';
 
+/** M1 adapter: the spike only has the dictionary, so the pack has no common words, profanity or minimums. */
+function dictOnlyPack(dict: ArrayBuffer, dawg: Dawg): LanguagePack {
+  const empty = buildDawg([], [...dawg.letterWeights]);
+  return LanguagePack.fromBuffers({
+    dict,
+    common: empty,
+    profanity: empty,
+    spellings: buildSpellings([]),
+    meta: { id: 'pt-BR', minCommonWords: {} },
+  });
+}
+
 export class SpikeDO extends DurableObject<Env> {
   private dawg: Dawg | undefined;
+  private pack: LanguagePack | undefined;
   private bytes = 0;
   private loadMs = 0;
 
@@ -31,6 +44,7 @@ export class SpikeDO extends DurableObject<Env> {
     if (!res.ok) throw new Error(`Dictionary asset fetch failed: HTTP ${res.status}`);
     const buf = await res.arrayBuffer();
     this.dawg = Dawg.fromBuffer(buf);
+    this.pack = dictOnlyPack(buf, this.dawg);
     this.bytes = buf.byteLength;
     this.loadMs = Date.now() - started;
     return true;
@@ -51,7 +65,7 @@ export class SpikeDO extends DurableObject<Env> {
           return Response.json({ route: '/solve', seed, loadedNow, board, wordCount: words.size });
         }
         case '/generate': {
-          const g = generateBoard(BOARD_SIZE, seed, dawg);
+          const g = generateBoard(BOARD_SIZE, seed, this.pack!);
           return Response.json({ route: '/generate', seed, loadedNow, ...g });
         }
         default:
