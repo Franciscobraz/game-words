@@ -109,7 +109,7 @@ Jogo de encontrar palavras em tabuleiro de letras, inspirado no Boggle Party (Ne
    - Em caso de empate, aparece uma que alguém encontrou; se ninguém encontrou, a primeira em ordem alfabética.
    - Se alguém a encontrou, a tela mostra quem.
    - Não há outra lista de "palavras perdidas".
-4. **Placar** acumulado. Um QR pequeno no canto permite que quem chegou atrasado entre na próxima rodada.
+4. **Placar** acumulado. As palavras aparecem com as grafias reais (ver §5.5). Um QR pequeno no canto permite que quem chegou atrasado entre na próxima rodada.
 
 O **fast mode** mostra os resultados de forma resumida, sem revelar palavra por palavra e cortando o máximo de animações.
 
@@ -163,6 +163,14 @@ São aceitas as formas flexionadas: plurais, femininos e conjugações.
 - Um solver encontra **todas** as palavras válidas, e tabuleiros com poucas palavras são rejeitados. Os mínimos iniciais, a calibrar, são: 4x4 ≥ 40, 5x5 ≥ 80, 6x6 ≥ 120.
 - Com o filtro de palavrões ligado, o gerador evita palavrões óbvios em linha reta.
 - O próximo tabuleiro é gerado **enquanto a TV mostra os resultados**.
+
+
+### 5.5 Grafias de exibição (decisão A1)
+- A validação e a pontuação usam só a forma normalizada: "faca" e "faça" são **a mesma palavra**, formada pelas mesmas peças (F-A-C-A), e valem **uma vez**. Os pontos contam as letras da forma normalizada (a peça "Qu" conta 2).
+- O build guarda, junto com o binário, um **mapa de grafias**: forma normalizada → grafias originais do dicionário (ex.: `faca` → `faca`, `faça`; `coracoes` → `corações`).
+- **Durante a rodada**, o celular mostra a palavra como o jogador a formou, em maiúsculas sem acento ("FACA").
+- **No resultado da rodada**, a TV mostra as grafias reais ao lado: "FACA (faca, faça)", "CORACOES (corações)". Quando a única grafia é igual à normalizada, nada é acrescentado.
+- O mapa fica só no servidor e é carregado sob demanda para montar os resultados. O tamanho será medido no marco 1.
 
 ---
 
