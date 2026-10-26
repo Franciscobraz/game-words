@@ -253,14 +253,16 @@ T13 → T14 → T15
 
 **Done when**:
 
-- [ ] Testes cobrem SCORE-01 AC 1 a 5, PROF-01 AC 4 e 5 e os edge cases de caminho vazio/peça única e de comum + palavrão
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: 66 tests pass (no silent deletions)
+- [x] Testes cobrem SCORE-01 AC 1 a 5, PROF-01 AC 4 e 5 e os edge cases de caminho vazio/peça única e de comum + palavrão
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: 66 tests pass (no silent deletions)
 
 **Tests**: unit
 **Gate**: quick
 
 **Commit**: `feat(core): submission validation`
+
+**Status**: ✅ Complete
 
 ---
 
