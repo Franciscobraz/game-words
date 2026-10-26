@@ -6,7 +6,7 @@
 
 | Critério | Valor medido | Limite | Veredito | Detalhe |
 | --- | --- | --- | --- | --- |
-| Tamanho do binário | 2,3 MB | ≤ 10 MB | PASSA | 2.414.708 bytes, 11.581.890 palavras |
+| Tamanho do binário | 1,62 MB | ≤ 10 MB | PASSA | 1.702.840 bytes, 2.328.458 palavras |
 | Memória com o dicionário carregado | 10,7 MB | ≤ 64 MB | PASSA | Node v24.18.0: heap 8,3 MB + 2,4 MB de ArrayBuffer após carregar; a Cloudflare carregou sem erro de memória |
 | Carga a frio | 688 ms | ≤ 500 ms | FALHA | Tempo de parede medido no DO (busca no ASSETS + Dawg.fromBuffer); invocação do DO 712 ms, CPU 4 ms |
 | Solver 6x6 (p95) | 21 ms de CPU | ≤ 50 ms de CPU | PASSA | 100/100 resoluções com CPU do wrangler tail; p50 10 ms, máx. 29 ms |
@@ -22,125 +22,125 @@
 - Tempo de parede no cliente (inclui a rede até a Cloudflare): `/solve` p95 243 ms, `/generate` p95 233 ms.
 - Memória: o Workers não expõe o heap; medida no Node v24.18.0 (`process.memoryUsage()` após `gc()`), e na Cloudflare se comprovou que o DO carregou o binário e respondeu.
 - Node local: carga 1,52 ms; solver 6x6 p50/p95 1,69/3,2 ms; geração 6x6 p50/p95 1,65/3,19 ms, média de 1 tentativa(s) por tabuleiro.
-- Pico de heap do build: 696,4 MB (saída do `unmunch` lida em streaming).
+- Pico de heap do build: 242,8 MB (saída do `unmunch` lida em streaming).
 
 ## Contagem de formas por filtro
 
 | Etapa | Formas restantes | Descartadas |
 | --- | --- | --- |
-| Expandidas pelo `unmunch` | 83.189.912 | - |
-| Sem letra maiúscula | 83.074.823 | 115.089 |
-| Só letras (sem hífen, apóstrofo, dígito, ponto) | 16.869.450 | 66.205.373 |
-| Entre 3 e 16 letras | 12.305.381 | 4.564.069 |
-| Sem duplicatas após normalizar | 11.581.890 | 723.491 |
+| Expandidas pelo `unmunch` | 10.545.886 | - |
+| Sem letra maiúscula | 10.469.642 | 76.244 |
+| Só letras (sem hífen, apóstrofo, dígito, ponto) | 2.725.425 | 7.744.217 |
+| Entre 3 e 16 letras | 2.437.442 | 287.983 |
+| Sem duplicatas após normalizar | 2.328.458 | 108.984 |
 
 ## Amostras (semente 20261026)
 
 ### 50 palavras aceitas
 
-- subvozeadores
-- autovigiarmo
-- heptaugadora
-- larvares
-- ominadoronas
-- hectartropineo
-- coparcializado
-- rinodinicos
-- probifara
-- zooorganica
-- empiolhadonas
-- posalarmavamos
-- aerochequemo
-- antitrombinas
-- aportarao
-- pseudoteimasseis
-- azonadissima
-- hipovampirante
-- aeroassumiste
-- zooosculas
-- neoternaria
-- microgarrotadao
-- tragiramosas
-- biscoutamo
-- cobaixasses
-- micromediador
-- hexapojarao
-- infoucaveis
-- anticoserieis
-- prosombreadores
-- juizemos
-- magalanico
-- polisoadona
-- transatupiu
-- poliasseguremo
-- enchumbavam
-- dessalmonada
-- protoveridicas
-- cardiotrotos
-- neoacautelareis
-- infraprecisou
-- infrainstruia
-- aeroiterados
-- interlacaiada
-- ultrapolegaria
-- despoisariamos
-- prochancelantes
-- sobreprofundarei
-- acastaneos
-- dessaciar
+- citarizassemos
+- regorgeamento
+- salmoeiram
+- revigorentavas
+- destabocadinha
+- simpaticistas
+- citarizemos
+- debarias
+- desencadeies
+- granidissimo
+- reparariam
+- grabanos
+- arquirrival
+- guarecerei
+- igualizei
+- limnodinaste
+- reopinam
+- pincel
+- apingentamo
+- cocontratarem
+- repreensona
+- lollardistas
+- encaminhadas
+- viropexia
+- helioporaceas
+- lembadorzao
+- escarapanteara
+- divaricarao
+- estuarialissima
+- microcebo
+- enfronhamo
+- eclipsastes
+- eliciadorona
+- gomificadamente
+- ramnitoizinhos
+- ombreardes
+- intecibilidades
+- hinam
+- anisidinas
+- esvoejem
+- sediaveis
+- comerciariamos
+- balancearemos
+- malucados
+- voluteadonas
+- circunvoaremo
+- neopteras
+- astralizariam
+- afaroladissimos
+- epigramassem
 
 ### 50 formas descartadas
 
-- aforjei-a (non-letter)
-- transsubordinem-na (non-letter)
-- supergangrenou-te (non-letter)
-- hipoarroteasse-me (non-letter)
-- ultra-aconchegam-lhes (non-letter)
-- hexa-assestavam-se-lhe (non-letter)
-- zooalmejar-na-ão (non-letter)
-- aasnava-as (non-letter)
-- ultra-avaliara-se-lhes (non-letter)
-- ininglesaste-me (non-letter)
-- poliProcurador-Geral (uppercase)
-- macroacoplá-la-ei (non-letter)
-- biocartorializava (length)
-- reencubassem-na (non-letter)
-- suprapelida-vos (non-letter)
-- supracofiávamo-la (non-letter)
-- hiperarranchei-as (non-letter)
-- intrapelidado-se (non-letter)
-- anfipatrizaste-as (non-letter)
-- ex-associarem-no (non-letter)
-- intercementado-lhes (non-letter)
-- anfimarginemo-la (non-letter)
-- acelerar-te-ás (non-letter)
-- semiencatarroem-na (non-letter)
-- anticoifei-vos (non-letter)
-- aentendeste-o (non-letter)
-- antecatoliza-se-lhe (non-letter)
-- sesquiempinar-vos-ás (non-letter)
-- hexafermentei-o (non-letter)
-- acolchetá-los-emos (non-letter)
-- pentabardávamo-lo (non-letter)
-- pseudoenroupar-me-ás (non-letter)
-- aamanhei-as (non-letter)
-- cossilicatado-se (non-letter)
-- arquifungasse-a (non-letter)
-- intergratificássemos (length)
-- posdedetizarem-te (non-letter)
-- sobrebagar-te-ia (non-letter)
-- bioembolar-te-emos (non-letter)
-- avalentoava-lhes (non-letter)
-- contradelimitara-nos (non-letter)
-- aerorompesse-as (non-letter)
-- hexaexaltarmos-te (non-letter)
-- hexa-alarmar-vos (non-letter)
-- subsalariei-me (non-letter)
-- polisurdinando-o (non-letter)
-- pentapodrecessem-te (non-letter)
-- barrer-se-lhe (non-letter)
-- pseudocaldeadinha (length)
-- resmalhas-se-lhe (non-letter)
+- correlatar-nos-ão (non-letter)
+- desratar-se-ias (non-letter)
+- puntado-lhes (non-letter)
+- vesse-se-lhe (non-letter)
+- calemburasse-as (non-letter)
+- desvalisarmos-te (non-letter)
+- farroufearem-nos (non-letter)
+- candolou-o (non-letter)
+- despauapiquemo-los (non-letter)
+- esbranquiçava-as (non-letter)
+- desportilhava-lhe (non-letter)
+- canela-vos (non-letter)
+- exaustar-te-ei (non-letter)
+- desobumbrou-o (non-letter)
+- desempencarem-nas (non-letter)
+- enigmar-se-iam (non-letter)
+- temperamos-lhe (non-letter)
+- aperaltava-nos (non-letter)
+- emparedavam-se (non-letter)
+- chelda-me (non-letter)
+- adligamo-vos (non-letter)
+- subjetiviza-la-á (non-letter)
+- desassustasse-as (non-letter)
+- charolassem-na (non-letter)
+- surpreendidíssmas (length)
+- encatrafiar-se-ias (non-letter)
+- mobile-te (non-letter)
+- raízes-de-cobra (non-letter)
+- engravidou-te (non-letter)
+- aborbulharam-se-lhes (non-letter)
+- marafoneado-lhes (non-letter)
+- Bolívia-Antártida (uppercase)
+- gazofilemos-lhes (non-letter)
+- parabenteai-a (non-letter)
+- arreatar-nos-ei (non-letter)
+- bacorinharem-lhe (non-letter)
+- empandoasse-o (non-letter)
+- desregulamentar-se (non-letter)
+- desenfardar-se-ias (non-letter)
+- desdramatizado-me (non-letter)
+- enloure-se-lhes (non-letter)
+- ataleigassem-me (non-letter)
+- Herzegóvina-Nauru (uppercase)
+- escamujou-lhe (non-letter)
+- vigavam-me (non-letter)
+- aculeara-se (non-letter)
+- reouvesste-me (non-letter)
+- desguiarem-lhe (non-letter)
+- almiranteio-a (non-letter)
+- arredaste-me (non-letter)
 
 ## Observações
 
@@ -153,5 +153,5 @@
 ## Fonte e limpeza
 
 - VERO: `LibreOffice/dictionaries` no commit `67032ee957631908098a72edf48dc81cac27e369` (https://github.com/LibreOffice/dictionaries/tree/67032ee957631908098a72edf48dc81cac27e369/pt_BR).
-- Binário: SHA-256 `3c5246689292e410f425dc4d6a3ce4619b87cb9b8ece1fbd17c4b794943da33e`.
+- Binário: SHA-256 `268a91fe0e168a1fb599f177a09c7908211f65f8833bcb8732d09a23edbcf9d3`.
 - Worker `bwords-m0-spike` removido: sim. `wrangler deployments list --name bwords-m0-spike` em 2026-10-26T20:41:12.312Z respondeu "This Worker does not exist on your account".

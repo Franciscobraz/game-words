@@ -1,6 +1,8 @@
 import { spawn } from 'node:child_process';
-import { open } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { mkdtemp, open, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
+import { wholeCharFlags } from './flags.ts';
 
 export interface ExpandOptions {
   /** unmunch executable name (default "unmunch"). */
@@ -40,9 +42,19 @@ function toWslPath(p: string): string {
 /**
  * Streams every form `unmunch` expands from a Hunspell .dic/.aff pair, one per line, decoded per the
  * .aff `SET`. Runs `unmunch` through WSL on Windows and directly elsewhere. The raw output is never
- * held in memory.
+ * held in memory. A `FLAG UTF-8` pair is first rewritten with one-byte flags (see `wholeCharFlags`).
  */
 export async function* expandForms(dicPath: string, affPath: string, opts: ExpandOptions = {}): AsyncGenerator<string> {
+  const flagsDir = await mkdtemp(join(tmpdir(), 'bwords-flags-'));
+  try {
+    const pair = await wholeCharFlags(dicPath, affPath, flagsDir);
+    yield* runUnmunch(pair.dicPath, pair.affPath, opts);
+  } finally {
+    await rm(flagsDir, { recursive: true, force: true });
+  }
+}
+
+async function* runUnmunch(dicPath: string, affPath: string, opts: ExpandOptions): AsyncGenerator<string> {
   const command = opts.command ?? 'unmunch';
   const decoder = new TextDecoder(await affEncoding(affPath));
   const distro = opts.wslDistro ?? process.env.BWORDS_WSL_DISTRO;

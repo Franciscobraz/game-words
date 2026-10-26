@@ -1,0 +1,19 @@
+SET UTF-8
+FLAG UTF-8
+NOSUGGEST Ý
+
+# À, Á, Ã and Ä are all 0xC3 0x8? in UTF-8
+SFX À Y 1
+SFX À 0 a/Ý .
+
+SFX Á Y 1
+SFX Á 0 b .
+
+SFX Ã Y 1
+SFX Ã 0 c .
+
+PFX Ä Y 1
+PFX Ä 0 anti [^í]
+
+SFX S Y 1
+SFX S 0 s .

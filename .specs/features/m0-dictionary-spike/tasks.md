@@ -394,11 +394,14 @@ T13 → T14 → T15
 
 **Done when**:
 
-- [ ] Fixture `utf8flags.dic`/`.aff` com duas flags que compartilham o primeiro byte UTF-8
-- [ ] Teste cobre DICT-01 AC 11
-- [ ] O build real roda de novo, e as formas falsas citadas no E1 ("heptaugadora", "zooorganica") não estão mais no binário
-- [ ] Gate check passes: `npx tsc -b; npx vitest run`
-- [ ] Test count: 35 tests pass (no silent deletions)
+- [x] Fixture `utf8flags.dic`/`.aff` com duas flags que compartilham o primeiro byte UTF-8
+- [x] Teste cobre DICT-01 AC 11
+- [x] O build real roda de novo, e as formas falsas citadas no E1 ("heptaugadora", "zooorganica") não estão mais no binário
+- [x] Gate check passes: `npx tsc -b; npx vitest run`
+- [x] Test count: 35 tests pass (no silent deletions)
+- desvio: em vez de remapear flag a flag, o par é regravado em ISO-8859-1 (todo o VERO cabe nele), o que deixa cada flag e cada letra das condições `[^iíhrs]` com um byte só; flags de continuação que são só marcadores (NOSUGGEST `Ý` no `SFX 5`) são removidas, porque o `unmunch` não expande continuação e as imprimia dentro da forma; o `docs/m0-results.md` foi regenerado aqui só para o teste `includes per-filter counts` seguir verde com o novo `pt-BR.stats.json` (os números de bench ainda são os antigos até o T15)
+
+**Status**: ✅ Complete
 
 **Tests**: integration
 **Gate**: build
