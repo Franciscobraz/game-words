@@ -1,5 +1,5 @@
 import { expect, type Page, test } from '@playwright/test';
-import { SPELLINGS, WORDS } from './fixtures/words.ts';
+import { COMMON, MIN_COMMON_WORDS, PROFANITY, SPELLINGS, WORDS } from './fixtures/words.ts';
 
 const FIXTURE = '/?pack=/e2e-fixture';
 const LOAD_ERROR = 'Não foi possível carregar o dicionário. Rode npm run dict:build -- pt-BR.';
@@ -184,4 +184,92 @@ test('shows the rejection reason', async ({ page }) => {
 
   await expect(page.getByTestId('found-word')).toHaveCount(1);
   await expect(page.getByTestId('total')).toHaveText('Total: 2');
+});
+
+/** Fixture words the board spells, worked out from the tiles shown (the test's own oracle). */
+function expectedSolutions(letters: string[], minLength: number, filterProfanity: boolean): string[] {
+  return WORDS.filter(
+    (w) => w.length >= minLength && !(filterProfanity && PROFANITY.includes(w)) && findPath(letters, w) !== null,
+  );
+}
+
+test('shows solutions with common words and the longest', async ({ page }) => {
+  // PLAY-01 AC 6: every valid solution is listed, the common ones are marked, the longest is named.
+  await newBoard(page, 4, 1);
+  const expected = expectedSolutions(await boardLetters(page), 3, true);
+  await expect(page.getByTestId('solutions')).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Mostrar soluções' }).click();
+  const items = page.getByTestId('solution');
+  await expect(items).toHaveCount(expected.length);
+  const words = await items.evaluateAll((els) => els.map((el) => (el as HTMLElement).dataset.word!));
+  expect([...words].sort()).toEqual([...expected].sort());
+
+  const common = await page.locator('[data-testid="solution"][data-common="true"]').evaluateAll((els) =>
+    els.map((el) => (el as HTMLElement).dataset.word!),
+  );
+  expect(common.sort()).toEqual(expected.filter((w) => COMMON.includes(w)).sort());
+  await expect(page.locator('[data-testid="solution"][data-common="true"]').first()).toHaveClass(/common/);
+  await expect(page.locator('[data-testid="solution"][data-word="mae"]')).toHaveText('mãe');
+
+  // The 4-letter common words tie; nobody found any, so the first alphabetically wins.
+  await expect(page.getByTestId('longest')).toHaveText('Maior palavra: amor');
+  await expect(page.locator('[data-testid="solution"][data-longest="true"]')).toHaveAttribute('data-word', 'amor');
+
+  // Finding "roma" makes it the longest: ties go to a word someone found.
+  await dragWord(page, 'roma');
+  await expect(page.getByTestId('longest')).toHaveText('Maior palavra: roma');
+});
+
+test('shows the board stats', async ({ page }) => {
+  // PLAY-01 AC 7: solution count, common count and the meta.json minimum for the size.
+  await newBoard(page, 4, 1);
+  let expected = expectedSolutions(await boardLetters(page), 3, true);
+  await expect(page.getByTestId('stat-solutions')).toHaveText(`Soluções: ${expected.length}`);
+  await expect(page.getByTestId('stat-common')).toHaveText(`Comuns: ${expected.filter((w) => COMMON.includes(w)).length}`);
+  await expect(page.getByTestId('stat-min')).toHaveText(`Mínimo de comuns (4x4): ${MIN_COMMON_WORDS[4]}`);
+
+  await page.getByTestId('size').selectOption('5');
+  await page.getByRole('button', { name: 'Novo tabuleiro' }).click();
+  await expect(page.getByTestId('tile')).toHaveCount(25);
+  expected = expectedSolutions(await boardLetters(page), 3, true);
+  await expect(page.getByTestId('stat-solutions')).toHaveText(`Soluções: ${expected.length}`);
+  await expect(page.getByTestId('stat-common')).toHaveText(`Comuns: ${expected.filter((w) => COMMON.includes(w)).length}`);
+  await expect(page.getByTestId('stat-min')).toHaveText(`Mínimo de comuns (5x5): ${MIN_COMMON_WORDS[5]}`);
+});
+
+test('recomputes on option change', async ({ page }) => {
+  // PLAY-01 AC 8: the profanity filter and the minimum length change both the solutions and validation.
+  await newBoard(page, 4, 1);
+  const letters = await boardLetters(page);
+  const profane = PROFANITY.find((w) => findPath(letters, w) !== null)!;
+  expect(profane).toBeDefined();
+  const feedback = page.getByTestId('feedback');
+  await expect(page.getByTestId('filter')).toBeChecked();
+  await expect(page.getByTestId('min-length')).toHaveValue('3');
+  await page.getByRole('button', { name: 'Mostrar soluções' }).click();
+
+  await dragWord(page, profane);
+  await expect(feedback).toHaveText('Rejeitada: not-a-word');
+  await expect(page.locator(`[data-testid="solution"][data-word="${profane}"]`)).toHaveCount(0);
+
+  await page.getByTestId('filter').uncheck();
+  const unfiltered = expectedSolutions(letters, 3, false);
+  expect(unfiltered.length).toBeGreaterThan(expectedSolutions(letters, 3, true).length);
+  await expect(page.getByTestId('stat-solutions')).toHaveText(`Soluções: ${unfiltered.length}`);
+  await expect(page.getByTestId('solution')).toHaveCount(unfiltered.length);
+  await expect(page.locator(`[data-testid="solution"][data-word="${profane}"]`)).toHaveCount(1);
+  await dragWord(page, profane);
+  await expect(feedback).toHaveText(`Aceita: ${profane}`);
+
+  await page.getByTestId('min-length').selectOption('4');
+  const longOnly = expectedSolutions(letters, 4, false);
+  await expect(page.getByTestId('stat-solutions')).toHaveText(`Soluções: ${longOnly.length}`);
+  await expect(page.getByTestId('solution')).toHaveCount(longOnly.length);
+  await dragWord(page, 'mae');
+  await expect(feedback).toHaveText('Rejeitada: too-short');
+
+  await page.getByTestId('min-length').selectOption('3');
+  await dragWord(page, 'mae');
+  await expect(feedback).toHaveText('Aceita: mae');
 });

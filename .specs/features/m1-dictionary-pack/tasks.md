@@ -446,14 +446,16 @@ T13 → T14 → T15
 
 **Done when**:
 
-- [ ] Testes cobrem PLAY-01 AC 6 a 8
-- [ ] Gate check passes: `npx tsc -b; npx vitest run; npx playwright test`
-- [ ] Test count: 91 vitest + 10 playwright tests pass (no silent deletions)
+- [x] Testes cobrem PLAY-01 AC 6 a 8
+- [x] Gate check passes: `npx tsc -b; npx vitest run; npx playwright test`
+- [x] Test count: 91 vitest + 10 playwright tests pass (no silent deletions) - 90 vitest de fato, como no T13
 
 **Tests**: e2e
 **Gate**: build
 
 **Commit**: `feat(play): solutions panel, stats and options`
+
+**Status**: ✅ Complete
 
 ---
 

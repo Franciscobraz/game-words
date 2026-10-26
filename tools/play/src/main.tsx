@@ -2,6 +2,7 @@ import { boardSolutions, generateBoard, LanguagePack, type PackMeta, validateSub
 import { render } from 'preact';
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import { Board } from './Board.tsx';
+import { Solutions } from './Solutions.tsx';
 import './style.css';
 
 /** Where the pack files are served; `?pack=/e2e-fixture` swaps in the E2E fixture. */
@@ -27,8 +28,6 @@ async function loadPack(): Promise<LanguagePack> {
 type Load = { state: 'loading' } | { state: 'error' } | { state: 'ready'; pack: LanguagePack };
 
 const SIZES = [4, 5, 6];
-const MIN_LENGTH = 3;
-const FILTER_PROFANITY = true;
 
 function App() {
   const [load, setLoad] = useState<Load>({ state: 'loading' });
@@ -37,11 +36,13 @@ function App() {
   const [board, setBoard] = useState<string[][]>([]);
   const [found, setFound] = useState<string[]>([]);
   const [feedback, setFeedback] = useState('');
+  const [minLength, setMinLength] = useState(3);
+  const [filterProfanity, setFilterProfanity] = useState(true);
   const pack = load.state === 'ready' ? load.pack : null;
 
   const newBoard = (p: LanguagePack) => {
     try {
-      setBoard(generateBoard(size, seed, p, { filterProfanity: FILTER_PROFANITY }).board);
+      setBoard(generateBoard(size, seed, p, { filterProfanity }).board);
       setFeedback('');
     } catch (err) {
       setBoard([]);
@@ -55,8 +56,8 @@ function App() {
   }, [pack]);
 
   const solutions = useMemo(
-    () => (pack && board.length > 0 ? boardSolutions(board, pack, { minLength: MIN_LENGTH, filterProfanity: FILTER_PROFANITY }) : null),
-    [pack, board],
+    () => (pack && board.length > 0 ? boardSolutions(board, pack, { minLength, filterProfanity }) : null),
+    [pack, board, minLength, filterProfanity],
   );
 
   const submit = (path: number[]) => {
@@ -64,8 +65,8 @@ function App() {
     const result = validateSubmission(board, path, {
       solutions: solutions.words,
       found: new Set(found),
-      minLength: MIN_LENGTH,
-      filterProfanity: FILTER_PROFANITY,
+      minLength,
+      filterProfanity,
       pack,
     });
     if (result.ok) {
@@ -125,6 +126,22 @@ function App() {
         <button type="button" disabled={!ready} onClick={() => pack && newBoard(pack)}>
           Novo tabuleiro
         </button>
+        <label>
+          Tamanho mínimo{' '}
+          <select data-testid="min-length" value={minLength} onChange={(e) => setMinLength(Number(e.currentTarget.value))}>
+            <option value={3}>3</option>
+            <option value={4}>4</option>
+          </select>
+        </label>
+        <label>
+          <input
+            data-testid="filter"
+            type="checkbox"
+            checked={filterProfanity}
+            onChange={(e) => setFilterProfanity(e.currentTarget.checked)}
+          />{' '}
+          Filtro de palavrões
+        </label>
       </div>
       <div class="game">
         <Board board={board} disabled={!ready} onSubmit={submit} />
@@ -146,6 +163,15 @@ function App() {
             ))}
           </ol>
         </section>
+        {pack && solutions && (
+          <Solutions
+            pack={pack}
+            size={board.length}
+            solutions={solutions}
+            found={found}
+            filterProfanity={filterProfanity}
+          />
+        )}
       </div>
     </main>
   );
