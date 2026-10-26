@@ -40,7 +40,12 @@ function input(over: { memoryMb?: number; binBytes?: number; cf?: Partial<Report
   const gens: CfRecord[] = Array.from({ length: 20 }, (_, i) => ({
     route: '/generate', seed: i + 1, status: 200, wallMs: 150, cpuMs: 12, serverWallMs: over.slow ? 1500 : 13, attempts: 1,
   }));
-  const load: CfRecord = { route: '/load', seed: null, status: 200, wallMs: 900, cpuMs: 4, serverWallMs: 90, loadMs: over.slow ? 900 : 80 };
+  const loads: CfRecord[] = [
+    { route: '/load', seed: null, status: 200, wallMs: 9000, cpuMs: 4, serverWallMs: 800, loadMs: 760, warmup: true },
+    ...Array.from({ length: 5 }, (): CfRecord => ({
+      route: '/load', seed: null, status: 200, wallMs: 900, cpuMs: 4, serverWallMs: 90, loadMs: over.slow ? 900 : 80, warmup: false,
+    })),
+  ];
   return {
     stats: {
       source: { repo: 'LibreOffice/dictionaries', commit: 'a'.repeat(40) },
@@ -63,7 +68,7 @@ function input(over: { memoryMb?: number; binBytes?: number; cf?: Partial<Report
     },
     cf: {
       cpuSource: 'wrangler tail',
-      records: [load, ...solves, ...gens],
+      records: [...loads, ...solves, ...gens],
       removal: { workerRemoved: true, check: 'wrangler deployments list --name bwords-m0-spike', checkOutput: 'This Worker does not exist on your account.', checkedAt: '2026-10-26T00:00:00Z' },
       ...over.cf,
     },
@@ -169,6 +174,32 @@ describe('M0 results report', () => {
     const slow = coldRow([600, 40, 700, 30, 650]);
     expect(slow[1]).toBe('600 ms (mediana de 5)');
     expect(slow[3]).toBe('FALHA');
+  });
+
+  test('fails the cold load without five valid cold samples', () => {
+    const coldRow = (cold: CfRecord[]) => {
+      const base = input();
+      const records = [
+        { route: '/load', seed: null, status: 200, wallMs: 9000, cpuMs: 4, serverWallMs: 800, loadMs: 760, warmup: true },
+        ...cold,
+        ...base.cf.records!.filter((r) => r.route !== '/load'),
+      ];
+      return criteriaRows(buildReport({ ...base, cf: { ...base.cf, records } })).get('Carga a frio')!;
+    };
+    const good = (loadMs: number): CfRecord => ({ route: '/load', seed: null, status: 200, wallMs: 800, cpuMs: 3, serverWallMs: loadMs + 10, loadMs, warmup: false });
+
+    // Four valid cold samples, all fast: still FALHA, the criterion asks for five.
+    const four = coldRow([42, 40, 44, 41].map(good));
+    expect(four[3]).toBe('FALHA');
+    expect(four[4]).toContain('são exigidas 5 amostras');
+    // Five cold requests, one rejected with status 500: four valid samples, FALHA.
+    const rejected = coldRow([
+      { route: '/load', seed: null, status: 500, wallMs: 800, cpuMs: 3, serverWallMs: 20, warmup: false },
+      ...[42, 40, 44, 41].map(good),
+    ]);
+    expect(rejected[3]).toBe('FALHA');
+    // Five valid cold samples with the same times pass.
+    expect(coldRow([42, 40, 44, 41, 43].map(good))[3]).toBe('PASSA');
   });
 
   test('passes every D3 criterion with a value exactly at the limit', () => {

@@ -105,7 +105,8 @@ export function evaluate(input: ReportInput): Criterion[] {
   const records = cf.records ?? [];
   const ok = (r: CfRecord) => r.status === 200;
   const load = records.find((r) => r.route === '/load');
-  const coldLoads = records.filter((r) => r.route === '/load' && !r.warmup && ok(r) && typeof r.loadMs === 'number');
+  const coldAll = records.filter((r) => r.route === '/load' && !r.warmup);
+  const coldLoads = coldAll.filter((r) => ok(r) && typeof r.loadMs === 'number');
   const solves = records.filter((r) => r.route === '/solve' && ok(r));
   const gens = records.filter((r) => r.route === '/generate' && ok(r));
   const nums = (xs: (number | null)[]) => xs.filter((x): x is number => typeof x === 'number');
@@ -139,11 +140,12 @@ export function evaluate(input: ReportInput): Criterion[] {
     name: 'Carga a frio',
     value: loadMs === null ? 'sem medida' : `${fmt(loadMs, 0)} ms (mediana de ${coldMs.length})`,
     limit: '≤ 500 ms',
-    verdict: loadMs !== null && loadMs <= 500 ? 'PASSA' : 'FALHA',
+    // BENCH-01 AC 7: the verdict needs exactly 5 cold samples, all with status 200 and loadMs.
+    verdict: loadMs !== null && coldLoads.length === 5 && coldAll.length === 5 && loadMs <= 500 ? 'PASSA' : 'FALHA',
     detail:
       loadMs === null
         ? 'Nenhum /load a frio devolveu loadMs'
-        : `Tempo de parede medido no DO (busca no ASSETS + Dawg.fromBuffer), cada amostra num DO novo: ${coldLoads
+        : `${coldLoads.length === 5 && coldAll.length === 5 ? '' : `${coldLoads.length} de ${coldAll.length} /load a frio válidos; são exigidas 5 amostras. `}Tempo de parede medido no DO (busca no ASSETS + Dawg.fromBuffer), cada amostra num DO novo: ${coldLoads
             .map((r) => `${fmt(r.loadMs as number, 0)} ms`)
             .join(', ')}; CPU ${coldLoads.map((r) => r.cpuMs ?? '?').join(', ')} ms`,
   });
