@@ -1,8 +1,8 @@
 # m0-dictionary-spike proofs
 
-**HEAD**: 02839e2
+**HEAD**: c55c9af
 **Tree**: clean
-**Result**: 48 pass, 0 fail; mutations 0 killed, 1 not
+**Result**: 48 pass, 0 fail; mutations 3 killed, 0 not
 
 | Check | Proof | Ran | Passed | Result |
 | --- | --- | --- | --- | --- |
@@ -59,4 +59,6 @@
 
 | Mutation | Location | Killed |
 | --- | --- | --- |
-| spec refused | `  mutation 2: r.route === '/load' && !r.warmup occurs 2 times in spikes/m0/src` | no |
+| C22 - draw total ignores the 4-copy cap (capped weight falls to the last letter) | `packages\core\src\generator.ts:37` | yes |
+| C42 - warm-up /load counted as a cold sample | `spikes\m0\src\report.ts:108` | yes |
+| C42 - cold-load limit <= 500 -> < 500 | `spikes\m0\src\report.ts:145` | yes |
