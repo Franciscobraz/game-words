@@ -195,9 +195,11 @@ T9 → T10 → T11 → T12
 
 **Done when**:
 
-- [ ] Testes cobrem GEN-01 AC 1-6
-- [ ] Gate check passes: `npx tsc -b; npx vitest run`
-- [ ] Test count: 20 tests pass (no silent deletions)
+- [x] Testes cobrem GEN-01 AC 1-6
+- [x] Gate check passes: `npx tsc -b; npx vitest run`
+- [x] Test count: 20 tests pass (no silent deletions)
+
+**Status**: ✅ Complete
 
 **Tests**: unit
 **Gate**: build

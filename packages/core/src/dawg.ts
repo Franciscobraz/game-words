@@ -118,11 +118,15 @@ export function buildDawg(sortedWords: readonly string[], letterWeights: readonl
 
 /** Read-only view over a DAWG buffer. Queries read the buffer directly. */
 export class Dawg {
-  private constructor(
-    private readonly edges: Uint32Array,
-    readonly wordCount: number,
-    readonly letterWeights: Float64Array,
-  ) {}
+  private readonly edges: Uint32Array;
+  readonly wordCount: number;
+  readonly letterWeights: Float64Array;
+
+  private constructor(edges: Uint32Array, wordCount: number, letterWeights: Float64Array) {
+    this.edges = edges;
+    this.wordCount = wordCount;
+    this.letterWeights = letterWeights;
+  }
 
   static fromBuffer(buf: ArrayBuffer): Dawg {
     const view = new DataView(buf);
