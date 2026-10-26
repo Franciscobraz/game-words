@@ -3,7 +3,8 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { Dawg, type DiscardReason, buildDawg, buildSpellings, classifyForm, mulberry32 } from '@bwords/core';
+import { Dawg, type DiscardReason, LanguagePack, buildDawg, buildSpellings, classifyForm, mulberry32 } from '@bwords/core';
+import { type Calibration, calibrate } from './calibrate.ts';
 import { type CleanupReport, cleanupVero } from './cleanup.ts';
 import { fetchSource } from './fetch.ts';
 import { loadCommonWords } from './frequency.ts';
@@ -33,6 +34,8 @@ export interface BuildOptions {
   workDir?: string;
   fetchImpl?: typeof fetch;
   unmunch?: ExpandOptions;
+  /** Board calibration over the built pack (default `calibrate`). */
+  calibrate?: (pack: LanguagePack) => Calibration;
 }
 
 export interface BuildStats {
@@ -54,6 +57,7 @@ export interface BuildStats {
   common: number;
   profanity: number;
   spellings: { bytes: number; entries: number };
+  calibration: Calibration;
   /** Size in bytes of each binary file. */
   files: Record<(typeof PACK_FILES)[number], number>;
   binBytes: number;
@@ -125,8 +129,8 @@ function indexOf(sorted: readonly string[], word: string): number {
 
 /**
  * Builds `languages/<id>/` into `<outRoot>/<id>/`: config, the pinned VERO expanded and cleaned, the
- * extra and blocklist lists, then the dictionary, display spellings, common and profanity sets, written
- * as dict.bin, common.bin, profanity.bin, spellings.bin, meta.json and stats.json. The same inputs give
+ * extra and blocklist lists, then the dictionary, display spellings, common and profanity sets, and the
+ * board calibration over them, written as dict.bin, common.bin, profanity.bin, spellings.bin, meta.json and stats.json. The same inputs give
  * the same files; only `durationMs` and `peakHeapMb` in stats.json change between runs.
  */
 export async function buildPack(id: string, opts: BuildOptions = {}): Promise<BuildResult> {
@@ -273,10 +277,21 @@ export async function buildPack(id: string, opts: BuildOptions = {}): Promise<Bu
       'profanity.bin': profanityBytes,
       'spellings.bin': spellingsBytes,
     };
+    const calibration = (opts.calibrate ?? calibrate)(
+      LanguagePack.fromBuffers({
+        dict: dictBytes.buffer,
+        common: commonBytes.buffer,
+        profanity: profanityBytes.buffer,
+        spellings: spellingsBytes.buffer,
+        meta: { id: config.id, minCommonWords: {} },
+      }),
+    );
+    sampleHeap();
+
     const meta = {
       id: config.id,
       letterWeights,
-      minCommonWords: {},
+      minCommonWords: Object.fromEntries(Object.entries(calibration.sizes).map(([size, c]) => [size, c.minCommonWords])),
       sha256: Object.fromEntries(PACK_FILES.map((f) => [f, sha256(binaries[f])])),
     };
 
@@ -293,6 +308,7 @@ export async function buildPack(id: string, opts: BuildOptions = {}): Promise<Bu
       common: common.length,
       profanity: profane.size,
       spellings: { bytes: spellingsBytes.byteLength, entries: spellingEntries.length },
+      calibration,
       files: Object.fromEntries(PACK_FILES.map((f) => [f, binaries[f].byteLength])) as BuildStats['files'],
       binBytes: dictBytes.byteLength,
       edgeCount: (dictBytes.byteLength - DAWG_HEADER_BYTES) / 4,
@@ -333,6 +349,9 @@ if (import.meta.main) {
         ` cleanup: ${stats.cleanup.forbidden.count} forbidden, ${stats.cleanup.enclitic.count} enclitic;` +
         ` peak heap ${stats.peakHeapMb} MB; ${(stats.durationMs / 1000).toFixed(1)} s`,
     );
+    for (const [size, c] of Object.entries(stats.calibration.sizes)) {
+      console.log(`${size}x${size}: min common words ${c.minCommonWords} (common min ${c.min}, median ${c.median}, max ${c.max})`);
+    }
   } catch (err) {
     console.error(`dict:build failed: ${(err as Error).message}`);
     process.exit(1);

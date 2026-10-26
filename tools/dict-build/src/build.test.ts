@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { Dawg, LanguagePack, type PackMeta } from '@bwords/core';
 import { describe, expect, test } from 'vitest';
 import { type BuildStats, PACK_FILES, buildPack } from './build.ts';
+import type { Calibration } from './calibrate.ts';
 import type { PackConfig } from './pack.ts';
 
 const CONFIG: PackConfig = {
@@ -35,6 +36,18 @@ const FREQUENCY = ['casa 900', 'gato 700', 'por 500', 'acao 100'].join('\n');
 
 type Pair = 'build' | 'enclitic';
 
+/**
+ * The fixture dictionaries have a handful of words, so no board reaches the generator's 40/80/120 word
+ * minimum and the real calibration would throw. It is covered by calibrate.test.ts.
+ */
+const CALIBRATION: Calibration = {
+  boards: 1000,
+  seeds: { first: 1, last: 1000 },
+  percentile: 'nearest-rank P10',
+  minLength: 3,
+  sizes: { 4: { min: 1, median: 2, max: 3, minCommonWords: 1 } },
+};
+
 /** Serves fixtures/<pair>.dic/.aff in place of the pinned VERO and FREQUENCY as the frequency list. */
 const fixtureFetch = (pair: Pair) =>
   (async (input: string | URL | Request) => {
@@ -64,6 +77,7 @@ async function build(lists: Lists = {}, pair: Pair = 'build') {
     outRoot: join(dir, 'dist'),
     workDir: join(dir, 'src'),
     fetchImpl: fixtureFetch(pair),
+    calibrate: () => CALIBRATION,
   });
   const out = join(dir, 'dist', 'pt-BR');
   const file = (name: string) => readFile(join(out, name));

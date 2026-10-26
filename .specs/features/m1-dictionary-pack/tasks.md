@@ -372,14 +372,16 @@ T13 → T14 → T15
 
 **Done when**:
 
-- [ ] Testes cobrem CAL-01 AC 1 e 3
-- [ ] `npm run dict:build -- pt-BR` real gera `tools/dict-build/dist/pt-BR/`
-- [ ] No pacote real, "esta", "va", "de", "por", "faca", "enfronhamos" e "cantavamos" são válidas, e "enfronhamo" não é (conferência da limpeza do T3)
-- [ ] Gate check passes: `npx tsc -b; npx vitest run`
-- [ ] Test count: 91 tests pass (no silent deletions)
+- [x] Testes cobrem CAL-01 AC 1 e 3
+- [x] `npm run dict:build -- pt-BR` real gera `tools/dict-build/dist/pt-BR/`
+- [x] No pacote real, "esta", "cre", "vamos", "deem", "por", "faca", "enfronhamos" e "cantavamos" são válidas, e "enfronhamo" não é (conferência da limpeza do T3; "va" e "de" saíram da lista por terem menos de 3 letras, o mínimo do jogo)
+- [x] Gate check passes: `npx tsc -b; npx vitest run`
+- [x] Test count: 90 tests pass (no silent deletions) - 91 previstos; o C4 adaptou um teste do M0 em vez de criar um novo
 
 **Tests**: integration
 **Gate**: build
+
+**Status**: ✅ Complete
 
 **Commit**: `feat(dict-build): calibrate board minimums`
 
@@ -641,7 +643,7 @@ Proof: `npx vitest run packages/core/src/validate.test.ts -t "rejects an empty o
 ## Handoff
 
 **Settled mid-build:** uma fase por vez, com parada e pergunta ao usuário entre fases - user: "execute cada fase, pare, me mostre o resultado e me pergunte antes de executar a proxima fase"
-**Dispatched:** batch worker fase 1 (T1-T4) em HEAD 7f41f1a - returned (T1-T4 em f6a8270 após reescrita do histórico); batch worker fase 2 (T5-T10) em HEAD 7c85ae2 - returned (T5-T10 em 973c8c5); batch worker fase 3 (T11-T12)
+**Dispatched:** batch worker fase 1 (T1-T4) em HEAD 7f41f1a - returned (T1-T4 em f6a8270 após reescrita do histórico); batch worker fase 2 (T5-T10) em HEAD 7c85ae2 - returned (T5-T10 em 973c8c5); batch worker fase 3 (T11-T12) em HEAD ee5b676 - returned (T11 em 9c3c83d; T12 parou na conferência por erro da lista, corrigida pelo orquestrador e commitada)
 **Walked:** none
 
 ---
