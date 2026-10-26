@@ -172,9 +172,11 @@ T9 → T10 → T11 → T12
 
 **Done when**:
 
-- [ ] Testes cobrem SOLV-01 AC 1-5 e o edge case de peças distintas com a mesma letra
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: 14 tests pass (no silent deletions)
+- [x] Testes cobrem SOLV-01 AC 1-5 e o edge case de peças distintas com a mesma letra
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: 14 tests pass (no silent deletions)
+
+**Status**: ✅ Complete
 
 **Tests**: unit
 **Gate**: quick
