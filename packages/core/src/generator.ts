@@ -43,6 +43,12 @@ function drawBoard(size: number, rng: () => number, weights: Float64Array): stri
         x -= weights[l]!;
         if (x < 0) break;
       }
+      if (pick < 0) {
+        const eligible = weights.filter((w) => w > 0).length;
+        throw new Error(
+          `Not enough letters for a ${size}x${size} board: ${eligible} letter(s) with non-zero weight allow at most ${eligible * MAX_COPIES_PER_LETTER} tiles`,
+        );
+      }
       copies[pick]!++;
       row.push(pick === Q ? 'qu' : String.fromCharCode(97 + pick));
     }

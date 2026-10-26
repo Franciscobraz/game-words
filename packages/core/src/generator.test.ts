@@ -121,4 +121,13 @@ describe('generateBoard', () => {
     const d = dict(['abc', 'casa'], PT_WEIGHTS);
     expect(() => generateBoard(4, 1, d)).toThrow(/200 attempts/);
   });
+
+  test('throws a clear error when the weights leave too few letters', () => {
+    // Only a and b have weight: 2 letters x 4 copies = 8 tiles, short of the 16 a 4x4 board needs.
+    const weights = Array.from({ length: 26 }, (_, i) => (i < 2 ? 1 : 0));
+    const d = dict(['aba', 'bab'], weights);
+    expect(() => generateBoard(4, 1, d)).toThrow(
+      'Not enough letters for a 4x4 board: 2 letter(s) with non-zero weight allow at most 8 tiles',
+    );
+  });
 });
