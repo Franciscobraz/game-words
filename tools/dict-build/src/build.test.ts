@@ -213,12 +213,17 @@ describe('buildPack', () => {
     const { stats, load } = await build({}, 'enclitic');
     expect((await stats()).cleanup).toEqual({
       forbidden: { count: 1, examples: ['menas'] },
-      enclitic: { count: 5, examples: ['damo', 'darmo', 'enfronhamo', 'enfronharmo', 'enfronhá'] },
+      enclitic: {
+        count: 9,
+        examples: ['comemo', 'comermo', 'compô', 'comê', 'damo', 'darmo', 'enfronhamo', 'enfronharmo', 'enfronhá'],
+      },
     });
     const pack = await load();
     expect(pack.isWord('enfronhamo')).toBe(false);
     expect(pack.isWord('menas')).toBe(false);
     expect(pack.isWord('enfronhamos')).toBe(true);
+    expect(pack.isWord('compo')).toBe(false);
+    expect(pack.isWord('comemos')).toBe(true);
   });
 
   test('marks profanity without removing it', async () => {

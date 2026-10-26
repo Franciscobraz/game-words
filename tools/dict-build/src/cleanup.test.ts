@@ -26,7 +26,8 @@ describe('cleanupVero', () => {
 
   test('drops enclitic-only forms', async () => {
     const { forms, report } = await clean();
-    for (const f of ['enfronhamo', 'enfronharmo', 'enfronhá', 'damo', 'darmo']) expect(forms).not.toContain(f);
+    for (const f of ['enfronhamo', 'enfronharmo', 'enfronhá', 'damo', 'darmo', 'comemo', 'comermo', 'comê', 'compô'])
+      expect(forms).not.toContain(f);
     // Legitimate forms stay: finite verbs, the hyphenated enclitic forms, superlatives, and "dá",
     // which the fragment rule makes too but the irregular-verb rule makes as a real form.
     for (const f of [
@@ -42,12 +43,15 @@ describe('cleanupVero', () => {
       'dar',
       'damos',
       'dá',
+      'comer',
+      'comemos',
+      'compor',
     ]) {
       expect(forms).toContain(f);
     }
     expect(report.enclitic).toEqual({
-      count: 5,
-      examples: ['damo', 'darmo', 'enfronhamo', 'enfronharmo', 'enfronhá'],
+      count: 9,
+      examples: ['comemo', 'comermo', 'compô', 'comê', 'damo', 'darmo', 'enfronhamo', 'enfronharmo', 'enfronhá'],
     });
   });
 });

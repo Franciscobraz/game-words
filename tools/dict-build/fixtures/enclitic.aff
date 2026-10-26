@@ -3,14 +3,16 @@ FLAG UTF-8
 FORBIDDENWORD ý
 
 # The VERO flag "a" shape: "-mos" with the "s" dropped and the infinitive with the "r" dropped
-# are pieces of enclitic forms ("enfronhamo-nos", "enfronhá-lo"), not words.
-SFX a Y 9
+# are pieces of enclitic forms ("enfronhamo-nos", "enfronhá-lo", "comê-lo", "compô-lo"), not words.
+SFX a Y 11
 SFX a   0       mos       [aei]r
 SFX a   0       mo        [aei]r
 SFX a   r       mos       [aei]r
 SFX a   r       mo        [aei]r
 SFX a   ar      o         ar
 SFX a   ar      á         ar
+SFX a   er      ê         er
+SFX a   or      ô         or
 SFX a   r       díssimo   ar
 SFX a   r       díssimos  ar
 SFX a   r       díssima   ar
