@@ -348,15 +348,17 @@ T13 → T14 → T15
 
 **Done when**:
 
-- [ ] Testes cobrem PACK-01 AC 1 e 4, LIST-01 AC 2, 3, 5 e 7, CLEAN-01 AC 3, PROF-01 AC 1 e 3 e SPELL-01 AC 4, sobre fixtures
-- [ ] Os testes do M0 que dependiam do `source.json` e da saída antiga são adaptados sem enfraquecer nenhuma asserção
-- [ ] Gate check passes: `npx vitest run`
-- [ ] Test count: 89 tests pass (no silent deletions)
+- [x] Testes cobrem PACK-01 AC 1 e 4, LIST-01 AC 2, 3, 5 e 7, CLEAN-01 AC 3, PROF-01 AC 1 e 3 e SPELL-01 AC 4, sobre fixtures
+- [x] Os testes do M0 que dependiam do `source.json` e da saída antiga são adaptados sem enfraquecer nenhuma asserção
+- [x] Gate check passes: `npx vitest run`
+- [x] Test count: 89 tests pass (no silent deletions) - 88 de fato: o teste do C4 ("is byte-identical across runs") já existia no M0 e foi adaptado, então o T11 soma 9 testes novos, não 10
 
 **Tests**: integration
 **Gate**: full
 
 **Commit**: `feat(dict-build): build language pack end to end`
+
+**Status**: ✅ Complete
 
 ---
 
