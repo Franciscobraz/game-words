@@ -149,9 +149,11 @@ T9 → T10 → T11 → T12
 
 **Done when**:
 
-- [ ] Testes cobrem LOOK-01 AC 1-4
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: 8 tests pass (no silent deletions)
+- [x] Testes cobrem LOOK-01 AC 1-4
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: 8 tests pass (no silent deletions)
+
+**Status**: ✅ Complete
 
 **Tests**: unit
 **Gate**: quick
