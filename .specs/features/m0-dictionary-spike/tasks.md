@@ -126,9 +126,11 @@ T9 → T10 → T11 → T12
 
 **Done when**:
 
-- [ ] Testes cobrem DICT-02 AC 3-6
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: 4 tests pass (no silent deletions)
+- [x] Testes cobrem DICT-02 AC 3-6
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: 4 tests pass (no silent deletions)
+
+**Status**: ✅ Complete
 
 **Tests**: unit
 **Gate**: quick
