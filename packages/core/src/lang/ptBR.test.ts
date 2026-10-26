@@ -22,6 +22,14 @@ describe('classifyForm', () => {
     expect(classifyForm('àquele')).toEqual({ ok: true, word: 'aquele' });
   });
 
+  test('classifies decomposed (NFD) forms like their composed equivalents', () => {
+    expect(classifyForm('ação'.normalize('NFD'))).toEqual({ ok: true, word: 'acao' });
+    expect(classifyForm('pôr'.normalize('NFD'))).toEqual({ ok: true, word: 'por' });
+    expect(classifyForm('Ávila'.normalize('NFD'))).toEqual({ ok: false, reason: 'uppercase' });
+    expect(classifyForm('pé-de-moleque'.normalize('NFD'))).toEqual({ ok: false, reason: 'non-letter' });
+    expect(classifyForm('pé'.normalize('NFD'))).toEqual({ ok: false, reason: 'length' });
+  });
+
   test('discards length outside 3-16', () => {
     expect(classifyForm('ar')).toEqual({ ok: false, reason: 'length' });
     expect(classifyForm('pé')).toEqual({ ok: false, reason: 'length' });
