@@ -546,11 +546,11 @@ Proof: `npx vitest run packages/core/src/generator.test.ts -t "throws after 200 
 **C28** - A primeira requisição ao DO publicado carrega o binário dos assets e responde com o tempo de carga (BENCH-01, AC 1)
 Proof: walk - `spikes/m0/results/cf.json` mostra o registro `/load` com `loadMs` e status 200
 
-**C29** - Cada operação é uma requisição separada: 1 carga, 100 resoluções e 20 gerações (BENCH-01, AC 2)
-Proof: walk - `spikes/m0/results/cf.json` tem 121 registros com rota e semente
+**C29** - Cada operação é uma requisição separada: 1 aquecimento, 5 cargas a frio, 100 resoluções e 20 gerações (BENCH-01, AC 2 e AC 7)
+Proof: walk - `spikes/m0/results/cf.json` tem 126 registros com rota e semente
 
 **C30** - Cada requisição tem o tempo de CPU vindo do `wrangler tail` (BENCH-01, AC 3)
-Proof: walk - todos os 121 registros de `cf.json` têm `cpuMs` numérico
+Proof: walk - todos os 126 registros de `cf.json` têm `cpuMs` numérico
 
 **C31** - A medição local registra o heap após carregar o dicionário (BENCH-01, AC 4)
 Proof: walk - `spikes/m0/results/node.json` tem `heapUsedMb`
@@ -588,13 +588,25 @@ Proof: `npx vitest run tools/dict-build/src/flags.test.ts -t "keeps utf-8 flags 
 **C42** - O veredito da carga a frio usa a mediana de 5 amostras (BENCH-01, AC 7)
 Proof: `npx vitest run spikes/m0/src/report.test.ts -t "uses the median of five cold loads"`
 
+**C43** - Um valor exatamente no limite de cada critério de D3 dá PASSA (REP-01, AC 1; achado 1 do Verifier)
+Proof: `npx vitest run spikes/m0/src/report.test.ts -t "passes every D3 criterion with a value exactly at the limit"`
+
+**C44** - Sem exatamente 5 amostras a frio válidas, a carga a frio dá FALHA (BENCH-01, AC 7; achado 2 do Verifier)
+Proof: `npx vitest run spikes/m0/src/report.test.ts -t "fails the cold load without five valid cold samples"`
+
+**C45** - Formas em NFD são classificadas como as compostas: "ação" vira "acao" (DICT-02, AC 4-5; achado 5 do Verifier)
+Proof: `npx vitest run packages/core/src/lang/ptBR.test.ts -t "classifies decomposed"`
+
+**C46** - Pesos com letras insuficientes lançam um erro claro, não uma peça inválida (GEN-01, AC 2; achado 4 do Verifier)
+Proof: `npx vitest run packages/core/src/generator.test.ts -t "throws a clear error when the weights leave too few letters"`
+
 ---
 
 ## Handoff
 
 **Settled mid-build:** E1 e E2 aprovados - user: "sim para E1 e E2" (2026-10-26), viram T13-T15; execução por subagentes em 2 lotes (fases 1-2, fases 3-4), cada um devolvendo um resumo - user: "execute com os sub agents para nao estourar o contexto dessa aba mas peça para o subagent retornar um resumo do que foi feito"
 **Dispatched:** batch worker 1 (fases 1-2, T1-T5) em HEAD 379ae13 - returned (T1-T5 em ca0dab2; desvio: `erasableSyntaxOnly` no tsconfig.base para rodar no Node 24); batch worker 2 (fases 3-4, T6-T12) em HEAD ca0dab2 - returned (T6-T12 em 715fd31; pendente decisão do usuário: flags UTF-8 do VERO no unmunch e carga a frio com amostra única); batch worker 3 (fase 5, T13-T15) em HEAD 109562d - returned (T13-T15 em 2dba6a1); Verifier em HEAD 2dba6a1 (check_proofs: 44 pass, 0 fail) em HEAD 109562d - returned (T13-T15)
-**Walked:** none
+**Walked:** 2026-10-26 pelo orquestrador, sobre os arquivos versionados em HEAD 8cd84f8+: C28 - `cf.json` tem 6 `/load` (1 aquecimento 760 ms + 5 a frio 54/17/8/17/13 ms), todos status 200 com `loadMs`; C29 - 126 registros (6 `/load`, 100 `/solve`, 20 `/generate`); C30 - 126 de 126 com `cpuMs` numérico (fonte `wrangler tail` `cpuTime`); C31 - `node.json` `heapUsedMb` 8.3; C33 - `npx wrangler deployments list --name bwords-m0-spike` respondeu "This Worker does not exist on your account. [code: 10007]"; C40 - `pt-BR.stats.json` `peakHeapMb` 242.8 < 1024
 
 ---
 
