@@ -1,0 +1,23 @@
+[
+  {
+    "file": "packages/core/src/generator.ts",
+    "old": "if (copies[l]! < MAX_COPIES_PER_LETTER) total += weights[l]!;",
+    "new": "total += weights[l]!;",
+    "proof": "npx vitest run packages/core/src/generator.test.ts -t \"weights letters by dictionary frequency\"",
+    "label": "C22 - draw total ignores the 4-copy cap (capped weight falls to the last letter)"
+  },
+  {
+    "file": "spikes/m0/src/report.ts",
+    "old": "!r.warmup && ok(r)",
+    "new": "ok(r)",
+    "proof": "npx vitest run spikes/m0/src/report.test.ts -t \"uses the median of five cold loads\"",
+    "label": "C42 - warm-up /load counted as a cold sample"
+  },
+  {
+    "file": "spikes/m0/src/report.ts",
+    "old": "loadMs !== null && loadMs <= 500",
+    "new": "loadMs !== null && loadMs < 500",
+    "proof": "npx vitest run spikes/m0/src/report.test.ts -t \"uses the median of five cold loads\"",
+    "label": "C42 - cold-load limit <= 500 -> < 500"
+  }
+]
