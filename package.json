@@ -1,0 +1,18 @@
+{
+  "name": "bwords",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "tools/*",
+    "spikes/*"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3",
+    "vitest": "^4.1.12"
+  }
+}

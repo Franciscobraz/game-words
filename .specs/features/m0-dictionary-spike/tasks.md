@@ -102,8 +102,10 @@ T9 → T10 → T11 → T12
 
 **Done when**:
 
-- [ ] `npm install` conclui sem erro
-- [ ] `npx tsc -b` e `npx vitest run --passWithNoTests` saem com código 0
+- [x] `npm install` conclui sem erro
+- [x] `npx tsc -b` e `npx vitest run --passWithNoTests` saem com código 0
+
+**Status**: ✅ Complete
 
 **Tests**: none
 **Gate**: build
@@ -479,7 +481,7 @@ Proof: walk - `pt-BR.stats.json` registra `peakHeapMb` < 1024
 ## Handoff
 
 **Settled mid-build:** execução por subagentes em 2 lotes (fases 1-2, fases 3-4), cada um devolvendo um resumo - user: "execute com os sub agents para nao estourar o contexto dessa aba mas peça para o subagent retornar um resumo do que foi feito"
-**Dispatched:** none
+**Dispatched:** batch worker 1 (fases 1-2, T1-T5) em HEAD 379ae13
 **Walked:** none
 
 ---
