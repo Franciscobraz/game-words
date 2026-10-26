@@ -157,16 +157,18 @@ T13 → T14 → T15
 
 **Done when**:
 
-- [ ] A regra encontrada está descrita num comentário no topo do arquivo, citando a regra do `.aff`
-- [ ] Fixture que reproduz o caso "enfronhamo" e uma entrada `FORBIDDENWORD`
-- [ ] Testes cobrem CLEAN-01 AC 1 e 2
-- [ ] Gate check passes: `npx vitest run`
-- [ ] Test count: 49 tests pass (no silent deletions)
+- [x] A regra encontrada está descrita num comentário no topo do arquivo, citando a regra do `.aff`
+- [x] Fixture que reproduz o caso "enfronhamo" e uma entrada `FORBIDDENWORD`
+- [x] Testes cobrem CLEAN-01 AC 1 e 2
+- [x] Gate check passes: `npx vitest run`
+- [x] Test count: 49 tests pass (no silent deletions)
 
 **Tests**: integration
 **Gate**: full
 
 **Commit**: `feat(dict-build): drop forbidden and enclitic-only vero forms`
+
+**Status**: ✅ Complete
 
 ---
 

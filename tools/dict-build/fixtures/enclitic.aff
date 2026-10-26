@@ -1,0 +1,24 @@
+SET UTF-8
+FLAG UTF-8
+FORBIDDENWORD ý
+
+# The VERO flag "a" shape: "-mos" with the "s" dropped and the infinitive with the "r" dropped
+# are pieces of enclitic forms ("enfronhamo-nos", "enfronhá-lo"), not words.
+SFX a Y 9
+SFX a   0       mos       [aei]r
+SFX a   0       mo        [aei]r
+SFX a   r       mos       [aei]r
+SFX a   r       mo        [aei]r
+SFX a   ar      o         ar
+SFX a   ar      á         ar
+SFX a   r       díssimo   ar
+SFX a   r       díssimos  ar
+SFX a   r       díssima   ar
+
+# Irregular verb: "dá" is a real form.
+SFX e Y 1
+SFX e   ar      á         dar
+
+SFX k Y 2
+SFX k   r       mo-nos    [aei]r
+SFX k   ar      á-lo      ar
