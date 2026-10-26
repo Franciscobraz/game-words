@@ -299,14 +299,16 @@ T13 → T14 → T15
 
 **Done when**:
 
-- [ ] Testes cobrem LONG-01 AC 1 a 5
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: 76 tests pass (no silent deletions)
+- [x] Testes cobrem LONG-01 AC 1 a 5
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: 76 tests pass (no silent deletions)
 
 **Tests**: unit
 **Gate**: quick
 
 **Commit**: `feat(core): longest word pick`
+
+**Status**: ✅ Complete
 
 ---
 

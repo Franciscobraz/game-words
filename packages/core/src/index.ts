@@ -1,6 +1,7 @@
 export * from './dawg.ts';
 export * from './generator.ts';
 export * from './lang/ptBR.ts';
+export * from './longest.ts';
 export * from './pack.ts';
 export * from './scoring.ts';
 export * from './solver.ts';
