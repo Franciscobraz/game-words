@@ -643,7 +643,7 @@ Proof: `npx vitest run packages/core/src/validate.test.ts -t "rejects an empty o
 ## Handoff
 
 **Settled mid-build:** uma fase por vez, com parada e pergunta ao usuário entre fases - user: "execute cada fase, pare, me mostre o resultado e me pergunte antes de executar a proxima fase"
-**Dispatched:** batch worker fase 1 (T1-T4) em HEAD 7f41f1a - returned (T1-T4 em f6a8270 após reescrita do histórico); batch worker fase 2 (T5-T10) em HEAD 7c85ae2 - returned (T5-T10 em 973c8c5); batch worker fase 3 (T11-T12) em HEAD ee5b676 - returned (T11 em 9c3c83d; T12 parou na conferência por erro da lista, corrigida pelo orquestrador e commitada)
+**Dispatched:** batch worker fase 1 (T1-T4) em HEAD 7f41f1a - returned (T1-T4 em f6a8270 após reescrita do histórico); batch worker fase 2 (T5-T10) em HEAD 7c85ae2 - returned (T5-T10 em 973c8c5); batch worker fase 3 (T11-T12) em HEAD ee5b676 - returned (T11 em 9c3c83d; T12 parou na conferência por erro da lista, corrigida pelo orquestrador e commitada em 3abcfe4); batch worker fase 4 (T13-T15)
 **Walked:** none
 
 ---
