@@ -360,6 +360,7 @@ T13 → T14 → T15
 
 - [ ] Testes cobrem CAL-01 AC 1 e 3
 - [ ] `npm run dict:build -- pt-BR` real gera `tools/dict-build/dist/pt-BR/`
+- [ ] No pacote real, "esta", "va", "de", "por", "faca", "enfronhamos" e "cantavamos" são válidas, e "enfronhamo" não é (conferência da limpeza do T3)
 - [ ] Gate check passes: `npx tsc -b; npx vitest run`
 - [ ] Test count: 91 tests pass (no silent deletions)
 
@@ -626,7 +627,7 @@ Proof: `npx vitest run packages/core/src/validate.test.ts -t "rejects an empty o
 ## Handoff
 
 **Settled mid-build:** uma fase por vez, com parada e pergunta ao usuário entre fases - user: "execute cada fase, pare, me mostre o resultado e me pergunte antes de executar a proxima fase"
-**Dispatched:** batch worker fase 1 (T1-T4) em HEAD 7f41f1a - returned (T1-T4 em da11604)
+**Dispatched:** batch worker fase 1 (T1-T4) em HEAD 7f41f1a - returned (T1-T4 em f6a8270 após reescrita do histórico); batch worker fase 2 (T5-T10)
 **Walked:** none
 
 ---
