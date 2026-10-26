@@ -14,7 +14,7 @@ export interface SourceFiles {
   affPath: string;
 }
 
-export function rawUrl(source: SourceSpec, path: string): string {
+export function rawUrl(source: Pick<SourceSpec, 'repo' | 'commit'>, path: string): string {
   return `https://raw.githubusercontent.com/${source.repo}/${source.commit}/${path}`;
 }
 

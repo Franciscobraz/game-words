@@ -182,14 +182,16 @@ T13 → T14 → T15
 
 **Done when**:
 
-- [ ] Testes cobrem FREQ-01 AC 1 a 3, com `fetch` substituído
-- [ ] Gate check passes: `npx tsc -b; npx vitest run`
-- [ ] Test count: 52 tests pass (no silent deletions)
+- [x] Testes cobrem FREQ-01 AC 1 a 3, com `fetch` substituído
+- [x] Gate check passes: `npx tsc -b; npx vitest run`
+- [x] Test count: 52 tests pass (no silent deletions)
 
 **Tests**: integration
 **Gate**: build
 
 **Commit**: `feat(dict-build): common words from frequency list`
+
+**Status**: ✅ Complete
 
 ---
 
