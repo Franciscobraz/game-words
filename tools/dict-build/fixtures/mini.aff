@@ -1,0 +1,11 @@
+SET UTF-8
+FLAG char
+
+PFX D Y 1
+PFX D 0 des .
+
+SFX S Y 1
+SFX S 0 s .
+
+SFX R Y 1
+SFX R ar ou ar

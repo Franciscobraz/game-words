@@ -244,10 +244,12 @@ T9 → T10 → T11 → T12
 
 **Done when**:
 
-- [ ] Fixtures `tools/dict-build/fixtures/mini.dic`/`.aff` (UTF-8) e `latin1.dic`/`.aff` (ISO-8859-1)
-- [ ] Testes cobrem DICT-01 AC 2, DICT-03 AC 10 (`unmunch` ausente) e o edge case de codificação
-- [ ] Gate check passes: `npx vitest run`
-- [ ] Test count: 25 tests pass (no silent deletions)
+- [x] Fixtures `tools/dict-build/fixtures/mini.dic`/`.aff` (UTF-8) e `latin1.dic`/`.aff` (ISO-8859-1)
+- [x] Testes cobrem DICT-01 AC 2, DICT-03 AC 10 (`unmunch` ausente) e o edge case de codificação
+- [x] Gate check passes: `npx vitest run`
+- [x] Test count: 25 tests pass (no silent deletions)
+
+**Status**: ✅ Complete
 
 **Tests**: integration
 **Gate**: full
