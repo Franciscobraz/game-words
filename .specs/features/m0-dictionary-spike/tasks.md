@@ -268,10 +268,12 @@ T9 → T10 → T11 → T12
 
 **Done when**:
 
-- [ ] Testes cobrem DICT-02 AC 7 e DICT-03 AC 8-9 sobre as fixtures
-- [ ] `npm run dict:build` real gera os dois arquivos a partir do VERO
-- [ ] Gate check passes: `npx tsc -b; npx vitest run`
-- [ ] Test count: 28 tests pass (no silent deletions)
+- [x] Testes cobrem DICT-02 AC 7 e DICT-03 AC 8-9 sobre as fixtures
+- [x] `npm run dict:build` real gera os dois arquivos a partir do VERO
+- [x] Gate check passes: `npx tsc -b; npx vitest run`
+- [x] Test count: 28 tests pass (no silent deletions)
+
+**Status**: ✅ Complete
 
 **Tests**: integration
 **Gate**: build
