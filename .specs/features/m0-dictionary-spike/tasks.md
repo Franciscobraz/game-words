@@ -362,15 +362,17 @@ T9 → T10 → T11 → T12
 
 **Done when**:
 
-- [ ] `docs/m0-results.md` gerado
-- [ ] Testes cobrem REP-01 AC 1-5
-- [ ] Gate check passes: `npx tsc -b; npx vitest run`
-- [ ] Test count: 33 tests pass (no silent deletions)
+- [x] `docs/m0-results.md` gerado
+- [x] Testes cobrem REP-01 AC 1-5
+- [x] Gate check passes: `npx tsc -b; npx vitest run`
+- [x] Test count: 34 tests pass (no silent deletions) - desvio: o plano previa 33, mas os Checks C32 e C34-C38 nomeiam 6 testes distintos em `report.test.ts` (28 + 6)
+
+**Status**: ✅ Complete
 
 **Tests**: unit
 **Gate**: build
 
-**Commit**: `docs: M0 results report`
+**Commit**: `docs: m0 results report`
 
 ---
 
