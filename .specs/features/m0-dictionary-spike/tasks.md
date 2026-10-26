@@ -220,10 +220,12 @@ T9 → T10 → T11 → T12
 
 **Done when**:
 
-- [ ] `tools/dict-build/source.json` fixa o commit atual do LibreOffice/dictionaries
-- [ ] Testes cobrem DICT-01 AC 1 e DICT-03 AC 10 (download), com `fetch` substituído
-- [ ] Gate check passes: `npx vitest run`
-- [ ] Test count: 22 tests pass (no silent deletions)
+- [x] `tools/dict-build/source.json` fixa o commit atual do LibreOffice/dictionaries
+- [x] Testes cobrem DICT-01 AC 1 e DICT-03 AC 10 (download), com `fetch` substituído
+- [x] Gate check passes: `npx vitest run`
+- [x] Test count: 22 tests pass (no silent deletions)
+
+**Status**: ✅ Complete
 
 **Tests**: integration
 **Gate**: full
@@ -489,7 +491,7 @@ Proof: walk - `pt-BR.stats.json` registra `peakHeapMb` < 1024
 ## Handoff
 
 **Settled mid-build:** execução por subagentes em 2 lotes (fases 1-2, fases 3-4), cada um devolvendo um resumo - user: "execute com os sub agents para nao estourar o contexto dessa aba mas peça para o subagent retornar um resumo do que foi feito"
-**Dispatched:** batch worker 1 (fases 1-2, T1-T5) em HEAD 379ae13
+**Dispatched:** batch worker 1 (fases 1-2, T1-T5) em HEAD 379ae13 - returned (T1-T5 em ca0dab2; desvio: `erasableSyntaxOnly` no tsconfig.base para rodar no Node 24); batch worker 2 (fases 3-4, T6-T12) em HEAD ca0dab2
 **Walked:** none
 
 ---
