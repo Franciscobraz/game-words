@@ -26,3 +26,49 @@ main {
   opacity: 0.4;
   pointer-events: none;
 }
+
+.game {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.board {
+  display: grid;
+  gap: 6px;
+  width: min(100%, 420px);
+  touch-action: none;
+  user-select: none;
+}
+
+.tile {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+  font-weight: 600;
+  background: #fff;
+  border: 1px solid #d0d4da;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.tile[data-selected='true'] {
+  background: #2f6feb;
+  border-color: #2f6feb;
+  color: #fff;
+}
+
+.found {
+  min-width: 220px;
+}
+
+.feedback {
+  min-height: 1.4em;
+  font-weight: 600;
+}
+
+.points {
+  color: #57606a;
+}
