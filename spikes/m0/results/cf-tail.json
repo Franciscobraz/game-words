@@ -1,0 +1,2422 @@
+[
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=1&seed=1",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 191,
+    "eventTimestamp": 1793047127844,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/load?r=0",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 1570,
+    "eventTimestamp": 1793047126191,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/load?r=0",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 4,
+    "wallTime": 712,
+    "eventTimestamp": 1793047127024,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=1&seed=1",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 29,
+    "wallTime": 32,
+    "eventTimestamp": 1793047127951,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=2&seed=2",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 19,
+    "wallTime": 20,
+    "eventTimestamp": 1793047129070,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=2&seed=2",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 181,
+    "eventTimestamp": 1793047128960,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=3&seed=3",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 7,
+    "wallTime": 8,
+    "eventTimestamp": 1793047130176,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=3&seed=3",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 167,
+    "eventTimestamp": 1793047130067,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=4&seed=4",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 7,
+    "wallTime": 8,
+    "eventTimestamp": 1793047131274,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=4&seed=4",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 169,
+    "eventTimestamp": 1793047131156,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=5&seed=5",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 22,
+    "wallTime": 23,
+    "eventTimestamp": 1793047132395,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=5&seed=5",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 186,
+    "eventTimestamp": 1793047132275,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=6&seed=6",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 6,
+    "wallTime": 7,
+    "eventTimestamp": 1793047133482,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=6&seed=6",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 164,
+    "eventTimestamp": 1793047133371,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=7&seed=7",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 5,
+    "wallTime": 5,
+    "eventTimestamp": 1793047134575,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=7&seed=7",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 167,
+    "eventTimestamp": 1793047134455,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=8&seed=8",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 18,
+    "wallTime": 21,
+    "eventTimestamp": 1793047135714,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=8&seed=8",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 181,
+    "eventTimestamp": 1793047135595,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=9&seed=9",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 21,
+    "wallTime": 22,
+    "eventTimestamp": 1793047136790,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=9&seed=9",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 185,
+    "eventTimestamp": 1793047136672,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=10&seed=10",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 12,
+    "wallTime": 13,
+    "eventTimestamp": 1793047137902,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=10&seed=10",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 171,
+    "eventTimestamp": 1793047137792,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=11&seed=11",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 7,
+    "wallTime": 7,
+    "eventTimestamp": 1793047139034,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=11&seed=11",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 165,
+    "eventTimestamp": 1793047138921,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=12&seed=12",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 12,
+    "wallTime": 12,
+    "eventTimestamp": 1793047140118,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=12&seed=12",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 170,
+    "eventTimestamp": 1793047140002,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=13&seed=13",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 9,
+    "wallTime": 9,
+    "eventTimestamp": 1793047141216,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=13&seed=13",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 174,
+    "eventTimestamp": 1793047141095,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=14&seed=14",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 7,
+    "wallTime": 7,
+    "eventTimestamp": 1793047142339,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=14&seed=14",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 165,
+    "eventTimestamp": 1793047142225,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=15&seed=15",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 13,
+    "wallTime": 14,
+    "eventTimestamp": 1793047143457,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=15&seed=15",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 174,
+    "eventTimestamp": 1793047143337,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=16&seed=16",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 7,
+    "wallTime": 8,
+    "eventTimestamp": 1793047144572,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=16&seed=16",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 166,
+    "eventTimestamp": 1793047144458,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=17&seed=17",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 25,
+    "wallTime": 27,
+    "eventTimestamp": 1793047145672,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=17&seed=17",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 189,
+    "eventTimestamp": 1793047145552,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=18&seed=18",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 16,
+    "wallTime": 18,
+    "eventTimestamp": 1793047146771,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=18&seed=18",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 176,
+    "eventTimestamp": 1793047146660,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=19&seed=19",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 7,
+    "wallTime": 7,
+    "eventTimestamp": 1793047147901,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=19&seed=19",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 165,
+    "eventTimestamp": 1793047147790,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=20&seed=20",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 7,
+    "wallTime": 7,
+    "eventTimestamp": 1793047148986,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=20&seed=20",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 166,
+    "eventTimestamp": 1793047148870,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=21&seed=21",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 8,
+    "wallTime": 9,
+    "eventTimestamp": 1793047150115,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=21&seed=21",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 165,
+    "eventTimestamp": 1793047149999,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=22&seed=22",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 12,
+    "wallTime": 13,
+    "eventTimestamp": 1793047151216,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=22&seed=22",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 176,
+    "eventTimestamp": 1793047151094,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=23&seed=23",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 6,
+    "wallTime": 8,
+    "eventTimestamp": 1793047152323,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=23&seed=23",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 169,
+    "eventTimestamp": 1793047152205,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=24&seed=24",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 13,
+    "wallTime": 14,
+    "eventTimestamp": 1793047153444,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=24&seed=24",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 177,
+    "eventTimestamp": 1793047153322,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=25&seed=25",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 10,
+    "wallTime": 11,
+    "eventTimestamp": 1793047154550,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=25&seed=25",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 171,
+    "eventTimestamp": 1793047154432,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=26&seed=26",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 19,
+    "wallTime": 20,
+    "eventTimestamp": 1793047155664,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=26&seed=26",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 180,
+    "eventTimestamp": 1793047155547,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=27&seed=27",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 13,
+    "wallTime": 13,
+    "eventTimestamp": 1793047156750,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=27&seed=27",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 169,
+    "eventTimestamp": 1793047156639,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=28&seed=28",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 13,
+    "wallTime": 14,
+    "eventTimestamp": 1793047157880,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=28&seed=28",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 171,
+    "eventTimestamp": 1793047157768,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=29&seed=29",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 6,
+    "wallTime": 7,
+    "eventTimestamp": 1793047158988,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=29&seed=29",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 164,
+    "eventTimestamp": 1793047158876,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=30&seed=30",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 6,
+    "wallTime": 6,
+    "eventTimestamp": 1793047160101,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=30&seed=30",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 163,
+    "eventTimestamp": 1793047159987,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=31&seed=31",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 19,
+    "wallTime": 20,
+    "eventTimestamp": 1793047161224,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=31&seed=31",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 185,
+    "eventTimestamp": 1793047161100,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=32&seed=32",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 11,
+    "wallTime": 12,
+    "eventTimestamp": 1793047162324,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=32&seed=32",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 173,
+    "eventTimestamp": 1793047162208,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=33&seed=33",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 13,
+    "wallTime": 14,
+    "eventTimestamp": 1793047163425,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=33&seed=33",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 176,
+    "eventTimestamp": 1793047163306,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=34&seed=34",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 9,
+    "wallTime": 10,
+    "eventTimestamp": 1793047164562,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=34&seed=34",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "canceled",
+    "cpuTime": 0,
+    "wallTime": 176,
+    "eventTimestamp": 1793047164442,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=35&seed=35",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 14,
+    "wallTime": 15,
+    "eventTimestamp": 1793047165630,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=35&seed=35",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 176,
+    "eventTimestamp": 1793047165514,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=36&seed=36",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 5,
+    "wallTime": 6,
+    "eventTimestamp": 1793047166747,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=36&seed=36",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 172,
+    "eventTimestamp": 1793047166625,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=37&seed=37",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 24,
+    "wallTime": 26,
+    "eventTimestamp": 1793047167853,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=37&seed=37",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 181,
+    "eventTimestamp": 1793047167739,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=38&seed=38",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 10,
+    "wallTime": 11,
+    "eventTimestamp": 1793047168956,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=38&seed=38",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 174,
+    "eventTimestamp": 1793047168839,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=39&seed=39",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 18,
+    "wallTime": 20,
+    "eventTimestamp": 1793047170053,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=39&seed=39",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 182,
+    "eventTimestamp": 1793047169936,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=40&seed=40",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 6,
+    "wallTime": 6,
+    "eventTimestamp": 1793047171171,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=40&seed=40",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 166,
+    "eventTimestamp": 1793047171057,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=41&seed=41",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 12,
+    "wallTime": 13,
+    "eventTimestamp": 1793047172258,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=41&seed=41",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 176,
+    "eventTimestamp": 1793047172138,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=42&seed=42",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 22,
+    "wallTime": 22,
+    "eventTimestamp": 1793047173372,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=42&seed=42",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 184,
+    "eventTimestamp": 1793047173253,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=43&seed=43",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 7,
+    "wallTime": 8,
+    "eventTimestamp": 1793047174480,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=43&seed=43",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 169,
+    "eventTimestamp": 1793047174365,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=44&seed=44",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 18,
+    "wallTime": 18,
+    "eventTimestamp": 1793047175582,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=44&seed=44",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 179,
+    "eventTimestamp": 1793047175464,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=45&seed=45",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 15,
+    "wallTime": 16,
+    "eventTimestamp": 1793047176704,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=45&seed=45",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 178,
+    "eventTimestamp": 1793047176588,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=46&seed=46",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 4,
+    "wallTime": 5,
+    "eventTimestamp": 1793047177822,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=46&seed=46",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 169,
+    "eventTimestamp": 1793047177703,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=47&seed=47",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 3,
+    "wallTime": 3,
+    "eventTimestamp": 1793047178925,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=47&seed=47",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 162,
+    "eventTimestamp": 1793047178808,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=48&seed=48",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 15,
+    "wallTime": 15,
+    "eventTimestamp": 1793047180054,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=48&seed=48",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 177,
+    "eventTimestamp": 1793047179932,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=49&seed=49",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 8,
+    "wallTime": 9,
+    "eventTimestamp": 1793047181128,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=49&seed=49",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 162,
+    "eventTimestamp": 1793047181016,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=50&seed=50",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 4,
+    "wallTime": 5,
+    "eventTimestamp": 1793047182247,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=50&seed=50",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 164,
+    "eventTimestamp": 1793047182131,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=51&seed=51",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 10,
+    "wallTime": 11,
+    "eventTimestamp": 1793047183357,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=51&seed=51",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 172,
+    "eventTimestamp": 1793047183236,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=52&seed=52",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 13,
+    "wallTime": 13,
+    "eventTimestamp": 1793047184466,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=52&seed=52",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 174,
+    "eventTimestamp": 1793047184347,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=53&seed=53",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 8,
+    "wallTime": 9,
+    "eventTimestamp": 1793047185582,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=53&seed=53",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 170,
+    "eventTimestamp": 1793047185464,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=54&seed=54",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 10,
+    "wallTime": 10,
+    "eventTimestamp": 1793047186678,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=54&seed=54",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 168,
+    "eventTimestamp": 1793047186563,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=55&seed=55",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 8,
+    "wallTime": 9,
+    "eventTimestamp": 1793047187781,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=55&seed=55",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 169,
+    "eventTimestamp": 1793047187662,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=56&seed=56",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 8,
+    "wallTime": 12,
+    "eventTimestamp": 1793047188893,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=56&seed=56",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 169,
+    "eventTimestamp": 1793047188777,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=57&seed=57",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 4,
+    "wallTime": 4,
+    "eventTimestamp": 1793047190115,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=57&seed=57",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 162,
+    "eventTimestamp": 1793047189998,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=58&seed=58",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 18,
+    "wallTime": 18,
+    "eventTimestamp": 1793047191128,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=58&seed=58",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 177,
+    "eventTimestamp": 1793047191010,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=59&seed=59",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 5,
+    "wallTime": 6,
+    "eventTimestamp": 1793047192252,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=59&seed=59",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 165,
+    "eventTimestamp": 1793047192137,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=60&seed=60",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 4,
+    "wallTime": 5,
+    "eventTimestamp": 1793047193342,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=60&seed=60",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 164,
+    "eventTimestamp": 1793047193224,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=61&seed=61",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 8,
+    "wallTime": 8,
+    "eventTimestamp": 1793047194460,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=61&seed=61",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 168,
+    "eventTimestamp": 1793047194340,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=62&seed=62",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 9,
+    "wallTime": 9,
+    "eventTimestamp": 1793047195553,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=62&seed=62",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 165,
+    "eventTimestamp": 1793047195437,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=63&seed=63",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 7,
+    "wallTime": 8,
+    "eventTimestamp": 1793047196674,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=63&seed=63",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 168,
+    "eventTimestamp": 1793047196556,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=64&seed=64",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 14,
+    "wallTime": 15,
+    "eventTimestamp": 1793047197787,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=64&seed=64",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 170,
+    "eventTimestamp": 1793047197673,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=65&seed=65",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 20,
+    "wallTime": 21,
+    "eventTimestamp": 1793047198900,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=65&seed=65",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 178,
+    "eventTimestamp": 1793047198785,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=66&seed=66",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 5,
+    "wallTime": 6,
+    "eventTimestamp": 1793047199980,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=66&seed=66",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 165,
+    "eventTimestamp": 1793047199869,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=67&seed=67",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 10,
+    "wallTime": 11,
+    "eventTimestamp": 1793047201090,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=67&seed=67",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 170,
+    "eventTimestamp": 1793047200973,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=68&seed=68",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 8,
+    "wallTime": 9,
+    "eventTimestamp": 1793047202192,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=68&seed=68",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "canceled",
+    "cpuTime": 1,
+    "wallTime": 167,
+    "eventTimestamp": 1793047202076,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=69&seed=69",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 14,
+    "wallTime": 15,
+    "eventTimestamp": 1793047203293,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=69&seed=69",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 175,
+    "eventTimestamp": 1793047203180,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=70&seed=70",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 10,
+    "wallTime": 11,
+    "eventTimestamp": 1793047204400,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=70&seed=70",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 172,
+    "eventTimestamp": 1793047204282,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=71&seed=71",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 9,
+    "wallTime": 10,
+    "eventTimestamp": 1793047205493,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=71&seed=71",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 175,
+    "eventTimestamp": 1793047205370,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=72&seed=72",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 12,
+    "wallTime": 12,
+    "eventTimestamp": 1793047206614,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=72&seed=72",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 173,
+    "eventTimestamp": 1793047206497,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=73&seed=73",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 11,
+    "wallTime": 12,
+    "eventTimestamp": 1793047207731,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=73&seed=73",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 172,
+    "eventTimestamp": 1793047207616,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=74&seed=74",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 9,
+    "wallTime": 10,
+    "eventTimestamp": 1793047208831,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=74&seed=74",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 170,
+    "eventTimestamp": 1793047208714,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=75&seed=75",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 10,
+    "wallTime": 10,
+    "eventTimestamp": 1793047209941,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=75&seed=75",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 179,
+    "eventTimestamp": 1793047209817,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=76&seed=76",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 7,
+    "wallTime": 7,
+    "eventTimestamp": 1793047211036,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=76&seed=76",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 165,
+    "eventTimestamp": 1793047210921,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=77&seed=77",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 17,
+    "wallTime": 18,
+    "eventTimestamp": 1793047212146,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=77&seed=77",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 175,
+    "eventTimestamp": 1793047212031,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=78&seed=78",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 4,
+    "wallTime": 4,
+    "eventTimestamp": 1793047213253,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=78&seed=78",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 163,
+    "eventTimestamp": 1793047213138,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=79&seed=79",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 12,
+    "wallTime": 12,
+    "eventTimestamp": 1793047214373,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=79&seed=79",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 177,
+    "eventTimestamp": 1793047214250,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=80&seed=80",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 7,
+    "wallTime": 7,
+    "eventTimestamp": 1793047215480,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=80&seed=80",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 166,
+    "eventTimestamp": 1793047215364,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=81&seed=81",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 3,
+    "wallTime": 3,
+    "eventTimestamp": 1793047216579,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=81&seed=81",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 159,
+    "eventTimestamp": 1793047216464,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=82&seed=82",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 5,
+    "wallTime": 6,
+    "eventTimestamp": 1793047217700,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=82&seed=82",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 169,
+    "eventTimestamp": 1793047217578,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=83&seed=83",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 7,
+    "wallTime": 8,
+    "eventTimestamp": 1793047218785,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=83&seed=83",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 163,
+    "eventTimestamp": 1793047218671,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=84&seed=84",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 17,
+    "wallTime": 19,
+    "eventTimestamp": 1793047219917,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=84&seed=84",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 190,
+    "eventTimestamp": 1793047219790,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=85&seed=85",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 10,
+    "wallTime": 11,
+    "eventTimestamp": 1793047221005,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=85&seed=85",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 170,
+    "eventTimestamp": 1793047220891,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=86&seed=86",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 21,
+    "wallTime": 22,
+    "eventTimestamp": 1793047222100,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=86&seed=86",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 181,
+    "eventTimestamp": 1793047221984,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=87&seed=87",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 11,
+    "wallTime": 13,
+    "eventTimestamp": 1793047223226,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=87&seed=87",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 173,
+    "eventTimestamp": 1793047223112,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=88&seed=88",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 10,
+    "wallTime": 12,
+    "eventTimestamp": 1793047224325,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=88&seed=88",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 174,
+    "eventTimestamp": 1793047224208,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=89&seed=89",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 17,
+    "wallTime": 17,
+    "eventTimestamp": 1793047225437,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=89&seed=89",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 176,
+    "eventTimestamp": 1793047225321,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=90&seed=90",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 16,
+    "wallTime": 17,
+    "eventTimestamp": 1793047226584,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=90&seed=90",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 180,
+    "eventTimestamp": 1793047226466,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=91&seed=91",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 10,
+    "wallTime": 11,
+    "eventTimestamp": 1793047227649,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=91&seed=91",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 169,
+    "eventTimestamp": 1793047227537,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=92&seed=92",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 15,
+    "wallTime": 16,
+    "eventTimestamp": 1793047228769,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=92&seed=92",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 177,
+    "eventTimestamp": 1793047228652,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=93&seed=93",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 9,
+    "wallTime": 9,
+    "eventTimestamp": 1793047229874,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=93&seed=93",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 169,
+    "eventTimestamp": 1793047229759,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=94&seed=94",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 13,
+    "wallTime": 14,
+    "eventTimestamp": 1793047230992,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=94&seed=94",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 176,
+    "eventTimestamp": 1793047230872,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=95&seed=95",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 10,
+    "wallTime": 11,
+    "eventTimestamp": 1793047232088,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=95&seed=95",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 173,
+    "eventTimestamp": 1793047231970,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=96&seed=96",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 6,
+    "wallTime": 6,
+    "eventTimestamp": 1793047233186,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=96&seed=96",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 165,
+    "eventTimestamp": 1793047233072,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=97&seed=97",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 7,
+    "wallTime": 7,
+    "eventTimestamp": 1793047234313,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=97&seed=97",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 166,
+    "eventTimestamp": 1793047234195,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=98&seed=98",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 7,
+    "wallTime": 7,
+    "eventTimestamp": 1793047235426,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=98&seed=98",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 165,
+    "eventTimestamp": 1793047235309,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=99&seed=99",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 7,
+    "wallTime": 7,
+    "eventTimestamp": 1793047236538,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=99&seed=99",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 164,
+    "eventTimestamp": 1793047236422,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=100&seed=100",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 8,
+    "wallTime": 8,
+    "eventTimestamp": 1793047237649,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/solve?r=100&seed=100",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 166,
+    "eventTimestamp": 1793047237532,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=101&seed=1",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 11,
+    "wallTime": 12,
+    "eventTimestamp": 1793047238750,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=101&seed=1",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 166,
+    "eventTimestamp": 1793047238638,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=102&seed=2",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 11,
+    "wallTime": 11,
+    "eventTimestamp": 1793047239867,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=102&seed=2",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 168,
+    "eventTimestamp": 1793047239752,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=103&seed=3",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 6,
+    "wallTime": 7,
+    "eventTimestamp": 1793047240982,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=103&seed=3",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 169,
+    "eventTimestamp": 1793047240867,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=104&seed=4",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 8,
+    "wallTime": 9,
+    "eventTimestamp": 1793047242103,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=104&seed=4",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 176,
+    "eventTimestamp": 1793047241979,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=105&seed=5",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 20,
+    "wallTime": 21,
+    "eventTimestamp": 1793047243200,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=105&seed=5",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 184,
+    "eventTimestamp": 1793047243079,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=106&seed=6",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 11,
+    "wallTime": 12,
+    "eventTimestamp": 1793047244293,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=106&seed=6",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 170,
+    "eventTimestamp": 1793047244181,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=107&seed=7",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 4,
+    "wallTime": 4,
+    "eventTimestamp": 1793047245404,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=107&seed=7",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 161,
+    "eventTimestamp": 1793047245290,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=108&seed=8",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 13,
+    "wallTime": 15,
+    "eventTimestamp": 1793047246506,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=108&seed=8",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 172,
+    "eventTimestamp": 1793047246390,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=109&seed=9",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 18,
+    "wallTime": 18,
+    "eventTimestamp": 1793047247601,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=109&seed=9",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 177,
+    "eventTimestamp": 1793047247486,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=110&seed=10",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 15,
+    "wallTime": 16,
+    "eventTimestamp": 1793047248717,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=110&seed=10",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 177,
+    "eventTimestamp": 1793047248601,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=111&seed=11",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 6,
+    "wallTime": 6,
+    "eventTimestamp": 1793047249816,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=111&seed=11",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 164,
+    "eventTimestamp": 1793047249703,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=112&seed=12",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 11,
+    "wallTime": 12,
+    "eventTimestamp": 1793047250922,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=112&seed=12",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 169,
+    "eventTimestamp": 1793047250808,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=113&seed=13",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 7,
+    "wallTime": 8,
+    "eventTimestamp": 1793047252047,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=113&seed=13",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 170,
+    "eventTimestamp": 1793047251927,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=114&seed=14",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 5,
+    "wallTime": 6,
+    "eventTimestamp": 1793047253140,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=114&seed=14",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 164,
+    "eventTimestamp": 1793047253024,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=115&seed=15",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 8,
+    "wallTime": 8,
+    "eventTimestamp": 1793047254255,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=115&seed=15",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 172,
+    "eventTimestamp": 1793047254133,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=116&seed=16",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 8,
+    "wallTime": 9,
+    "eventTimestamp": 1793047255368,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=116&seed=16",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 170,
+    "eventTimestamp": 1793047255248,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=117&seed=17",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 13,
+    "wallTime": 14,
+    "eventTimestamp": 1793047256472,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=117&seed=17",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 176,
+    "eventTimestamp": 1793047256351,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=118&seed=18",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 17,
+    "wallTime": 18,
+    "eventTimestamp": 1793047257578,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=118&seed=18",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 177,
+    "eventTimestamp": 1793047257464,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=119&seed=19",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 8,
+    "wallTime": 8,
+    "eventTimestamp": 1793047258694,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=119&seed=19",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 1,
+    "wallTime": 168,
+    "eventTimestamp": 1793047258579,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=120&seed=20",
+    "executionModel": "durableObject",
+    "entrypoint": "SpikeDO",
+    "outcome": "ok",
+    "cpuTime": 9,
+    "wallTime": 10,
+    "eventTimestamp": 1793047259800,
+    "exceptions": []
+  },
+  {
+    "url": "https://bwords-m0-spike.<conta>.workers.dev/generate?r=120&seed=20",
+    "executionModel": "stateless",
+    "entrypoint": null,
+    "outcome": "ok",
+    "cpuTime": 0,
+    "wallTime": 170,
+    "eventTimestamp": 1793047259684,
+    "exceptions": []
+  }
+]

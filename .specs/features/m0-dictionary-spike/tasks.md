@@ -339,14 +339,16 @@ T9 → T10 → T11 → T12
 
 **Done when**:
 
-- [ ] `spikes/m0/results/cf.json` com 121 registros de CPU
-- [ ] `wrangler deployments list --name bwords-m0-spike` confirma que o Worker não existe mais
-- [ ] Gate check passes: `npx tsc -b; npx vitest run`
+- [x] `spikes/m0/results/cf.json` com 121 registros de CPU
+- [x] `wrangler deployments list --name bwords-m0-spike` confirma que o Worker não existe mais
+- [x] Gate check passes: `npx tsc -b; npx vitest run`
+
+**Status**: ✅ Complete
 
 **Tests**: none
 **Gate**: build
 
-**Commit**: `feat(spike): Cloudflare benchmark run`
+**Commit**: `feat(spike): cloudflare benchmark run`
 
 ---
 
