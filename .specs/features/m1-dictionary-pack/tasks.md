@@ -230,14 +230,16 @@ T13 → T14 → T15
 
 **Done when**:
 
-- [ ] Testes cobrem FREQ-01 AC 4 e PROF-01 AC 2
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: 57 tests pass (no silent deletions)
+- [x] Testes cobrem FREQ-01 AC 4 e PROF-01 AC 2
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: 57 tests pass (no silent deletions)
 
 **Tests**: unit
 **Gate**: quick
 
 **Commit**: `feat(core): language pack loader`
+
+**Status**: ✅ Complete
 
 ---
 
