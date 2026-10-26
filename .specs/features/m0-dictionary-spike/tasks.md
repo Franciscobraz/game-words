@@ -86,6 +86,12 @@ T6 → T7 → T8
 T9 → T10 → T11 → T12
 ```
 
+### Phase 5: Fixes E1 and E2
+
+```
+T13 → T14 → T15
+```
+
 ---
 
 ## Task Breakdown
@@ -376,6 +382,75 @@ T9 → T10 → T11 → T12
 
 ---
 
+#### Phase 5: Fixes E1 and E2
+
+### T13: Flags UTF-8 inteiras na expansão
+
+**What**: Fazer o build tratar cada flag de um `.aff` com `FLAG UTF-8` como um caractere inteiro (por exemplo, remapeando as flags para caracteres de um byte antes do `unmunch` ou expandindo por outro meio), refazer o build real e conferir as amostras.
+**Where**: `tools/dict-build/src/flags.ts`
+**Depends on**: T12
+**Reuses**: `expandForms` (T7), `buildDictionary` (T8)
+**Requirement**: DICT-01
+
+**Done when**:
+
+- [ ] Fixture `utf8flags.dic`/`.aff` com duas flags que compartilham o primeiro byte UTF-8
+- [ ] Teste cobre DICT-01 AC 11
+- [ ] O build real roda de novo, e as formas falsas citadas no E1 ("heptaugadora", "zooorganica") não estão mais no binário
+- [ ] Gate check passes: `npx tsc -b; npx vitest run`
+- [ ] Test count: 35 tests pass (no silent deletions)
+
+**Tests**: integration
+**Gate**: build
+
+**Commit**: `fix(dict-build): treat utf-8 affix flags as whole characters`
+
+---
+
+### T14: Amostragem da carga a frio e nova medição
+
+**What**: Mudar o `bench:cf` para aquecer o asset e medir 5 cargas a frio, cada uma num Durable Object novo, e rodar de novo a medição completa com o dicionário corrigido, terminando com `wrangler delete`.
+**Where**: `spikes/m0/src/bench-cf.ts`
+**Depends on**: T13
+**Reuses**: `bench-cf.ts` (T11)
+**Requirement**: BENCH-01
+
+**Done when**:
+
+- [ ] `spikes/m0/results/cf.json` com 5 registros de carga a frio, além das 100 resoluções e 20 gerações
+- [ ] `spikes/m0/results/node.json` refeito com o dicionário corrigido
+- [ ] O Worker `bwords-m0-spike` não existe mais na conta
+- [ ] Gate check passes: `npx tsc -b; npx vitest run`
+
+**Tests**: none
+**Gate**: build
+
+**Commit**: `fix(spike): sample five cold loads after asset warm-up`
+
+---
+
+### T15: Relatório com a mediana e o dicionário corrigido
+
+**What**: Fazer o relatório usar a mediana das 5 cargas a frio e gerar de novo o `docs/m0-results.md` com os novos números.
+**Where**: `spikes/m0/src/report.ts`
+**Depends on**: T14
+**Reuses**: `report.ts` (T12)
+**Requirement**: REP-01, BENCH-01
+
+**Done when**:
+
+- [ ] Teste cobre BENCH-01 AC 7
+- [ ] `docs/m0-results.md` regenerado
+- [ ] Gate check passes: `npx tsc -b; npx vitest run`
+- [ ] Test count: 36 tests pass (no silent deletions)
+
+**Tests**: unit
+**Gate**: build
+
+**Commit**: `docs: m0 results with corrected dictionary`
+
+---
+
 ## Checks
 
 **C1** - O download usa a URL do commit fixado em `source.json` (DICT-01, AC 1)
@@ -498,12 +573,18 @@ Proof: `npx vitest run tools/dict-build/src/unmunch.test.ts -t "decodes per the 
 **C40** - A saída do `unmunch` é processada em streaming: o pico de heap do build real fica abaixo de 1 GB (edge case de streaming)
 Proof: walk - `pt-BR.stats.json` registra `peakHeapMb` < 1024
 
+**C41** - Com `FLAG UTF-8`, uma flag nunca aplica as regras de outra que compartilha o primeiro byte (DICT-01, AC 11)
+Proof: `npx vitest run tools/dict-build/src/flags.test.ts -t "keeps utf-8 flags that share a first byte apart"`
+
+**C42** - O veredito da carga a frio usa a mediana de 5 amostras (BENCH-01, AC 7)
+Proof: `npx vitest run spikes/m0/src/report.test.ts -t "uses the median of five cold loads"`
+
 ---
 
 ## Handoff
 
-**Settled mid-build:** execução por subagentes em 2 lotes (fases 1-2, fases 3-4), cada um devolvendo um resumo - user: "execute com os sub agents para nao estourar o contexto dessa aba mas peça para o subagent retornar um resumo do que foi feito"
-**Dispatched:** batch worker 1 (fases 1-2, T1-T5) em HEAD 379ae13 - returned (T1-T5 em ca0dab2; desvio: `erasableSyntaxOnly` no tsconfig.base para rodar no Node 24); batch worker 2 (fases 3-4, T6-T12) em HEAD ca0dab2
+**Settled mid-build:** E1 e E2 aprovados - user: "sim para E1 e E2" (2026-10-26), viram T13-T15; execução por subagentes em 2 lotes (fases 1-2, fases 3-4), cada um devolvendo um resumo - user: "execute com os sub agents para nao estourar o contexto dessa aba mas peça para o subagent retornar um resumo do que foi feito"
+**Dispatched:** batch worker 1 (fases 1-2, T1-T5) em HEAD 379ae13 - returned (T1-T5 em ca0dab2; desvio: `erasableSyntaxOnly` no tsconfig.base para rodar no Node 24); batch worker 2 (fases 3-4, T6-T12) em HEAD ca0dab2 - returned (T6-T12 em 715fd31; pendente decisão do usuário: flags UTF-8 do VERO no unmunch e carga a frio com amostra única); batch worker 3 (fase 5, T13-T15)
 **Walked:** none
 
 ---
@@ -511,10 +592,11 @@ Proof: walk - `pt-BR.stats.json` registra `peakHeapMb` < 1024
 ## Phase Execution Map
 
 ```
-Phase 1 → Phase 2 → Phase 3 → Phase 4
+Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5
 
 Phase 1:  T1
 Phase 2:  T2 ------→ T3 ------→ T4 ------→ T5
 Phase 3:  T6 ------→ T7 ------→ T8
 Phase 4:  T9 ------→ T10 -----→ T11 -----→ T12
+Phase 5:  T13 -----→ T14 -----→ T15
 ```

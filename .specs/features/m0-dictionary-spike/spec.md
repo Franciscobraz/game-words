@@ -31,7 +31,7 @@ O BWords valida palavras e gera tabuleiros no servidor, dentro de um Durable Obj
 | --- | --- | --- | --- |
 | D1 - Deploy de teste | Publicar `bwords-m0-spike` no workers.dev da conta do usuário, medir e remover com `wrangler delete` | Medir de verdade exige a Cloudflare real; o simulador local não reproduz os limites | y |
 | D2 - O que é descartável | `tools/dict-build/` e `packages/core` (formato do dicionário, solver, gerador) com qualidade de produção; `spikes/m0/` descartável | O pipeline, o formato e o solver são peças do marco 1 | y |
-| D3 - Limites de aprovação | Binário ≤ 10 MB; memória ≤ 64 MB; carga a frio ≤ 500 ms; solver 6x6 p95 ≤ 50 ms de CPU; geração 6x6 ≤ 1 s | Metade do limite de memória dá margem para o estado da sala; carga e geração imperceptíveis para os jogadores | y |
+| D3 - Limites de aprovação | Binário ≤ 10 MB; memória ≤ 64 MB; carga a frio ≤ 500 ms (mediana de 5 amostras, E2); solver 6x6 p95 ≤ 50 ms de CPU; geração 6x6 ≤ 1 s | Metade do limite de memória dá margem para o estado da sala; carga e geração imperceptíveis para os jogadores | y |
 | D4 - Versionamento | VERO baixado no build numa versão fixada por commit; binário gerado no `.gitignore` | Repositório leve; build reproduzível | y |
 | D5 - Relatório | `docs/m0-results.md` com números, veredito por critério, contagens por filtro e amostras | Deixa a decisão do plano B auditável | y |
 | D6 - Filtros no M0 | Só os filtros base; o solver já trata "Qu" | A peça "Qu" muda a contagem de palavras do tabuleiro | y |
@@ -41,6 +41,8 @@ O BWords valida palavras e gera tabuleiros no servidor, dentro de um Durable Obj
 | Medição de memória | O Workers não expõe uso de heap. A memória é medida no Node (`process.memoryUsage()` após carregar), e na Cloudflare se comprova que carrega sem erro de memória | Única medida disponível; o Node usa o mesmo V8 | y - fato de plataforma |
 | Cópias por letra no gerador | Máximo de 4 cópias da mesma letra | DESIGN §5.4 fala em "~3–4"; 4 dá mais chance a pares como RR e SS | y - delegado ("você decide" nos defaults do DESIGN) |
 | Mínimo de palavras por tabuleiro | 4x4 ≥ 40, 5x5 ≥ 80, 6x6 ≥ 120, com tamanho mínimo de palavra 3 | Valores iniciais do DESIGN §5.4, a calibrar com o relatório | y |
+| E1 - Flags UTF-8 do VERO | O build trata cada flag do `.aff`/`.dic` como um caractere UTF-8 inteiro antes ou durante a expansão | O `unmunch` lia as flags byte a byte e gerava formas falsas ("heptaugadora", "zooorganica"); 11,6 M palavras infladas | y - user: "sim para E1 e E2" (2026-10-26) |
+| E2 - Amostragem da carga a frio | 5 cargas a frio, cada uma num Durable Object novo, após uma requisição que aquece o asset; veredito pela mediana; novo deploy temporário removido ao final | A amostra única de 688 ms foi feita com o asset fora do cache, logo após o deploy, com 4 ms de CPU | y - user: "sim para E1 e E2" (2026-10-26) |
 | Tentativas do gerador | Até 200 tentativas antes de falhar | Limite que evita laço infinito; o relatório mostra a média real | y - delegado |
 
 **Open questions:** none - all resolved or logged above.
@@ -59,6 +61,7 @@ O BWords valida palavras e gera tabuleiros no servidor, dentro de um Durable Obj
 
 1. WHEN o desenvolvedor executa `npm run dict:build` THEN o sistema SHALL baixar `pt_BR.dic` e `pt_BR.aff` do repositório LibreOffice/dictionaries no commit fixado em `tools/dict-build/source.json`
 2. WHEN o build expande o dicionário THEN o sistema SHALL gerar as formas com o `unmunch` executado no WSL (Windows) ou nativamente (Linux)
+11. WHEN o `.aff` declara `FLAG UTF-8` THEN o sistema SHALL tratar cada flag como um caractere UTF-8 inteiro, de modo que duas flags que compartilham o primeiro byte nunca apliquem as regras uma da outra (E1)
 3. IF uma forma expandida contém uma letra maiúscula THEN o sistema SHALL descartá-la
 4. IF uma forma expandida contém um caractere que não é letra (hífen, apóstrofo, dígito, ponto) THEN o sistema SHALL descartá-la
 5. The system SHALL normalizar cada forma mantida para letras `a`–`z`, removendo diacríticos e convertendo `ç` em `c`
@@ -135,6 +138,7 @@ O BWords valida palavras e gera tabuleiros no servidor, dentro de um Durable Obj
 **Acceptance Criteria**:
 
 1. WHEN o Durable Object do spike recebe a primeira requisição após ser criado THEN o sistema SHALL buscar o binário nos static assets do Worker, carregá-lo e responder com o tempo de parede da carga
+7. WHEN o script de medição mede a carga a frio THEN o sistema SHALL registrar 5 amostras, cada uma num Durable Object novo, depois de uma requisição de aquecimento do asset, e o veredito SHALL usar a mediana (E2)
 2. WHEN o script de medição roda contra o spike publicado THEN o sistema SHALL executar uma operação por requisição (carga a frio, 100 resoluções de 6x6 e 20 gerações de 6x6, cada uma isolada)
 3. WHEN as requisições terminam THEN o sistema SHALL registrar o tempo de CPU de cada uma a partir dos dados de invocação da Cloudflare
 4. WHEN o script de medição local roda no Node THEN o sistema SHALL registrar o heap usado depois de carregar o dicionário
@@ -175,13 +179,13 @@ O BWords valida palavras e gera tabuleiros no servidor, dentro de um Durable Obj
 
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
-| DICT-01 | P1: Build do dicionário (AC 1-2) | Tasks | Pending |
+| DICT-01 | P1: Build do dicionário (AC 1-2, 11) | Tasks | Pending |
 | DICT-02 | P1: Build do dicionário (AC 3-7) | Tasks | Pending |
 | DICT-03 | P1: Build do dicionário (AC 8-10) | Tasks | Pending |
 | LOOK-01 | P1: Consulta ao dicionário (AC 1-4) | Tasks | Pending |
 | SOLV-01 | P1: Solver (AC 1-5) | Tasks | Pending |
 | GEN-01 | P1: Gerador de tabuleiros (AC 1-6) | Tasks | Pending |
-| BENCH-01 | P1: Medição na Cloudflare (AC 1-6) | Tasks | Pending |
+| BENCH-01 | P1: Medição na Cloudflare (AC 1-7) | Tasks | Pending |
 | REP-01 | P1: Relatório de resultados (AC 1-5) | Tasks | Pending |
 
 **Coverage:** 8 total, 0 mapped to tasks, 8 unmapped ⚠️ (mapeados na fase Tasks)
