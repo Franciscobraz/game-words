@@ -276,14 +276,16 @@ T13 → T14 → T15
 
 **Done when**:
 
-- [ ] Testes cobrem SCORE-01 AC 6 a 9 e o edge case do "Qu"
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: 71 tests pass (no silent deletions)
+- [x] Testes cobrem SCORE-01 AC 6 a 9 e o edge case do "Qu"
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: 71 tests pass (no silent deletions)
 
 **Tests**: unit
 **Gate**: quick
 
 **Commit**: `feat(core): round scoring`
+
+**Status**: ✅ Complete
 
 ---
 
