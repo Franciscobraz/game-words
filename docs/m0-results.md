@@ -1,27 +1,23 @@
 # M0: resultados do spike do dicionário
 
-**Veredito: FALHA em 1 de 5 critérios (Carga a frio). Recomendação: adotar o plano B indicado em cada critério.**
+**Veredito: PASSA nos 5 critérios de D3. Recomendação: seguir com o plano (dicionário VERO completo num DAWG servido como asset e carregado no Durable Object).**
 
 ## Critérios de D3
 
 | Critério | Valor medido | Limite | Veredito | Detalhe |
 | --- | --- | --- | --- | --- |
 | Tamanho do binário | 1,62 MB | ≤ 10 MB | PASSA | 1.702.840 bytes, 2.328.458 palavras |
-| Memória com o dicionário carregado | 10,7 MB | ≤ 64 MB | PASSA | Node v24.18.0: heap 8,3 MB + 2,4 MB de ArrayBuffer após carregar; a Cloudflare carregou sem erro de memória |
-| Carga a frio | 688 ms | ≤ 500 ms | FALHA | Tempo de parede medido no DO (busca no ASSETS + Dawg.fromBuffer); invocação do DO 712 ms, CPU 4 ms |
-| Solver 6x6 (p95) | 21 ms de CPU | ≤ 50 ms de CPU | PASSA | 100/100 resoluções com CPU do wrangler tail; p50 10 ms, máx. 29 ms |
-| Geração 6x6 | 18 ms (p95) | ≤ 1 s | PASSA | 20/20 gerações; tempo de parede da invocação do DO, máx. 21 ms; CPU p95 18 ms |
-
-### Plano B por critério em FALHA
-
-- **Carga a frio**: Plano B: embutir o binário no bundle do Worker em vez de buscá-lo nos assets, ou carregar o dicionário de forma preguiçosa antes da primeira rodada (ao criar a sala).
+| Memória com o dicionário carregado | 10 MB | ≤ 64 MB | PASSA | Node v24.18.0: heap 8,3 MB + 1,8 MB de ArrayBuffer após carregar; a Cloudflare carregou sem erro de memória |
+| Carga a frio | 17 ms (mediana de 5) | ≤ 500 ms | PASSA | Tempo de parede medido no DO (busca no ASSETS + Dawg.fromBuffer), cada amostra num DO novo: 54 ms, 17 ms, 8 ms, 17 ms, 13 ms; CPU 2, 3, 1, 4, 4 ms |
+| Solver 6x6 (p95) | 17 ms de CPU | ≤ 50 ms de CPU | PASSA | 100/100 resoluções com CPU do wrangler tail; p50 7 ms, máx. 30 ms |
+| Geração 6x6 | 14 ms (p95) | ≤ 1 s | PASSA | 20/20 gerações; tempo de parede da invocação do DO, máx. 16 ms; CPU p95 11 ms |
 
 ## Como foi medido
 
-- CPU na Cloudflare: campo `cpuTime` do evento do Durable Object no `wrangler tail --format json`, presente em 121 de 121 requisições. Uma operação por requisição: 1 `/load` a frio, 100 `/solve` e 20 `/generate`.
-- Tempo de parede no cliente (inclui a rede até a Cloudflare): `/solve` p95 243 ms, `/generate` p95 233 ms.
+- CPU na Cloudflare: campo `cpuTime` do evento do Durable Object no `wrangler tail --format json`, presente em 126 de 126 requisições. Uma operação por requisição: 1 `/load` de aquecimento do asset, 5 `/load` a frio (cada um num Durable Object novo), 100 `/solve` e 20 `/generate`.
+- Tempo de parede no cliente (inclui a rede até a Cloudflare): `/solve` p95 237 ms, `/generate` p95 223 ms.
 - Memória: o Workers não expõe o heap; medida no Node v24.18.0 (`process.memoryUsage()` após `gc()`), e na Cloudflare se comprovou que o DO carregou o binário e respondeu.
-- Node local: carga 1,52 ms; solver 6x6 p50/p95 1,69/3,2 ms; geração 6x6 p50/p95 1,65/3,19 ms, média de 1 tentativa(s) por tabuleiro.
+- Node local: carga 1,76 ms; solver 6x6 p50/p95 1,34/2,93 ms; geração 6x6 p50/p95 1,22/2,04 ms, média de 1 tentativa(s) por tabuleiro.
 - Pico de heap do build: 242,8 MB (saída do `unmunch` lida em streaming).
 
 ## Contagem de formas por filtro
@@ -144,14 +140,15 @@
 
 ## Observações
 
-- Qualidade do dicionário: o `.aff` do VERO declara `FLAG UTF-8`, mas o `unmunch` lê as flags byte a byte. As flags de prefixo multibyte (À, Á, Ã, ... todas começando pelo byte 0xC3 em UTF-8) se confundem, e famílias inteiras de prefixos são aplicadas a palavras que não as têm (ex.: `funfar/ajkLMYÀ`). O resultado são 83 milhões de formas e 11,6 milhões de palavras, com muitas combinações que o VERO não aceitaria. A amostra de aceitas mostra isso: "heptaugadora", "zooorganica", "hexapojarao", "poliasseguremo".
-- Por isso os números de desempenho são um limite superior: o dicionário medido é maior e mais denso que o real, e o solver encontra mais palavras por tabuleiro (cerca de 1.000 a 2.000 num 6x6). Para o marco 1, a expansão precisa tratar `FLAG UTF-8`: converter as flags para `FLAG num` antes do `unmunch`, ou expandir com o próprio Hunspell. Isso muda DICT-01 AC 2 e pede uma decisão do usuário.
-- Carga a frio: a CPU do `/load` foi de 4 ms. O tempo vem da busca do binário nos static assets logo após o deploy. Uma rodada anterior, descartada porque o `wrangler tail` amostrou os eventos e só 22 de 121 requisições trouxeram CPU, mediu `loadMs` = 78 ms para o mesmo binário. Com uma única amostra por deploy, o valor oscila; o veredito usa a rodada oficial.
-- CPU: o `wrangler tail --format json` traz `cpuTime` e `wallTime` (ms inteiros) por invocação, com `executionModel: durableObject` no evento do DO. O tail passa a amostrar acima de cerca de 1 evento por segundo, por isso as requisições foram espaçadas em 1,1 s. Todas as 121 tiveram evento do DO na primeira tentativa.
-- O DO ficou quente durante toda a medição: só o `/load` fez a carga (`loadedNow` verdadeiro em 1 de 121 respostas).
+- Correção do E1 (flags UTF-8): o `.aff` do VERO declara `FLAG UTF-8`, mas o `unmunch` lê as flags byte a byte. As flags multibyte (À, Á, Ã, ... todas começando pelo byte 0xC3) aplicavam as regras umas das outras e geravam formas falsas como "heptaugadora" e "zooorganica". O build agora regrava o `.aff`/`.dic` em ISO-8859-1 antes do `unmunch` (todo o VERO cabe nele): cada flag vira um byte só, e cada letra das condições como `[^iíhrs]` também, o que antes descartava formas certas como "antiético". As flags de continuação que são só marcadores (NOSUGGEST `Ý` no `SFX 5`) saem, porque o `unmunch` não expande continuação. Resultado: 10.545.886 formas e 2.328.458 palavras, contra 83.189.912 e 11.581.890 antes; o binário caiu de 2.414.708 para 1.702.840 bytes. "heptaugadora" e "zooorganica" não estão mais no binário.
+- Formas que ainda passam e vêm do próprio VERO, não do E1: radicais de ênclise sem o hífen (ex.: "enfronhamo", de "enfronhamo-lo"), aumentativos e diminutivos produtivos (ex.: "raposãozões") e as 12 entradas com FORBIDDENWORD (ex.: "ague"), que o `unmunch` ignora. Ficam para o filtro de palavras do marco 1.
+- Carga a frio (E2): uma requisição de aquecimento (`loadMs` 760 ms, com o asset ainda fora do cache logo após o deploy) e depois 5 cargas, cada uma num Durable Object novo: 54, 17, 8, 17 e 13 ms. A mediana, 17 ms, decide o critério. A amostra única da rodada anterior (688 ms) foi feita com o asset fora do cache.
+- CPU: o `wrangler tail --format json` traz `cpuTime` e `wallTime` (ms inteiros) por invocação, com `executionModel: durableObject` no evento do DO. O tail passa a amostrar acima de cerca de 1 evento por segundo, por isso as requisições foram espaçadas em 1,1 s (e 3 s a mais antes de cada carga a frio). Todas as 126 requisições tiveram evento do DO na primeira tentativa.
+- As resoluções e gerações rodaram no DO do aquecimento, já carregado. Uma exceção: a primeira resolução (semente 1) recarregou o dicionário (`loadedNow` verdadeiro), porque a Cloudflare recriou esse DO durante as cargas a frio. Sua CPU de 21 ms inclui a carga, que custa de 1 a 4 ms de CPU, e não muda o p95.
+- Com o dicionário corrigido, um 6x6 aleatório tem de 408 a 4.240 palavras (mediana 1.424) no Node.
 
 ## Fonte e limpeza
 
 - VERO: `LibreOffice/dictionaries` no commit `67032ee957631908098a72edf48dc81cac27e369` (https://github.com/LibreOffice/dictionaries/tree/67032ee957631908098a72edf48dc81cac27e369/pt_BR).
 - Binário: SHA-256 `268a91fe0e168a1fb599f177a09c7908211f65f8833bcb8732d09a23edbcf9d3`.
-- Worker `bwords-m0-spike` removido: sim. `wrangler deployments list --name bwords-m0-spike` em 2026-10-26T20:41:12.312Z respondeu "This Worker does not exist on your account".
+- Worker `bwords-m0-spike` removido: sim. `wrangler deployments list --name bwords-m0-spike` em 2026-10-26T21:01:47.234Z respondeu "This Worker does not exist on your account".

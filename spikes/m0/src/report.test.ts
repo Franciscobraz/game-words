@@ -148,6 +148,29 @@ describe('M0 results report', () => {
     expect(realPlanB.map((l) => /^- \*\*(.+?)\*\*: Plano B: /.exec(l)?.[1])).toEqual(failed);
   });
 
+  test('uses the median of five cold loads', () => {
+    const loads = (ms: number[]): CfRecord[] => [
+      // The warm-up /load only puts the asset in cache; it is never a cold sample.
+      { route: '/load', seed: null, status: 200, wallMs: 9000, cpuMs: 4, serverWallMs: 800, loadMs: 760, warmup: true },
+      ...ms.map((loadMs) => ({ route: '/load', seed: null, status: 200, wallMs: 800, cpuMs: 3, serverWallMs: loadMs + 10, loadMs, warmup: false })),
+    ];
+    const coldRow = (ms: number[]) => {
+      const base = input();
+      const records = [...loads(ms), ...base.cf.records!.filter((r) => r.route !== '/load')];
+      return criteriaRows(buildReport({ ...base, cf: { ...base.cf, records } })).get('Carga a frio')!;
+    };
+
+    // Median of 54, 17, 8, 900, 13 is 17: one slow sample does not fail the criterion.
+    const [, value, , verdict, detail] = coldRow([54, 17, 8, 900, 13]);
+    expect(value).toBe('17 ms (mediana de 5)');
+    expect(verdict).toBe('PASSA');
+    for (const ms of [54, 17, 8, 900, 13]) expect(detail).toContain(`${ms} ms`);
+    // Three of five above 500 ms: the median (600) fails, though the fastest sample passes.
+    const slow = coldRow([600, 40, 700, 30, 650]);
+    expect(slow[1]).toBe('600 ms (mediana de 5)');
+    expect(slow[3]).toBe('FALHA');
+  });
+
   test('records the VERO commit and the worker removal', async () => {
     const md = await readReport();
     const source = JSON.parse(await readFile(new URL('../../../tools/dict-build/source.json', import.meta.url), 'utf8')) as {

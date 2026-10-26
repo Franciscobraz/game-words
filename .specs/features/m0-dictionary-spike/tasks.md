@@ -445,10 +445,13 @@ T13 → T14 → T15
 
 **Done when**:
 
-- [ ] Teste cobre BENCH-01 AC 7
-- [ ] `docs/m0-results.md` regenerado
-- [ ] Gate check passes: `npx tsc -b; npx vitest run`
-- [ ] Test count: 36 tests pass (no silent deletions)
+- [x] Teste cobre BENCH-01 AC 7
+- [x] `docs/m0-results.md` regenerado
+- [x] Gate check passes: `npx tsc -b; npx vitest run`
+- [x] Test count: 36 tests pass (no silent deletions)
+- as Observações do relatório vêm de `spikes/m0/results/notes.json`, reescrito com a correção do E1 e as novas medidas
+
+**Status**: ✅ Complete
 
 **Tests**: unit
 **Gate**: build
@@ -590,7 +593,7 @@ Proof: `npx vitest run spikes/m0/src/report.test.ts -t "uses the median of five 
 ## Handoff
 
 **Settled mid-build:** E1 e E2 aprovados - user: "sim para E1 e E2" (2026-10-26), viram T13-T15; execução por subagentes em 2 lotes (fases 1-2, fases 3-4), cada um devolvendo um resumo - user: "execute com os sub agents para nao estourar o contexto dessa aba mas peça para o subagent retornar um resumo do que foi feito"
-**Dispatched:** batch worker 1 (fases 1-2, T1-T5) em HEAD 379ae13 - returned (T1-T5 em ca0dab2; desvio: `erasableSyntaxOnly` no tsconfig.base para rodar no Node 24); batch worker 2 (fases 3-4, T6-T12) em HEAD ca0dab2 - returned (T6-T12 em 715fd31; pendente decisão do usuário: flags UTF-8 do VERO no unmunch e carga a frio com amostra única); batch worker 3 (fase 5, T13-T15)
+**Dispatched:** batch worker 1 (fases 1-2, T1-T5) em HEAD 379ae13 - returned (T1-T5 em ca0dab2; desvio: `erasableSyntaxOnly` no tsconfig.base para rodar no Node 24); batch worker 2 (fases 3-4, T6-T12) em HEAD ca0dab2 - returned (T6-T12 em 715fd31; pendente decisão do usuário: flags UTF-8 do VERO no unmunch e carga a frio com amostra única); batch worker 3 (fase 5, T13-T15) em HEAD 109562d - returned (T13-T15)
 **Walked:** none
 
 ---

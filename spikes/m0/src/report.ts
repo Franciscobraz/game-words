@@ -40,6 +40,8 @@ export interface CfRecord {
   serverWallMs: number | null;
   loadMs?: unknown;
   attempts?: unknown;
+  /** True for the /load that only warms the asset; every other /load is a cold sample on a new DO. */
+  warmup?: boolean;
 }
 
 export interface CfInput {
@@ -74,6 +76,12 @@ const MB = 2 ** 20;
 const fmt = (n: number, digits = 1) => n.toLocaleString('pt-BR', { maximumFractionDigits: digits });
 const int = (n: number) => n.toLocaleString('pt-BR');
 
+export function median(values: number[]): number {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = sorted.length >> 1;
+  return sorted.length % 2 ? sorted[mid]! : (sorted[mid - 1]! + sorted[mid]!) / 2;
+}
+
 export function percentile(values: number[], p: number): number {
   const sorted = [...values].sort((a, b) => a - b);
   return sorted[Math.min(sorted.length - 1, Math.ceil((p / 100) * sorted.length) - 1)]!;
@@ -97,6 +105,7 @@ export function evaluate(input: ReportInput): Criterion[] {
   const records = cf.records ?? [];
   const ok = (r: CfRecord) => r.status === 200;
   const load = records.find((r) => r.route === '/load');
+  const coldLoads = records.filter((r) => r.route === '/load' && !r.warmup && ok(r) && typeof r.loadMs === 'number');
   const solves = records.filter((r) => r.route === '/solve' && ok(r));
   const gens = records.filter((r) => r.route === '/generate' && ok(r));
   const nums = (xs: (number | null)[]) => xs.filter((x): x is number => typeof x === 'number');
@@ -123,16 +132,20 @@ export function evaluate(input: ReportInput): Criterion[] {
       : `Node ${node.node}: heap ${fmt(node.heapUsedMb)} MB + ${fmt(node.arrayBuffersMb)} MB de ArrayBuffer após carregar; a Cloudflare carregou sem erro de memória`,
   });
 
-  const loadMs = typeof load?.loadMs === 'number' ? load.loadMs : null;
+  // Verdict by the median of the cold samples (E2): one slow asset fetch does not decide it alone.
+  const coldMs = coldLoads.map((r) => r.loadMs as number);
+  const loadMs = coldMs.length ? median(coldMs) : null;
   criteria.push({
     name: 'Carga a frio',
-    value: loadMs === null ? 'sem medida' : `${fmt(loadMs, 0)} ms`,
+    value: loadMs === null ? 'sem medida' : `${fmt(loadMs, 0)} ms (mediana de ${coldMs.length})`,
     limit: '≤ 500 ms',
     verdict: loadMs !== null && loadMs <= 500 ? 'PASSA' : 'FALHA',
     detail:
       loadMs === null
-        ? 'O /load não devolveu loadMs'
-        : `Tempo de parede medido no DO (busca no ASSETS + Dawg.fromBuffer); invocação do DO ${load?.serverWallMs ?? '?'} ms, CPU ${load?.cpuMs ?? '?'} ms`,
+        ? 'Nenhum /load a frio devolveu loadMs'
+        : `Tempo de parede medido no DO (busca no ASSETS + Dawg.fromBuffer), cada amostra num DO novo: ${coldLoads
+            .map((r) => `${fmt(r.loadMs as number, 0)} ms`)
+            .join(', ')}; CPU ${coldLoads.map((r) => r.cpuMs ?? '?').join(', ')} ms`,
   });
 
   const solveCpu = nums(solves.map((r) => r.cpuMs));
@@ -195,7 +208,9 @@ export function buildReport(input: ReportInput): string {
 
   L.push('## Como foi medido', '');
   const cpuCount = records.filter((r) => typeof r.cpuMs === 'number').length;
-  L.push(`- CPU na Cloudflare: campo \`cpuTime\` do evento do Durable Object no \`wrangler tail --format json\`, presente em ${cpuCount} de ${records.length} requisições. Uma operação por requisição: 1 \`/load\` a frio, ${solves.length} \`/solve\` e ${gens.length} \`/generate\`.`);
+  const warmups = records.filter((r) => r.route === '/load' && r.warmup);
+  const colds = records.filter((r) => r.route === '/load' && !r.warmup);
+  L.push(`- CPU na Cloudflare: campo \`cpuTime\` do evento do Durable Object no \`wrangler tail --format json\`, presente em ${cpuCount} de ${records.length} requisições. Uma operação por requisição: ${warmups.length} \`/load\` de aquecimento do asset, ${colds.length} \`/load\` a frio (cada um num Durable Object novo), ${solves.length} \`/solve\` e ${gens.length} \`/generate\`.`);
   L.push(`- Tempo de parede no cliente (inclui a rede até a Cloudflare): \`/solve\` p95 ${clientP95(solves)}, \`/generate\` p95 ${clientP95(gens)}.`);
   L.push(`- Memória: o Workers não expõe o heap; medida no Node ${node.node} (\`process.memoryUsage()\` após \`gc()\`), e na Cloudflare se comprovou que o DO carregou o binário e respondeu.`);
   L.push(`- Node local: carga ${fmt(node.loadMs, 2)} ms; solver 6x6 p50/p95 ${fmt(node.solve.p50Ms, 2)}/${fmt(node.solve.p95Ms, 2)} ms; geração 6x6 p50/p95 ${fmt(node.generate.p50Ms, 2)}/${fmt(node.generate.p95Ms, 2)} ms, média de ${fmt(node.generate.meanAttempts, 2)} tentativa(s) por tabuleiro.`);
