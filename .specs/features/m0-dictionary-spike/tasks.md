@@ -294,14 +294,16 @@ T9 → T10 → T11 → T12
 
 **Done when**:
 
-- [ ] `wrangler.jsonc` com o DO de backend SQLite e assets apontando para `tools/dict-build/dist`
-- [ ] Rodando com `wrangler dev`, as três rotas respondem 200 com JSON
-- [ ] Gate check passes: `npx tsc -b; npx vitest run`
+- [x] `wrangler.jsonc` com o DO de backend SQLite e assets apontando para `tools/dict-build/dist`
+- [x] Rodando com `wrangler dev`, as três rotas respondem 200 com JSON
+- [x] Gate check passes: `npx tsc -b; npx vitest run`
+
+**Status**: ✅ Complete
 
 **Tests**: none
 **Gate**: build
 
-**Commit**: `feat(spike): Durable Object benchmark worker`
+**Commit**: `feat(spike): durable object benchmark worker`
 
 ---
 

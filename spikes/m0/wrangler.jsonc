@@ -1,0 +1,12 @@
+// M0 spike: temporary Worker, published only to measure and then removed with `wrangler delete` (D1).
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "bwords-m0-spike",
+  "main": "src/worker.ts",
+  "compatibility_date": "2025-10-01",
+  "workers_dev": true,
+  "assets": { "directory": "../../tools/dict-build/dist", "binding": "ASSETS" },
+  "durable_objects": { "bindings": [{ "name": "SPIKE", "class_name": "SpikeDO" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["SpikeDO"] }],
+  "observability": { "enabled": true }
+}
