@@ -4,6 +4,8 @@
     { "path": "packages/core" },
     { "path": "tools/dict-build" },
     { "path": "spikes/m0" },
-    { "path": "spikes/m0/tsconfig.worker.json" }
+    { "path": "spikes/m0/tsconfig.worker.json" },
+    { "path": "tools/play" },
+    { "path": "tools/play/tsconfig.node.json" }
   ]
 }

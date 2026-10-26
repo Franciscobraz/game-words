@@ -1,0 +1,28 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #1f2328;
+  background: #f6f7f9;
+}
+
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.status.error {
+  color: #b42318;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.board[aria-disabled='true'] {
+  opacity: 0.4;
+  pointer-events: none;
+}

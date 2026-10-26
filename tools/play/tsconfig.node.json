@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "../../node_modules/.cache/tsc/play-node",
+    "tsBuildInfoFile": "../../node_modules/.cache/tsc/play-node.tsbuildinfo",
+    "lib": ["ES2022", "DOM"],
+    "types": ["node"]
+  },
+  "include": ["vite.config.ts", "e2e"],
+  "references": [{ "path": "../../packages/core" }]
+}

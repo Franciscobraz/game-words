@@ -3,3 +3,5 @@ dist/
 tools/dict-build/dist/
 .wrangler/
 *.tsbuildinfo
+test-results/
+playwright-report/

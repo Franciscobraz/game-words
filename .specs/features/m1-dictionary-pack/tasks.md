@@ -399,15 +399,17 @@ T13 → T14 → T15
 
 **Done when**:
 
-- [ ] Pacote de fixture pequeno para os testes E2E em `tools/play/e2e/fixtures/`
-- [ ] Testes cobrem PLAY-01 AC 1, 9 e 10
-- [ ] Gate check passes: `npx vitest run; npx playwright test`
-- [ ] Test count: 91 vitest + 3 playwright tests pass (no silent deletions)
+- [x] Pacote de fixture pequeno para os testes E2E em `tools/play/e2e/fixtures/`
+- [x] Testes cobrem PLAY-01 AC 1, 9 e 10
+- [x] Gate check passes: `npx vitest run; npx playwright test`
+- [x] Test count: 91 vitest + 3 playwright tests pass (no silent deletions) - 90 vitest de fato, a mesma contagem do T12 (o C4 adaptou um teste do M0)
 
 **Tests**: e2e
 **Gate**: e2e
 
 **Commit**: `feat(play): solo page shell with pack loading`
+
+**Status**: ✅ Complete
 
 ---
 
