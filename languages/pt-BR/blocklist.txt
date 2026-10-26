@@ -1,0 +1,2 @@
+# Palavras removidas do dicionário, uma por linha (remove a forma sem acento exata).
+# Linhas começadas por # e linhas em branco são ignoradas.

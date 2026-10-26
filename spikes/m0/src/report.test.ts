@@ -240,9 +240,11 @@ describe('M0 results report', () => {
 
   test('records the VERO commit and the worker removal', async () => {
     const md = await readReport();
-    const source = JSON.parse(await readFile(new URL('../../../tools/dict-build/source.json', import.meta.url), 'utf8')) as {
-      commit: string;
-    };
+    const source = (
+      JSON.parse(await readFile(new URL('../../../languages/pt-BR/pack.json', import.meta.url), 'utf8')) as {
+        sources: { vero: { commit: string } };
+      }
+    ).sources.vero;
     expect(md).toContain(`no commit \`${source.commit}\``);
     expect(md).toMatch(/Worker `bwords-m0-spike` removido: sim\. `wrangler deployments list --name bwords-m0-spike`/);
 

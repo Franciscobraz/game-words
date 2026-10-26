@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 
 /** Pinned dictionary source: a GitHub repo at a fixed commit and the paths of the .dic/.aff inside it. */
@@ -12,10 +12,6 @@ export interface SourceSpec {
 export interface SourceFiles {
   dicPath: string;
   affPath: string;
-}
-
-export async function loadSource(path: string | URL): Promise<SourceSpec> {
-  return JSON.parse(await readFile(path, 'utf8')) as SourceSpec;
 }
 
 export function rawUrl(source: SourceSpec, path: string): string {

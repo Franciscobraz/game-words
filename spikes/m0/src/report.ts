@@ -259,7 +259,7 @@ if (import.meta.main) {
     stats: await json<StatsInput>('tools/dict-build/dist/pt-BR.stats.json'),
     node: await json<NodeInput>('spikes/m0/results/node.json'),
     cf: await json<CfInput>('spikes/m0/results/cf.json'),
-    source: await json<{ repo: string; commit: string }>('tools/dict-build/source.json'),
+    source: (await json<{ sources: { vero: { repo: string; commit: string } } }>('languages/pt-BR/pack.json')).sources.vero,
     notes: await json<string[]>('spikes/m0/results/notes.json').catch(() => []),
   };
   const out = fileURLToPath(new URL('docs/m0-results.md', root));

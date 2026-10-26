@@ -1,8 +1,10 @@
 import { mkdtemp, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, test } from 'vitest';
-import { type SourceSpec, fetchSource, loadSource } from './fetch.ts';
+import { type SourceSpec, fetchSource } from './fetch.ts';
+import { loadPackConfig } from './pack.ts';
 
 const SOURCE: SourceSpec = {
   repo: 'LibreOffice/dictionaries',
@@ -31,7 +33,7 @@ function fakeFetch(urls: string[], failing?: string, mode: 'status' | 'throw' = 
 
 describe('fetchSource', () => {
   test('downloads from the pinned commit', async () => {
-    const pinned = await loadSource(new URL('../source.json', import.meta.url));
+    const pinned = (await loadPackConfig(fileURLToPath(new URL('../../../languages/pt-BR', import.meta.url)))).sources.vero;
     expect(pinned.repo).toBe('LibreOffice/dictionaries');
     expect(pinned.commit).toMatch(/^[0-9a-f]{40}$/);
     expect(pinned.dic).toBe('pt_BR/pt_BR.dic');

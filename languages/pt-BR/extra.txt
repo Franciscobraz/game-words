@@ -1,0 +1,2 @@
+# Palavras acrescentadas ao dicionário, uma por linha. Aceita acento.
+# Linhas começadas por # e linhas em branco são ignoradas.

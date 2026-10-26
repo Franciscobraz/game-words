@@ -1,0 +1,22 @@
+{
+  "id": "pt-BR",
+  "name": "Português (Brasil)",
+  "alphabet": "abcdefghijklmnopqrstuvwxyz",
+  "compoundTiles": [{ "tile": "Qu", "letters": "qu" }],
+  "normalization": "strip-diacritics",
+  "minWordLength": 3,
+  "sources": {
+    "vero": {
+      "repo": "LibreOffice/dictionaries",
+      "commit": "67032ee957631908098a72edf48dc81cac27e369",
+      "dic": "pt_BR/pt_BR.dic",
+      "aff": "pt_BR/pt_BR.aff"
+    },
+    "frequency": {
+      "repo": "hermitdave/FrequencyWords",
+      "commit": "525f9b560de45753a5ea01069454e72e9aa541c6",
+      "path": "content/2018/pt_br/pt_br_full.txt",
+      "top": 50000
+    }
+  }
+}

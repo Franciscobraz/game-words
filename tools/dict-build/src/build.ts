@@ -4,7 +4,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { type DiscardReason, buildDawg, classifyForm, mulberry32 } from '@bwords/core';
-import { type SourceSpec, fetchSource, loadSource } from './fetch.ts';
+import { type SourceSpec, fetchSource } from './fetch.ts';
+import { loadPackConfig } from './pack.ts';
 import { type ExpandOptions, expandForms } from './unmunch.ts';
 
 export const SAMPLE_SIZE = 50;
@@ -164,7 +165,7 @@ export async function buildDictionary(opts: BuildOptions): Promise<BuildResult> 
 if (import.meta.main) {
   const root = new URL('..', import.meta.url);
   try {
-    const source = await loadSource(new URL('source.json', root));
+    const source = (await loadPackConfig(fileURLToPath(new URL('../../languages/pt-BR', root)))).sources.vero;
     const { binPath, stats } = await buildDictionary({
       source,
       outDir: fileURLToPath(new URL('dist', root)),

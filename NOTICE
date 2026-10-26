@@ -1,0 +1,13 @@
+BWords
+======
+
+O pacote de idioma pt-BR é gerado a partir de dados de terceiros:
+
+VERO - Verificador Ortográfico do LibreOffice (pt_BR)
+  Fonte: https://github.com/LibreOffice/dictionaries (pt_BR/pt_BR.dic e pt_BR.aff)
+  Licença: LGPLv3 / MPL (Mozilla Public License)
+
+FrequencyWords - Hermit Dave
+  Fonte: https://github.com/hermitdave/FrequencyWords (content/2018/pt_br/pt_br_full.txt)
+  Dados: OpenSubtitles 2018 (http://www.opensubtitles.org/)
+  Licença: CC-BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)

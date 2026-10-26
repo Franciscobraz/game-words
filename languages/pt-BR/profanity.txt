@@ -1,0 +1,2 @@
+# Palavrões, uma por linha. Ficam no dicionário e deixam de valer com o filtro ligado.
+# Linhas começadas por # e linhas em branco são ignoradas.

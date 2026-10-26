@@ -111,14 +111,16 @@ T13 → T14 → T15
 
 **Done when**:
 
-- [ ] Testes cobrem PACK-01 AC 2, 3 e 5, e PROF-01 AC 7
-- [ ] Gate check passes: `npx vitest run`
-- [ ] Test count: 40 + 4 = 44 tests pass (no silent deletions)
+- [x] Testes cobrem PACK-01 AC 2, 3 e 5, e PROF-01 AC 7
+- [x] Gate check passes: `npx vitest run`
+- [x] Test count: 40 + 4 = 44 tests pass (no silent deletions)
 
 **Tests**: integration
 **Gate**: full
 
 **Commit**: `feat(dict-build): language pack config`
+
+**Status**: ✅ Complete
 
 ---
 
