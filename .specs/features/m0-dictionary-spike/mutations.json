@@ -8,8 +8,8 @@
   },
   {
     "file": "spikes/m0/src/report.ts",
-    "old": "r.route === '/load' && !r.warmup",
-    "new": "r.route === '/load'",
+    "old": "const coldAll = records.filter((r) => r.route === '/load' && !r.warmup);",
+    "new": "const coldAll = records.filter((r) => r.route === '/load');",
     "proof": "npx vitest run spikes/m0/src/report.test.ts -t \"uses the median of five cold loads\"",
     "label": "C42 - warm-up /load counted as a cold sample"
   },

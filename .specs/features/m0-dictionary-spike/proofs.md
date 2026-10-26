@@ -1,6 +1,6 @@
 # m0-dictionary-spike proofs
 
-**HEAD**: f0cec9e
+**HEAD**: 02839e2
 **Tree**: clean
 **Result**: 48 pass, 0 fail; mutations 0 killed, 1 not
 
@@ -59,4 +59,4 @@
 
 | Mutation | Location | Killed |
 | --- | --- | --- |
-| spec refused | `  mutation 3: loadMs !== null && loadMs <= 500 occurs 0 times in spikes/m0/src` | no |
+| spec refused | `  mutation 2: r.route === '/load' && !r.warmup occurs 2 times in spikes/m0/src` | no |
