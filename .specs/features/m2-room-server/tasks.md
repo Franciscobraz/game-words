@@ -613,10 +613,10 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 **Done when**:
 
-- [ ] Duas chamadas fazem uma busca só; uma resposta 404 rejeita com o nome do arquivo
-- [ ] `spellings.bin` só é buscado na primeira vez que alguém pede grafias
-- [ ] Gate check passes: `npx vitest run`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Duas chamadas fazem uma busca só; uma resposta 404 rejeita com o nome do arquivo
+- [x] `spellings.bin` só é buscado na primeira vez que alguém pede grafias
+- [x] Gate check passes: `npx vitest run`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: integration
 **Gate**: full
