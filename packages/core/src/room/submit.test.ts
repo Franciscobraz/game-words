@@ -70,6 +70,19 @@ describe('submissions', () => {
     expect(r.state.lastActionAt).toBe(20_000);
   });
 
+  // PERSIST-01 AC 1 and EXP-01 AC 2: a rebuilt room keeps the time of the last submit.
+  test('persists the last action time with an accepted submit', () => {
+    const state = { ...inRound(), lastActionAt: 5_000 };
+    const r = submit(state, 0, [path('cat')], 20_000);
+    expect(r.results).toEqual([{ ok: true, word: 'cat' }]);
+    expect(r.state.lastActionAt).toBe(20_000);
+    const room = r.effects.findIndex((e) => e.kind === 'persist' && e.keys.includes('room'));
+    const reply = r.effects.findIndex((e) => e.kind === 'send' && e.msg.type === 'submit-result');
+    expect(room).toBeGreaterThanOrEqual(0);
+    // Stored before the player hears about it.
+    expect(room).toBeLessThan(reply);
+  });
+
   test('a path that is not a stored solution is not-a-word', () => {
     // "cats" is a path on the board but not a word of the pack.
     const r = submit(inRound(), 0, [path('cats')], 20_000);

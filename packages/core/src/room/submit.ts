@@ -19,7 +19,9 @@ const NO_PACK = { isProfane: () => false };
  * second it is `rate-limited` without validation; outside `[startsAt, endsAt + 300]`
  * it is `round-closed`; from a spectator it is `spectator`; otherwise
  * `validateSubmission` decides against the round's stored solutions. New counts
- * go to the TV, throttled by `flushCounts`.
+ * go to the TV, throttled by `flushCounts`. An accepted word stores `found:<id>`
+ * and `room`, whose `lastActionAt` must survive a rebuild; a submit with nothing
+ * accepted writes nothing.
  */
 export const handleSubmit: Handler<'submit'> = ({ state, conn, now }, msg) => {
   if (conn.role !== 'player') return { state, effects: [] };
@@ -64,7 +66,13 @@ export const handleSubmit: Handler<'submit'> = ({ state, conn, now }, msg) => {
   return {
     state: counts.state,
     effects: [
-      ...(accepted.length > 0 ? [{ kind: 'persist' as const, keys: [`found:${player.id}` as const] }] : []),
+      // `room` carries the `lastActionAt` that `step` sets for this submit (PERSIST-01 AC 1, EXP-01 AC 2).
+      ...(accepted.length > 0
+        ? [
+            { kind: 'persist' as const, keys: [`found:${player.id}` as const] },
+            { kind: 'persist' as const, keys: ['room' as const] },
+          ]
+        : []),
       { kind: 'send', to: conn, msg: { type: 'submit-result', results } },
       ...counts.effects,
     ],

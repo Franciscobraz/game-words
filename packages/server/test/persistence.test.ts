@@ -19,6 +19,7 @@ const durable = (s: RoomState | null) =>
     roundIndex: s.roundIndex,
     round: s.round,
     solutions: s.solutions,
+    lastActionAt: s.lastActionAt,
   };
 
 describe('persistence', () => {
@@ -58,6 +59,8 @@ describe('persistence', () => {
 
     const before = await liveState(code);
     expect(before?.players.map((p) => p.found)).toEqual([[w1!.word, w2!.word], [w2!.word, w3!.word]]);
+    // The last submit is the room's last action (EXP-01 AC 2).
+    expect(before?.lastActionAt).toBe(start.startsAt + 1000);
     await evictDurableObject(stubOf(code));
     // A new instance: its clock is the runtime's again, not the test's.
     expect(await runInDurableObject(stubOf(code), (room: RoomDO) => room.clock() < T0)).toBe(true);

@@ -230,12 +230,12 @@ interface RoundMeta {
 
 | Chave | Conteúdo | Quando grava |
 | --- | --- | --- |
-| `room` | `RoomState` sem as palavras | Toda mudança que não é envio |
+| `room` | `RoomState` sem as palavras | Toda mudança que não é envio, e com cada envio aceito, para guardar o `lastActionAt` (achado 3 do Verifier) |
 | `round:solutions` | Soluções da rodada atual (`string[]`) + prefixos de hash (`Uint8Array`) | Uma vez por rodada |
 | `round:next` | Mesmo formato, da rodada pré-gerada | Uma vez, no resultado |
 | `found:<playerId>` | Palavras aceitas do jogador na rodada (`string[]`) | Uma vez por mensagem `submit` com pelo menos um aceito |
 
-Orçamento de rows written (plano Free: 100.000/dia; incluídas na fonte de pricing em Sources). Uma rodada de 10 jogadores com o debounce de 500 ms dá algumas centenas de writes (uma por lote aceito, mais ~10 de estado), o que cabe em centenas de rodadas por dia. As mensagens recebidas contam 20:1 como requests (100.000/dia), e o `ping` com auto-response não conta duration.
+Orçamento de rows written (plano Free: 100.000/dia; incluídas na fonte de pricing em Sources). Uma rodada de 10 jogadores com o debounce de 500 ms dá algumas centenas de writes (duas por lote aceito, `found:<playerId>` e `room`, mais ~10 de estado), o que ainda cabe em centenas de rodadas por dia. As mensagens recebidas contam 20:1 como requests (100.000/dia), e o `ping` com auto-response não conta duration.
 
 ---
 
