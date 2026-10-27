@@ -1,4 +1,4 @@
-import { boardSolutions, findPath, PALETTE, type ServerMessage } from '@bwords/core';
+import { boardSolutions, findPath, PALETTE, type RoomState, type RoundStartMessage, type ServerMessage } from '@bwords/core';
 import { runInDurableObject } from 'cloudflare:test';
 import { env } from 'cloudflare:workers';
 import type { RoomDO } from '../src/room-do.ts';
@@ -56,3 +56,32 @@ export function solutionPaths(board: string[][], minLength: 3 | 4 = 3): { word: 
 /** Every JSON message a client got. */
 export const messagesOf = (client: Client): ServerMessage[] =>
   client.frames.flatMap((f) => (f.kind === 'json' ? [f.msg] : []));
+
+/** The `room` record in the room's storage. */
+export async function storedRoom(code: string): Promise<RoomState | undefined> {
+  return runInDurableObject(stubOf(code), (_, state) => state.storage.get<RoomState>('room'));
+}
+
+/** The room's alarm time, or null. */
+export async function alarmOf(code: string): Promise<number | null> {
+  return runInDurableObject(stubOf(code), (_, state) => state.storage.getAlarm());
+}
+
+/** Waits until the stored room satisfies `ready` (the room handles closes asynchronously). */
+export async function untilStored(code: string, ready: (room: RoomState) => boolean, what: string): Promise<RoomState> {
+  const deadline = Date.now() + 2000;
+  for (;;) {
+    const room = await storedRoom(code);
+    if (room && ready(room)) return room;
+    if (Date.now() > deadline) throw new Error(`Timed out waiting for ${what}`);
+    await new Promise((resolve) => setTimeout(resolve, 20));
+  }
+}
+
+/** Starts the first round with the host phone; every client reads up to its `round-start`. */
+export async function startRound(host: Phone, clients: Client[]): Promise<RoundStartMessage> {
+  host.client.send({ type: 'start' });
+  let start: RoundStartMessage | null = null;
+  for (const c of [host.client, ...clients]) start = await c.skipTo('round-start');
+  return start!;
+}

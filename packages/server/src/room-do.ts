@@ -3,7 +3,6 @@ import {
   createRoom,
   type Effect,
   type LanguagePack,
-  nextDeadline,
   prepareRound,
   type RoomConfig,
   type RoomDeps,
@@ -12,6 +11,7 @@ import {
   step,
 } from '@bwords/core';
 import { DurableObject } from 'cloudflare:workers';
+import { syncAlarm } from './alarms.ts';
 import type { Env } from './env.ts';
 import { loadPack } from './pack-loader.ts';
 import { CLOSE_CODE, randomToken, roomNotFound } from './socket.ts';
@@ -47,8 +47,7 @@ export class RoomDO extends DurableObject<Env> {
     const tvToken = randomToken();
     this.state = createRoom(code, tvToken, this.clock(), cfg);
     void this.ctx.storage.put('room', this.state);
-    const deadline = nextDeadline(this.state);
-    if (deadline !== null) await this.ctx.storage.setAlarm(deadline);
+    await syncAlarm(this.ctx.storage, this.state);
     return { tvToken };
   }
 
@@ -76,6 +75,18 @@ export class RoomDO extends DurableObject<Env> {
     await this.input({ kind: 'disconnect', conn: connOf(ws) });
   }
 
+  /**
+   * A deadline is due. In a round the results need the pack with its spellings,
+   * so it loads first; a failed load throws, and the runtime retries the alarm.
+   */
+  override async alarm(): Promise<void> {
+    if (this.state === null) return;
+    if (this.state.phase === 'round') {
+      this.pack = await loadPack(this.env.ASSETS, this.state.settings.pack, { spellings: true });
+    }
+    await this.input({ kind: 'alarm' });
+  }
+
   private deps(): RoomDeps {
     return {
       randomToken,
@@ -86,7 +97,10 @@ export class RoomDO extends DurableObject<Env> {
     };
   }
 
-  /** Steps one input and runs its effects; a `prepare-next` runs last and feeds a `prepared` input. */
+  /**
+   * Steps one input, runs its effects and points the alarm at the next deadline.
+   * A `prepare-next` runs last and feeds a `prepared` input.
+   */
   private async input(input: RoomInput): Promise<void> {
     if (this.state === null) return;
     const result = step(this.state, input, this.clock(), this.deps());
@@ -96,6 +110,8 @@ export class RoomDO extends DurableObject<Env> {
       if (effect.kind === 'prepare-next') prepare = true;
       else await this.run(effect);
     }
+    // After `close-room` the state is gone and so is the alarm.
+    if (this.state !== null) await syncAlarm(this.ctx.storage, this.state);
     if (prepare) await this.prepareNext();
   }
 
