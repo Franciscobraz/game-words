@@ -4,14 +4,22 @@
 
 Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas de Assumptions de cada `spec.md`.
 
+### AD-001 - Código em inglês, documentos em português
+
+- **Data:** 2026-10-27
+- **Decisão:** todo o código usa termos em inglês, inclusive o vocabulário do jogo: identificadores, tipos de mensagem, campos do protocolo, códigos de erro e motivos (`host`, `round`, `lobby`, `kicked`). Os documentos (`docs/`, `.specs/`) explicam em português, com os termos técnicos em inglês.
+- **Motivo:** o idioma do jogo muda com o pacote de dicionário (pt-BR hoje, EN depois). O texto que o jogador vê sai do i18n da interface (DESIGN §5.1), nunca do código nem do protocolo.
+- user: "o codigo deve ter todos os termos em ingles, mas pode manter a explicação dos documentos em portuguez"
+
 ## Handoff
 
-- **Data:** 2026-10-26
+- **Data:** 2026-10-27
 - **Marcos concluídos:**
   - M0 (`m0-dictionary-spike`): Done, verificado.
   - M1 (`m1-dictionary-pack`): Done, verificado (`validate_verification` 0 erros, 64 provas, 3 mutações mortas).
 - **Branch:** `main`. `origin/main` está em `21757c1`. Os commits do M1 são só locais: o usuário decidiu não publicar por enquanto.
-- **Próximo passo:** especificação do M2 (salas no Durable Object, protocolo WebSocket, anfitrião, reconexão, persistência, expiração configurável; DESIGN §2 e §6). Começar pelo Specify do `tlc-spec-driven`, com perguntas antes da spec.
+- **Em andamento:** M2 (`m2-room-server`): spec aprovada em 2026-10-27 (`spec.md`, `context.md`).
+- **Próximo passo:** Design do M2 (`design.md`): arquitetura do Worker + Durable Object, formato do protocolo, modelo de estado persistido, alarms e harness de testes com `@cloudflare/vitest-pool-workers`.
 - **Modo de execução preferido pelo usuário:** subagentes, uma fase por vez, parando para mostrar o resultado e perguntar antes da próxima fase.
 - **Bloqueios:** nenhum.
 - **Arquivos não commitados:** nenhum.
