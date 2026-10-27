@@ -112,10 +112,10 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 **Done when**:
 
-- [ ] Testes de limite exato: 2 e 12 aceitos, 1 e 13 recusados, contados depois do trim
-- [ ] "João" e "joao" têm a mesma chave
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Testes de limite exato: 2 e 12 aceitos, 1 e 13 recusados, contados depois do trim
+- [x] "João" e "joao" têm a mesma chave
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick
