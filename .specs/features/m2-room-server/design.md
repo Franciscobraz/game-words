@@ -94,7 +94,7 @@ sequenceDiagram
 - **Purpose**: Tipos e parser estrito de todas as mensagens (PROTO-01), em inglês (AD-001).
 - **Location**: `packages/core/src/room/protocol.ts`
 - **Interfaces**:
-  - `type ClientMessage` - união: `hello`, `join`, `settings`, `start`, `submit`, `next`, `transfer-host`, `kick`, `play-again`, `close-room`, `time`
+  - `type ClientMessage` - união: `hello`, `join`, `settings`, `start`, `submit`, `next`, `transfer-host`, `kick`, `play-again`, `back-to-lobby`, `close-room`, `time`
   - `type ServerMessage` - união: `welcome`, `joined`, `players`, `settings`, `round-start`, `submit-result`, `counts`, `round-results`, `podium`, `time`, `error`, `closed`
   - `type ErrorCode` - `bad-message`, `wrong-phase`, `not-host`, `bad-token`, `room-not-found`, `bad-nickname`, `nickname-taken`, `bad-color`, `color-illegible`, `color-too-similar`, `room-full`, `bad-settings`, `bad-target`
   - `type SubmitReject = RejectReason | 'round-closed' | 'spectator' | 'rate-limited'`

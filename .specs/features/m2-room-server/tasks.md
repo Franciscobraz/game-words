@@ -11,6 +11,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 **Design**: `.specs/features/m2-room-server/design.md`
 **Status**: Approved
 **Approved**: 2026-10-27 - user: "aprovo as tasks do M2, execute uma fase por vez com subagentes e pare entre as fases"
+**Amended**: 2026-10-27 - nova Phase 4 (T27-T28) para "Voltar ao lobby" e "Jogar de novo" (spec RES-01 AC 7 e 10, M2-Q8/Q9); o servidor vira a Phase 5; aguardando aprovação do user
 **Mutations**: 3
 **Build**: `npx tsc -b; npx vitest run; npx playwright test`
 
@@ -42,7 +43,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 | Gate Level | When to Use | Command |
 | --- | --- | --- |
 | Quick | Tasks com testes unit no core (Phases 1-3) | `npx vitest run packages/core` |
-| Full | Tasks do servidor (Phase 4) | `npx vitest run` |
+| Full | Tasks do servidor (Phase 5) | `npx vitest run` |
 | Build | Fim de cada fase | `npx tsc -b; npx vitest run; npx playwright test` |
 
 ---
@@ -69,7 +70,13 @@ T7 → T8 → T9 → T10 → T11
 T12 → T13 → T14 → T15 → T16 → T17 → T18
 ```
 
-### Phase 4: Durable Object server
+### Phase 4: Lobby return
+
+```
+T27 → T28
+```
+
+### Phase 5: Durable Object server
 
 ```
 T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
@@ -463,13 +470,59 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 ---
 
-#### Phase 4: Durable Object server
+#### Phase 4: Lobby return
+
+### T27: Back to lobby
+
+**What**: Comando de anfitrião `back-to-lobby` no protocolo (tipo, parser, listas) e no despacho (`HOST_COMMANDS`, fases `round`, `results` e `podium`), com o handler: cancela a rodada em andamento sem `round-results`, descarta as palavras, zera os placares, volta ao lobby com os mesmos jogadores, cores, configurações e anfitrião, e reenvia `welcome` a todos.
+**Where**: `packages/core/src/room/flow.ts`
+**Depends on**: T18
+**Reuses**: o retorno ao lobby que o `play-again` fazia no T17; tabelas de `protocol.ts` e `machine.ts`
+**Requirement**: RES-01, HOST-01, PROTO-01
+
+**Done when**:
+
+- [ ] Um caso por fase válida (contagem, rodada, resultado, pódio) e `wrong-phase` no lobby (L-007)
+- [ ] Depois de voltar ao lobby no meio da rodada, um `submit` atrasado dá `wrong-phase` e o alarm do fim da rodada não manda resultado
+- [ ] As tabelas do protocolo (bem formada, campo fora do formato) e de `not-host` ganham a linha do `back-to-lobby`
+- [ ] C21, C53, C70, C74, C84 passam
+- [ ] Gate check passes: `npx vitest run packages/core`
+- [ ] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(core): back to lobby`
+
+---
+
+### T28: Play again starts a new match
+
+**What**: `play-again` no pódio passa a zerar os placares e começar direto a contagem de uma nova partida com os mesmos jogadores, cores, configurações e anfitrião (usa o tabuleiro preparado ou emite `prepare-next` e espera o `prepared`).
+**Where**: `packages/core/src/room/flow.ts`
+**Depends on**: T27
+**Reuses**: início de rodada de `round.ts` (T13), `pendingStart` (T17)
+**Requirement**: RES-01
+
+**Done when**:
+
+- [ ] O teste antigo do C51 ("play-again returns to the lobby with zeroed scores") é substituído pelo novo nome do C51, porque a spec mudou (M2-Q9)
+- [ ] C51 passa
+- [ ] Gate check passes: `npx tsc -b; npx vitest run; npx playwright test`
+- [ ] Test count: anterior + novos; o único teste removido é o substituído acima
+
+**Tests**: unit
+**Gate**: build
+**Commit**: `feat(core): play again starts a new match`
+
+---
+
+#### Phase 5: Durable Object server
 
 ### T19: Server workspace and test harness
 
 **What**: Workspace `@bwords/server` com `wrangler.jsonc` (DO `ROOM` SQLite, `ASSETS`, vars de expiração, `compatibility_date` ≥ 2026-04-07 suportada pelo wrangler 4.153), `tsconfig`, projeto Vitest com `@cloudflare/vitest-plugin` e o pacote de fixture dos testes. O teste "hello" prova que um DO de teste carrega o pacote de fixture.
 **Where**: `packages/server/test/fixture-pack.ts`
-**Depends on**: T18
+**Depends on**: T28
 **Reuses**: `spikes/m0/wrangler.jsonc`, `buildDawg`, `buildSpellings`
 **Requirement**: PERSIST-01
 
@@ -689,7 +742,7 @@ Proof: `npx vitest run packages/core/src/room/host.test.ts -t "keeps exactly one
 **C20** - `transfer-host` para um jogador conectado o torna anfitrião e avisa todos (HOST-01, AC 3)
 Proof: `npx vitest run packages/core/src/room/host.test.ts -t "transfers the host role and announces it"`
 
-**C21** - Cada um dos 7 comandos de anfitrião vindo de outro jogador dá `not-host` sem mudar o estado (HOST-01, AC 4)
+**C21** - Cada um dos 8 comandos de anfitrião vindo de outro jogador dá `not-host` sem mudar o estado (HOST-01, AC 4)
 Proof: `npx vitest run packages/core/src/room/host.test.ts -t "rejects every host command from a non-host"`
 
 **C22** - Anfitrião offline por 30.000 ms passa o papel ao próximo conectado na ordem de entrada; em 29.999 ms não (HOST-01, AC 5)
@@ -773,13 +826,13 @@ Proof: `npx vitest run packages/core/src/room/flow.test.ts -t "next starts the c
 **C50** - `next` depois da última rodada manda o pódio do maior para o menor placar (RES-01, AC 6)
 Proof: `npx vitest run packages/core/src/room/flow.test.ts -t "next after the last round sends the podium"`
 
-**C51** - `play-again` volta ao lobby com os mesmos jogadores, cores, configurações e anfitrião, e placares zerados (RES-01, AC 7)
-Proof: `npx vitest run packages/core/src/room/flow.test.ts -t "play-again returns to the lobby with zeroed scores"`
+**C51** - `play-again` no pódio zera os placares e começa a contagem de uma nova partida com os mesmos jogadores, cores, configurações e anfitrião, sem passar pelo lobby (RES-01, AC 7)
+Proof: `npx vitest run packages/core/src/room/flow.test.ts -t "play-again starts a new match with zeroed scores"`
 
 **C52** - `close-room` fecha a sala com `closed-by-host` (RES-01, AC 8)
 Proof: `npx vitest run packages/core/src/room/flow.test.ts -t "close-room closes with closed-by-host"`
 
-**C53** - `next`, `play-again` e `start` fora da fase dão `wrong-phase` (RES-01, AC 9)
+**C53** - `next`, `play-again`, `back-to-lobby` e `start` fora da fase dão `wrong-phase` (RES-01, AC 9)
 Proof: `npx vitest run packages/core/src/room/flow.test.ts -t "rejects flow commands outside their phase"`
 
 **C54** - Depois de uma resposta ao cliente, o estado que ela anuncia já está no storage (PERSIST-01, AC 1)
@@ -872,6 +925,9 @@ Proof: `npx vitest run packages/server/test/match.test.ts -t "plays a 2-round ma
 **C82** - Sem soluções no tabuleiro, o resultado vem sem maior palavra (edge case)
 Proof: `npx vitest run packages/core/src/room/results.test.ts -t "has no longest word when the board has no solution"`
 
+**C84** - `back-to-lobby` na contagem, na rodada, no resultado ou no pódio cancela a rodada sem resultado, descarta as palavras, zera os placares e volta ao lobby com os mesmos jogadores, cores, configurações e anfitrião (RES-01, AC 10)
+Proof: `npx vitest run packages/core/src/room/flow.test.ts -t "back-to-lobby cancels the match and returns to the lobby"`
+
 **C83** - Com todos desconectados, a rodada termina no alarm normalmente (edge case)
 Proof: `npx vitest run packages/server/test/alarms.test.ts -t "ends the round on the alarm with no socket open"`
 
@@ -888,12 +944,13 @@ Proof: `npx vitest run packages/server/test/alarms.test.ts -t "ends the round on
 ## Phase Execution Map
 
 ```
-Phase 1 → Phase 2 → Phase 3 → Phase 4
+Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5
 
 Phase 1:  T1 ---→ T2 ---→ T3 ---→ T4 ---→ T5 ---→ T6
 Phase 2:  T7 ---→ T8 ---→ T9 ---→ T10 --→ T11
 Phase 3:  T12 --→ T13 --→ T14 --→ T15 --→ T16 --→ T17 --→ T18
-Phase 4:  T19 --→ T20 --→ T21 --→ T22 --→ T23 --→ T24 --→ T25 --→ T26
+Phase 4:  T27 --→ T28
+Phase 5:  T19 --→ T20 --→ T21 --→ T22 --→ T23 --→ T24 --→ T25 --→ T26
 ```
 
-Cada fase é um batch de subagente (6, 5, 7 e 8 tarefas). Os batches rodam em sequência e o orquestrador para entre eles para mostrar o resultado e perguntar, como no M1.
+Cada fase é um batch de subagente (6, 5, 7, 2 e 8 tarefas). Os batches rodam em sequência e o orquestrador para entre eles para mostrar o resultado e perguntar, como no M1.

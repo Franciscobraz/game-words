@@ -52,7 +52,8 @@ Jogo de encontrar palavras em tabuleiro de letras, inspirado no Boggle Party (Ne
 2. **Contagem regressiva "3, 2, 1"** na TV e nos celulares. O tabuleiro aparece para todos ao mesmo tempo no "já".
 3. **Rodada:** timer controlado pelo servidor. Envios que chegarem até ~300 ms depois do fim ainda valem, para compensar a latência.
 4. **Resultado da rodada** (ver §4.3). O anfitrião avança para a próxima rodada.
-5. Depois da última rodada vem o **pódio final**, com as opções "Jogar de novo" (volta ao lobby com os mesmos jogadores e placar zerado) ou "Encerrar sala".
+5. Depois da última rodada vem o **pódio final**, com as opções "Jogar de novo" (começa direto uma nova partida com os mesmos jogadores e configurações, placar zerado), "Voltar ao lobby" (placar zerado, para esperar mais gente entrar) ou "Encerrar sala".
+6. Durante a partida (contagem, rodada ou resultado), o anfitrião pode **voltar ao lobby** pelo menu: a rodada em andamento é cancelada e o placar zera.
 
 ---
 
@@ -68,7 +69,7 @@ Jogo de encontrar palavras em tabuleiro de letras, inspirado no Boggle Party (Ne
   - É o primeiro celular que entra na sala.
   - Pode transferir o papel para outro jogador. Sempre existe exatamente um anfitrião por sala.
   - Se o anfitrião ficar desconectado por ~30 s, o papel passa para o próximo jogador conectado.
-  - É quem controla tudo: configurações, iniciar, próxima rodada, encerrar e expulsar jogador.
+  - É quem controla tudo: configurações, iniciar, próxima rodada, jogar de novo, voltar ao lobby, encerrar e expulsar jogador.
 - **Entrada atrasada:** quem entra durante uma rodada fica assistindo e joga a partir da próxima, começando com 0 pontos.
 - **Reconexão:** um token salvo no celular recupera o nome, a cor, os pontos e as palavras da rodada. Se a TV recarregar a página, ela volta para a mesma sala.
 - **Expiração:** configurável em `wrangler.toml`.

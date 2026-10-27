@@ -4,6 +4,8 @@
 
 **Amended**: 2026-10-27 - análise de gargalos (ROUND-01 AC 2, 3, 6, 7 e 10; Out of Scope); respostas do user registradas na tabela de Assumptions (M2-Q5 a M2-Q7)
 
+**Amended**: 2026-10-27 - voltar ao lobby e jogar de novo (HOST-01 AC 4; RES-01 AC 7, 9 e 10; PROTO-01 AC 6); decisões M2-Q8 e M2-Q9
+
 ## Problem Statement
 
 O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solver, validação, pontuação e maior palavra), mas só para jogar sozinho numa página local. Ainda não existe sala, nem jeito de vários celulares e uma TV jogarem juntos. O M2 constrói o servidor autoritativo: um Durable Object por sala, que roda a partida inteira e guarda o estado de forma que nada se perca em reconexões, hibernation ou queda da TV. Os marcos 3 (celular) e 4 (TV) passam a ser só clientes desse protocolo.
@@ -55,6 +57,8 @@ O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solv
 | Anfitrião sem ninguém conectado | Se não houver outro jogador conectado após os 30 s, o papel passa ao primeiro jogador que reconectar | Sempre existe exatamente um anfitrião (DESIGN §2) | y - consequência do DESIGN §2 |
 | Conexão duplicada | Uma nova conexão com o mesmo token substitui a anterior, que é fechada | Um token = um dispositivo ativo | y - consequência do DESIGN §2 |
 | AD-001 - Idioma do código | Todo o código e o protocolo usam termos em inglês, inclusive o vocabulário do jogo; os documentos explicam em português | O idioma do jogo muda com o pacote de dicionário; o texto exibido vem do i18n | y - user: "o codigo deve ter todos os termos em ingles, mas pode manter a explicação dos documentos em portuguez" |
+| M2-Q8 - Voltar ao lobby no meio da partida | Novo comando de anfitrião `back-to-lobby`, válido na contagem, na rodada, no resultado e no pódio: cancela a rodada sem resultado, descarta as palavras e zera o placar | O anfitrião precisa abandonar uma partida e esperar mais gente no lobby | y - user: "Descarta e zera (Recomendado)" |
+| M2-Q9 - Jogar de novo | `play-again` continua separado: no pódio, zera o placar e começa direto a contagem de uma nova partida com as mesmas configurações e jogadores | São duas funcionalidades diferentes | y - user: "São duas funcionalidades diferentes, o play-again se mantem como está e começa uma nova rodada com as mesmas configurações atuais e os participantes. o back-to-lobby volta para a pagina de lobby, se existir uma rodada em andamento ela é cancelada e os pontos zerados." |
 | M2-Q5 - Envios do celular | Uma mensagem leva um ou mais caminhos; o limite é de 10 caminhos/s; o celular (M3) só envia caminhos cujo hash bate e que ainda não achou, com debounce de 500 ms e envio imediato nos últimos 3 s | Com o optimistic feedback, o servidor não precisa responder na hora; menos mensagens ao DO | y - user: "O celular só envia caminhos cujo hash bate e que ainda não achou, agrupados numa mensagem com debounce de 500 ms. No último 3 s da rodada envia na hora. O limite vira 10 caminhos/s." |
 | M2-Q6 - Contagem na TV | No máximo 1 atualização por segundo, só quando muda; no fim da rodada, as contagens finais vão antes do resultado | TV antiga re-renderiza no máximo 1x/s, sem perder o último dado | y - user: "No máximo 1x por segundo [...] mas garantindo que ao final da partida não tenha perda de dados." |
 | M2-Q7 - Formato dos hashes | Prefixo de 6 bytes do SHA-256 (salt + palavra), em binário (~25 KB num 6x6 com ~4.240 soluções) | SHA-256 completo em hex daria ~270 KB por celular; falso ✓ ≈ 1,5e-11 e o servidor confirma | y - user: "6 bytes binário (Recomendado)" |
@@ -118,7 +122,7 @@ O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solv
 1. WHEN o primeiro jogador entra na sala THEN o servidor SHALL torná-lo anfitrião
 2. The servidor SHALL manter exatamente um anfitrião em toda sala com pelo menos um jogador
 3. WHEN o anfitrião transfere o papel para outro jogador conectado THEN o servidor SHALL tornar esse jogador o anfitrião e avisar todas as conexões
-4. IF um comando de anfitrião (configurar, iniciar, avançar, transferir, expulsar, jogar de novo, encerrar) vem de quem não é anfitrião THEN o servidor SHALL recusá-lo com o erro `not-host` sem mudar o estado
+4. IF um comando de anfitrião (configurar, iniciar, avançar, transferir, expulsar, jogar de novo, voltar ao lobby, encerrar) vem de quem não é anfitrião THEN o servidor SHALL recusá-lo com o erro `not-host` sem mudar o estado
 5. WHEN o anfitrião fica desconectado por 30 s THEN o servidor SHALL passar o papel ao próximo jogador conectado na ordem de entrada
 6. IF não houver outro jogador conectado quando os 30 s do anfitrião desconectado vencerem THEN o servidor SHALL passar o papel ao primeiro jogador que reconectar
 7. WHEN o anfitrião reconecta antes de 30 s THEN o servidor SHALL mantê-lo anfitrião
@@ -185,9 +189,10 @@ O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solv
 4. WHEN o resultado começa e ainda há rodadas THEN o servidor SHALL gerar e guardar o tabuleiro da próxima rodada antes de o anfitrião avançar
 5. WHILE ainda há rodadas, WHEN o anfitrião avança no resultado THEN o servidor SHALL começar a contagem da próxima rodada com o tabuleiro já gerado
 6. WHILE o resultado é da última rodada, WHEN o anfitrião avança THEN o servidor SHALL enviar a todas as conexões o pódio com os jogadores do maior para o menor placar
-7. WHEN o anfitrião escolhe "Jogar de novo" no pódio THEN o servidor SHALL voltar ao lobby com os mesmos jogadores, cores, configurações e anfitrião, e com todos os placares zerados
+7. WHEN o anfitrião escolhe "Jogar de novo" no pódio THEN o servidor SHALL zerar todos os placares e começar a contagem de uma nova partida com os mesmos jogadores, cores, configurações e anfitrião, sem passar pelo lobby
 8. WHEN o anfitrião escolhe "Encerrar sala" THEN o servidor SHALL fechar a sala com o motivo `closed-by-host`
-9. IF o anfitrião avança, joga de novo ou inicia fora da fase em que o comando vale THEN o servidor SHALL recusar com o erro `wrong-phase`
+9. IF o anfitrião avança, joga de novo, volta ao lobby ou inicia fora da fase em que o comando vale THEN o servidor SHALL recusar com o erro `wrong-phase`
+10. WHILE a sala está na contagem, na rodada, no resultado ou no pódio, WHEN o anfitrião escolhe "Voltar ao lobby" THEN o servidor SHALL cancelar a rodada em andamento sem enviar resultado, descartar as palavras dela, zerar todos os placares e voltar ao lobby com os mesmos jogadores, cores, configurações e anfitrião
 
 **Independent Test**: Partida de 2 rodadas com dois jogadores e palavras em comum e únicas; conferir resultados, pódio e o lobby depois de jogar de novo.
 
@@ -261,7 +266,7 @@ O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solv
 3. IF um cliente manda um comando que não vale na fase atual THEN o servidor SHALL recusar com o erro `wrong-phase` sem mudar o estado
 4. IF uma mensagem tiver mais de 4 KB THEN o servidor SHALL recusá-la com o erro `bad-message` sem processá-la
 5. The servidor SHALL nunca enviar aos celulares as palavras da rodada em texto antes do resultado, exceto a palavra aceita do próprio envio
-6. The protocolo SHALL usar só termos em inglês nos tipos de mensagem, nomes de campo, códigos de erro e motivos (ex.: `join`, `start-round`, `play-again`, `close-room`, `kicked`, `closed-by-host`)
+6. The protocolo SHALL usar só termos em inglês nos tipos de mensagem, nomes de campo, códigos de erro e motivos (ex.: `join`, `start`, `play-again`, `back-to-lobby`, `close-room`, `kicked`, `closed-by-host`)
 7. The servidor SHALL nunca enviar texto para exibição ao jogador; os clientes traduzem os códigos pelo i18n da interface
 
 **Independent Test**: Enviar lixo, tipos desconhecidos, campos errados e mensagens grandes e conferir os erros e o estado inalterado.
@@ -288,7 +293,7 @@ O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solv
 | HOST-01 | P1: Anfitrião (AC 1-10) | Design | Pending |
 | CFG-01 | P1: Configurações da sala (AC 1-5) | Design | Pending |
 | ROUND-01 | P1: Rodada (AC 1-10) | Design | Pending |
-| RES-01 | P1: Resultado, pódio e jogar de novo (AC 1-9) | Design | Pending |
+| RES-01 | P1: Resultado, pódio e jogar de novo (AC 1-10) | Design | Pending |
 | RECON-01 | P1: Reconexão (AC 1-6) | Design | Pending |
 | PERSIST-01 | P1: Persistência e hibernation (AC 1-4) | Design | Pending |
 | EXP-01 | P1: Expiração (AC 1-6) | Design | Pending |
