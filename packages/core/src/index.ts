@@ -8,6 +8,7 @@ export * from './room/codes.ts';
 export * from './room/colors.ts';
 export * from './room/effects.ts';
 export * from './room/hashes.ts';
+export * from './room/host.ts';
 export * from './room/join.ts';
 export * from './room/machine.ts';
 export * from './room/nickname.ts';

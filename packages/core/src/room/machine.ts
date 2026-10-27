@@ -11,6 +11,7 @@ import {
   roundInfo,
   unchanged,
 } from './effects.ts';
+import { handleKick, handleTransferHost, HOST_COMMANDS, isHost } from './host.ts';
 import { handleJoin } from './join.ts';
 import { type ClientMessage, type ClientMessageType, encodeHashFrame, type Phase, parseClientMessage } from './protocol.ts';
 import type { RoomState } from './state.ts';
@@ -152,6 +153,8 @@ const HANDLERS: { [T in ClientMessageType]?: Handler<T> } = {
   hello: handleHello,
   time: handleTime,
   join: handleJoin,
+  'transfer-host': handleTransferHost,
+  kick: handleKick,
 };
 
 function welcomeBase(state: RoomState) {
@@ -192,6 +195,7 @@ function onMessage(state: RoomState, conn: ConnRef, data: string, now: number, d
   const msg = parseClientMessage(data);
   if (!msg) return reject(state, conn, 'bad-message');
   if (!COMMAND_ROLES[msg.type].includes(conn.role)) return reject(state, conn, 'bad-message');
+  if (HOST_COMMANDS.includes(msg.type) && !isHost(state, conn)) return reject(state, conn, 'not-host');
   if (!COMMAND_PHASES[msg.type].includes(state.phase)) return reject(state, conn, 'wrong-phase');
   const handler = HANDLERS[msg.type] as Handler<ClientMessage['type']> | undefined;
   if (!handler) return unchanged(state);

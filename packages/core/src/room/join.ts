@@ -35,7 +35,13 @@ export const handleJoin: Handler<'join'> = ({ state, conn, now, deps }, msg) => 
     score: 0,
     found: [],
   };
-  const next: RoomState = { ...state, players: [...state.players, player], joinCount: state.joinCount + 1 };
+  const next: RoomState = {
+    ...state,
+    players: [...state.players, player],
+    joinCount: state.joinCount + 1,
+    // The first player becomes the host (HOST-01 AC 1).
+    hostId: state.hostId ?? player.id,
+  };
   const me: ConnRef = { id: conn.id, role: 'player', playerId: player.id };
   return {
     state: next,
