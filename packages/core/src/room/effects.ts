@@ -41,7 +41,12 @@ export type Effect =
    * Prepares a round for the room's current settings (`prepareRound` with a fresh
    * seed and salt) and feeds it back to `step` as a `prepared` input.
    */
-  | { kind: 'prepare-next' };
+  | { kind: 'prepare-next' }
+  /**
+   * Closes the room: closes every connection (a `closed` broadcast precedes it),
+   * deletes the storage and the alarm, and frees the code.
+   */
+  | { kind: 'close-room' };
 
 export interface StepResult {
   state: RoomState;
@@ -98,6 +103,18 @@ export function roundInfo(state: RoomState): RoundInfo | null {
   const r = state.round;
   if (!r || state.phase === 'lobby') return null;
   return { id: r.id, index: state.roundIndex, board: r.board, startsAt: r.startsAt, endsAt: r.endsAt };
+}
+
+/** The part of `welcome` every role gets: the room as it stands. */
+export function welcomeBase(state: RoomState) {
+  return {
+    code: state.code,
+    phase: state.phase,
+    settings: state.settings,
+    players: state.players.map(playerInfo),
+    hostId: state.hostId,
+    round: roundInfo(state),
+  };
 }
 
 // ---------------------------------------------------------------------------

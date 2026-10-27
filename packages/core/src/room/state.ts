@@ -95,6 +95,8 @@ export interface RoomState {
   /** Per player, when each path of the last second was taken in (rate limit); kept in memory only. */
   rateWindow: Record<string, number[]>;
   tvCounts: { dirty: boolean; lastSentAt: number };
+  /** The room closed; every later input is ignored. */
+  closed: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -136,6 +138,7 @@ export function createRoom(code: string, tvToken: string, now: number, cfg: Room
     results: null,
     rateWindow: {},
     tvCounts: { dirty: false, lastSentAt: 0 },
+    closed: false,
   };
 }
 

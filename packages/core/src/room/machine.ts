@@ -6,12 +6,12 @@ import {
   type HandlerContext,
   type RoomDeps,
   type StepResult,
-  playerInfo,
   playersMessage,
   reject,
-  roundInfo,
   unchanged,
+  welcomeBase,
 } from './effects.ts';
+import { handleCloseRoom, handleNext, handlePlayAgain, podiumMessage } from './flow.ts';
 import { handleKick, handleTransferHost, HOST_COMMANDS, isHost } from './host.ts';
 import { handleJoin } from './join.ts';
 import { type ClientMessage, type ClientMessageType, encodeHashFrame, type Phase, parseClientMessage } from './protocol.ts';
@@ -175,22 +175,15 @@ const HANDLERS: { [T in ClientMessageType]?: Handler<T> } = {
   settings: handleSettings,
   start: handleStart,
   submit: handleSubmit,
+  next: handleNext,
+  'play-again': handlePlayAgain,
+  'close-room': handleCloseRoom,
 };
 
-function welcomeBase(state: RoomState) {
-  return {
-    code: state.code,
-    phase: state.phase,
-    settings: state.settings,
-    players: state.players.map(playerInfo),
-    hostId: state.hostId,
-    round: roundInfo(state),
-  };
-}
-
-/** What follows the welcome in the results: the results of the round. */
+/** What follows the welcome in the results and the podium: the message of the phase. */
 function afterWelcome(state: RoomState, to: ConnRef): Effect[] {
   if (state.phase === 'results' && state.results) return [{ kind: 'send', to, msg: state.results }];
+  if (state.phase === 'podium') return [{ kind: 'send', to, msg: podiumMessage(state) }];
   return [];
 }
 
@@ -254,6 +247,7 @@ function onDisconnect(state: RoomState, conn: ConnRef, now: number): StepResult 
  * in order. Never mutates `state`; a rejected input returns it unchanged.
  */
 export function step(state: RoomState, input: RoomInput, now: number, deps: RoomDeps): StepResult {
+  if (state.closed) return unchanged(state);
   switch (input.kind) {
     case 'message':
       return onMessage(state, input.conn, input.data, now, deps);
