@@ -1,0 +1,198 @@
+:root {
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+  color: #1f2328;
+  background: #f6f7f9;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  padding: 12px;
+}
+
+h1 {
+  font-size: 1.2em;
+  margin: 0;
+}
+
+h2 {
+  font-size: 1.1em;
+  margin: 0 0 8px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+h4 {
+  margin: 4px 0;
+}
+
+.top,
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.columns {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  align-items: flex-start;
+  padding-bottom: 8px;
+}
+
+.column {
+  flex: 0 0 340px;
+  background: #fff;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.right {
+  margin-left: auto;
+}
+
+.small {
+  font-size: 0.85em;
+  color: #57606a;
+}
+
+.error {
+  color: #b42318;
+}
+
+.ok {
+  color: #1a7f37;
+}
+
+.danger {
+  color: #b42318;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 8px;
+  margin: 0 0 8px;
+}
+
+.facts dd {
+  margin: 0;
+}
+
+.status-open {
+  color: #1a7f37;
+}
+
+.status-closed {
+  color: #b42318;
+}
+
+.players {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 8px;
+}
+
+.players li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.players li.offline {
+  opacity: 0.45;
+}
+
+.swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid #8c959f;
+}
+
+.tag {
+  font-size: 0.75em;
+  background: #eaeef2;
+  border-radius: 4px;
+  padding: 0 4px;
+}
+
+.clock {
+  font-weight: bold;
+  margin: 4px 0;
+}
+
+.board {
+  display: grid;
+  gap: 4px;
+  margin: 6px 0;
+}
+
+.tile {
+  height: 2.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  background: #eaeef2;
+  border: 1px solid #d0d7de;
+  border-radius: 4px;
+  padding: 0;
+}
+
+.tile.selected {
+  background: #ffd33d;
+}
+
+button.tile:disabled:not(.selected) {
+  opacity: 0.5;
+}
+
+.word {
+  min-width: 6em;
+  font-size: 1.1em;
+}
+
+.host {
+  border: 1px solid #d0d7de;
+  border-radius: 4px;
+  margin: 0 0 8px;
+}
+
+.block {
+  margin: 6px 0;
+}
+
+.log {
+  margin-top: 8px;
+  font-size: 0.8em;
+}
+
+.log ol {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0;
+  max-height: 260px;
+  overflow: auto;
+  font-family: ui-monospace, monospace;
+  word-break: break-all;
+}
+
+.log-out {
+  color: #0550ae;
+}
+
+.log-info {
+  color: #6e7781;
+}

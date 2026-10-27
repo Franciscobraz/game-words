@@ -7,6 +7,8 @@
     { "path": "spikes/m0" },
     { "path": "spikes/m0/tsconfig.worker.json" },
     { "path": "tools/play" },
-    { "path": "tools/play/tsconfig.node.json" }
+    { "path": "tools/play/tsconfig.node.json" },
+    { "path": "tools/debug" },
+    { "path": "tools/debug/tsconfig.node.json" }
   ]
 }

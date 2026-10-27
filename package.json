@@ -14,7 +14,8 @@
     "bench:node": "node --expose-gc spikes/m0/src/bench-node.ts",
     "bench:cf": "node spikes/m0/src/bench-cf.ts",
     "report": "node spikes/m0/src/report.ts",
-    "play": "npm run dev -w @bwords/play"
+    "play": "npm run dev -w @bwords/play",
+    "debug": "node tools/debug/launch.ts"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",
