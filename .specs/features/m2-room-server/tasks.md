@@ -9,8 +9,8 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 ---
 
 **Design**: `.specs/features/m2-room-server/design.md`
-**Status**: Draft
-**Approved**: pendente
+**Status**: Approved
+**Approved**: 2026-10-27 - user: "aprovo as tasks do M2, execute uma fase por vez com subagentes e pare entre as fases"
 **Mutations**: 3
 **Build**: `npx tsc -b; npx vitest run; npx playwright test`
 
@@ -879,8 +879,8 @@ Proof: `npx vitest run packages/server/test/alarms.test.ts -t "ends the round on
 
 ## Handoff
 
-**Settled mid-build:** none
-**Dispatched:** none
+**Settled mid-build:** uma fase por vez, cada uma num subagente, com parada e pergunta ao user entre fases - user: "aprovo as tasks do M2, execute uma fase por vez com subagentes e pare entre as fases"
+**Dispatched:** batch worker fase 1 (T1-T6) em HEAD fc23ee9
 **Walked:** N/A - o M2 não tem tela; a partida completa é provada por C81
 
 ---
