@@ -4,6 +4,7 @@ export * from './lang/ptBR.ts';
 export * from './longest.ts';
 export * from './pack.ts';
 export * from './room/codes.ts';
+export * from './room/colors.ts';
 export * from './room/nickname.ts';
 export * from './scoring.ts';
 export * from './solver.ts';

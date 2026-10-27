@@ -133,11 +133,11 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 **Done when**:
 
-- [ ] `ciede2000` confere os pares de teste publicados por Sharma et al. (2005) com erro < 0,0001
-- [ ] Limites exatos: contraste 2,99:1 recusado e 3:1 aceito; CIEDE2000 19,99 recusado e 20 aceito
-- [ ] C17 passa
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] `ciede2000` confere os pares de teste publicados por Sharma et al. (2005) com erro < 0,0001
+- [x] Limites exatos: contraste 2,99:1 recusado e 3:1 aceito; CIEDE2000 19,99 recusado e 20 aceito
+- [x] C17 passa
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick
