@@ -1,4 +1,5 @@
 import { validateSubmission } from '../validate.ts';
+import { flushCounts } from './counts.ts';
 import type { Handler } from './effects.ts';
 import type { SubmitResult } from './protocol.ts';
 import type { RoomState } from './state.ts';
@@ -17,7 +18,8 @@ const NO_PACK = { isProfane: () => false };
  * single `submit-result` to the sender. Per path: beyond 10 paths in the last
  * second it is `rate-limited` without validation; outside `[startsAt, endsAt + 300]`
  * it is `round-closed`; from a spectator it is `spectator`; otherwise
- * `validateSubmission` decides against the round's stored solutions.
+ * `validateSubmission` decides against the round's stored solutions. New counts
+ * go to the TV, throttled by `flushCounts`.
  */
 export const handleSubmit: Handler<'submit'> = ({ state, conn, now }, msg) => {
   if (conn.role !== 'player') return { state, effects: [] };
@@ -57,11 +59,14 @@ export const handleSubmit: Handler<'submit'> = ({ state, conn, now }, msg) => {
         : state.players,
     tvCounts: accepted.length > 0 ? { ...state.tvCounts, dirty: true } : state.tvCounts,
   };
+  // New counts go to the TV now, or at the flush deadline when one went out less than a second ago.
+  const counts = flushCounts(next, now);
   return {
-    state: next,
+    state: counts.state,
     effects: [
       ...(accepted.length > 0 ? [{ kind: 'persist' as const, keys: [`found:${player.id}` as const] }] : []),
       { kind: 'send', to: conn, msg: { type: 'submit-result', results } },
+      ...counts.effects,
     ],
   };
 };

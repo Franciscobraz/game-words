@@ -6,6 +6,7 @@ export * from './pack.ts';
 export * from './path.ts';
 export * from './room/codes.ts';
 export * from './room/colors.ts';
+export * from './room/counts.ts';
 export * from './room/effects.ts';
 export * from './room/hashes.ts';
 export * from './room/host.ts';

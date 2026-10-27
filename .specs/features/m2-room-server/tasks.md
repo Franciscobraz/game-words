@@ -391,10 +391,10 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 **Done when**:
 
-- [ ] Limite exato: aceito em 999 ms não sai; em 1.000 ms sai
-- [ ] C42 passa
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Limite exato: aceito em 999 ms não sai; em 1.000 ms sai
+- [x] C42 passa
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick

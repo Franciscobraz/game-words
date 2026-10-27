@@ -1,3 +1,4 @@
+import { countsMessage } from './counts.ts';
 import {
   type ConnRef,
   type Effect,
@@ -86,18 +87,26 @@ const ACTIONS: ReadonlySet<ClientMessageType> = new Set([
 // Connection handlers
 
 const handleHello: Handler<'hello'> = (ctx, msg) => {
-  const { state, conn } = ctx;
+  const { state, conn, now } = ctx;
   if (msg.role === 'tv') {
     if (msg.token !== state.tvToken) return badToken(state, conn);
     const effects: Effect[] = [];
     if (state.tvConn !== null) effects.push(...replace({ id: state.tvConn, role: 'tv' }));
     const tv: ConnRef = { id: conn.id, role: 'tv' };
-    const next: RoomState = { ...state, tvConn: conn.id, tvOfflineSince: null };
+    const inRound = state.phase === 'round';
+    const next: RoomState = {
+      ...state,
+      tvConn: conn.id,
+      tvOfflineSince: null,
+      // During a round the counts so far follow the welcome, so nothing is pending.
+      tvCounts: inRound ? { dirty: false, lastSentAt: now } : state.tvCounts,
+    };
     effects.push(
       { kind: 'persist', keys: ['room'] },
       { kind: 'bind', conn: tv },
       { kind: 'send', to: tv, msg: { type: 'welcome', role: 'tv', ...welcomeBase(next) } },
     );
+    if (inRound) effects.push({ kind: 'send', to: tv, msg: countsMessage(next) });
     // Phase 3: in the results or the podium, follow with `round-results` or `podium`.
     return { state: next, effects };
   }
