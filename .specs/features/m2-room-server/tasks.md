@@ -880,7 +880,7 @@ Proof: `npx vitest run packages/server/test/alarms.test.ts -t "ends the round on
 ## Handoff
 
 **Settled mid-build:** uma fase por vez, cada uma num subagente, com parada e pergunta ao user entre fases - user: "aprovo as tasks do M2, execute uma fase por vez com subagentes e pare entre as fases"
-**Dispatched:** batch worker fase 1 (T1-T6) em HEAD fc23ee9 - returned (T1-T6 em c25d57e; core 138 testes, build gate verde). Nota para a fase 2: `Phase`, `Settings` e os tipos de fio já estão em `room/protocol.ts`; o T7 importa de lá em vez de redeclarar; batch worker fase 2 (T7-T11) em HEAD cda0e21
+**Dispatched:** batch worker fase 1 (T1-T6) em HEAD fc23ee9 - returned (T1-T6 em c25d57e; core 138 testes, build gate verde). Nota para a fase 2: `Phase`, `Settings` e os tipos de fio já estão em `room/protocol.ts`; o T7 importa de lá em vez de redeclarar; batch worker fase 2 (T7-T11) em HEAD cda0e21 - returned (T7-T11 em 4078241; core 249 testes, build gate verde; Playwright "recomputes on option change" do M1 falhou uma vez e passou em 4 reruns). Defaults do worker, a confirmar pelo user: volume padrão 100; patch vazio dá `bad-settings`; papel errado dá `bad-message`; `close-room`, `kick` e `transfer-host` valem em toda fase; quem entra no pódio é jogador; `not-host` antes de `wrong-phase`; `transfer-host` para si, desconhecido ou desconectado dá `bad-target`; `tvOfflineSince` começa na criação. Para a fase 4: tags do Cloudflare são fixas no accept, então o adaptador roteia pelo `ConnRef` do attachment, atualizado no efeito `bind`
 **Walked:** N/A - o M2 não tem tela; a partida completa é provada por C81
 
 ---
