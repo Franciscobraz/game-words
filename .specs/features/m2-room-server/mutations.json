@@ -10,7 +10,7 @@
     "file": "packages/server/src/room-do.ts",
     "old": "await this.dropStaleConnections();",
     "new": "void 0;",
-    "proof": "npx vitest run packages/server/test/persistence.test.ts -t \"rebuilds a room mid-round after eviction\"",
+    "proof": "npx vitest run packages/server/test/persistence.test.ts -t \"marks players and the TV disconnected when their sockets die in a restart\"",
     "label": "rebuilt room keeps players whose sockets died marked connected"
   },
   {

@@ -905,6 +905,9 @@ Proof: `npx vitest run packages/server/test/persistence.test.ts -t "stores the s
 **C55** - Depois de `evictDurableObject` no meio da rodada, o DO reconstrói fase, configurações, jogadores, tokens, anfitrião, tabuleiro, palavras e placares (PERSIST-01, AC 2)
 Proof: `npx vitest run packages/server/test/persistence.test.ts -t "rebuilds a room mid-round after eviction"`
 
+**C94** - Depois de um reinício em que os sockets morrem, todo jogador e a TV ficam desconectados, o prazo de TV ausente começa e a troca de anfitrião é agendada no alarm (RECON-01, AC 3; achado 2 do Verifier)
+Proof: `npx vitest run packages/server/test/persistence.test.ts -t "marks players and the TV disconnected when their sockets die in a restart"`
+
 **C56** - Com a eviction em modo `hibernate`, os sockets continuam abertos e o próximo envio funciona (PERSIST-01, AC 3)
 Proof: `npx vitest run packages/server/test/persistence.test.ts -t "keeps sockets open across hibernation"`
 

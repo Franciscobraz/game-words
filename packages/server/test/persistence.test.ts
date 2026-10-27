@@ -1,7 +1,7 @@
-import { type RoomState, type RoundSolutions } from '@bwords/core';
+import { HOST_HANDOFF_MS, type RoomState, type RoundSolutions } from '@bwords/core';
 import { evictDurableObject, runDurableObjectAlarm, runInDurableObject } from 'cloudflare:test';
 import { describe, expect, it } from 'vitest';
-import { joinPhone, liveState, roomWithTv, setClock, solutionPaths, startRound, stubOf, T0 } from './room.ts';
+import { alarmOf, joinPhone, liveState, roomWithTv, setClock, solutionPaths, startRound, stubOf, T0 } from './room.ts';
 import type { RoomDO } from '../src/room-do.ts';
 import { connect } from './ws.ts';
 
@@ -71,6 +71,36 @@ describe('persistence', () => {
     const ended = await liveState(code);
     expect(ended?.phase).toBe('results');
     expect(ended?.players.every((p) => p.score > 0)).toBe(true);
+  });
+
+  it('marks players and the TV disconnected when their sockets die in a restart', async () => {
+    const { code, tv } = await roomWithTv();
+    const a = await joinPhone(code, 'Ana', 0);
+    const b = await joinPhone(code, 'Bia', 1);
+    const start = await startRound(a, [b.client, tv]);
+    const before = await liveState(code);
+    expect(before?.players.every((p) => p.connected)).toBe(true);
+    expect(before?.tvConn).not.toBeNull();
+
+    // A restart that loses every socket (RECON-01 AC 3).
+    await evictDurableObject(stubOf(code), { webSockets: 'close' });
+    await setClock(code, start.startsAt);
+    const after = await liveState(code);
+    expect(after?.phase).toBe('round');
+    expect(after?.players.map((p) => [p.id, p.connected, p.connId])).toEqual([
+      [a.playerId, false, null],
+      [b.playerId, false, null],
+    ]);
+    // The TV timeout starts (EXP-01 AC 3) and the host handoff is scheduled (HOST-01 AC 5).
+    expect(after?.tvConn).toBeNull();
+    expect(after?.tvOfflineSince).toEqual(expect.any(Number));
+    expect(after?.hostId).toBe(a.playerId);
+    expect(after?.hostOfflineSince).toEqual(expect.any(Number));
+    expect(await alarmOf(code)).toBe(after!.hostOfflineSince! + HOST_HANDOFF_MS);
+    // The disconnections are stored too.
+    const stored = await get<RoomState>(code, 'room');
+    expect(stored?.players.every((p) => !p.connected)).toBe(true);
+    expect(stored?.tvConn).toBeNull();
   });
 
   it('keeps sockets open across hibernation', async () => {
