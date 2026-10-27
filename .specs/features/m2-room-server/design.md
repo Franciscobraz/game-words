@@ -275,6 +275,7 @@ O pacote dos testes do servidor é uma fixture pequena, montada com `buildDawg`/
 | `generateBoard` usa `minCommonWords` do pacote; a fixture não tem palavras comuns suficientes | `packages/core/src/generator.ts:102` | Gerador falha nos testes | Fixture com `minCommonWords: {}` |
 | Primeiro `ASSETS.fetch` após deploy levou 760 ms no M0 | `docs/m0-results.md:145` | Primeiro "start" de uma sala logo após um deploy demora | Carregar o pacote já no `create()` da sala, enquanto a TV mostra o lobby |
 | `spellings.bin` tem 6,79 MB, 4x o dicionário (achado ao extrair o design do M1) | `pack-loader.ts` | Carregar o pacote inteiro em toda sala gasta memória e tempo por nada | O loader busca `spellings.bin` só quando o primeiro resultado precisa das grafias, e guarda em cache por isolate |
+| Static Assets são públicos: com o pacote na pasta de assets, `/pt-BR/dict.bin` respondia 200 (achado no `wrangler dev`, padrão herdado do M0) | `packages/server/wrangler.jsonc` | Qualquer um baixa o dicionário e monta um solver, contra o DESIGN §5.3 | `run_worker_first: true`; o Worker nunca serve os arquivos e só o DO lê pelo `ASSETS` (T31, PROTO-01 AC 8) |
 | Rows written: 100.000/dia no Free | storage | Muitas salas num dia esgotam a cota e as gravações falham | Gravar só deltas (tabela acima); registrar no relatório do M5 a conta real |
 | Auto-reply de Close frames só com `compatibility_date` ≥ 2026-04-07 | `wrangler.jsonc` | Sockets presos em CLOSING | Usar uma data ≥ 2026-04-07 suportada pelo wrangler 4.153 instalado, ou chamar `ws.close()` no `webSocketClose` |
 

@@ -8,6 +8,8 @@
 
 **Amended**: 2026-10-27 - vitórias da sessão e coroa no lobby (WINS-01); decisões M2-Q10 a M2-Q13
 
+**Amended**: 2026-10-27 - PROTO-01 AC 8: o pacote de idioma não é servido por HTTP (achado ao rodar `wrangler dev`: `/pt-BR/dict.bin` respondia 200, contra o DESIGN §5.3 e §6.2); user: "faça a correção do dicionario publico a pagina de debug deixa para depois, pois meus tokens estão acabando e so renovam as 17:40"
+
 ## Problem Statement
 
 O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solver, validação, pontuação e maior palavra), mas só para jogar sozinho numa página local. Ainda não existe sala, nem jeito de vários celulares e uma TV jogarem juntos. O M2 constrói o servidor autoritativo: um Durable Object por sala, que roda a partida inteira e guarda o estado de forma que nada se perca em reconexões, hibernation ou queda da TV. Os marcos 3 (celular) e 4 (TV) passam a ser só clientes desse protocolo.
@@ -298,6 +300,7 @@ O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solv
 5. The servidor SHALL nunca enviar aos celulares as palavras da rodada em texto antes do resultado, exceto a palavra aceita do próprio envio
 6. The protocolo SHALL usar só termos em inglês nos tipos de mensagem, nomes de campo, códigos de erro e motivos (ex.: `join`, `start`, `play-again`, `back-to-lobby`, `close-room`, `kicked`, `closed-by-host`)
 7. The servidor SHALL nunca enviar texto para exibição ao jogador; os clientes traduzem os códigos pelo i18n da interface
+8. IF alguém pede por HTTP um arquivo do pacote de idioma (dicionário, comuns, palavrões, grafias ou metadados) THEN o servidor SHALL responder 404, e só o Durable Object lê o pacote pelo binding `ASSETS`
 
 **Independent Test**: Enviar lixo, tipos desconhecidos, campos errados e mensagens grandes e conferir os erros e o estado inalterado.
 
@@ -327,7 +330,7 @@ O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solv
 | RECON-01 | P1: Reconexão (AC 1-6) | Design | Pending |
 | PERSIST-01 | P1: Persistência e hibernation (AC 1-4) | Design | Pending |
 | EXP-01 | P1: Expiração (AC 1-6) | Design | Pending |
-| PROTO-01 | P1: Protocolo (AC 1-7) | Design | Pending |
+| PROTO-01 | P1: Protocolo (AC 1-8) | Design | Pending |
 | WINS-01 | P1: Vitórias da sessão (AC 1-8) | Design | Pending |
 
 **Coverage:** 10 total, 0 mapped to tasks, 10 unmapped ⚠️ (mapeados na fase Tasks)

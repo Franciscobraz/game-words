@@ -9,7 +9,7 @@ import { FIXTURE_PACK_ID, fixturePackFiles } from './packages/server/test/fixtur
  * of the built pt-BR pack (git-ignored, and too big for a test): its files are
  * written here and the `assets` override points the `ASSETS` binding at them.
  */
-function writeFixtureAssets(): string {
+export function writeFixtureAssets(): string {
   const dir = resolve(import.meta.dirname, 'node_modules/.cache/bwords-server-test-assets');
   mkdirSync(join(dir, FIXTURE_PACK_ID), { recursive: true });
   for (const [name, bytes] of Object.entries(fixturePackFiles())) writeFileSync(join(dir, FIXTURE_PACK_ID, name), bytes);
@@ -22,8 +22,8 @@ export default defineConfig({
       {
         test: {
           name: 'core',
-          include: ['{packages,tools,spikes}/*/src/**/*.test.ts'],
-          exclude: [...configDefaults.exclude, 'packages/server/**'],
+          include: ['{packages,tools,spikes}/*/src/**/*.test.ts', 'packages/server/e2e/**/*.test.ts'],
+          exclude: [...configDefaults.exclude, 'packages/server/test/**'],
         },
       },
       {

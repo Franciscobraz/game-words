@@ -10,6 +10,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 
 **Design**: `.specs/features/m2-room-server/design.md`
 **Status**: Approved
+**Amended**: 2026-10-27 - T31 (pacote fora dos assets públicos, PROTO-01 AC 8); user: "faça a correção do dicionario publico a pagina de debug deixa para depois, pois meus tokens estão acabando e so renovam as 17:40"
 **Approved**: 2026-10-27 - user: "aprovo as tasks do M2, execute uma fase por vez com subagentes e pare entre as fases"
 **Amended**: 2026-10-27 - nova Phase 4 (T27-T28) para "Voltar ao lobby" e "Jogar de novo" (spec RES-01 AC 7 e 10, M2-Q8/Q9); o servidor vira a Phase 5; aprovado em 2026-10-27 - user: "Aprovo as tarefas T27-T30, as decisões da fase 3 e o placar 0 sem vitória. Pode seguir com a fase 4."
 **Amended**: 2026-10-27 - T29-T30 (vitórias da sessão e coroa, WINS-01) entram na Phase 4; aprovado em 2026-10-27 - user: "Aprovo as tarefas T27-T30, as decisões da fase 3 e o placar 0 sem vitória. Pode seguir com a fase 4."
@@ -80,7 +81,7 @@ T27 → T28 → T29 → T30
 ### Phase 5: Durable Object server
 
 ```
-T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
+T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26 → T31
 ```
 
 ---
@@ -725,6 +726,27 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 ---
 
+### T31: Language pack is server-only
+
+**What**: `run_worker_first: true` nos assets do `wrangler.jsonc`, para o Worker atender toda requisição e nunca servir os arquivos do pacote; só o `RoomDO` lê o pacote pelo binding `ASSETS`. Teste com o `wrangler dev` real (`unstable_dev`), porque o pool do workerd não passa pelos static assets.
+**Where**: `packages/server/wrangler.jsonc`
+**Depends on**: T26
+**Reuses**: `writeFixtureAssets` do `vitest.config.ts`, `fixture-pack.ts` (T19)
+**Requirement**: PROTO-01
+
+**Done when**:
+
+- [x] Sem a correção, o teste falha com 200 nos 5 arquivos; com a correção, todos dão 404 e `POST /api/rooms` continua 200
+- [x] C93 passa
+- [x] Gate check passes: `npx vitest run`
+- [x] Test count: 424 → 430, nenhum removido
+
+**Tests**: integration
+**Gate**: full
+**Commit**: `fix(server): keep the language pack off public assets`
+
+---
+
 ## Checks
 
 **C1** - `POST /api/rooms` cria uma sala no lobby e responde com um código de 4 letras de `ABCDEFGHJKLMNPQRSTUVWXYZ` e um token de TV (ROOM-01, AC 1)
@@ -994,6 +1016,9 @@ Proof: `npx vitest run packages/server/test/persistence.test.ts -t "keeps wins a
 **C92** - Um jogador expulso perde as vitórias e volta com 0 se entrar de novo (WINS-01, AC 8)
 Proof: `npx vitest run packages/core/src/room/flow.test.ts -t "kick discards the player's wins"`
 
+**C93** - Nenhum arquivo do pacote de idioma é servido por HTTP: `/<id>/dict.bin`, `common.bin`, `profanity.bin`, `spellings.bin` e `meta.json` dão 404 (PROTO-01, AC 8)
+Proof: `npx vitest run packages/server/e2e/assets.test.ts -t "answers 404 to any language pack file over HTTP"`
+
 **C83** - Com todos desconectados, a rodada termina no alarm normalmente (edge case)
 Proof: `npx vitest run packages/server/test/alarms.test.ts -t "ends the round on the alarm with no socket open"`
 
@@ -1016,7 +1041,7 @@ Phase 1:  T1 ---→ T2 ---→ T3 ---→ T4 ---→ T5 ---→ T6
 Phase 2:  T7 ---→ T8 ---→ T9 ---→ T10 --→ T11
 Phase 3:  T12 --→ T13 --→ T14 --→ T15 --→ T16 --→ T17 --→ T18
 Phase 4:  T27 --→ T28 --→ T29 --→ T30
-Phase 5:  T19 --→ T20 --→ T21 --→ T22 --→ T23 --→ T24 --→ T25 --→ T26
+Phase 5:  T19 --→ T20 --→ T21 --→ T22 --→ T23 --→ T24 --→ T25 --→ T26 --→ T31
 ```
 
 Cada fase é um batch de subagente (6, 5, 7, 4 e 8 tarefas). Os batches rodam em sequência e o orquestrador para entre eles para mostrar o resultado e perguntar, como no M1.
