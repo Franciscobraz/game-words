@@ -880,7 +880,7 @@ Proof: `npx vitest run packages/server/test/alarms.test.ts -t "ends the round on
 ## Handoff
 
 **Settled mid-build:** uma fase por vez, cada uma num subagente, com parada e pergunta ao user entre fases - user: "aprovo as tasks do M2, execute uma fase por vez com subagentes e pare entre as fases"
-**Dispatched:** batch worker fase 1 (T1-T6) em HEAD fc23ee9
+**Dispatched:** batch worker fase 1 (T1-T6) em HEAD fc23ee9 - returned (T1-T6 em c25d57e; core 138 testes, build gate verde). Nota para a fase 2: `Phase`, `Settings` e os tipos de fio já estão em `room/protocol.ts`; o T7 importa de lá em vez de redeclarar
 **Walked:** N/A - o M2 não tem tela; a partida completa é provada por C81
 
 ---
