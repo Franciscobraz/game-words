@@ -270,6 +270,8 @@ test('recomputes on option change', async ({ page }) => {
   await expect(feedback).toHaveText('Rejeitada: too-short');
 
   await page.getByTestId('min-length').selectOption('3');
+  // Wait for the recompute, or the drag can still be judged with the minimum of 4.
+  await expect(page.getByTestId('stat-solutions')).toHaveText(`Soluções: ${unfiltered.length}`);
   await dragWord(page, 'mae');
   await expect(feedback).toHaveText('Aceita: mae');
 });
