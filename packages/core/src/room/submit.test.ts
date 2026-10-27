@@ -83,11 +83,23 @@ describe('submissions', () => {
     expect(room).toBeLessThan(reply);
   });
 
+  test('persists the last action time with a refused submit', () => {
+    const state = { ...inRound(), lastActionAt: 5_000 };
+    const r = submit(state, 0, [path('cats')], 20_000);
+    expect(r.results).toEqual([{ ok: false, reason: 'not-a-word' }]);
+    expect(r.state.lastActionAt).toBe(20_000);
+    const room = r.effects.findIndex((e) => e.kind === 'persist' && e.keys.includes('room'));
+    const reply = r.effects.findIndex((e) => e.kind === 'send' && e.msg.type === 'submit-result');
+    expect(room).toBeGreaterThanOrEqual(0);
+    expect(room).toBeLessThan(reply);
+  });
+
   test('a path that is not a stored solution is not-a-word', () => {
     // "cats" is a path on the board but not a word of the pack.
     const r = submit(inRound(), 0, [path('cats')], 20_000);
     expect(r.results).toEqual([{ ok: false, reason: 'not-a-word' }]);
-    expect(r.effects.some((e) => e.kind === 'persist')).toBe(false);
+    // No word was added, so only `room` (for the last action time) is stored.
+    expect(r.effects.filter((e) => e.kind === 'persist')).toEqual([{ kind: 'persist', keys: ['room'] }]);
   });
 
   // ROUND-01 AC 4 with the exact limits (L-001).
