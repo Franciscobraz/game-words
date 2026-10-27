@@ -10,7 +10,8 @@ async function collect(forms: AsyncIterable<string>): Promise<string[]> {
   return out;
 }
 
-describe('expandForms', () => {
+// The first real `unmunch` run in a file takes ~4.5 s, close to Vitest's 5 s default timeout.
+describe('expandForms', { timeout: 30_000 }, () => {
   test('expands fixture forms', async () => {
     const forms = await collect(expandForms(fixture('mini.dic'), fixture('mini.aff')));
     expect(forms.sort()).toEqual(

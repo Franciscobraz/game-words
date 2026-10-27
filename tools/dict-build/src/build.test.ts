@@ -97,7 +97,8 @@ async function build(lists: Lists = {}, pair: Pair = 'build') {
 const sha256 = (bytes: Uint8Array) => createHash('sha256').update(bytes).digest('hex');
 
 // build.dic expands to: pôr, por, casa, casas, ação, Brasil, guarda-chuva, pé.
-describe('buildPack', () => {
+// The first real `unmunch` run in a file takes ~4.5 s, close to Vitest's 5 s default timeout.
+describe('buildPack', { timeout: 30_000 }, () => {
   test('stores duplicate normalized words once', async () => {
     const { out } = await build();
     const dawg = Dawg.fromBuffer(new Uint8Array(await readFile(join(out, 'dict.bin'))).buffer);

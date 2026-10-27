@@ -10,7 +10,8 @@ async function collect(forms: AsyncIterable<string>): Promise<string[]> {
   return out;
 }
 
-describe('FLAG UTF-8', () => {
+// The first real `unmunch` run in a file takes ~4.5 s, close to Vitest's 5 s default timeout.
+describe('FLAG UTF-8', { timeout: 30_000 }, () => {
   test('keeps utf-8 flags that share a first byte apart', async () => {
     // À, Á, Ã and Ä all start with byte 0xC3; read byte by byte each would apply the others' rules,
     // and the condition [^í] (0xC3 0xAD) would also reject "ético" (0xC3 0xA9).

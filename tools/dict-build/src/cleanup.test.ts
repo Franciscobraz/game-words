@@ -16,7 +16,8 @@ async function clean() {
   return { forms, report: cleanup.report() };
 }
 
-describe('cleanupVero', () => {
+// The first real `unmunch` run in a file takes ~4.5 s, close to Vitest's 5 s default timeout.
+describe('cleanupVero', { timeout: 30_000 }, () => {
   test('drops forbidden words', async () => {
     const { forms, report } = await clean();
     expect(forms).not.toContain('menas');
