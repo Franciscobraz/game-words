@@ -8,7 +8,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 
 ---
 
-**Design**: inline - decisões de arquitetura abaixo, sem `design.md`
+**Design**: `.specs/features/m1-dictionary-pack/design.md` (extraído em 2026-10-27 da antiga seção "Inline design")
 **Status**: Done
 **Approved**: 2026-10-26 - user: "execute cada fase, pare, me mostre o resultado e me pergunte antes de executar a proxima fase"
 **Mutations**: 3
@@ -16,30 +16,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 
 ### Inline design
 
-- **Pacote de entrada (`languages/pt-BR/`):** contém `pack.json`, `extra.txt`, `blocklist.txt` e `profanity.txt` (vazio). O `pack.json` define:
-  - `id`, `name`, `alphabet` e `compoundTiles` (`[{ "tile": "Qu", "letters": "qu" }]`);
-  - `normalization` (`"strip-diacritics"`) e `minWordLength`;
-  - `sources.vero` (repo, commit, dic, aff) e `sources.frequency` (url fixada no commit `525f9b5…`, `top: 50000`).
-
-  O `tools/dict-build/source.json` some e o conteúdo dele vai para o `pack.json`.
-- **Saída (`tools/dict-build/dist/<id>/`):** é o `dist/pt-BR/` da spec.
-  - `dict.bin`: DAWG de todas as palavras válidas, no formato v1 do M0 sem mudanças.
-  - `common.bin`: DAWG das palavras comuns.
-  - `profanity.bin`: DAWG dos palavrões, que pode ter zero palavras.
-  - `spellings.bin`: ver abaixo.
-  - `meta.json`: id, pesos de letra, `minCommonWords` por tamanho e hashes dos arquivos.
-  - `stats.json`: contagens, exemplos, tamanhos e tempos.
-- **Formato de `spellings.bin`:** linhas ordenadas pela chave normalizada, no formato `chave\tedições`. As edições ficam em notação compacta, posição seguida do caractere (`faca` → `2ç`). Várias grafias são separadas por `|`, e a grafia sem acento também conta quando existe no VERO (`faca` → `|2ç`). Os blocos de 64 linhas usam front coding, e um índice com a primeira chave de cada bloco permite busca binária. O leitor consulta o `ArrayBuffer` direto.
-- **Core (`packages/core/src`):**
-  - `pack.ts`: `LanguagePack.fromBuffers(...)`, com `isWord`, `isCommon`, `isProfane`, `spellings` e `meta`.
-  - `validate.ts`: `validateSubmission(board, path, ctx)`, onde o `ctx` traz soluções, palavras já encontradas, tamanho mínimo, filtro e pacote.
-  - `scoring.ts`: `wordPoints` e `scoreRound(found: Map<player, Set<word>>)`, que devolve totais, únicas e em comum.
-  - `longest.ts`: `pickLongestWord`.
-  - `generator.ts`: passa a receber o pacote e as opções (`minCommonWords`, `filterProfanity`).
-- **Limpeza do VERO (`tools/dict-build/src/cleanup.ts`):**
-  - Lê a flag `FORBIDDENWORD` do `.aff` e exclui as raízes marcadas com ela.
-  - A regra das formas de ênclise e mesóclise sai da investigação no T3. O teste usa uma fixture que reproduz o caso "enfronhamo".
-- **Página solo (`tools/play`):** Vite + Preact, servindo `tools/dict-build/dist/pt-BR` como estático. O core roda no navegador, e o Playwright cobre as interações.
+Movido para `design.md` em 2026-10-27, com o mesmo conteúdo, mais componentes, modelos de dados e riscos.
 
 ---
 
