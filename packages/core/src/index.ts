@@ -3,6 +3,7 @@ export * from './generator.ts';
 export * from './lang/ptBR.ts';
 export * from './longest.ts';
 export * from './pack.ts';
+export * from './path.ts';
 export * from './room/codes.ts';
 export * from './room/colors.ts';
 export * from './room/hashes.ts';
