@@ -1,3 +1,6 @@
+import { buildDawg } from '../dawg.ts';
+import { LanguagePack } from '../pack.ts';
+import { buildSpellings } from '../spellings.ts';
 import type { ConnRef, Effect, RoomDeps } from './effects.ts';
 import { type RoomInput, step } from './machine.ts';
 import type { ServerMessage } from './protocol.ts';
@@ -68,4 +71,44 @@ export function run(state: RoomState, inputs: RoomInput[], now = 0, deps = fakeD
     effects.push(...r.effects);
   }
   return { state, effects };
+}
+
+// ---------------------------------------------------------------------------
+// Language packs
+
+const UNIFORM = new Array<number>(26).fill(1 / 26);
+const ALPHABET = 'abcdefghijklmnopqrstuvwxyz';
+
+export interface PackLists {
+  words: string[];
+  common?: string[];
+  profanity?: string[];
+  /** Display spellings by normalized word. */
+  spellings?: [string, string[]][];
+}
+
+/** A pack built in memory, with no common-word minimum and uniform letter weights. */
+export function makePack({ words, common = [], profanity = [], spellings = [] }: PackLists): LanguagePack {
+  const dawg = (ws: string[]) => buildDawg([...new Set(ws)].sort(), UNIFORM);
+  return LanguagePack.fromBuffers({
+    dict: dawg(words),
+    common: dawg(common),
+    profanity: dawg(profanity),
+    spellings: buildSpellings(new Map(spellings)),
+    meta: { id: 'test', minCommonWords: {} },
+  });
+}
+
+/** Every 3-letter string: any board has far more than the generator's minimum. */
+export const ALL_TRIGRAMS = [...ALPHABET].flatMap((a) => [...ALPHABET].flatMap((b) => [...ALPHABET].map((c) => a + b + c)));
+
+/** Profanity of the rich pack: every trigram that starts with "a", so most boards have some. */
+export const RICH_PROFANITY = ALL_TRIGRAMS.filter((w) => w.startsWith('a'));
+
+let rich: LanguagePack | null = null;
+
+/** A pack where every trigram is a word and those starting with "a" are profane. */
+export function richPack(): LanguagePack {
+  rich ??= makePack({ words: ALL_TRIGRAMS, profanity: RICH_PROFANITY });
+  return rich;
 }

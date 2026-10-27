@@ -40,6 +40,23 @@ export interface RoundMeta {
   salt: string;
 }
 
+/** The settings a round's board and solutions depend on. */
+export interface RoundOptions {
+  size: Settings['size'];
+  minLength: Settings['minLength'];
+  filterProfanity: boolean;
+  pack: Settings['pack'];
+}
+
+/** A board prepared for a round that has not started: no id or timestamps yet. */
+export interface PreparedBoard {
+  board: string[][];
+  /** Base64url, 16 bytes. */
+  salt: string;
+  /** Settings it was prepared for. */
+  options: RoundOptions;
+}
+
 /** Valid words of a round and their salted hash prefixes, in the same order. */
 export interface RoundSolutions {
   words: readonly string[];
@@ -68,8 +85,8 @@ export interface RoomState {
   roundIndex: number;
   round: RoundMeta | null;
   solutions: RoundSolutions | null;
-  /** Prepared while the results show (RES-01 AC 4). */
-  nextRound: RoundMeta | null;
+  /** Prepared before `start`, or while the results show (RES-01 AC 4). */
+  nextRound: PreparedBoard | null;
   nextSolutions: RoundSolutions | null;
   tvCounts: { dirty: boolean; lastSentAt: number };
 }

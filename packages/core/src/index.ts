@@ -12,6 +12,7 @@ export * from './room/host.ts';
 export * from './room/join.ts';
 export * from './room/machine.ts';
 export * from './room/nickname.ts';
+export * from './room/prepare.ts';
 export * from './room/protocol.ts';
 export * from './room/settings.ts';
 export * from './room/state.ts';
