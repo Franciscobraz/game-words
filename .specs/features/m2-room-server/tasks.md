@@ -197,12 +197,12 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 **Done when**:
 
-- [ ] Um caso de recusa para cada tipo de mensagem com um campo fora do formato (L-007)
-- [ ] Limite exato: 4.096 bytes aceito, 4.097 recusado
-- [ ] `decodeHashFrame(encodeHashFrame(...))` devolve o mesmo `roundId` e os mesmos prefixos
-- [ ] C70-C72 e C74 passam
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Um caso de recusa para cada tipo de mensagem com um campo fora do formato (L-007)
+- [x] Limite exato: 4.096 bytes aceito, 4.097 recusado
+- [x] `decodeHashFrame(encodeHashFrame(...))` devolve o mesmo `roundId` e os mesmos prefixos
+- [x] C70-C72 e C74 passam
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick

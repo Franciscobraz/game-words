@@ -8,6 +8,7 @@ export * from './room/codes.ts';
 export * from './room/colors.ts';
 export * from './room/hashes.ts';
 export * from './room/nickname.ts';
+export * from './room/protocol.ts';
 export * from './scoring.ts';
 export * from './solver.ts';
 export * from './spellings.ts';
