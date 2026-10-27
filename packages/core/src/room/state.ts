@@ -26,6 +26,8 @@ export interface Player {
   spectator: boolean;
   /** Accumulated score of the match. */
   score: number;
+  /** Matches won since the room opened (WINS-01). */
+  wins: number;
   /** Words this player found in the current round. */
   found: string[];
 }

@@ -60,8 +60,8 @@ describe('TV connections', () => {
       phase: 'round',
       settings: state.settings,
       players: [
-        { id: 'p1', nickname: 'Alice', color: '#FFFFFF', connected: false, spectator: false, score: 7 },
-        { id: 'p2', nickname: 'Bob', color: '#E53935', connected: true, spectator: false, score: 0 },
+        { id: 'p1', nickname: 'Alice', color: '#FFFFFF', connected: false, spectator: false, score: 7, wins: 0 },
+        { id: 'p2', nickname: 'Bob', color: '#E53935', connected: true, spectator: false, score: 0, wins: 0 },
       ],
       hostId: 'p1',
       round: { id: 42, index: 0, board: BOARD, startsAt: 10_000, endsAt: 130_000 },
@@ -130,8 +130,8 @@ describe('player connections', () => {
       phase: 'round',
       settings: state.settings,
       players: [
-        { id: 'p1', nickname: 'Alice', color: '#FFFFFF', connected: true, spectator: false, score: 7 },
-        { id: 'p2', nickname: 'Bob', color: '#E53935', connected: true, spectator: false, score: 0 },
+        { id: 'p1', nickname: 'Alice', color: '#FFFFFF', connected: true, spectator: false, score: 7, wins: 0 },
+        { id: 'p2', nickname: 'Bob', color: '#E53935', connected: true, spectator: false, score: 0, wins: 0 },
       ],
       hostId: 'p1',
       round: { id: 42, index: 0, board: BOARD, startsAt: 10_000, endsAt: 130_000 },

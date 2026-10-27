@@ -37,7 +37,7 @@ describe('join', () => {
     expect(sentTo(r.effects, '*')).toEqual([
       {
         type: 'players',
-        players: [{ id: ana.id, nickname: 'Ana', color: '#E53935', connected: true, spectator: false, score: 0 }],
+        players: [{ id: ana.id, nickname: 'Ana', color: '#E53935', connected: true, spectator: false, score: 0, wins: 0 }],
         hostId: r.state.hostId,
       },
     ]);

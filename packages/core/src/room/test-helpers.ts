@@ -45,6 +45,7 @@ export function makePlayer(id: string, extra: Partial<Player> = {}): Player {
     connId: `conn-${id}`,
     spectator: false,
     score: 0,
+    wins: 0,
     found: [],
     ...extra,
   };

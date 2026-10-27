@@ -33,6 +33,7 @@ export const handleJoin: Handler<'join'> = ({ state, conn, now, deps }, msg) => 
     connId: conn.id,
     spectator: state.phase === 'round' || state.phase === 'results',
     score: 0,
+    wins: 0,
     found: [],
   };
   const next: RoomState = {

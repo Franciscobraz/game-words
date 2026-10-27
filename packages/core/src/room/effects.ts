@@ -91,6 +91,7 @@ export function playerInfo(p: Player): PlayerInfo {
     connected: p.connected,
     spectator: p.spectator,
     score: p.score,
+    wins: p.wins,
   };
 }
 

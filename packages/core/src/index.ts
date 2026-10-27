@@ -22,6 +22,7 @@ export * from './room/round.ts';
 export * from './room/settings.ts';
 export * from './room/state.ts';
 export * from './room/submit.ts';
+export * from './room/wins.ts';
 export * from './scoring.ts';
 export * from './solver.ts';
 export * from './spellings.ts';

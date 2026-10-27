@@ -111,6 +111,8 @@ export interface PlayerInfo {
   spectator: boolean;
   /** Accumulated score of the match. */
   score: number;
+  /** Matches won since the room opened; `crownedPlayers` picks the leaders (WINS-01). */
+  wins: number;
 }
 
 /** The current round: board and server timestamps (ms since epoch). */
