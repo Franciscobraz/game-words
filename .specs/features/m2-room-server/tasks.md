@@ -243,10 +243,10 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 **Done when**:
 
-- [ ] Um caso por linha da tabela fase → comandos válidos, com `wrong-phase` para cada comando fora da fase (L-007)
-- [ ] C3-C5, C47, C59-C62, C73, C77, C79 passam
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Um caso por linha da tabela fase → comandos válidos, com `wrong-phase` para cada comando fora da fase (L-007)
+- [x] C3-C5, C47, C59-C62, C73, C77, C79 passam
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick
