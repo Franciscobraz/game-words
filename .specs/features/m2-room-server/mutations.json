@@ -1,0 +1,23 @@
+[
+  {
+    "file": "packages/core/src/room/effects.ts",
+    "old": "wins: p.wins,",
+    "new": "wins: p.wins, found: p.found,",
+    "proof": "npx vitest run packages/server/test/match.test.ts -t \"never sends round words to phones before the results\"",
+    "label": "player view leaks each player's round words in players and welcome"
+  },
+  {
+    "file": "packages/server/src/room-do.ts",
+    "old": "await this.dropStaleConnections();",
+    "new": "void 0;",
+    "proof": "npx vitest run packages/server/test/persistence.test.ts -t \"rebuilds a room mid-round after eviction\"",
+    "label": "rebuilt room keeps players whose sockets died marked connected"
+  },
+  {
+    "file": "packages/server/wrangler.jsonc",
+    "old": "\"run_worker_first\": true",
+    "new": "\"run_worker_first\": false",
+    "proof": "npx vitest run packages/server/e2e/assets.test.ts -t \"answers 404 to any language pack file over HTTP\"",
+    "label": "static assets served before the Worker (pack public over HTTP)"
+  }
+]
