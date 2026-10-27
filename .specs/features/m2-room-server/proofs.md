@@ -1,8 +1,8 @@
 # m2-room-server proofs
 
-**HEAD**: d7017c6
+**HEAD**: 1bd8f22
 **Tree**: clean
-**Result**: 93 pass, 0 fail; mutations 0 killed, 0 not
+**Result**: 94 pass, 0 fail; mutations 0 killed, 0 not
 
 | Check | Proof | Ran | Passed | Result |
 | --- | --- | --- | --- | --- |
@@ -95,6 +95,7 @@
 | C90 | `npx vitest run packages/core/src/room/wins.test.ts -t "crowns every player with the most wins and nobody at 0"` | 6 | 6 | pass |
 | C91 | `npx vitest run packages/server/test/persistence.test.ts -t "keeps wins across reconnection and eviction"` | 1 | 1 | pass |
 | C92 | `npx vitest run packages/core/src/room/flow.test.ts -t "kick discards the player's wins"` | 1 | 1 | pass |
+| C93 | `npx vitest run packages/server/e2e/assets.test.ts -t "answers 404 to any language pack file over HTTP"` | 5 | 5 | pass |
 | C83 | `npx vitest run packages/server/test/alarms.test.ts -t "ends the round on the alarm with no socket open"` | 1 | 1 | pass |
 | Build | `npx tsc -b` | - | - | pass |
 | Build | `npx vitest run` | - | - | pass |
