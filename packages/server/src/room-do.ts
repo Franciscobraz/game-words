@@ -14,6 +14,7 @@ import { DurableObject } from 'cloudflare:workers';
 import { syncAlarm } from './alarms.ts';
 import type { Env } from './env.ts';
 import { loadPack } from './pack-loader.ts';
+import { loadRoom, saveKeys } from './storage.ts';
 import { CLOSE_CODE, randomToken, roomNotFound } from './socket.ts';
 
 /**
@@ -34,7 +35,8 @@ export class RoomDO extends DurableObject<Env> {
     // Answered by the runtime without waking the object (RECON-01 AC 6).
     ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair('ping', 'pong'));
     void ctx.blockConcurrencyWhile(async () => {
-      this.state = (await ctx.storage.get<RoomState>('room')) ?? null;
+      this.state = await loadRoom(ctx.storage);
+      await this.dropStaleConnections();
     });
   }
 
@@ -46,9 +48,24 @@ export class RoomDO extends DurableObject<Env> {
     if (this.state !== null && !this.state.closed) return null;
     const tvToken = randomToken();
     this.state = createRoom(code, tvToken, this.clock(), cfg);
-    void this.ctx.storage.put('room', this.state);
+    saveKeys(this.ctx.storage, this.state, ['room']);
     await syncAlarm(this.ctx.storage, this.state);
     return { tvToken };
+  }
+
+  /**
+   * After a restart that lost sockets (hibernation keeps them), the TV and players
+   * whose connection is gone are disconnected, as if their socket had closed.
+   */
+  private async dropStaleConnections(): Promise<void> {
+    if (this.state === null) return;
+    const live = new Set(this.ctx.getWebSockets().map((ws) => connOf(ws).id));
+    const stale: ConnRef[] = [];
+    if (this.state.tvConn !== null && !live.has(this.state.tvConn)) stale.push({ id: this.state.tvConn, role: 'tv' });
+    for (const p of this.state.players) {
+      if (p.connId !== null && !live.has(p.connId)) stale.push({ id: p.connId, role: 'player', playerId: p.id });
+    }
+    for (const conn of stale) await this.input({ kind: 'disconnect', conn });
   }
 
   /** The WebSocket upgrade of a client; it starts `pending` until its `hello`. */
@@ -135,7 +152,7 @@ export class RoomDO extends DurableObject<Env> {
       case 'close':
         return close(this.socket(effect.to.id));
       case 'persist':
-        void this.ctx.storage.put('room', this.state);
+        if (this.state !== null) saveKeys(this.ctx.storage, this.state, effect.keys);
         return;
       case 'close-room':
         for (const ws of this.ctx.getWebSockets()) close(ws);

@@ -85,3 +85,8 @@ export async function startRound(host: Phone, clients: Client[]): Promise<RoundS
   for (const c of [host.client, ...clients]) start = await c.skipTo('round-start');
   return start!;
 }
+
+/** The room's state in memory, as the running Durable Object holds it. */
+export async function liveState(code: string): Promise<RoomState | null> {
+  return runInDurableObject(stubOf(code), (room: RoomDO) => (room as unknown as { state: RoomState | null }).state);
+}
