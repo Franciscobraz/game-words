@@ -14,6 +14,7 @@ import {
 import { handleKick, handleTransferHost, HOST_COMMANDS, isHost } from './host.ts';
 import { handleJoin } from './join.ts';
 import { type ClientMessage, type ClientMessageType, encodeHashFrame, type Phase, parseClientMessage } from './protocol.ts';
+import { handleSettings } from './settings.ts';
 import type { RoomState } from './state.ts';
 
 /**
@@ -155,6 +156,7 @@ const HANDLERS: { [T in ClientMessageType]?: Handler<T> } = {
   join: handleJoin,
   'transfer-host': handleTransferHost,
   kick: handleKick,
+  settings: handleSettings,
 };
 
 function welcomeBase(state: RoomState) {
