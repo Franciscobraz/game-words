@@ -12,6 +12,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 **Status**: Approved
 **Approved**: 2026-10-27 - user: "aprovo as tasks do M2, execute uma fase por vez com subagentes e pare entre as fases"
 **Amended**: 2026-10-27 - nova Phase 4 (T27-T28) para "Voltar ao lobby" e "Jogar de novo" (spec RES-01 AC 7 e 10, M2-Q8/Q9); o servidor vira a Phase 5; aguardando aprovação do user
+**Amended**: 2026-10-27 - T29-T30 (vitórias da sessão e coroa, WINS-01) entram na Phase 4; aguardando aprovação do user
 **Mutations**: 3
 **Build**: `npx tsc -b; npx vitest run; npx playwright test`
 
@@ -70,10 +71,10 @@ T7 → T8 → T9 → T10 → T11
 T12 → T13 → T14 → T15 → T16 → T17 → T18
 ```
 
-### Phase 4: Lobby return
+### Phase 4: Lobby return and session wins
 
 ```
-T27 → T28
+T27 → T28 → T29 → T30
 ```
 
 ### Phase 5: Durable Object server
@@ -507,12 +508,53 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 - [ ] O teste antigo do C51 ("play-again returns to the lobby with zeroed scores") é substituído pelo novo nome do C51, porque a spec mudou (M2-Q9)
 - [ ] C51 passa
-- [ ] Gate check passes: `npx tsc -b; npx vitest run; npx playwright test`
+- [ ] Gate check passes: `npx vitest run packages/core`
 - [ ] Test count: anterior + novos; o único teste removido é o substituído acima
 
 **Tests**: unit
-**Gate**: build
+**Gate**: quick
 **Commit**: `feat(core): play again starts a new match`
+
+---
+
+### T29: Session wins and crown rule
+
+**What**: Campo `wins` no jogador (estado) e no `PlayerInfo` (protocolo), presente em toda lista de jogadores para TV e celulares, e `crownedPlayers(players)`: todos com o maior número de vitórias, nenhum quando o maior é 0.
+**Where**: `packages/core/src/room/wins.ts`
+**Depends on**: T28
+**Reuses**: `PlayerInfo` de `protocol.ts`, visões por papel de `machine.ts`
+**Requirement**: WINS-01
+
+**Done when**:
+
+- [ ] Casos da coroa: um líder, empate de dois, todos com 0, um só jogador (L-007)
+- [ ] C88, C90 passam
+- [ ] Gate check passes: `npx vitest run packages/core`
+- [ ] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(core): session wins and crown rule`
+
+---
+
+### T30: Count wins at the podium
+
+**What**: Ao enviar o pódio de uma partida completa, somar 1 vitória a cada jogador com o maior placar (empatados todos; nenhum com placar máximo 0); `back-to-lobby` antes do pódio não soma; `play-again` e `back-to-lobby` zeram placares e mantêm vitórias; `kick` descarta as vitórias.
+**Where**: `packages/core/src/room/flow.ts`
+**Depends on**: T29
+**Reuses**: pódio de `flow.ts` (T17), `kick` de `host.ts` (T10)
+**Requirement**: WINS-01
+
+**Done when**:
+
+- [ ] C85-C87, C89, C92 passam
+- [ ] Gate check passes: `npx tsc -b; npx vitest run; npx playwright test`
+- [ ] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: build
+**Commit**: `feat(core): count session wins at the podium`
 
 ---
 
@@ -522,7 +564,7 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 **What**: Workspace `@bwords/server` com `wrangler.jsonc` (DO `ROOM` SQLite, `ASSETS`, vars de expiração, `compatibility_date` ≥ 2026-04-07 suportada pelo wrangler 4.153), `tsconfig`, projeto Vitest com `@cloudflare/vitest-plugin` e o pacote de fixture dos testes. O teste "hello" prova que um DO de teste carrega o pacote de fixture.
 **Where**: `packages/server/test/fixture-pack.ts`
-**Depends on**: T28
+**Depends on**: T30
 **Reuses**: `spikes/m0/wrangler.jsonc`, `buildDawg`, `buildSpellings`
 **Requirement**: PERSIST-01
 
@@ -633,7 +675,7 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 **Done when**:
 
-- [ ] C54-C56 passam
+- [ ] C54-C56, C91 passam
 - [ ] Gate check passes: `npx vitest run`
 - [ ] Test count: anterior + novos, nenhum removido
 
@@ -928,6 +970,30 @@ Proof: `npx vitest run packages/core/src/room/results.test.ts -t "has no longest
 **C84** - `back-to-lobby` na contagem, na rodada, no resultado ou no pódio cancela a rodada sem resultado, descarta as palavras, zera os placares e volta ao lobby com os mesmos jogadores, cores, configurações e anfitrião (RES-01, AC 10)
 Proof: `npx vitest run packages/core/src/room/flow.test.ts -t "back-to-lobby cancels the match and returns to the lobby"`
 
+**C85** - No pódio de uma partida completa, todo jogador com o maior placar acumulado, inclusive empatados, ganha 1 vitória (WINS-01, AC 1)
+Proof: `npx vitest run packages/core/src/room/flow.test.ts -t "awards a win to every top scorer at the podium"`
+
+**C86** - Com o maior placar da partida em 0, ninguém ganha vitória (WINS-01, AC 2)
+Proof: `npx vitest run packages/core/src/room/flow.test.ts -t "awards no win when the top score is 0"`
+
+**C87** - Uma partida cancelada com `back-to-lobby` antes do pódio não dá vitória a ninguém (WINS-01, AC 3)
+Proof: `npx vitest run packages/core/src/room/flow.test.ts -t "awards no win to a cancelled match"`
+
+**C88** - Toda lista de jogadores para a TV e os celulares traz as vitórias de cada jogador, conectado ou não (WINS-01, AC 4)
+Proof: `npx vitest run packages/core/src/room/wins.test.ts -t "lists every player's wins to the TV and phones"`
+
+**C89** - `play-again` e `back-to-lobby` zeram os placares e mantêm as vitórias (WINS-01, AC 5)
+Proof: `npx vitest run packages/core/src/room/flow.test.ts -t "keeps wins when scores reset"`
+
+**C90** - A coroa vai para todos os jogadores com o maior número de vitórias, e para ninguém enquanto o maior é 0 (WINS-01, AC 6)
+Proof: `npx vitest run packages/core/src/room/wins.test.ts -t "crowns every player with the most wins and nobody at 0"`
+
+**C91** - As vitórias continuam depois de uma reconexão e de um `evictDurableObject` (WINS-01, AC 7)
+Proof: `npx vitest run packages/server/test/persistence.test.ts -t "keeps wins across reconnection and eviction"`
+
+**C92** - Um jogador expulso perde as vitórias e volta com 0 se entrar de novo (WINS-01, AC 8)
+Proof: `npx vitest run packages/core/src/room/flow.test.ts -t "kick discards the player's wins"`
+
 **C83** - Com todos desconectados, a rodada termina no alarm normalmente (edge case)
 Proof: `npx vitest run packages/server/test/alarms.test.ts -t "ends the round on the alarm with no socket open"`
 
@@ -949,8 +1015,8 @@ Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5
 Phase 1:  T1 ---→ T2 ---→ T3 ---→ T4 ---→ T5 ---→ T6
 Phase 2:  T7 ---→ T8 ---→ T9 ---→ T10 --→ T11
 Phase 3:  T12 --→ T13 --→ T14 --→ T15 --→ T16 --→ T17 --→ T18
-Phase 4:  T27 --→ T28
+Phase 4:  T27 --→ T28 --→ T29 --→ T30
 Phase 5:  T19 --→ T20 --→ T21 --→ T22 --→ T23 --→ T24 --→ T25 --→ T26
 ```
 
-Cada fase é um batch de subagente (6, 5, 7, 2 e 8 tarefas). Os batches rodam em sequência e o orquestrador para entre eles para mostrar o resultado e perguntar, como no M1.
+Cada fase é um batch de subagente (6, 5, 7, 4 e 8 tarefas). Os batches rodam em sequência e o orquestrador para entre eles para mostrar o resultado e perguntar, como no M1.

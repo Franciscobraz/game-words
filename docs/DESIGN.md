@@ -77,6 +77,7 @@ Jogo de encontrar palavras em tabuleiro de letras, inspirado no Boggle Party (Ne
   - **`0` = nunca expira.**
   - O estado da sala é persistido no storage do Durable Object a cada mudança. Nada se perde se a TV entrar em espera ou se o servidor hibernar.
 - **Placar:** fica só na sala no MVP, sem persistência entre salas.
+- **Vitórias da sessão:** a sala conta quantas partidas completas cada jogador venceu (maior placar no pódio; empatados vencem todos; partida cancelada não conta). O lobby da TV e dos celulares mostra as vitórias de cada um, e quem tem mais vitórias (todos, no empate) ganha um ícone de coroa ao lado do nome. As vitórias valem enquanto a sala existir.
 
 ---
 
@@ -97,7 +98,7 @@ Jogo de encontrar palavras em tabuleiro de letras, inspirado no Boggle Party (Ne
 ## 4. TV (tela principal)
 
 ### 4.1 Lobby
-- QR code grande, código da sala, lista de jogadores com suas cores e as configurações espelhadas ao vivo.
+- QR code grande, código da sala, lista de jogadores com suas cores, vitórias da sessão e coroa (ver §2), e as configurações espelhadas ao vivo. Jogadores desconectados aparecem esmaecidos.
 
 ### 4.2 Rodada
 - Tabuleiro grande, timer e o **número** de palavras de cada jogador ao vivo, sem revelar quais são.

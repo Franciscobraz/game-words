@@ -6,6 +6,8 @@
 
 **Amended**: 2026-10-27 - voltar ao lobby e jogar de novo (HOST-01 AC 4; RES-01 AC 7, 9 e 10; PROTO-01 AC 6); decisões M2-Q8 e M2-Q9
 
+**Amended**: 2026-10-27 - vitórias da sessão e coroa no lobby (WINS-01); decisões M2-Q10 a M2-Q13
+
 ## Problem Statement
 
 O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solver, validação, pontuação e maior palavra), mas só para jogar sozinho numa página local. Ainda não existe sala, nem jeito de vários celulares e uma TV jogarem juntos. O M2 constrói o servidor autoritativo: um Durable Object por sala, que roda a partida inteira e guarda o estado de forma que nada se perca em reconexões, hibernation ou queda da TV. Os marcos 3 (celular) e 4 (TV) passam a ser só clientes desse protocolo.
@@ -24,6 +26,7 @@ O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solv
 | Telas do celular e da TV, QR code, áudio, Wake Lock | Marcos 3 e 4 |
 | Uso dos salted hashes no celular (optimistic feedback) | O M2 só os envia; o uso é do M3 |
 | Filtro e debounce dos envios no celular | Comportamento do cliente, M3: enviar só caminhos cujo hash bate e ainda não achados, agrupados com debounce de 500 ms, e na hora nos últimos 3 s da rodada (M2-Q5) |
+| Desenho da lista do lobby, da coroa e do estado esmaecido | Telas do M3 (celular) e do M4 (TV); o M2 entrega as vitórias, o estado de conexão e a regra da coroa |
 | Apresentação do fast mode | O servidor só guarda e transmite a opção; a apresentação é do M4 |
 | Deploy na Cloudflare, CI/CD | Marco 5; decisão "Testes no workerd" |
 | Página de debug ou cliente manual | Decisão "Testes no workerd" |
@@ -59,6 +62,12 @@ O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solv
 | AD-001 - Idioma do código | Todo o código e o protocolo usam termos em inglês, inclusive o vocabulário do jogo; os documentos explicam em português | O idioma do jogo muda com o pacote de dicionário; o texto exibido vem do i18n | y - user: "o codigo deve ter todos os termos em ingles, mas pode manter a explicação dos documentos em portuguez" |
 | M2-Q8 - Voltar ao lobby no meio da partida | Novo comando de anfitrião `back-to-lobby`, válido na contagem, na rodada, no resultado e no pódio: cancela a rodada sem resultado, descarta as palavras e zera o placar | O anfitrião precisa abandonar uma partida e esperar mais gente no lobby | y - user: "Descarta e zera (Recomendado)" |
 | M2-Q9 - Jogar de novo | `play-again` continua separado: no pódio, zera o placar e começa direto a contagem de uma nova partida com as mesmas configurações e jogadores | São duas funcionalidades diferentes | y - user: "São duas funcionalidades diferentes, o play-again se mantem como está e começa uma nova rodada com as mesmas configurações atuais e os participantes. o back-to-lobby volta para a pagina de lobby, se existir uma rodada em andamento ela é cancelada e os pontos zerados." |
+| M2-Q10 - O que é vitória | Maior placar acumulado ao fim de uma partida completa (pódio); empatados no 1º lugar ganham todos; partida cancelada não conta | Regra simples e justa | y - user: "Maior placar no pódio (Recomendado)" |
+| M2-Q11 - Coroa no empate | Todos com o maior número de vitórias têm coroa; ninguém enquanto todos têm 0 | Consistente com a regra de vitória | y - user: "Todos os empatados (Recomendado)" |
+| M2-Q12 - Onde aparece | Na lista do lobby da TV e dos celulares | O servidor manda as vitórias para todos | y - user: "TV e celulares (Recomendado)" |
+| M2-Q13 - Desconectados no lobby | Continuam na lista, esmaecidos, com as vitórias | Mantém o que a spec já dizia; reconectar não perde nada | y - user: "Sim, esmaecidos (Recomendado)" |
+| Partida com placar máximo 0 | Ninguém ganha vitória | Com 0 pontos, todos empatariam e "ganhariam" sem jogar | n - default do agente, a confirmar |
+| Vida das vitórias | Valem enquanto a sala existir; somem quando ela fecha ou expira | DESIGN §2: placar só na sala, sem persistência entre salas | y - consequência do DESIGN §2 |
 | M2-Q5 - Envios do celular | Uma mensagem leva um ou mais caminhos; o limite é de 10 caminhos/s; o celular (M3) só envia caminhos cujo hash bate e que ainda não achou, com debounce de 500 ms e envio imediato nos últimos 3 s | Com o optimistic feedback, o servidor não precisa responder na hora; menos mensagens ao DO | y - user: "O celular só envia caminhos cujo hash bate e que ainda não achou, agrupados numa mensagem com debounce de 500 ms. No último 3 s da rodada envia na hora. O limite vira 10 caminhos/s." |
 | M2-Q6 - Contagem na TV | No máximo 1 atualização por segundo, só quando muda; no fim da rodada, as contagens finais vão antes do resultado | TV antiga re-renderiza no máximo 1x/s, sem perder o último dado | y - user: "No máximo 1x por segundo [...] mas garantindo que ao final da partida não tenha perda de dados." |
 | M2-Q7 - Formato dos hashes | Prefixo de 6 bytes do SHA-256 (salt + palavra), em binário (~25 KB num 6x6 com ~4.240 soluções) | SHA-256 completo em hex daria ~270 KB por celular; falso ✓ ≈ 1,5e-11 e o servidor confirma | y - user: "6 bytes binário (Recomendado)" |
@@ -198,6 +207,27 @@ O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solv
 
 ---
 
+### P1: Vitórias da sessão ⭐ MVP
+
+**User Story**: Como grupo, queremos ver no lobby quantas partidas cada um ganhou desde que a sala abriu, com uma coroa para quem lidera.
+
+**Why P1**: Pedido do user para a página de lobby; o servidor precisa contar e guardar as vitórias para a TV (M4) e os celulares (M3) mostrarem.
+
+**Acceptance Criteria**:
+
+1. WHEN o pódio de uma partida completa é enviado THEN o servidor SHALL somar 1 vitória a cada jogador com o maior placar acumulado da partida, incluindo todos os empatados no 1º lugar
+2. IF o maior placar acumulado da partida é 0 THEN o servidor SHALL não somar vitória a ninguém
+3. IF a partida é cancelada com "Voltar ao lobby" antes do pódio THEN o servidor SHALL não somar vitória a ninguém
+4. The servidor SHALL incluir o número de vitórias de cada jogador, conectado ou não, em toda lista de jogadores enviada à TV e aos celulares
+5. WHEN o anfitrião escolhe "Jogar de novo" ou "Voltar ao lobby" THEN o servidor SHALL zerar os placares e manter as vitórias
+6. The `core` SHALL exportar a regra da coroa: os jogadores com o maior número de vitórias da sala, todos os empatados, e nenhum enquanto o maior número for 0
+7. WHEN um jogador reconecta ou o Durable Object é reconstruído do storage THEN o servidor SHALL manter as vitórias de cada jogador
+8. WHEN um jogador é expulso THEN o servidor SHALL descartar as vitórias dele, e ele volta com 0 se entrar de novo
+
+**Independent Test**: Jogar duas partidas completas com dois jogadores, cancelar uma terceira, e conferir as vitórias na lista de jogadores e a coroa.
+
+---
+
 ### P1: Reconexão ⭐ MVP
 
 **User Story**: Como jogador, quero voltar à sala depois de cair sem perder nada.
@@ -298,6 +328,7 @@ O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solv
 | PERSIST-01 | P1: Persistência e hibernation (AC 1-4) | Design | Pending |
 | EXP-01 | P1: Expiração (AC 1-6) | Design | Pending |
 | PROTO-01 | P1: Protocolo (AC 1-7) | Design | Pending |
+| WINS-01 | P1: Vitórias da sessão (AC 1-8) | Design | Pending |
 
 **Coverage:** 10 total, 0 mapped to tasks, 10 unmapped ⚠️ (mapeados na fase Tasks)
 

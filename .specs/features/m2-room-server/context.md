@@ -64,6 +64,14 @@ Decisões (2026-10-27):
 
 Não é gargalo: CPU da validação (O(tamanho da palavra)), geração do próximo tabuleiro durante o resultado (p95 14 ms no M0), clock sync e heartbeat (poucas mensagens; `ping`/`pong` não acorda o DO). Os limites exatos do plano Free (requests, duration, rows written) são conferidos no Design.
 
+### Vitórias da sessão (WINS-01, 2026-10-27)
+
+- Pedido do user: "Eu tenho um novo requisito para a pagina de lobby, nela deve mostrar todos os usuários conectados e o numero de vitorias  daquela sessão por usuário, no usuário que tiver o numero maior de vitorias, fica um icone de coroa ao lado do nome."
+- Vitória = maior placar no pódio de uma partida completa; empatados ganham todos; partida cancelada não conta. user: "Maior placar no pódio (Recomendado)"
+- Coroa para todos os empatados no maior número de vitórias; ninguém com 0. user: "Todos os empatados (Recomendado)"
+- Aparece no lobby da TV e dos celulares. user: "TV e celulares (Recomendado)"
+- Desconectados continuam na lista, esmaecidos. user: "Sim, esmaecidos (Recomendado)"
+
 ### Agent's Discretion
 
 Nenhuma área delegada até agora.
