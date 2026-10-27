@@ -1,6 +1,6 @@
 # m2-room-server proofs
 
-**HEAD**: 27ead32
+**HEAD**: fe7ee0f
 **Tree**: clean
 **Result**: 97 pass, 0 fail; mutations 3 killed, 0 not
 

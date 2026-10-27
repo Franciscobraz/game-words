@@ -1,6 +1,6 @@
 # m1-dictionary-pack proofs
 
-**HEAD**: dbd2ab3
+**HEAD**: fe7ee0f
 **Tree**: clean
 **Result**: 64 pass, 0 fail; mutations 3 killed, 0 not
 
