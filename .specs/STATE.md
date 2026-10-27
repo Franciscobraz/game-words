@@ -19,7 +19,7 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
   - M1 (`m1-dictionary-pack`): Done, verificado (`validate_verification` 0 erros, 64 provas, 3 mutações mortas).
   - M2 (`m2-room-server`): Done, verificado (`validate_verification` 0 erros, 95 provas, 3 mutações mortas; Verifier achou 3 problemas, todos fechados).
 - **Branch:** `main`. `origin/main` está em `fec4f70` (push de 2026-10-27, pedido pelo user, com M0, M1 e os documentos do M2).
-- **Ferramenta de debug:** `npm run debug` sobe o `wrangler dev` (8787) e a página `tools/debug` em http://localhost:5174 (commit `f7bb7e4`). Lista de jogadores não atualiza o placar no resultado/pódio (o placar real aparece nas listas de resultado e pódio).
+- **Ferramenta de debug:** `npm run debug` sobe o `wrangler dev` (8787) e a página `tools/debug` em http://localhost:5174 (commit `f7bb7e4`). Lista de jogadores atualiza placar e vitórias depois do resultado e do pódio (T32, `27ead32`).
 - **Próximo passo:** especificar o M3 (celular).
 - **Pendências conhecidas:** um `submit` sem nenhuma palavra aceita atualiza `lastActionAt` só em memória (não persiste); `proofs.md` do M2 em `3a0e586`.
 - **Modo de execução preferido pelo usuário:** subagentes, uma fase por vez, parando para mostrar o resultado e perguntar antes da próxima fase.
