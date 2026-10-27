@@ -23,8 +23,11 @@ export type PersistKey = 'room' | 'round:solutions' | 'round:next' | `found:${st
 export type Effect =
   /** Sends a JSON message to one connection. */
   | { kind: 'send'; to: ConnRef; msg: ServerMessage }
-  /** Sends a JSON message to every connection past `hello`: the TV, guests and players. */
-  | { kind: 'broadcast'; msg: ServerMessage }
+  /**
+   * Sends a JSON message to every connection past `hello` (the TV, guests and
+   * players), or only to those whose role is in `roles`.
+   */
+  | { kind: 'broadcast'; msg: ServerMessage; roles?: readonly ConnRef['role'][] }
   /** Sends the binary hash frame of the current round to one phone. */
   | { kind: 'send-hashes'; to: ConnRef; frame: ArrayBuffer }
   /** The connection with `conn.id` now has this identity. */
@@ -32,7 +35,12 @@ export type Effect =
   /** Closes one connection; a `closed` or `error` send precedes it when there is a reason. */
   | { kind: 'close'; to: ConnRef }
   /** Writes these storage keys from the new state, before any send reaches a client. */
-  | { kind: 'persist'; keys: PersistKey[] };
+  | { kind: 'persist'; keys: PersistKey[] }
+  /**
+   * Prepares a round for the room's current settings (`prepareRound` with a fresh
+   * seed and salt) and feeds it back to `step` as a `prepared` input.
+   */
+  | { kind: 'prepare-next' };
 
 export interface StepResult {
   state: RoomState;

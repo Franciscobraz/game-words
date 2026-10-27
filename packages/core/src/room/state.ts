@@ -88,6 +88,8 @@ export interface RoomState {
   /** Prepared before `start`, or while the results show (RES-01 AC 4). */
   nextRound: PreparedBoard | null;
   nextSolutions: RoundSolutions | null;
+  /** The host asked for the next round before its board was prepared; it starts when the board arrives. */
+  pendingStart: boolean;
   tvCounts: { dirty: boolean; lastSentAt: number };
 }
 
@@ -126,6 +128,7 @@ export function createRoom(code: string, tvToken: string, now: number, cfg: Room
     solutions: null,
     nextRound: null,
     nextSolutions: null,
+    pendingStart: false,
     tvCounts: { dirty: false, lastSentAt: 0 },
   };
 }

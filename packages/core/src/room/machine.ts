@@ -14,6 +14,8 @@ import {
 import { handleKick, handleTransferHost, HOST_COMMANDS, isHost } from './host.ts';
 import { handleJoin } from './join.ts';
 import { type ClientMessage, type ClientMessageType, encodeHashFrame, type Phase, parseClientMessage } from './protocol.ts';
+import type { PreparedRound } from './prepare.ts';
+import { handleStart, onPrepared } from './round.ts';
 import { handleSettings } from './settings.ts';
 import type { RoomState } from './state.ts';
 
@@ -23,12 +25,16 @@ import type { RoomState } from './state.ts';
  * the `now` parameter: nothing here reads the time.
  */
 
-/** What reaches the room. `data` is the raw text frame; `step` parses it. */
+/**
+ * What reaches the room. `data` is the raw text frame; `step` parses it.
+ * `prepared` carries a round the adapter prepared after a `prepare-next` effect.
+ */
 export type RoomInput =
   | { kind: 'message'; conn: ConnRef; data: string }
   | { kind: 'connect'; conn: ConnRef }
   | { kind: 'disconnect'; conn: ConnRef }
-  | { kind: 'alarm' };
+  | { kind: 'alarm' }
+  | { kind: 'prepared'; round: PreparedRound };
 
 const ALL_PHASES: readonly Phase[] = ['lobby', 'round', 'results', 'podium'];
 
@@ -157,6 +163,7 @@ const HANDLERS: { [T in ClientMessageType]?: Handler<T> } = {
   'transfer-host': handleTransferHost,
   kick: handleKick,
   settings: handleSettings,
+  start: handleStart,
 };
 
 function welcomeBase(state: RoomState) {
@@ -241,5 +248,7 @@ export function step(state: RoomState, input: RoomInput, now: number, deps: Room
     case 'alarm':
       // Phase 3 (deadlines): round end, host handover, TV counts flush, expiry.
       return unchanged(state);
+    case 'prepared':
+      return onPrepared(state, input.round, now);
   }
 }
