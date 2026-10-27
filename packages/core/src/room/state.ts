@@ -76,6 +76,8 @@ export interface RoomState {
   players: Player[];
   hostId: string | null;
   hostOfflineSince: number | null;
+  /** The host was offline 30 s with nobody else connected: the first player to connect takes the role. */
+  hostHandoffDue: boolean;
   tvOfflineSince: number | null;
   /** Last player or host action; clock sync and heartbeat never touch it. */
   lastActionAt: number;
@@ -126,6 +128,7 @@ export function createRoom(code: string, tvToken: string, now: number, cfg: Room
     players: [],
     hostId: null,
     hostOfflineSince: null,
+    hostHandoffDue: false,
     tvOfflineSince: now,
     lastActionAt: now,
     joinCount: 0,

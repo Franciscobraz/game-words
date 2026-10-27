@@ -11,6 +11,7 @@ import {
   unchanged,
   welcomeBase,
 } from './effects.ts';
+import { onAlarm } from './deadlines.ts';
 import { handleCloseRoom, handleNext, handlePlayAgain, podiumMessage } from './flow.ts';
 import { handleKick, handleTransferHost, HOST_COMMANDS, isHost } from './host.ts';
 import { handleJoin } from './join.ts';
@@ -130,10 +131,14 @@ const handleHello: Handler<'hello'> = (ctx, msg) => {
   const effects: Effect[] = [];
   if (player.connId !== null) effects.push(...replace({ id: player.connId, role: 'player', playerId: player.id }));
   const me: ConnRef = { id: conn.id, role: 'player', playerId: player.id };
+  // After a handoff with nobody connected, the first player back takes the host role (HOST-01 AC 6).
+  const hostId = state.hostHandoffDue ? player.id : state.hostId;
   const next: RoomState = {
     ...state,
     players: state.players.map((p) => (p.id === player.id ? { ...p, connected: true, connId: conn.id } : p)),
-    hostOfflineSince: state.hostId === player.id ? null : state.hostOfflineSince,
+    hostId,
+    hostOfflineSince: hostId === player.id ? null : state.hostOfflineSince,
+    hostHandoffDue: false,
   };
   const inRound = next.phase === 'round' && next.round !== null;
   effects.push(
@@ -257,8 +262,7 @@ export function step(state: RoomState, input: RoomInput, now: number, deps: Room
       // A new socket waits for its `hello`; the room has nothing to do yet.
       return unchanged(state);
     case 'alarm':
-      // Phase 3 (deadlines): round end, host handover, TV counts flush, expiry.
-      return unchanged(state);
+      return onAlarm(state, now, deps);
     case 'prepared':
       return onPrepared(state, input.round, now);
   }
