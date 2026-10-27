@@ -1,7 +1,7 @@
 # M2 Room Server Design
 
 **Spec**: `.specs/features/m2-room-server/spec.md`
-**Status**: Draft
+**Status**: Approved - 2026-10-27 - user: "ok concordo com a opção A"
 
 ---
 
@@ -15,7 +15,7 @@
 | B - Lógica dentro da classe do DO | Os handlers do DO mudam o estado e mandam mensagens direto | Menos indireção | Toda regra só se testa no workerd, mais lento e sem controle fino do relógio; amarra as regras ao runtime da Cloudflare |
 | C - Um DO por sala + um DO "registro" de códigos | Um DO central sorteia e reserva os códigos | Listagem global de salas | Ponto central e uma requisição a mais por sala; o `idFromName(code)` já garante a unicidade sem registro |
 
-Escolha: **A**. Os testes de integração no workerd (M2-Q2) cobrem o adaptador e uma partida inteira; as regras ficam testadas na camada pura.
+Escolha: **A**, aprovada pelo user ("ok concordo com a opção A") depois de comparar o que a B perderia: testes rápidos com relógio injetado, o `core` independente do runtime (DESIGN §6.3), servidor falso para o M3/M4 e provas sobre todas as mensagens enviadas. Os testes de integração no workerd (M2-Q2) cobrem o adaptador e uma partida inteira; as regras ficam testadas na camada pura.
 
 ### Componentes e fluxo
 
