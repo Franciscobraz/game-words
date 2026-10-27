@@ -11,6 +11,7 @@ import {
   roundInfo,
   unchanged,
 } from './effects.ts';
+import { handleJoin } from './join.ts';
 import { type ClientMessage, type ClientMessageType, encodeHashFrame, type Phase, parseClientMessage } from './protocol.ts';
 import type { RoomState } from './state.ts';
 
@@ -150,6 +151,7 @@ const handleTime: Handler<'time'> = ({ state, conn, now }, msg) =>
 const HANDLERS: { [T in ClientMessageType]?: Handler<T> } = {
   hello: handleHello,
   time: handleTime,
+  join: handleJoin,
 };
 
 function welcomeBase(state: RoomState) {

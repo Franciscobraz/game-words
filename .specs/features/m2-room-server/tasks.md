@@ -264,10 +264,10 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 **Done when**:
 
-- [ ] O 10º jogador entra e o 11º recebe `room-full` (L-001)
-- [ ] C6-C12, C14 passam
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] O 10º jogador entra e o 11º recebe `room-full` (L-001)
+- [x] C6-C12, C14 passam
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick
