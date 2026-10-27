@@ -91,10 +91,10 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 **Done when**:
 
-- [ ] Testes cobrem ROOM-01 AC 2 e o alfabeto sem `I` e `O` (C2, C80)
-- [ ] `packages/core/src/index.ts` exporta `room/codes.ts`
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Testes cobrem ROOM-01 AC 2 e o alfabeto sem `I` e `O` (C2, C80)
+- [x] `packages/core/src/index.ts` exporta `room/codes.ts`
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick
