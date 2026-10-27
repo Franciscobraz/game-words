@@ -17,7 +17,7 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 - **Marcos concluídos:**
   - M0 (`m0-dictionary-spike`): Done, verificado.
   - M1 (`m1-dictionary-pack`): Done, verificado (`validate_verification` 0 erros, 64 provas, 3 mutações mortas).
-- **Branch:** `main`. `origin/main` está em `21757c1`. Os commits do M1 são só locais: o usuário decidiu não publicar por enquanto.
+- **Branch:** `main`. `origin/main` está em `fec4f70` (push de 2026-10-27, pedido pelo user, com M0, M1 e os documentos do M2).
 - **Em andamento:** M2 (`m2-room-server`): spec aprovada e emendada; `design.md` aprovado em 2026-10-27 (abordagem A: regras puras em `core/room`, DO como adaptador).
 - **Próximo passo:** aprovação do `tasks.md` do M2 (26 tarefas em 4 fases, 81 checks); depois, Execute com um subagente por fase e parada entre fases.
 - **Modo de execução preferido pelo usuário:** subagentes, uma fase por vez, parando para mostrar o resultado e perguntar antes da próxima fase.
