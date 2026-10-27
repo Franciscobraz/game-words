@@ -1,6 +1,6 @@
 # m1-dictionary-pack proofs
 
-**HEAD**: c694f1b
+**HEAD**: 91c7872
 **Tree**: clean
 **Result**: 64 pass, 0 fail; mutations 3 killed, 0 not
 
