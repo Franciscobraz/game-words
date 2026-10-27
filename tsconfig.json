@@ -2,6 +2,7 @@
   "files": [],
   "references": [
     { "path": "packages/core" },
+    { "path": "packages/server" },
     { "path": "tools/dict-build" },
     { "path": "spikes/m0" },
     { "path": "spikes/m0/tsconfig.worker.json" },
