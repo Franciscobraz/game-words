@@ -68,20 +68,34 @@ describe('match flow', () => {
   test('next after the last round sends the podium', () => {
     const r = step(inResults({ roundIndex: 1 }), message(host, { type: 'next' }), 70_000, deps);
     expect(r.state.phase).toBe('podium');
-    expect(sentTo(r.effects, '*')).toEqual([
-      {
-        type: 'podium',
-        ranking: [
-          { playerId: 'p2', score: 12 },
-          { playerId: 'p3', score: 8 },
-          { playerId: 'p1', score: 5 },
-        ],
-      },
-    ]);
+    expect(sentTo(r.effects, '*')[0]).toEqual({
+      type: 'podium',
+      ranking: [
+        { playerId: 'p2', score: 12 },
+        { playerId: 'p3', score: 8 },
+        { playerId: 'p1', score: 5 },
+      ],
+    });
+    expect(sentTo(r.effects, '*').map((m) => m.type)).toEqual(['podium', 'players']);
     expect(r.effects).toContainEqual({ kind: 'persist', keys: ['room'] });
     // Whoever connects on the podium gets it after the welcome.
     const tv = step(r.state, message(pending('c-tv2'), { type: 'hello', role: 'tv', token: TV_TOKEN }), 71_000, deps);
     expect(sentTo(tv.effects, 'c-tv2').map((m) => m.type)).toEqual(['welcome', 'podium']);
+  });
+
+  test('sends the updated players list after the results and the podium', () => {
+    // Round end: scores in the list match the new cumulative scores.
+    const ended = step(inResults({ roundIndex: 1 }), message(host, { type: 'next' }), 70_000, deps);
+    const list = sentTo(ended.effects, '*').find((m) => m.type === 'players');
+    expect(list).toBeDefined();
+    if (list?.type !== 'players') throw new Error('no players list');
+    for (const p of ended.state.players) {
+      const info = list.players.find((i) => i.id === p.id);
+      expect(info?.score).toBe(p.score);
+      expect(info?.wins).toBe(p.wins);
+    }
+    // The winner's new win is in the list sent with the podium.
+    expect(list.players.find((i) => i.id === 'p2')?.wins).toBe(1);
   });
 
   /** The podium of a finished match of two rounds, hosted by Bia, with a guest on the join screen. */

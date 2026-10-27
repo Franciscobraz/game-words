@@ -3,7 +3,7 @@ import type { LanguagePack } from '../pack.ts';
 import { findPath } from '../path.ts';
 import { scoreRound, wordPoints } from '../scoring.ts';
 import { countsMessage } from './counts.ts';
-import type { Effect, RoomDeps, StepResult } from './effects.ts';
+import { type Effect, playersMessage, type RoomDeps, type StepResult } from './effects.ts';
 import type { PlayerResult, ResultWord, RoundResultsMessage } from './protocol.ts';
 import { isLastRound } from './round.ts';
 import type { RoomState } from './state.ts';
@@ -70,6 +70,8 @@ export function endRound(state: RoomState, now: number, deps: RoomDeps): StepRes
   const effects: Effect[] = [{ kind: 'persist', keys: ['room'] }];
   if (state.tvConn !== null) effects.push({ kind: 'send', to: { id: state.tvConn, role: 'tv' }, msg: countsMessage(state) });
   effects.push({ kind: 'broadcast', msg });
+  // The players list carries the new scores (RES-01 AC 11).
+  effects.push({ kind: 'broadcast', msg: playersMessage(next) });
   if (!last) effects.push({ kind: 'prepare-next' });
   return { state: next, effects };
 }

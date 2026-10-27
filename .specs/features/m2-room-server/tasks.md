@@ -10,6 +10,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 
 **Design**: `.specs/features/m2-room-server/design.md`
 **Status**: Done
+**Amended**: 2026-10-27 - T32 (lista de jogadores depois do resultado e do pódio, RES-01 AC 11-12); user: "O score não está atualizando" e "na tv no caso as wins que nao contam o podio mostra os pontos corretamente"
 **Amended**: 2026-10-27 - T31 (pacote fora dos assets públicos, PROTO-01 AC 8); user: "faça a correção do dicionario publico a pagina de debug deixa para depois, pois meus tokens estão acabando e so renovam as 17:40"
 **Approved**: 2026-10-27 - user: "aprovo as tasks do M2, execute uma fase por vez com subagentes e pare entre as fases"
 **Amended**: 2026-10-27 - nova Phase 4 (T27-T28) para "Voltar ao lobby" e "Jogar de novo" (spec RES-01 AC 7 e 10, M2-Q8/Q9); o servidor vira a Phase 5; aprovado em 2026-10-27 - user: "Aprovo as tarefas T27-T30, as decisões da fase 3 e o placar 0 sem vitória. Pode seguir com a fase 4."
@@ -81,7 +82,7 @@ T27 → T28 → T29 → T30
 ### Phase 5: Durable Object server
 
 ```
-T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26 → T31
+T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26 → T31 → T32
 ```
 
 ---
@@ -747,6 +748,28 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26 → T31
 
 ---
 
+### T32: Players list after results and podium
+
+**What**: Depois do `round-results` e do `podium`, o servidor reenvia a todas as conexões a lista de jogadores (`players`) com placares e vitórias atualizados. Reverte o default 1 da fase 4.
+**Where**: `packages/core/src/room/results.ts`
+**Depends on**: T31
+**Reuses**: `playersMessage` de `effects.ts`; o pódio em `flow.ts`
+**Requirement**: RES-01
+
+**Done when**:
+
+- [x] Os dois testes novos falham sem a correção e passam com ela
+- [x] Os testes que conferiam a lista exata de mensagens antiga (`deadlines.test.ts`, `flow.test.ts`) passam a esperar o `players` depois do resultado e do pódio
+- [x] C95, C96 passam
+- [x] Gate check passes: `npx tsc -b; npx vitest run; npx playwright test`
+- [x] Test count: 432 → 434, nenhum removido
+
+**Tests**: unit
+**Gate**: build
+**Commit**: `fix(core): resend the players list after results and podium`
+
+---
+
 ## Checks
 
 **C1** - `POST /api/rooms` cria uma sala no lobby e responde com um código de 4 letras de `ABCDEFGHJKLMNPQRSTUVWXYZ` e um token de TV (ROOM-01, AC 1)
@@ -1022,6 +1045,12 @@ Proof: `npx vitest run packages/core/src/room/flow.test.ts -t "kick discards the
 **C93** - Nenhum arquivo do pacote de idioma é servido por HTTP: `/<id>/dict.bin`, `common.bin`, `profanity.bin`, `spellings.bin` e `meta.json` dão 404 (PROTO-01, AC 8)
 Proof: `npx vitest run packages/server/e2e/assets.test.ts -t "answers 404 to any language pack file over HTTP"`
 
+**C95** - Depois do resultado de uma rodada, todas as conexões recebem a lista de jogadores com os placares acumulados novos (RES-01, AC 11)
+Proof: `npx vitest run packages/core/src/room/results.test.ts -t "sends the players list with the new scores after the results"`
+
+**C96** - Depois do pódio, todas as conexões recebem a lista de jogadores com as vitórias novas (RES-01, AC 12)
+Proof: `npx vitest run packages/core/src/room/flow.test.ts -t "sends the updated players list after the results and the podium"`
+
 **C83** - Com todos desconectados, a rodada termina no alarm normalmente (edge case)
 Proof: `npx vitest run packages/server/test/alarms.test.ts -t "ends the round on the alarm with no socket open"`
 
@@ -1030,7 +1059,7 @@ Proof: `npx vitest run packages/server/test/alarms.test.ts -t "ends the round on
 ## Handoff
 
 **Settled mid-build:** uma fase por vez, cada uma num subagente, com parada e pergunta ao user entre fases - user: "aprovo as tasks do M2, execute uma fase por vez com subagentes e pare entre as fases"; T19 (harness): o pacote chega ao DO pelo ASSETS de verdade. O `vitest.config.ts` escreve os arquivos de `fixturePackFiles()` em `node_modules/.cache/bwords-server-test-assets/pt-BR/` e passa `miniflare.assets = { directory, binding: 'ASSETS' }` ao `cloudflareTest`, que o plugin repassa como override do `assets` do `wrangler.jsonc`. Um `serviceBindings.ASSETS` em memória não serve: o binding de assets do `wrangler.jsonc` vence. O teste "hello" confere que as peças só usam as letras da fixture e passa sem `tools/dict-build/dist`. `@cloudflare/vitest-plugin` 1.4.8 (fixado: depende do wrangler 4.153.0 instalado), `compatibility_date` 2026-10-20 (workerd 1.20261023)
-**Dispatched:** batch worker fase 1 (T1-T6) em HEAD fc23ee9 - returned (T1-T6 em c25d57e; core 138 testes, build gate verde). Nota para a fase 2: `Phase`, `Settings` e os tipos de fio já estão em `room/protocol.ts`; o T7 importa de lá em vez de redeclarar; batch worker fase 2 (T7-T11) em HEAD cda0e21 - returned (T7-T11 em 4078241; core 249 testes, build gate verde; Playwright "recomputes on option change" do M1 falhou uma vez e passou em 4 reruns). Defaults do worker, aceitos pelo user ("Aceito os defaults da fase 2, pode seguir com a fase 3."): volume padrão 100; patch vazio dá `bad-settings`; papel errado dá `bad-message`; `close-room`, `kick` e `transfer-host` valem em toda fase; quem entra no pódio é jogador; `not-host` antes de `wrong-phase`; `transfer-host` para si, desconhecido ou desconectado dá `bad-target`; `tvOfflineSince` começa na criação. Para a fase 4: tags do Cloudflare são fixas no accept, então o adaptador roteia pelo `ConnRef` do attachment, atualizado no efeito `bind`; batch worker fase 3 (T12-T18) em HEAD 8ec6472 - returned (T12-T18 em d91b50e, prova do C39 escapada em bde08e1; core 327 testes, build gate verde). Defaults do worker, aceitos pelo user: "Aprovo as tarefas T27-T30, as decisões da fase 3 e o placar 0 sem vitória. Pode seguir com a fase 4.": ordem por caminho = rate limit, `round-closed`, `spectator`, validação (janela deslizante; caminhos `rate-limited` não contam); espectadores fora de `round-results.players`, todos no pódio; empates mantêm a ordem de entrada; `play-again` reenvia `welcome` a todos; troca automática de anfitrião vai ao próximo conectado depois do anfitrião, circular, e sem ninguém conectado o papel vai a quem conectar primeiro, inclusive um `join` novo; ociosidade checada antes de TV ausente; falha ao preparar tabuleiro não tem código de erro (estado inalterado, anfitrião tenta de novo). Para a fase 4: `prepare-next` → `prepareRound(...)` → input `{kind:"prepared", round}`; `deps.pack()` só é lido no fim da rodada, então o pacote precisa estar carregado antes de um `alarm` na fase `round`; `close-room` → fechar sockets, `deleteAll`, `deleteAlarm`; `broadcast` tem `roles?`; `setAlarm(nextDeadline(state))` ou `deleteAlarm` depois de cada input; batch worker fase 4 (T27-T30) em HEAD a54f7ef - returned (T27-T30 em 97c2018; core 354 testes, build gate verde). Defaults do worker, aceitos pelo user ("Aceito as decisões da fase 4, pode seguir com a fase 5."): o pódio não reenvia a lista de jogadores (as vitórias novas chegam no próximo `welcome`/`players`); `play-again` sem tabuleiro pronto fica no pódio até o `prepared`, e o placar zera quando a contagem começa; `back-to-lobby` descarta o tabuleiro preparado e torna espectadores jogadores; espectadores entram na comparação do maior placar com 0. Para a fase 5: `back-to-lobby` reaproveita os efeitos do antigo `play-again`; `wins` está em `Player` (chave `room`) e em `PlayerInfo`; batch worker fase 5 (T19-T26) em HEAD deb7134 - returned (T19-T26 em eac2d7a, T25 antes do T24 porque o C91 precisa do alarm de fim de rodada; core 354, servidor 29, total 424 testes; build gate verde; `@cloudflare/vitest-plugin` 1.4.8 fixado, `compatibility_date` 2026-10-20; pacote de fixture chega ao DO pelo ASSETS real via `miniflare.assets`). Defaults do worker, a confirmar pelo user: rotas `POST /api/rooms` → 200 `{code, tvToken}`, WebSocket sem Upgrade → 426, resto → 404; todo fechamento usa o código 1000 com o motivo na mensagem; frame binário do cliente → `bad-message`; falha no `prepare-next` só é registrada no log; falha ao carregar o pacote no `alarm` faz o runtime tentar de novo; no reinício, TV e jogadores sem socket recebem `disconnect`; Verifier em HEAD 1bd8f22 (check_proofs: 94 pass, 0 fail) - returned (FAIL, 3 achados, fechados em 963a04e, d200ac9 e 100cf7e); round 2 em 3a0e586: 95 pass, 3 mutações mortas; validate_verification 0 erros
+**Dispatched:** batch worker fase 1 (T1-T6) em HEAD fc23ee9 - returned (T1-T6 em c25d57e; core 138 testes, build gate verde). Nota para a fase 2: `Phase`, `Settings` e os tipos de fio já estão em `room/protocol.ts`; o T7 importa de lá em vez de redeclarar; batch worker fase 2 (T7-T11) em HEAD cda0e21 - returned (T7-T11 em 4078241; core 249 testes, build gate verde; Playwright "recomputes on option change" do M1 falhou uma vez e passou em 4 reruns). Defaults do worker, aceitos pelo user ("Aceito os defaults da fase 2, pode seguir com a fase 3."): volume padrão 100; patch vazio dá `bad-settings`; papel errado dá `bad-message`; `close-room`, `kick` e `transfer-host` valem em toda fase; quem entra no pódio é jogador; `not-host` antes de `wrong-phase`; `transfer-host` para si, desconhecido ou desconectado dá `bad-target`; `tvOfflineSince` começa na criação. Para a fase 4: tags do Cloudflare são fixas no accept, então o adaptador roteia pelo `ConnRef` do attachment, atualizado no efeito `bind`; batch worker fase 3 (T12-T18) em HEAD 8ec6472 - returned (T12-T18 em d91b50e, prova do C39 escapada em bde08e1; core 327 testes, build gate verde). Defaults do worker, aceitos pelo user: "Aprovo as tarefas T27-T30, as decisões da fase 3 e o placar 0 sem vitória. Pode seguir com a fase 4.": ordem por caminho = rate limit, `round-closed`, `spectator`, validação (janela deslizante; caminhos `rate-limited` não contam); espectadores fora de `round-results.players`, todos no pódio; empates mantêm a ordem de entrada; `play-again` reenvia `welcome` a todos; troca automática de anfitrião vai ao próximo conectado depois do anfitrião, circular, e sem ninguém conectado o papel vai a quem conectar primeiro, inclusive um `join` novo; ociosidade checada antes de TV ausente; falha ao preparar tabuleiro não tem código de erro (estado inalterado, anfitrião tenta de novo). Para a fase 4: `prepare-next` → `prepareRound(...)` → input `{kind:"prepared", round}`; `deps.pack()` só é lido no fim da rodada, então o pacote precisa estar carregado antes de um `alarm` na fase `round`; `close-room` → fechar sockets, `deleteAll`, `deleteAlarm`; `broadcast` tem `roles?`; `setAlarm(nextDeadline(state))` ou `deleteAlarm` depois de cada input; batch worker fase 4 (T27-T30) em HEAD a54f7ef - returned (T27-T30 em 97c2018; core 354 testes, build gate verde). Defaults do worker, aceitos pelo user ("Aceito as decisões da fase 4, pode seguir com a fase 5."): [revertido pelo T32] o pódio não reenvia a lista de jogadores (as vitórias novas chegam no próximo `welcome`/`players`); `play-again` sem tabuleiro pronto fica no pódio até o `prepared`, e o placar zera quando a contagem começa; `back-to-lobby` descarta o tabuleiro preparado e torna espectadores jogadores; espectadores entram na comparação do maior placar com 0. Para a fase 5: `back-to-lobby` reaproveita os efeitos do antigo `play-again`; `wins` está em `Player` (chave `room`) e em `PlayerInfo`; batch worker fase 5 (T19-T26) em HEAD deb7134 - returned (T19-T26 em eac2d7a, T25 antes do T24 porque o C91 precisa do alarm de fim de rodada; core 354, servidor 29, total 424 testes; build gate verde; `@cloudflare/vitest-plugin` 1.4.8 fixado, `compatibility_date` 2026-10-20; pacote de fixture chega ao DO pelo ASSETS real via `miniflare.assets`). Defaults do worker, a confirmar pelo user: rotas `POST /api/rooms` → 200 `{code, tvToken}`, WebSocket sem Upgrade → 426, resto → 404; todo fechamento usa o código 1000 com o motivo na mensagem; frame binário do cliente → `bad-message`; falha no `prepare-next` só é registrada no log; falha ao carregar o pacote no `alarm` faz o runtime tentar de novo; no reinício, TV e jogadores sem socket recebem `disconnect`; Verifier em HEAD 1bd8f22 (check_proofs: 94 pass, 0 fail) - returned (FAIL, 3 achados, fechados em 963a04e, d200ac9 e 100cf7e); round 2 em 3a0e586: 95 pass, 3 mutações mortas; validate_verification 0 erros
 **Walked:** N/A - o M2 não tem tela; a partida completa é provada por C81
 
 ---
@@ -1044,7 +1073,7 @@ Phase 1:  T1 ---→ T2 ---→ T3 ---→ T4 ---→ T5 ---→ T6
 Phase 2:  T7 ---→ T8 ---→ T9 ---→ T10 --→ T11
 Phase 3:  T12 --→ T13 --→ T14 --→ T15 --→ T16 --→ T17 --→ T18
 Phase 4:  T27 --→ T28 --→ T29 --→ T30
-Phase 5:  T19 --→ T20 --→ T21 --→ T22 --→ T23 --→ T24 --→ T25 --→ T26 --→ T31
+Phase 5:  T19 --→ T20 --→ T21 --→ T22 --→ T23 --→ T24 --→ T25 --→ T26 --→ T31 --→ T32
 ```
 
 Cada fase é um batch de subagente (6, 5, 7, 4 e 8 tarefas). Os batches rodam em sequência e o orquestrador para entre eles para mostrar o resultado e perguntar, como no M1.

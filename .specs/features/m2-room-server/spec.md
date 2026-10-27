@@ -8,6 +8,8 @@
 
 **Amended**: 2026-10-27 - vitórias da sessão e coroa no lobby (WINS-01); decisões M2-Q10 a M2-Q13
 
+**Amended**: 2026-10-27 - RES-01 AC 11-12: a lista de jogadores é reenviada depois do resultado e do pódio, revertendo o default 1 da fase 4 (achado na página de debug: placar e vitórias não atualizavam); user: "O score não está atualizando" e "na tv no caso as wins que nao contam o podio mostra os pontos corretamente"
+
 **Amended**: 2026-10-27 - PROTO-01 AC 8: o pacote de idioma não é servido por HTTP (achado ao rodar `wrangler dev`: `/pt-BR/dict.bin` respondia 200, contra o DESIGN §5.3 e §6.2); user: "faça a correção do dicionario publico a pagina de debug deixa para depois, pois meus tokens estão acabando e so renovam as 17:40"
 
 ## Problem Statement
@@ -204,6 +206,8 @@ O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solv
 8. WHEN o anfitrião escolhe "Encerrar sala" THEN o servidor SHALL fechar a sala com o motivo `closed-by-host`
 9. IF o anfitrião avança, joga de novo, volta ao lobby ou inicia fora da fase em que o comando vale THEN o servidor SHALL recusar com o erro `wrong-phase`
 10. WHILE a sala está na contagem, na rodada, no resultado ou no pódio, WHEN o anfitrião escolhe "Voltar ao lobby" THEN o servidor SHALL cancelar a rodada em andamento sem enviar resultado, descartar as palavras dela, zerar todos os placares e voltar ao lobby com os mesmos jogadores, cores, configurações e anfitrião
+11. WHEN o resultado de uma rodada é enviado THEN o servidor SHALL enviar em seguida, a todas as conexões, a lista de jogadores com os placares acumulados novos
+12. WHEN o pódio é enviado THEN o servidor SHALL enviar em seguida, a todas as conexões, a lista de jogadores com as vitórias novas
 
 **Independent Test**: Partida de 2 rodadas com dois jogadores e palavras em comum e únicas; conferir resultados, pódio e o lobby depois de jogar de novo.
 
@@ -326,7 +330,7 @@ O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solv
 | HOST-01 | P1: Anfitrião (AC 1-10) | Design | Pending |
 | CFG-01 | P1: Configurações da sala (AC 1-5) | Design | Pending |
 | ROUND-01 | P1: Rodada (AC 1-10) | Design | Pending |
-| RES-01 | P1: Resultado, pódio e jogar de novo (AC 1-10) | Design | Pending |
+| RES-01 | P1: Resultado, pódio e jogar de novo (AC 1-12) | Design | Pending |
 | RECON-01 | P1: Reconexão (AC 1-6) | Design | Pending |
 | PERSIST-01 | P1: Persistência e hibernation (AC 1-4) | Design | Pending |
 | EXP-01 | P1: Expiração (AC 1-6) | Design | Pending |

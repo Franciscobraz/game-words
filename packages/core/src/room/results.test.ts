@@ -107,6 +107,17 @@ describe('round results', () => {
     expect(r.state.results).toEqual(results(finishedRound([alice, bob, carol])));
   });
 
+  test('sends the players list with the new scores after the results', () => {
+    const r = endRound(finishedRound([alice, bob, carol]), END, deps);
+    const broadcasts = r.effects.flatMap((e) => (e.kind === 'broadcast' ? [e.msg] : []));
+    expect(broadcasts.map((m) => m.type)).toEqual(['round-results', 'players']);
+    const list = broadcasts[1];
+    if (list?.type !== 'players') throw new Error('no players list');
+    expect(list.players.map((p) => [p.id, p.score])).toEqual(r.state.players.map((p) => [p.id, p.score]));
+    // The scores moved: nobody keeps the score from before the round.
+    expect(list.players.find((p) => p.id === 'p2')?.score).toBeGreaterThan(0);
+  });
+
   test('attaches real spellings only when they differ', () => {
     const msg = results(finishedRound([alice, bob, carol]));
     expect(msg.shared.find((w) => w.word === 'ate')).toEqual({ word: 'ate', points: 1, spellings: ['ate', 'até'] });

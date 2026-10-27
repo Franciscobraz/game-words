@@ -1,4 +1,4 @@
-import { type ConnRef, type Effect, type Handler, type PersistKey, type StepResult, welcomeBase } from './effects.ts';
+import { type ConnRef, type Effect, type Handler, type PersistKey, playersMessage, type StepResult, welcomeBase } from './effects.ts';
 import type { CloseReason, ServerMessage } from './protocol.ts';
 import { isLastRound, requestRound } from './round.ts';
 import type { RoomState } from './state.ts';
@@ -31,6 +31,8 @@ export const handleNext: Handler<'next'> = ({ state, now }) => {
     effects: [
       { kind: 'persist', keys: ['room'] },
       { kind: 'broadcast', msg: podiumMessage(next) },
+      // The players list carries the new wins (RES-01 AC 11).
+      { kind: 'broadcast', msg: playersMessage(next) },
     ],
   };
 };
