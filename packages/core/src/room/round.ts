@@ -19,6 +19,8 @@ function hasPrepared(state: RoomState): boolean {
 /**
  * Starts the countdown of a round with the prepared board: spectators become
  * players, everyone's round words reset, and every connection gets `round-start`.
+ * Outside the results this is the first round of a new match, so every score
+ * starts at zero.
  * Only phones get the salt, followed by the binary frame of the hash prefixes;
  * the TV and the guests on the join screen get neither.
  */
@@ -32,16 +34,17 @@ export function beginRound(state: RoomState, now: number): StepResult {
     endsAt: startsAt + state.settings.seconds * 1000,
     salt: prepared.salt,
   };
+  const newMatch = state.phase !== 'results';
   const next: RoomState = {
     ...state,
     phase: 'round',
-    roundIndex: state.phase === 'results' ? state.roundIndex + 1 : 0,
+    roundIndex: newMatch ? 0 : state.roundIndex + 1,
     round,
     solutions: state.nextSolutions,
     nextRound: null,
     nextSolutions: null,
     pendingStart: false,
-    players: state.players.map((p) => ({ ...p, spectator: false, found: [] })),
+    players: state.players.map((p) => ({ ...p, spectator: false, found: [], score: newMatch ? 0 : p.score })),
     tvCounts: { dirty: false, lastSentAt: 0 },
   };
   const info = roundInfo(next)!;
@@ -65,7 +68,8 @@ export function beginRound(state: RoomState, now: number): StepResult {
 /**
  * Starts the round when its board is ready; otherwise remembers the request and
  * asks the adapter for a board (`prepare-next`), and the round starts when the
- * `prepared` input arrives. Used by `start` in the lobby and `next` in the results.
+ * `prepared` input arrives. Used by `start` in the lobby, `next` in the results
+ * and `play-again` on the podium.
  */
 export function requestRound(state: RoomState, now: number): StepResult {
   if (hasPrepared(state)) return beginRound(state, now);
@@ -78,11 +82,14 @@ export const handleStart: Handler<'start'> = ({ state, now }) => requestRound(st
 /**
  * A round the adapter prepared. Kept as the next round while the room is in the
  * lobby or in results with rounds left, and started at once when the host already
- * asked for it. A board prepared for other settings is dropped (and asked for again
+ * asked for it (on the podium, through `play-again`). A board prepared for other settings is dropped (and asked for again
  * when the host is waiting); anywhere else the input is stale and ignored.
  */
 export function onPrepared(state: RoomState, prepared: PreparedRound, now: number): StepResult {
-  const waiting = state.phase === 'lobby' || (state.phase === 'results' && !isLastRound(state));
+  const waiting =
+    state.phase === 'lobby' ||
+    (state.phase === 'results' && !isLastRound(state)) ||
+    (state.phase === 'podium' && state.pendingStart);
   if (!waiting) return unchanged(state);
   if (!preparedFor(prepared, state.settings)) {
     return state.pendingStart ? unchanged(state, { kind: 'prepare-next' }) : unchanged(state);

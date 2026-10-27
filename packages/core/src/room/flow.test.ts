@@ -1,7 +1,8 @@
 import { describe, expect, test } from 'vitest';
 import { nextDeadline } from './deadlines.ts';
 import { step } from './machine.ts';
-import { prepareRound } from './prepare.ts';
+import type { Effect } from './effects.ts';
+import { type PreparedRound, prepareRound } from './prepare.ts';
 import type { ClientMessageType, Phase } from './protocol.ts';
 import { DEFAULT_SETTINGS, type RoomState } from './state.ts';
 import { allMessages, fakeDeps, guest, makePlayer, message, pending, playerConn, richPack, roomWith, sentTo, TV_TOKEN } from './test-helpers.ts';
@@ -83,32 +84,58 @@ describe('match flow', () => {
     expect(sentTo(tv.effects, 'c-tv2').map((m) => m.type)).toEqual(['welcome', 'podium']);
   });
 
-  test('play-again returns to the lobby with zeroed scores', () => {
-    const podium = inResults({ phase: 'podium', roundIndex: 1, hostId: 'p2' });
-    const r = step(podium, message(playerConn(bia), { type: 'play-again' }), 80_000, deps);
-    expect(r.state.phase).toBe('lobby');
-    expect(r.state.hostId).toBe('p2');
-    expect(r.state.settings).toEqual(TWO_ROUNDS);
-    expect(r.state.roundIndex).toBe(0);
-    expect(r.state.players.map((p) => [p.id, p.nickname, p.color, p.score, p.found])).toEqual([
-      ['p1', 'Ana', ana.color, 0, []],
-      ['p2', 'Bia', bia.color, 0, []],
-      ['p3', 'Cid', cid.color, 0, []],
+  /** The podium of a finished match of two rounds, hosted by Bia, with a guest on the join screen. */
+  const onPodium = (extra: Partial<RoomState> = {}) =>
+    inResults({ phase: 'podium', roundIndex: 1, hostId: 'p2', players: [ana, bia, { ...cid, spectator: true }], ...extra });
+
+  /** Checks the countdown of round 0 of a new match, started at `now` with `prepared`. */
+  function expectNewMatch(state: RoomState, effects: Effect[], prepared: PreparedRound, now: number) {
+    expect(state.phase).toBe('round');
+    expect(state.roundIndex).toBe(0);
+    expect(state.hostId).toBe('p2');
+    expect(state.settings).toEqual(TWO_ROUNDS);
+    expect(state.round).toEqual({ id: 2, board: prepared.board, startsAt: now + 3000, endsAt: now + 63_000, salt: prepared.salt });
+    expect(state.players.map((p) => [p.id, p.nickname, p.color, p.token, p.score, p.found, p.spectator])).toEqual([
+      ['p1', 'Ana', ana.color, ana.token, 0, [], false],
+      ['p2', 'Bia', bia.color, bia.token, 0, [], false],
+      ['p3', 'Cid', cid.color, cid.token, 0, [], false],
     ]);
-    expect(r.state.players.map((p) => p.token)).toEqual([ana.token, bia.token, cid.token]);
-    // Every connection learns the room is back in the lobby.
-    for (const id of ['c-tv', 'conn-p1', 'conn-p2']) {
-      expect(sentTo(r.effects, id)).toEqual([
-        expect.objectContaining({ type: 'welcome', phase: 'lobby', round: null, hostId: 'p2', settings: TWO_ROUNDS }),
-      ]);
-    }
-    expect(r.effects).toContainEqual({
-      kind: 'broadcast',
-      msg: expect.objectContaining({ type: 'welcome', role: 'player', phase: 'lobby', playerId: null }),
-      roles: ['guest'],
+    // The countdown goes out at once, with no stop in the lobby.
+    expect(sentTo(effects, 'conn-p2')[0]).toEqual({
+      type: 'round-start',
+      id: 2,
+      index: 0,
+      board: prepared.board,
+      startsAt: now + 3000,
+      endsAt: now + 63_000,
+      salt: prepared.salt,
     });
-    const [welcome] = sentTo(r.effects, 'c-tv');
-    expect((welcome as { players: { score: number }[] }).players.map((p) => p.score)).toEqual([0, 0, 0]);
+    expect(sentTo(effects, 'c-tv')).toEqual([]);
+    expect(effects).toContainEqual({
+      kind: 'broadcast',
+      msg: { type: 'round-start', id: 2, index: 0, board: prepared.board, startsAt: now + 3000, endsAt: now + 63_000 },
+      roles: ['tv', 'guest'],
+    });
+    expect(allMessages(effects).filter((m) => m.type === 'welcome')).toEqual([]);
+  }
+
+  test('play-again starts a new match with zeroed scores: board to prepare', async () => {
+    const asked = step(onPodium(), message(playerConn(bia), { type: 'play-again' }), 80_000, deps);
+    expect(asked.state.phase).toBe('podium');
+    expect(asked.state.pendingStart).toBe(true);
+    expect(asked.effects).toEqual([{ kind: 'prepare-next' }]);
+    const prepared = await prepareRound(richPack(), TWO_ROUNDS, 4, SALT);
+    const r = step(asked.state, { kind: 'prepared', round: prepared }, 80_050, deps);
+    expectNewMatch(r.state, r.effects, prepared, 80_050);
+  });
+
+  test('play-again starts a new match with zeroed scores: board already prepared', async () => {
+    const prepared = await prepareRound(richPack(), TWO_ROUNDS, 4, SALT);
+    const { solutions, ...board } = prepared;
+    const ready = onPodium({ nextRound: board, nextSolutions: solutions });
+    const r = step(ready, message(playerConn(bia), { type: 'play-again' }), 80_000, deps);
+    expectNewMatch(r.state, r.effects, prepared, 80_000);
+    expect(r.effects).not.toContainEqual({ kind: 'prepare-next' });
   });
 
   /** A round of two with words found: countdown until 10 s, open until 70 s. */

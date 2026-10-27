@@ -63,8 +63,12 @@ function returnToLobby(state: RoomState): StepResult {
   return { state: next, effects };
 }
 
-/** `play-again` from the host on the podium (RES-01 AC 7). */
-export const handlePlayAgain: Handler<'play-again'> = ({ state }) => returnToLobby(state);
+/**
+ * `play-again` from the host on the podium: the countdown of a new match with the
+ * same players, colors, settings and host, every score at zero, without the lobby
+ * (RES-01 AC 7). Uses a prepared board that fits the settings, or asks for one.
+ */
+export const handlePlayAgain: Handler<'play-again'> = ({ state, now }) => requestRound(state, now);
 
 /**
  * `back-to-lobby` from the host in the countdown, the round, the results or the

@@ -506,10 +506,10 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 **Done when**:
 
-- [ ] O teste antigo do C51 ("play-again returns to the lobby with zeroed scores") é substituído pelo novo nome do C51, porque a spec mudou (M2-Q9)
-- [ ] C51 passa
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: anterior + novos; o único teste removido é o substituído acima
+- [x] O teste antigo do C51 ("play-again returns to the lobby with zeroed scores") é substituído pelo novo nome do C51, porque a spec mudou (M2-Q9)
+- [x] C51 passa
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: anterior + novos; o único teste removido é o substituído acima
 
 **Tests**: unit
 **Gate**: quick
