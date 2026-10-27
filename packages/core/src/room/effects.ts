@@ -1,3 +1,4 @@
+import type { LanguagePack } from '../pack.ts';
 import type { ClientMessage, ErrorCode, PlayerInfo, RoundInfo, ServerMessage } from './protocol.ts';
 import type { Player, RoomState } from './state.ts';
 
@@ -47,10 +48,16 @@ export interface StepResult {
   effects: Effect[];
 }
 
-/** Services `step()` gets from the adapter; Phase 3 adds salts and the language pack. */
+/** Services `step()` gets from the adapter. */
 export interface RoomDeps {
   /** A fresh secret token: 16 random bytes in base64url. */
   randomToken(): string;
+  /**
+   * The room's language pack, already loaded. Read only when a round ends (the
+   * results need spellings and the longest word), so the adapter loads the pack
+   * before it feeds an `alarm` while the room is in the `round` phase.
+   */
+  pack(): LanguagePack;
 }
 
 /** Everything a message handler gets. `conn` already passed the role check. */

@@ -107,7 +107,7 @@ const handleHello: Handler<'hello'> = (ctx, msg) => {
       { kind: 'send', to: tv, msg: { type: 'welcome', role: 'tv', ...welcomeBase(next) } },
     );
     if (inRound) effects.push({ kind: 'send', to: tv, msg: countsMessage(next) });
-    // Phase 3: in the results or the podium, follow with `round-results` or `podium`.
+    effects.push(...afterWelcome(next, tv));
     return { state: next, effects };
   }
 
@@ -121,6 +121,7 @@ const handleHello: Handler<'hello'> = (ctx, msg) => {
         to: guest,
         msg: { type: 'welcome', role: 'player', ...welcomeBase(state), playerId: null, found: [], salt: null },
       },
+      ...afterWelcome(state, guest),
     );
   }
 
@@ -154,8 +155,7 @@ const handleHello: Handler<'hello'> = (ctx, msg) => {
   if (inRound && next.solutions) {
     effects.push({ kind: 'send-hashes', to: me, frame: encodeHashFrame(next.round!.id, next.solutions.prefixes) });
   }
-  effects.push({ kind: 'broadcast', msg: playersMessage(next) });
-  // Phase 3: in the results or the podium, follow with `round-results` or `podium`.
+  effects.push(...afterWelcome(next, me), { kind: 'broadcast', msg: playersMessage(next) });
   return { state: next, effects };
 };
 
@@ -186,6 +186,12 @@ function welcomeBase(state: RoomState) {
     hostId: state.hostId,
     round: roundInfo(state),
   };
+}
+
+/** What follows the welcome in the results: the results of the round. */
+function afterWelcome(state: RoomState, to: ConnRef): Effect[] {
+  if (state.phase === 'results' && state.results) return [{ kind: 'send', to, msg: state.results }];
+  return [];
 }
 
 function badToken(state: RoomState, conn: ConnRef): StepResult {

@@ -14,10 +14,16 @@ export function newRoom(now = 0): RoomState {
   return createRoom('ABCD', TV_TOKEN, now, { idleMin: 30, tvGoneMin: 10 });
 }
 
-/** Deterministic tokens: `token-1`, `token-2`, ... */
-export function fakeDeps(): RoomDeps {
+/** Deterministic tokens: `token-1`, `token-2`, ...; the pack only when a test gives one. */
+export function fakeDeps(pack?: LanguagePack): RoomDeps {
   let n = 0;
-  return { randomToken: () => `token-${++n}` };
+  return {
+    randomToken: () => `token-${++n}`,
+    pack: () => {
+      if (!pack) throw new Error('This test has no language pack');
+      return pack;
+    },
+  };
 }
 
 export const pending = (id: string): ConnRef => ({ id, role: 'pending' });

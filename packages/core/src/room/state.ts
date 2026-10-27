@@ -1,4 +1,4 @@
-import type { Phase, Settings, SettingsPatch } from './protocol.ts';
+import type { Phase, RoundResultsMessage, Settings, SettingsPatch } from './protocol.ts';
 
 /**
  * Server-side state of a room. Wire shapes (`Settings`, `PlayerInfo`, `RoundInfo`)
@@ -90,6 +90,8 @@ export interface RoomState {
   nextSolutions: RoundSolutions | null;
   /** The host asked for the next round before its board was prepared; it starts when the board arrives. */
   pendingStart: boolean;
+  /** Results of the last round, sent again to whoever connects in the results. */
+  results: RoundResultsMessage | null;
   /** Per player, when each path of the last second was taken in (rate limit); kept in memory only. */
   rateWindow: Record<string, number[]>;
   tvCounts: { dirty: boolean; lastSentAt: number };
@@ -131,6 +133,7 @@ export function createRoom(code: string, tvToken: string, now: number, cfg: Room
     nextRound: null,
     nextSolutions: null,
     pendingStart: false,
+    results: null,
     rateWindow: {},
     tvCounts: { dirty: false, lastSentAt: 0 },
   };
