@@ -2,6 +2,8 @@
 
 **Approved**: 2026-10-27 - user: "aprovo a spec do M2"
 
+**Amended**: 2026-10-27 - análise de gargalos (ROUND-01 AC 2, 3, 6, 7 e 10; Out of Scope); respostas do user registradas na tabela de Assumptions (M2-Q5 a M2-Q7)
+
 ## Problem Statement
 
 O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solver, validação, pontuação e maior palavra), mas só para jogar sozinho numa página local. Ainda não existe sala, nem jeito de vários celulares e uma TV jogarem juntos. O M2 constrói o servidor autoritativo: um Durable Object por sala, que roda a partida inteira e guarda o estado de forma que nada se perca em reconexões, hibernation ou queda da TV. Os marcos 3 (celular) e 4 (TV) passam a ser só clientes desse protocolo.
@@ -19,6 +21,7 @@ O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solv
 | --- | --- |
 | Telas do celular e da TV, QR code, áudio, Wake Lock | Marcos 3 e 4 |
 | Uso dos salted hashes no celular (optimistic feedback) | O M2 só os envia; o uso é do M3 |
+| Filtro e debounce dos envios no celular | Comportamento do cliente, M3: enviar só caminhos cujo hash bate e ainda não achados, agrupados com debounce de 500 ms, e na hora nos últimos 3 s da rodada (M2-Q5) |
 | Apresentação do fast mode | O servidor só guarda e transmite a opção; a apresentação é do M4 |
 | Deploy na Cloudflare, CI/CD | Marco 5; decisão "Testes no workerd" |
 | Página de debug ou cliente manual | Decisão "Testes no workerd" |
@@ -52,6 +55,9 @@ O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solv
 | Anfitrião sem ninguém conectado | Se não houver outro jogador conectado após os 30 s, o papel passa ao primeiro jogador que reconectar | Sempre existe exatamente um anfitrião (DESIGN §2) | y - consequência do DESIGN §2 |
 | Conexão duplicada | Uma nova conexão com o mesmo token substitui a anterior, que é fechada | Um token = um dispositivo ativo | y - consequência do DESIGN §2 |
 | AD-001 - Idioma do código | Todo o código e o protocolo usam termos em inglês, inclusive o vocabulário do jogo; os documentos explicam em português | O idioma do jogo muda com o pacote de dicionário; o texto exibido vem do i18n | y - user: "o codigo deve ter todos os termos em ingles, mas pode manter a explicação dos documentos em portuguez" |
+| M2-Q5 - Envios do celular | Uma mensagem leva um ou mais caminhos; o limite é de 10 caminhos/s; o celular (M3) só envia caminhos cujo hash bate e que ainda não achou, com debounce de 500 ms e envio imediato nos últimos 3 s | Com o optimistic feedback, o servidor não precisa responder na hora; menos mensagens ao DO | y - user: "O celular só envia caminhos cujo hash bate e que ainda não achou, agrupados numa mensagem com debounce de 500 ms. No último 3 s da rodada envia na hora. O limite vira 10 caminhos/s." |
+| M2-Q6 - Contagem na TV | No máximo 1 atualização por segundo, só quando muda; no fim da rodada, as contagens finais vão antes do resultado | TV antiga re-renderiza no máximo 1x/s, sem perder o último dado | y - user: "No máximo 1x por segundo [...] mas garantindo que ao final da partida não tenha perda de dados." |
+| M2-Q7 - Formato dos hashes | Prefixo de 6 bytes do SHA-256 (salt + palavra), em binário (~25 KB num 6x6 com ~4.240 soluções) | SHA-256 completo em hex daria ~270 KB por celular; falso ✓ ≈ 1,5e-11 e o servidor confirma | y - user: "6 bytes binário (Recomendado)" |
 
 **Open questions:** none - all resolved or logged above.
 
@@ -151,14 +157,15 @@ O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solv
 **Acceptance Criteria**:
 
 1. WHEN o anfitrião inicia a partida no lobby THEN o servidor SHALL gerar o tabuleiro com as configurações da sala e enviar a todas as conexões a contagem com o tabuleiro, o timestamp de início (agora + 3 s) e o timestamp de fim (início + tempo da rodada)
-2. WHEN a contagem começa THEN o servidor SHALL enviar a cada celular um salt novo da rodada e os hashes SHA-256 (salt + palavra) de todas as soluções válidas com o mínimo e o filtro da sala, sem nenhuma palavra em texto
-3. WHEN um jogador envia um caminho entre o início e o fim + 300 ms THEN o servidor SHALL validá-lo com `validateSubmission` do `core` e responder só a ele com a palavra aceita ou o motivo da recusa
+2. WHEN a contagem começa THEN o servidor SHALL enviar a cada celular um salt novo da rodada e o prefixo de 6 bytes do SHA-256 (salt + palavra) de cada solução válida com o mínimo e o filtro da sala, em binário, sem nenhuma palavra em texto
+3. WHEN um jogador envia uma mensagem com um ou mais caminhos entre o início e o fim + 300 ms THEN o servidor SHALL validar cada caminho, na ordem, com `validateSubmission` do `core` e responder só a ele com uma única mensagem que traz, para cada caminho, a palavra aceita ou o motivo da recusa
 4. IF um envio chega antes do timestamp de início ou depois do fim + 300 ms THEN o servidor SHALL recusá-lo com o motivo `round-closed`
 5. IF um espectador envia um caminho THEN o servidor SHALL recusá-lo com o motivo `spectator`
-6. IF um jogador faz mais de 10 envios em qualquer janela de 1 s THEN o servidor SHALL recusar os excedentes com o motivo `rate-limited`, sem validá-los
-7. WHEN um envio é aceito THEN o servidor SHALL enviar à TV a contagem de palavras de cada jogador, sem as palavras
+6. IF um jogador envia mais de 10 caminhos em qualquer janela de 1 s, somando todas as mensagens THEN o servidor SHALL recusar os caminhos excedentes com o motivo `rate-limited`, sem validá-los
+7. WHILE a rodada está aberta, the servidor SHALL enviar à TV a contagem de palavras de cada jogador, sem as palavras, no máximo uma vez por segundo e só quando alguma contagem mudou desde o último envio
 8. WHEN o fim + 300 ms chega THEN o servidor SHALL encerrar a rodada e passar ao resultado, mesmo que nenhuma conexão esteja aberta
 9. WHEN um cliente envia um clock sync com o seu timestamp THEN o servidor SHALL responder com esse timestamp e o timestamp do servidor
+10. WHEN a rodada termina THEN o servidor SHALL enviar à TV as contagens finais de todos os jogadores, incluindo os caminhos aceitos desde o último envio, antes do resultado
 
 **Independent Test**: Iniciar com dois celulares, enviar caminhos válidos, inválidos, repetidos, fora do tempo e em rajada, e avançar o alarm do fim.
 
@@ -280,7 +287,7 @@ O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solv
 | JOIN-01 | P1: Entrada de jogadores (AC 1-11) | Design | Pending |
 | HOST-01 | P1: Anfitrião (AC 1-10) | Design | Pending |
 | CFG-01 | P1: Configurações da sala (AC 1-5) | Design | Pending |
-| ROUND-01 | P1: Rodada (AC 1-9) | Design | Pending |
+| ROUND-01 | P1: Rodada (AC 1-10) | Design | Pending |
 | RES-01 | P1: Resultado, pódio e jogar de novo (AC 1-9) | Design | Pending |
 | RECON-01 | P1: Reconexão (AC 1-6) | Design | Pending |
 | PERSIST-01 | P1: Persistência e hibernation (AC 1-4) | Design | Pending |

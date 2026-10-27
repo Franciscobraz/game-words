@@ -39,6 +39,31 @@ Servidor autoritativo do jogo: um Durable Object por sala, protocolo WebSocket, 
 - Todo o código e o protocolo usam termos em inglês, inclusive o vocabulário do jogo; os documentos explicam em português, com termos técnicos em inglês. O texto exibido ao jogador vem do i18n.
 - user: "o codigo deve ter todos os termos em ingles, mas pode manter a explicação dos documentos em portuguez"
 
+### Análise de gargalos de uma partida (2026-10-27)
+
+Pedido do user: "identifique possíveis gargalos ao rodar uma partida, os celulares podem ter uma espécie de debounceTime para agrupar acertos [...] podemos explorar que os celulares normalmente tem mais poder de processamento que o browser de tvs antigas".
+
+Cenário de referência: 10 celulares, 6x6, 120 s, até ~4.240 soluções (M0).
+
+| # | Gargalo | Onde dói | Proposta |
+| --- | --- | --- | --- |
+| G1 | Payload de salted hashes no início da rodada: SHA-256 completo em hex = 64 B por palavra, ~270 KB por celular num 6x6 rico | Rede 4G e o "já" < 1 s | Prefixo de 6 bytes do SHA-256 em binário (~25 KB). Colisão com palavra inválida ≈ 1,5e-11; o servidor confirma de qualquer jeito |
+| G2 | Envios inválidos e repetidos chegam ao servidor | Mensagens e CPU do DO | O celular só envia caminhos cujo hash bate e que ele ainda não achou; o ✓/✗ já é local |
+| G3 | Rajadas de acertos | Mensagens ao DO | Uma mensagem leva vários caminhos; o celular agrupa com debounce curto e envia na hora no último segundo da rodada |
+| G4 | Contagem ao vivo na TV a cada acerto: com 10 jogadores, várias mensagens e re-render por segundo | CPU da TV antiga | O servidor agrupa e manda à TV no máximo 1 atualização por intervalo fixo |
+| G5 | Trabalho de montagem na TV (ordenar, agrupar, achar caminho da maior palavra) | CPU da TV antiga | O servidor manda o resultado pronto para renderizar; a TV nunca recebe hashes nem soluções |
+| G6 | Gravar o estado inteiro a cada acerto | Storage do DO | Gravar só o delta (a palavra nova do jogador); o output gate do DO segura o envio até a gravação |
+| G7 | Wake da hibernation recarrega o pacote (~17 ms, M0) | Latência do primeiro envio | As soluções da rodada ficam no storage; validar não exige recarregar o dicionário |
+
+Decisões (2026-10-27):
+
+- G1: prefixo de 6 bytes em binário. user: "6 bytes binário (Recomendado)"
+- G2/G3: o celular só envia caminhos cujo hash bate e ainda não achados, com debounce de 500 ms e envio imediato nos últimos 3 s; limite de 10 caminhos/s. user: "O celular só envia caminhos cujo hash bate e que ainda não achou, agrupados numa mensagem com debounce de 500 ms. No último 3 s da rodada envia na hora. O limite vira 10 caminhos/s."
+- G4: TV recebe a contagem no máximo 1x/s; as contagens finais vão antes do resultado. user: "No máximo 1x por segundo [...] mas garantindo que ao final da partida não tenha perda de dados."
+- G5-G7: decisões de Design, sem mudança de comportamento na spec.
+
+Não é gargalo: CPU da validação (O(tamanho da palavra)), geração do próximo tabuleiro durante o resultado (p95 14 ms no M0), clock sync e heartbeat (poucas mensagens; `ping`/`pong` não acorda o DO). Os limites exatos do plano Free (requests, duration, rows written) são conferidos no Design.
+
 ### Agent's Discretion
 
 Nenhuma área delegada até agora.
