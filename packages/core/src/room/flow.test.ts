@@ -235,3 +235,87 @@ describe('match flow', () => {
     expect(allMessages(r.effects)).toEqual([{ type: 'error', code: 'wrong-phase' }]);
   });
 });
+
+describe('session wins', () => {
+  /** The results of the last round of two, with these scores and wins for Ana, Bia and Cid. */
+  const lastResults = (scores: number[], wins: number[]) =>
+    inResults({
+      roundIndex: 1,
+      players: [ana, bia, cid].map((p, i) => ({ ...p, score: scores[i]!, wins: wins[i]! })),
+    });
+
+  const winsOf = (state: RoomState) => state.players.map((p) => p.wins);
+
+  test('awards a win to every top scorer at the podium', () => {
+    // Bia and Cid (offline) tie at the top; Ana trails.
+    const r = step(lastResults([5, 12, 12], [1, 0, 2]), message(host, { type: 'next' }), 70_000, deps);
+    expect(r.state.phase).toBe('podium');
+    expect(winsOf(r.state)).toEqual([1, 1, 3]);
+    expect(r.effects).toContainEqual({ kind: 'persist', keys: ['room'] });
+    // A single leader takes the only win.
+    const one = step(lastResults([20, 12, 3], [0, 0, 0]), message(host, { type: 'next' }), 70_000, deps);
+    expect(winsOf(one.state)).toEqual([1, 0, 0]);
+  });
+
+  test('awards no win when the top score is 0', () => {
+    const r = step(lastResults([0, 0, 0], [1, 2, 0]), message(host, { type: 'next' }), 70_000, deps);
+    expect(r.state.phase).toBe('podium');
+    expect(winsOf(r.state)).toEqual([1, 2, 0]);
+  });
+
+  test('awards no win before the last round ends', () => {
+    // `next` in the results of round 1 of 2 starts round 2 and counts nothing.
+    const state = { ...lastResults([5, 12, 8], [0, 0, 0]), roundIndex: 0 };
+    const r = step(state, message(host, { type: 'next' }), 70_000, deps);
+    expect(r.state.phase).toBe('results');
+    expect(winsOf(r.state)).toEqual([0, 0, 0]);
+  });
+
+  // WINS-01 AC 3: one row per phase before the podium (L-007).
+  const CANCEL_ROWS: [string, Partial<RoomState>, number][] = [
+    ['countdown', { phase: 'round', roundIndex: 1 }, 0],
+    ['round', { phase: 'round', roundIndex: 1 }, 30_000],
+    ['results of the last round', { phase: 'results', roundIndex: 1 }, 75_000],
+  ];
+
+  test.each(CANCEL_ROWS)('awards no win to a cancelled match: %s', (_name, extra, now) => {
+    const round = { id: 1, board: [['a']], startsAt: 10_000, endsAt: 70_000, salt: 's' };
+    const state = { ...lastResults([5, 12, 8], [1, 0, 0]), round, ...extra };
+    const back = step(state, message(host, { type: 'back-to-lobby' }), now, deps);
+    expect(back.state.phase).toBe('lobby');
+    expect(winsOf(back.state)).toEqual([1, 0, 0]);
+    // The next match starts from the lobby; the cancelled one never reaches a podium.
+    const welcome = sentTo(back.effects, 'c-tv')[0] as { players: { wins: number }[] };
+    expect(welcome.players.map((p) => p.wins)).toEqual([1, 0, 0]);
+  });
+
+  test.each(['play-again', 'back-to-lobby'] as const)('keeps wins when scores reset: %s', async (type) => {
+    const podium = inResults({
+      phase: 'podium',
+      roundIndex: 1,
+      players: [{ ...ana, wins: 2 }, { ...bia, wins: 1 }, { ...cid, wins: 0 }],
+    });
+    const r = step(podium, message(host, { type }), 80_000, deps);
+    // play-again waits for a board; its scores reset when the countdown starts.
+    const after =
+      type === 'play-again'
+        ? step(r.state, { kind: 'prepared', round: await prepareRound(richPack(), TWO_ROUNDS, 4, SALT) }, 80_050, deps).state
+        : r.state;
+    expect(after.phase).toBe(type === 'play-again' ? 'round' : 'lobby');
+    expect(after.players.map((p) => p.score)).toEqual([0, 0, 0]);
+    expect(winsOf(after)).toEqual([2, 1, 0]);
+  });
+
+  test("kick discards the player's wins", () => {
+    const lobby = roomWith([{ ...ana, wins: 1 }, { ...bia, wins: 3 }], { tvConn: 'c-tv' });
+    const kicked = step(lobby, message(host, { type: 'kick', playerId: 'p2' }), 0, deps);
+    expect(kicked.state.players.map((p) => [p.id, p.wins])).toEqual([['p1', 1]]);
+    const [players] = sentTo(kicked.effects, '*') as { players: { id: string; wins: number }[] }[];
+    expect(players!.players.map((p) => [p.id, p.wins])).toEqual([['p1', 1]]);
+    // Bia scans the code again: a new player with 0 wins.
+    const again = step(kicked.state, message(guest('c-bia'), { type: 'join', nickname: 'Bia', color: bia.color }), 0, deps);
+    const newBia = again.state.players.find((p) => p.nickname === 'Bia')!;
+    expect(newBia.id).not.toBe('p2');
+    expect(newBia.wins).toBe(0);
+  });
+});

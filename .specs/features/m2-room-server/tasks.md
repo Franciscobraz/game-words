@@ -548,9 +548,9 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 **Done when**:
 
-- [ ] C85-C87, C89, C92 passam
-- [ ] Gate check passes: `npx tsc -b; npx vitest run; npx playwright test`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] C85-C87, C89, C92 passam
+- [x] Gate check passes: `npx tsc -b; npx vitest run; npx playwright test`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: build

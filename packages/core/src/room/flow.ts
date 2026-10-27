@@ -10,12 +10,22 @@ export function podiumMessage(state: RoomState): ServerMessage {
 }
 
 /**
+ * One more win to every player with the highest score of the finished match, all
+ * of them on a tie, and to nobody when that score is 0 (WINS-01 AC 1-2).
+ */
+function awardWins(players: RoomState['players']): RoomState['players'] {
+  const top = Math.max(0, ...players.map((p) => p.score));
+  return top === 0 ? players : players.map((p) => (p.score === top ? { ...p, wins: p.wins + 1 } : p));
+}
+
+/**
  * `next` from the host in the results: the countdown of the next round with the
- * prepared board (RES-01 AC 5), or the podium after the last round (AC 6).
+ * prepared board (RES-01 AC 5), or the podium after the last round (AC 6), which
+ * counts the match's wins.
  */
 export const handleNext: Handler<'next'> = ({ state, now }) => {
   if (!isLastRound(state)) return requestRound(state, now);
-  const next: RoomState = { ...state, phase: 'podium' };
+  const next: RoomState = { ...state, phase: 'podium', players: awardWins(state.players) };
   return {
     state: next,
     effects: [
@@ -27,7 +37,7 @@ export const handleNext: Handler<'next'> = ({ state, now }) => {
 
 /**
  * Back to the lobby with the same players, colors, settings and host: every score
- * at zero, the round words and any prepared board dropped. Every connection gets a
+ * at zero (wins stay), the round words and any prepared board dropped. Every connection gets a
  * fresh `welcome`, which tells it the room is in the lobby.
  */
 function returnToLobby(state: RoomState): StepResult {
