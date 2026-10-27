@@ -592,10 +592,10 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 **Done when**:
 
-- [ ] Um caso por entrada inválida: vazio, negativo, decimal, texto (L-007)
-- [ ] C64, C65 passam
-- [ ] Gate check passes: `npx vitest run`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Um caso por entrada inválida: vazio, negativo, decimal, texto (L-007)
+- [x] C64, C65 passam
+- [x] Gate check passes: `npx vitest run`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: integration
 **Gate**: full
