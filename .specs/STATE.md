@@ -18,8 +18,8 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
   - M0 (`m0-dictionary-spike`): Done, verificado.
   - M1 (`m1-dictionary-pack`): Done, verificado (`validate_verification` 0 erros, 64 provas, 3 mutações mortas).
 - **Branch:** `main`. `origin/main` está em `21757c1`. Os commits do M1 são só locais: o usuário decidiu não publicar por enquanto.
-- **Em andamento:** M2 (`m2-room-server`): spec aprovada em 2026-10-27 (`spec.md`, `context.md`).
-- **Próximo passo:** Design do M2 (`design.md`): arquitetura do Worker + Durable Object, formato do protocolo, modelo de estado persistido, alarms e harness de testes com `@cloudflare/vitest-pool-workers`.
+- **Em andamento:** M2 (`m2-room-server`): spec aprovada e emendada em 2026-10-27 (`spec.md`, `context.md`); `design.md` em rascunho, aguardando aprovação.
+- **Próximo passo:** aprovação do design do M2; depois, Tasks (`tasks.md`).
 - **Modo de execução preferido pelo usuário:** subagentes, uma fase por vez, parando para mostrar o resultado e perguntar antes da próxima fase.
 - **Bloqueios:** nenhum.
 - **Arquivos não commitados:** nenhum.
