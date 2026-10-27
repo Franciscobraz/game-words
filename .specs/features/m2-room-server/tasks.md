@@ -735,7 +735,7 @@ Proof: `npx vitest run packages/core/src/room/round.test.ts -t "phones get the s
 Proof: `npx vitest run packages/core/src/room/submit.test.ts -t "validates a batch in order and answers once"`
 
 **C39** - Caminho antes de `startsAt` ou depois de `endsAt + 300 ms` dá `round-closed`; em `endsAt + 300 ms` vale (ROUND-01, AC 4)
-Proof: `npx vitest run packages/core/src/room/submit.test.ts -t "accepts paths only between startsAt and endsAt + 300 ms"`
+Proof: `npx vitest run packages/core/src/room/submit.test.ts -t "accepts paths only between startsAt and endsAt \+ 300 ms"`
 
 **C40** - Caminho de espectador dá `spectator` (ROUND-01, AC 5)
 Proof: `npx vitest run packages/core/src/room/submit.test.ts -t "rejects paths from spectators"`
