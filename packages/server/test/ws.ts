@@ -4,6 +4,8 @@ import { exports } from 'cloudflare:workers';
 /** A frame a client got: a JSON message or the binary hash frame. */
 export type Frame =
   | { kind: 'json'; msg: ServerMessage }
+  /** A text frame that is not JSON: the `pong` of the auto-response. */
+  | { kind: 'text'; text: string }
   | { kind: 'hashes'; roundId: number; prefixes: Uint8Array };
 
 type Of<T extends ServerMessage['type']> = Extract<ServerMessage, { type: T }>;
@@ -21,9 +23,11 @@ export class Client {
 
   constructor(ws: WebSocket) {
     this.ws = ws;
+    // With this compatibility date binary frames arrive as Blobs by default.
+    ws.binaryType = 'arraybuffer';
     ws.addEventListener('message', (event) => {
       if (typeof event.data === 'string') {
-        this.frames.push({ kind: 'json', msg: JSON.parse(event.data) as ServerMessage });
+        this.frames.push(event.data.startsWith('{') ? { kind: 'json', msg: JSON.parse(event.data) as ServerMessage } : { kind: 'text', text: event.data });
       } else {
         const frame = decodeHashFrame(event.data as ArrayBuffer);
         if (!frame) throw new Error('Unexpected binary frame');

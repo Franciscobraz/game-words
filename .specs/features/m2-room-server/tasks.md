@@ -654,10 +654,10 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 **Done when**:
 
-- [ ] Uma TV e dois celulares entram, jogam um envio e recebem as respostas por WebSocket real
-- [ ] C58 passa
-- [ ] Gate check passes: `npx vitest run`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Uma TV e dois celulares entram, jogam um envio e recebem as respostas por WebSocket real
+- [x] C58 passa
+- [x] Gate check passes: `npx vitest run`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: integration
 **Gate**: full
