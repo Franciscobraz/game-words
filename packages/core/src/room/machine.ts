@@ -17,6 +17,7 @@ import { type ClientMessage, type ClientMessageType, encodeHashFrame, type Phase
 import type { PreparedRound } from './prepare.ts';
 import { handleStart, onPrepared } from './round.ts';
 import { handleSettings } from './settings.ts';
+import { handleSubmit } from './submit.ts';
 import type { RoomState } from './state.ts';
 
 /**
@@ -164,6 +165,7 @@ const HANDLERS: { [T in ClientMessageType]?: Handler<T> } = {
   kick: handleKick,
   settings: handleSettings,
   start: handleStart,
+  submit: handleSubmit,
 };
 
 function welcomeBase(state: RoomState) {

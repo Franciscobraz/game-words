@@ -369,11 +369,11 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 **Done when**:
 
-- [ ] Limites exatos da janela e do rate limit (L-001)
-- [ ] Um palavrão filtrado continua recusado com as soluções guardadas
-- [ ] C38-C41, C76 passam
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Limites exatos da janela e do rate limit (L-001)
+- [x] Um palavrão filtrado continua recusado com as soluções guardadas
+- [x] C38-C41, C76 passam
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick

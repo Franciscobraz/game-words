@@ -13,7 +13,8 @@ export interface SubmissionContext {
   /** The room's minimum word length, in normalized letters. */
   minLength: number;
   filterProfanity: boolean;
-  pack: LanguagePack;
+  /** Read only while `filterProfanity` is on. */
+  pack: Pick<LanguagePack, 'isProfane'>;
 }
 
 export interface SolutionOptions {
