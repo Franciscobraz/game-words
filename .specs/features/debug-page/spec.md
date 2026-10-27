@@ -66,6 +66,7 @@ O M2 entregou o servidor da sala, mas as telas de TV e celular só chegam no M3 
 
 **C1** - Com o servidor e a página no ar, criar sala, entrar com 2 celulares, iniciar, enviar uma palavra e voltar ao lobby funciona pela página (DBG-01, AC 1-7)
 Proof: walk - visita do orquestrador no browser, registrada no relatório
+Walked: 2026-10-27 sobre `f7bb7e4`. Worker: sala, 2 celulares, rodada com "DOCE" aceita, reconexão com hashes, resultado, pódio, voltar ao lobby e coroa com 1 vitória. Orquestrador: sala `VWBM`, Ana (anfitriã, com comandos) e Bruno entraram, ambos no lobby com vitórias 0
 
 ## Success Criteria
 
