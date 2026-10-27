@@ -12,7 +12,7 @@ import {
   welcomeBase,
 } from './effects.ts';
 import { onAlarm } from './deadlines.ts';
-import { handleCloseRoom, handleNext, handlePlayAgain, podiumMessage } from './flow.ts';
+import { handleBackToLobby, handleCloseRoom, handleNext, handlePlayAgain, podiumMessage } from './flow.ts';
 import { handleKick, handleTransferHost, HOST_COMMANDS, isHost } from './host.ts';
 import { handleJoin } from './join.ts';
 import { type ClientMessage, type ClientMessageType, encodeHashFrame, type Phase, parseClientMessage } from './protocol.ts';
@@ -53,6 +53,7 @@ export const COMMAND_PHASES: Record<ClientMessageType, readonly Phase[]> = {
   'transfer-host': ALL_PHASES,
   kick: ALL_PHASES,
   'play-again': ['podium'],
+  'back-to-lobby': ['round', 'results', 'podium'],
   'close-room': ALL_PHASES,
 };
 
@@ -68,6 +69,7 @@ export const COMMAND_ROLES: Record<ClientMessageType, readonly ConnRef['role'][]
   'transfer-host': ['player'],
   kick: ['player'],
   'play-again': ['player'],
+  'back-to-lobby': ['player'],
   'close-room': ['player'],
 };
 
@@ -81,6 +83,7 @@ const ACTIONS: ReadonlySet<ClientMessageType> = new Set([
   'transfer-host',
   'kick',
   'play-again',
+  'back-to-lobby',
   'close-room',
 ]);
 
@@ -182,6 +185,7 @@ const HANDLERS: { [T in ClientMessageType]?: Handler<T> } = {
   submit: handleSubmit,
   next: handleNext,
   'play-again': handlePlayAgain,
+  'back-to-lobby': handleBackToLobby,
   'close-room': handleCloseRoom,
 };
 

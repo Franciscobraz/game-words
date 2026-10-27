@@ -21,6 +21,7 @@ export const CLIENT_MESSAGE_TYPES = [
   'transfer-host',
   'kick',
   'play-again',
+  'back-to-lobby',
   'close-room',
   'time',
 ] as const;
@@ -179,6 +180,7 @@ export type ClientMessage =
   | { type: 'transfer-host'; playerId: string }
   | { type: 'kick'; playerId: string }
   | { type: 'play-again' }
+  | { type: 'back-to-lobby' }
   | { type: 'close-room' }
   /** Clock sync: the client's own timestamp, echoed back. */
   | { type: 'time'; clientTime: number };
@@ -285,6 +287,7 @@ const SHAPES: Record<ClientMessageType, (m: Fields) => boolean> = {
   'transfer-host': (m) => hasOnly(m, ['type', 'playerId']) && isId(m.playerId),
   kick: (m) => hasOnly(m, ['type', 'playerId']) && isId(m.playerId),
   'play-again': (m) => hasOnly(m, ['type']),
+  'back-to-lobby': (m) => hasOnly(m, ['type']),
   'close-room': (m) => hasOnly(m, ['type']),
   time: (m) => hasOnly(m, ['type', 'clientTime']) && typeof m.clientTime === 'number' && Number.isFinite(m.clientTime),
 };

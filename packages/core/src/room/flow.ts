@@ -26,11 +26,11 @@ export const handleNext: Handler<'next'> = ({ state, now }) => {
 };
 
 /**
- * `play-again` from the host on the podium: back to the lobby with the same
- * players, colors, settings and host, every score at zero (RES-01 AC 7). Every
- * connection gets a fresh `welcome`, which tells it the room is in the lobby.
+ * Back to the lobby with the same players, colors, settings and host: every score
+ * at zero, the round words and any prepared board dropped. Every connection gets a
+ * fresh `welcome`, which tells it the room is in the lobby.
  */
-export const handlePlayAgain: Handler<'play-again'> = ({ state }) => {
+function returnToLobby(state: RoomState): StepResult {
   const next: RoomState = {
     ...state,
     phase: 'lobby',
@@ -61,7 +61,18 @@ export const handlePlayAgain: Handler<'play-again'> = ({ state }) => {
     roles: ['guest'],
   });
   return { state: next, effects };
-};
+}
+
+/** `play-again` from the host on the podium (RES-01 AC 7). */
+export const handlePlayAgain: Handler<'play-again'> = ({ state }) => returnToLobby(state);
+
+/**
+ * `back-to-lobby` from the host in the countdown, the round, the results or the
+ * podium (RES-01 AC 10): the running round ends without results and its words are
+ * dropped. Leaving the `round` phase also drops the round-end deadline, so a
+ * pending alarm sends nothing and a late `submit` gets `wrong-phase`.
+ */
+export const handleBackToLobby: Handler<'back-to-lobby'> = ({ state }) => returnToLobby(state);
 
 /**
  * Closes the room for good: every connection gets `closed` with the reason, then

@@ -82,6 +82,7 @@ describe('host role', () => {
     ['transfer-host', 'lobby', { type: 'transfer-host', playerId: 'p2' }],
     ['kick', 'lobby', { type: 'kick', playerId: 'p1' }],
     ['play-again', 'podium', { type: 'play-again' }],
+    ['back-to-lobby', 'round', { type: 'back-to-lobby' }],
     ['close-room', 'lobby', { type: 'close-room' }],
   ];
 

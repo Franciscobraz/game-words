@@ -10,6 +10,7 @@ export const HOST_COMMANDS: readonly ClientMessageType[] = [
   'transfer-host',
   'kick',
   'play-again',
+  'back-to-lobby',
   'close-room',
 ];
 

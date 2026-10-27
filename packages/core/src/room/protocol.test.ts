@@ -23,6 +23,7 @@ const SPEC_CLIENT_TYPES = [
   'transfer-host',
   'kick',
   'play-again',
+  'back-to-lobby',
   'close-room',
   'time',
 ];
@@ -81,6 +82,7 @@ const VALID: Record<(typeof CLIENT_MESSAGE_TYPES)[number], ClientMessage[]> = {
   'transfer-host': [{ type: 'transfer-host', playerId: 'p2' }],
   kick: [{ type: 'kick', playerId: 'p2' }],
   'play-again': [{ type: 'play-again' }],
+  'back-to-lobby': [{ type: 'back-to-lobby' }],
   'close-room': [{ type: 'close-room' }],
   time: [{ type: 'time', clientTime: 1_700_000_000_123 }],
 };
@@ -128,6 +130,7 @@ const MALFORMED: Record<(typeof CLIENT_MESSAGE_TYPES)[number], unknown[]> = {
   ],
   kick: [{ type: 'kick' }, { type: 'kick', playerId: false }, { type: 'kick', playerId: '' }],
   'play-again': [{ type: 'play-again', keepScores: true }],
+  'back-to-lobby': [{ type: 'back-to-lobby', keepScores: true }],
   'close-room': [{ type: 'close-room', reason: 'idle' }],
   time: [
     { type: 'time' },

@@ -483,12 +483,12 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 **Done when**:
 
-- [ ] Um caso por fase válida (contagem, rodada, resultado, pódio) e `wrong-phase` no lobby (L-007)
-- [ ] Depois de voltar ao lobby no meio da rodada, um `submit` atrasado dá `wrong-phase` e o alarm do fim da rodada não manda resultado
-- [ ] As tabelas do protocolo (bem formada, campo fora do formato) e de `not-host` ganham a linha do `back-to-lobby`
-- [ ] C21, C53, C70, C74, C84 passam
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Um caso por fase válida (contagem, rodada, resultado, pódio) e `wrong-phase` no lobby (L-007)
+- [x] Depois de voltar ao lobby no meio da rodada, um `submit` atrasado dá `wrong-phase` e o alarm do fim da rodada não manda resultado
+- [x] As tabelas do protocolo (bem formada, campo fora do formato) e de `not-host` ganham a linha do `back-to-lobby`
+- [x] C21, C53, C70, C74, C84 passam
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick

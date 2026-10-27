@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest';
+import { nextDeadline } from './deadlines.ts';
 import { step } from './machine.ts';
 import { prepareRound } from './prepare.ts';
 import type { ClientMessageType, Phase } from './protocol.ts';
@@ -110,6 +111,71 @@ describe('match flow', () => {
     expect((welcome as { players: { score: number }[] }).players.map((p) => p.score)).toEqual([0, 0, 0]);
   });
 
+  /** A round of two with words found: countdown until 10 s, open until 70 s. */
+  const midMatch = (phase: Phase) =>
+    inResults({
+      phase,
+      hostId: 'p2',
+      players: [{ ...ana, found: ['abc'] }, { ...bia, found: ['abc', 'def'] }, { ...cid, spectator: true }],
+      round: { id: 1, board: [['a']], startsAt: 10_000, endsAt: 70_000, salt: 'salt' },
+      solutions: { words: ['abc', 'def'], prefixes: new Uint8Array(12) },
+    });
+
+  // RES-01 AC 10: one row per phase where the command is valid (L-007).
+  const BACK_ROWS: [string, Phase, number][] = [
+    ['countdown', 'round', 5_000],
+    ['round', 'round', 30_000],
+    ['results', 'results', 75_000],
+    ['podium', 'podium', 80_000],
+  ];
+
+  test.each(BACK_ROWS)('back-to-lobby cancels the match and returns to the lobby: %s', (_name, phase, now) => {
+    const state = midMatch(phase);
+    const r = step(state, message(playerConn(bia), { type: 'back-to-lobby' }), now, deps);
+    expect(r.state.phase).toBe('lobby');
+    expect(r.state.hostId).toBe('p2');
+    expect(r.state.settings).toEqual(TWO_ROUNDS);
+    expect(r.state.roundIndex).toBe(0);
+    expect(r.state.solutions).toBeNull();
+    expect(r.state.players.map((p) => [p.id, p.nickname, p.color, p.token, p.score, p.found, p.spectator])).toEqual([
+      ['p1', 'Ana', ana.color, ana.token, 0, [], false],
+      ['p2', 'Bia', bia.color, bia.token, 0, [], false],
+      ['p3', 'Cid', cid.color, cid.token, 0, [], false],
+    ]);
+    // The round ends without results.
+    expect(allMessages(r.effects).map((m) => m.type)).not.toContain('round-results');
+    // The discarded words are deleted from the storage.
+    expect(r.effects).toContainEqual({
+      kind: 'persist',
+      keys: ['room', 'round:solutions', 'round:next', 'found:p1', 'found:p2', 'found:p3'],
+    });
+    // Every connection learns the room is back in the lobby.
+    for (const id of ['c-tv', 'conn-p1', 'conn-p2']) {
+      expect(sentTo(r.effects, id)).toEqual([
+        expect.objectContaining({ type: 'welcome', phase: 'lobby', round: null, hostId: 'p2', settings: TWO_ROUNDS }),
+      ]);
+    }
+    expect(r.effects).toContainEqual({
+      kind: 'broadcast',
+      msg: expect.objectContaining({ type: 'welcome', role: 'player', phase: 'lobby', playerId: null }),
+      roles: ['guest'],
+    });
+    const [welcome] = sentTo(r.effects, 'c-tv');
+    expect((welcome as { players: { score: number }[] }).players.map((p) => p.score)).toEqual([0, 0, 0]);
+  });
+
+  test('back-to-lobby drops the late submit and the round-end alarm', () => {
+    const back = step(midMatch('round'), message(playerConn(bia), { type: 'back-to-lobby' }), 30_000, deps).state;
+    expect(nextDeadline(back)).not.toBe(70_300);
+    const late = step(back, message(playerConn(ana), { type: 'submit', paths: [[0]] }), 30_100, deps);
+    expect(late.state).toBe(back);
+    expect(allMessages(late.effects)).toEqual([{ type: 'error', code: 'wrong-phase' }]);
+    const alarm = step(back, { kind: 'alarm' }, 70_300, deps);
+    expect(alarm.state.phase).toBe('lobby');
+    expect(alarm.state.results).toBeNull();
+    expect(allMessages(alarm.effects)).toEqual([]);
+  });
+
   test('close-room closes with closed-by-host', () => {
     for (const phase of ['lobby', 'round', 'results', 'podium'] as const) {
       const r = step(inResults({ phase }), message(host, { type: 'close-room' }), 90_000, deps);
@@ -129,6 +195,7 @@ describe('match flow', () => {
     ['play-again', 'lobby'],
     ['play-again', 'round'],
     ['play-again', 'results'],
+    ['back-to-lobby', 'lobby'],
     ['start', 'round'],
     ['start', 'results'],
     ['start', 'podium'],

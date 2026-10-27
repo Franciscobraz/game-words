@@ -242,9 +242,9 @@ describe('dispatch', () => {
   // The phase table of the protocol: which commands each phase accepts (PROTO-01 AC 3).
   const VALID: Record<Phase, ClientMessageType[]> = {
     lobby: ['hello', 'time', 'join', 'settings', 'start', 'transfer-host', 'kick', 'close-room'],
-    round: ['hello', 'time', 'join', 'submit', 'transfer-host', 'kick', 'close-room'],
-    results: ['hello', 'time', 'join', 'next', 'transfer-host', 'kick', 'close-room'],
-    podium: ['hello', 'time', 'join', 'play-again', 'transfer-host', 'kick', 'close-room'],
+    round: ['hello', 'time', 'join', 'submit', 'back-to-lobby', 'transfer-host', 'kick', 'close-room'],
+    results: ['hello', 'time', 'join', 'next', 'back-to-lobby', 'transfer-host', 'kick', 'close-room'],
+    podium: ['hello', 'time', 'join', 'play-again', 'back-to-lobby', 'transfer-host', 'kick', 'close-room'],
   };
 
   /** A well-formed message of each type, from a connection allowed to send it. */
@@ -261,6 +261,7 @@ describe('dispatch', () => {
       'transfer-host': [host, { type: 'transfer-host', playerId: 'p2' }],
       kick: [host, { type: 'kick', playerId: 'p2' }],
       'play-again': [host, { type: 'play-again' }],
+      'back-to-lobby': [host, { type: 'back-to-lobby' }],
       'close-room': [host, { type: 'close-room' }],
     };
     const [conn, msg] = msgs[type];
@@ -295,6 +296,7 @@ describe('dispatch', () => {
     ['transfer-host', guest('c-g'), { type: 'transfer-host', playerId: 'p1' }],
     ['kick', tvConn('c-tv'), { type: 'kick', playerId: 'p1' }],
     ['play-again', guest('c-g'), { type: 'play-again' }],
+    ['back-to-lobby', tvConn('c-tv'), { type: 'back-to-lobby' }],
     ['close-room', tvConn('c-tv'), { type: 'close-room' }],
   ];
 
