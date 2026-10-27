@@ -1,8 +1,8 @@
 # m2-room-server proofs
 
-**HEAD**: 1bd8f22
+**HEAD**: 3a0e586
 **Tree**: clean
-**Result**: 94 pass, 0 fail; mutations 0 killed, 0 not
+**Result**: 95 pass, 0 fail; mutations 3 killed, 0 not
 
 | Check | Proof | Ran | Passed | Result |
 | --- | --- | --- | --- | --- |
@@ -58,6 +58,7 @@
 | C53 | `npx vitest run packages/core/src/room/flow.test.ts -t "rejects flow commands outside their phase"` | 10 | 10 | pass |
 | C54 | `npx vitest run packages/server/test/persistence.test.ts -t "stores the state before the client sees it"` | 1 | 1 | pass |
 | C55 | `npx vitest run packages/server/test/persistence.test.ts -t "rebuilds a room mid-round after eviction"` | 1 | 1 | pass |
+| C94 | `npx vitest run packages/server/test/persistence.test.ts -t "marks players and the TV disconnected when their s` | 1 | 1 | pass |
 | C56 | `npx vitest run packages/server/test/persistence.test.ts -t "keeps sockets open across hibernation"` | 1 | 1 | pass |
 | C57 | `npx vitest run packages/server/test/alarms.test.ts -t "schedules every deadline on the durable object alarm"` | 1 | 1 | pass |
 | C58 | `npx vitest run packages/server/test/room-do.test.ts -t "answers ping with pong through the auto-response"` | 1 | 1 | pass |
@@ -100,3 +101,11 @@
 | Build | `npx tsc -b` | - | - | pass |
 | Build | `npx vitest run` | - | - | pass |
 | Build | `npx playwright test` | - | - | pass |
+
+## Mutations
+
+| Mutation | Location | Killed |
+| --- | --- | --- |
+| player view leaks each player's round words in players and welcome | `packages\core\src\room\effects.ts:94` | yes |
+| rebuilt room keeps players whose sockets died marked connected | `packages\server\src\room-do.ts:39` | yes |
+| static assets served before the Worker (pack public over HTTP) | `packages\server\wrangler.jsonc:9` | yes |

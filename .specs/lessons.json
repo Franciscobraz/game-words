@@ -3,7 +3,7 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 8,
+  "next_id": 11,
   "lessons": [
     {
       "id": "L-001",
@@ -130,6 +130,60 @@
       ],
       "created": "2026-10-26T23:49:25Z",
       "last_seen": "2026-10-26T23:49:25Z"
+    },
+    {
+      "id": "L-008",
+      "key": "surviving_mutant::prove a no leak rule over every message the client can receive including reconnect snapshots",
+      "text": "Prove a no-leak rule over every message the client can receive, including reconnect snapshots",
+      "signal": "surviving_mutant",
+      "scope": "server",
+      "status": "candidate",
+      "features": [
+        "m2-room-server"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "packages/core/src/room/effects.ts:94 (C16, PROTO-01 AC 5) (server)"
+      ],
+      "created": "2026-10-27T20:59:02Z",
+      "last_seen": "2026-10-27T20:59:02Z"
+    },
+    {
+      "id": "L-009",
+      "key": "surviving_mutant::test restart recovery with dead sockets not only with hibernated ones",
+      "text": "Test restart recovery with dead sockets, not only with hibernated ones",
+      "signal": "surviving_mutant",
+      "scope": "server",
+      "status": "candidate",
+      "features": [
+        "m2-room-server"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "packages/server/src/room-do.ts:39 (C55, RECON-01 AC 3) (server)"
+      ],
+      "created": "2026-10-27T20:59:02Z",
+      "last_seen": "2026-10-27T20:59:02Z"
+    },
+    {
+      "id": "L-010",
+      "key": "ac_gap::persist every state field an action changes not only the record it adds",
+      "text": "Persist every state field an action changes, not only the record it adds",
+      "signal": "ac_gap",
+      "scope": "persistence",
+      "status": "candidate",
+      "features": [
+        "m2-room-server"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "packages/core/src/room/submit.ts (PERSIST-01 AC 1, EXP-01 AC 2) (persistence)"
+      ],
+      "created": "2026-10-27T20:59:02Z",
+      "last_seen": "2026-10-27T20:59:02Z"
     }
   ]
 }

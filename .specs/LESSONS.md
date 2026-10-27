@@ -56,6 +56,24 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - evidence: tools/dict-build/src/cleanup.ts (C14, CLEAN-01 AC 2) (dict-build)
 - last seen: 2026-10-26T23:49:25Z
 
+### L-008 - Prove a no-leak rule over every message the client can receive, including reconnect snapshots
+- signal: `surviving_mutant` · recurrence: 1 feature(s) · scope: `server` · harmful: 0
+- features: m2-room-server
+- evidence: packages/core/src/room/effects.ts:94 (C16, PROTO-01 AC 5) (server)
+- last seen: 2026-10-27T20:59:02Z
+
+### L-009 - Test restart recovery with dead sockets, not only with hibernated ones
+- signal: `surviving_mutant` · recurrence: 1 feature(s) · scope: `server` · harmful: 0
+- features: m2-room-server
+- evidence: packages/server/src/room-do.ts:39 (C55, RECON-01 AC 3) (server)
+- last seen: 2026-10-27T20:59:02Z
+
+### L-010 - Persist every state field an action changes, not only the record it adds
+- signal: `ac_gap` · recurrence: 1 feature(s) · scope: `persistence` · harmful: 0
+- features: m2-room-server
+- evidence: packages/core/src/room/submit.ts (PERSIST-01 AC 1, EXP-01 AC 2) (persistence)
+- last seen: 2026-10-27T20:59:02Z
+
 ## Quarantined (failed when applied - ignore)
 
 A confirmed lesson that recurred alongside failure. Kept for the maintainer to review.
