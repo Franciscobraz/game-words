@@ -155,10 +155,10 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 **Done when**:
 
-- [ ] Vetor fixo: salt e palavra conhecidos dão um prefixo conferido com `node:crypto` no teste
-- [ ] O mesmo salt e palavra sempre dão o mesmo prefixo; salts diferentes dão prefixos diferentes
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Vetor fixo: salt e palavra conhecidos dão um prefixo conferido com `node:crypto` no teste
+- [x] O mesmo salt e palavra sempre dão o mesmo prefixo; salts diferentes dão prefixos diferentes
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick
