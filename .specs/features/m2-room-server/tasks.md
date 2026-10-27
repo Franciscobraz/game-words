@@ -222,10 +222,10 @@ T19 → T20 → T21 → T22 → T23 → T24 → T25 → T26
 
 **Done when**:
 
-- [ ] Limites exatos de cada opção (L-001), um caso por opção (L-007)
-- [ ] C31, C33, C35 passam
-- [ ] Gate check passes: `npx vitest run packages/core`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Limites exatos de cada opção (L-001), um caso por opção (L-007)
+- [x] C31, C33, C35 passam
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick
