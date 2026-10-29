@@ -240,9 +240,9 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] `/kbxt`, `/KBXT`, `/`, `/KBX`, `/KBXTA` e `/KBIO` (letras fora do alfabeto) cobertos
-- [ ] Gate check passes: `npx vitest run packages/phone`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] `/kbxt`, `/KBXT`, `/`, `/KBX`, `/KBXTA` e `/KBIO` (letras fora do alfabeto) cobertos
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick
