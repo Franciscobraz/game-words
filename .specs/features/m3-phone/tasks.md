@@ -157,10 +157,10 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] Um caso por tipo de mensagem (L-007); `welcome` reconstrói a visão do zero e recupera `found`
-- [ ] C115, C116 passam
-- [ ] Gate check passes: `npx vitest run packages/phone`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Um caso por tipo de mensagem (L-007); `welcome` reconstrói a visão do zero e recupera `found`
+- [x] C115, C116 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick
