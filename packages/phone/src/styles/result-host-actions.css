@@ -1,0 +1,8 @@
+/* The host's buttons stay at the foot of the screen while the result scrolls by (RES-01 AC 7-8). */
+.result-host-actions {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+  padding: var(--space-lg) 0 var(--space-md);
+  background: linear-gradient(to bottom, transparent, var(--color-background) 30%);
+}

@@ -1,5 +1,6 @@
-import { type ResultWord, type RoundResultsMessage, wordPoints } from '@bwords/core';
+import { type ResultWord, type RoundResultsMessage, type Settings, wordPoints } from '@bwords/core';
 import type { FoundWord } from './room-view.ts';
+import type { RoundPosition } from './round-position.ts';
 
 /** The personal card of the round result (RES-01 AC 2). */
 export interface RoundSummary {
@@ -23,6 +24,22 @@ export interface WordRow {
   points: number;
   /** The word's points before doubling: "base +N". */
   basePoints: number;
+}
+
+/** The round that ended and the one the host's button starts (RES-01 AC 2, 7). */
+export interface ResultRounds {
+  /** "Rodada 1 de 3 • RESULTADO". */
+  ended: RoundPosition;
+  /** "PRÓXIMA RODADA (2 DE 3)"; null after the last round, when the button is "VER PÓDIO". */
+  next: RoundPosition | null;
+}
+
+/** The 1-based round that ended and the next one, from the server's index and `last`; null before the settings arrive. */
+export function resultRounds(results: RoundResultsMessage, settings: Settings | null): ResultRounds | null {
+  if (settings === null) return null;
+  const ended = { round: results.index + 1, total: settings.rounds };
+  const next = results.last ? null : { round: ended.round + 1, total: settings.rounds };
+  return { ended, next };
 }
 
 /**

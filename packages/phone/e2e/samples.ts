@@ -4,6 +4,7 @@ import {
   PALETTE,
   type PlayerInfo,
   type RoundInfo,
+  type RoundResultsMessage,
   type RoundStartMessage,
   type Settings,
   type WelcomeMessage,
@@ -99,3 +100,55 @@ export function roundWelcome(players: PlayerInfo[], playerId: string, round: Rou
 export async function sampleHashFrame(): Promise<ArrayBuffer> {
   return encodeHashFrame(SAMPLE_ROUND_ID, await hashPrefixes(SAMPLE_SALT, Object.keys(SAMPLE_WORDS)));
 }
+
+/** The phase `results` of KBXT as the server describes it to `playerId`, with the words it found in the round. */
+export function resultsWelcome(players: PlayerInfo[], playerId: string, found: string[], index = 0): WelcomeMessage {
+  const now = Date.now();
+  return {
+    type: 'welcome',
+    role: 'player',
+    code: SAMPLE_CODE,
+    phase: 'results',
+    settings: SAMPLE_SETTINGS,
+    players,
+    hostId: ANA.id,
+    round: sampleRound(now - 120_000, now, index),
+    playerId,
+    found,
+    salt: null,
+  };
+}
+
+/** Ana's words of the captures' round: CORACOES alone, CASA, QUERO and LUA shared. */
+export const ANA_FOUND = ['coracoes', 'casa', 'quero', 'lua'];
+
+/**
+ * The end of round `index` as the captures draw it: Ana 32 (18 this round, CORACOES
+ * only hers), Beto 25, Caio 16; Duda watches. Players go from the lowest score up.
+ */
+export function sampleResults(index = 0, last = false): RoundResultsMessage {
+  return {
+    type: 'round-results',
+    index,
+    shared: [
+      { word: 'lua', points: 1 },
+      { word: 'casa', points: 2 },
+      { word: 'quero', points: 3 },
+    ],
+    players: [
+      { playerId: CAIO.id, unique: [], roundPoints: 6, score: 16 },
+      { playerId: BETO.id, unique: [], roundPoints: 9, score: 25 },
+      { playerId: ANA.id, unique: [{ word: 'coracoes', points: 12, spellings: ['corações'] }], roundPoints: 18, score: 32 },
+    ],
+    longest: null,
+    last,
+  };
+}
+
+/** The players of the captures' results, with the scores of `sampleResults`. */
+export const SCORED_PLAYERS: PlayerInfo[] = [
+  { ...ANA, score: 32 },
+  { ...BETO, score: 25 },
+  { ...CAIO, score: 16 },
+  DUDA,
+];

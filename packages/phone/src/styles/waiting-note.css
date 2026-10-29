@@ -1,0 +1,30 @@
+/* "Aguardando <anfitrião> …" in place of the host's buttons (RES-01 AC 9, POD-01 AC 12). */
+.waiting-note {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: var(--space-lg);
+  padding: var(--space-lg) var(--space-md);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container-low);
+}
+
+.waiting-note__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-high);
+  color: var(--color-primary);
+  font-size: 1.75rem;
+}
+
+.waiting-note__text {
+  margin: var(--space-md) 0 0;
+  color: var(--color-on-surface);
+  font-size: clamp(1.0625rem, 5vw, var(--font-size-title-md));
+  font-weight: var(--font-weight-extrabold);
+  text-align: center;
+}

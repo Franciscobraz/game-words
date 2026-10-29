@@ -118,8 +118,17 @@ export const STRINGS = {
   playerCount: (count: number) => (count === 1 ? '1 jogador' : `${count} jogadores`),
 
   // Round result (RES-01)
-  roundResultTitle: (round: number, total: number) => `Rodada ${round} de ${total} • RESULTADO`,
+  // "Rodada N de M • RESULTADO", with "RESULTADO" highlighted after the round (phone-round-result.jpg).
+  resultRound: (round: number, total: number) => `Rodada ${round} de ${total} •`,
+  resultTag: 'RESULTADO',
   lookAtTv: 'OLHE PARA A TV',
+  lookAtTvHint: 'Acompanhe no telão a revelação das palavras',
+  roundPerformance: 'DESEMPENHO DA RODADA',
+  addedThisRound: 'somados nesta rodada!',
+  accumulatedScore: 'PLACAR ACUMULADO',
+  points: (points: number) => (points === 1 ? '1 pt' : `${points} pts`),
+  gainedPoints: (points: number) => (points === 1 ? '+1 pt' : `+${points} pts`),
+  placeBadge: (position: number) => `${position}º lugar`,
   ordinal: (position: number) => `${position}º`,
   yourPlace: (position: number) => `Você está em ${position}º lugar`,
   myFoundWords: (count: number) => `MINHAS PALAVRAS ENCONTRADAS (${count})`,

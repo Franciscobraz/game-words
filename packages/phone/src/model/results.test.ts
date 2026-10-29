@@ -1,7 +1,7 @@
-import type { PlayerResult, RoundResultsMessage } from '@bwords/core';
+import type { PlayerResult, RoundResultsMessage, Settings } from '@bwords/core';
 import { describe, expect, test } from 'vitest';
 import type { FoundWord } from './room-view.ts';
-import { myRoundSummary, myWordRows, spellingsLabel, wordLabel } from './results.ts';
+import { myRoundSummary, myWordRows, resultRounds, spellingsLabel, wordLabel } from './results.ts';
 
 /** A player's line of `round-results`. */
 function line(playerId: string, roundPoints: number, score: number, unique: PlayerResult['unique'] = []): PlayerResult {
@@ -129,5 +129,31 @@ describe('myWordRows', () => {
     const message = results([line('p1', 2, 2, [{ word: 'casa', points: 4 }])]);
 
     expect(myWordRows([], message, 'p4')).toEqual([]);
+  });
+});
+
+describe('resultRounds', () => {
+  const settings: Settings = {
+    size: 4,
+    seconds: 120,
+    rounds: 3,
+    minLength: 3,
+    filterProfanity: true,
+    fastMode: false,
+    pack: 'pt-BR',
+    volume: 80,
+    muted: false,
+  };
+
+  test('names the round that ended and the next one, none after the last', () => {
+    // RES-01 AC 2, 7: round 1 of 3 leads to "PRÓXIMA RODADA (2 DE 3)"; round 2 still has a next; round 3 is the last.
+    const first = { ...results([]), index: 0, last: false };
+    const second = { ...results([]), index: 1, last: false };
+    const third = { ...results([]), index: 2, last: true };
+
+    expect(resultRounds(first, settings)).toEqual({ ended: { round: 1, total: 3 }, next: { round: 2, total: 3 } });
+    expect(resultRounds(second, settings)).toEqual({ ended: { round: 2, total: 3 }, next: { round: 3, total: 3 } });
+    expect(resultRounds(third, settings)).toEqual({ ended: { round: 3, total: 3 }, next: null });
+    expect(resultRounds(first, null)).toBeNull();
   });
 });

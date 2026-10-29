@@ -852,10 +852,10 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] Tela igual a `.specs/features/m3-phone/captures/phone-round-result.jpg`, foto em `phone-round-result.running.png`
-- [ ] C70a, C75, C76, C78, C79 passam
-- [ ] Gate check passes: full
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Tela igual a `.specs/features/m3-phone/captures/phone-round-result.jpg`, foto em `phone-round-result.running.png`
+- [x] C70a, C75, C76, C78, C79 passam
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: e2e
 **Gate**: full

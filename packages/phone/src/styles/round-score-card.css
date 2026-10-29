@@ -1,0 +1,102 @@
+/* "DESEMPENHO DA RODADA" (RES-01 AC 2, phone-round-result.jpg). */
+.round-score {
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  border: 1px solid var(--color-card-stroke);
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, var(--color-surface-container-high), var(--color-surface-container-low));
+}
+
+.round-score__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.round-score__gain {
+  min-width: 0;
+}
+
+.round-score__title {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-black);
+  letter-spacing: 0.06em;
+}
+
+.round-score__title .icon {
+  flex: none;
+  margin-right: var(--space-sm);
+  color: var(--color-action);
+  font-size: 1.25em;
+}
+
+.round-score__points {
+  margin: var(--space-xs) 0 0;
+  color: var(--color-primary);
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-black);
+}
+
+.round-score__added {
+  margin: 0;
+  color: var(--color-on-surface);
+  font-size: var(--font-size-body);
+}
+
+/* The place in a round badge, in place of the capture's crown (AD-012). */
+.round-score__badge {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin-left: var(--space-sm);
+  border: 2px solid var(--color-crown);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-highest);
+  color: var(--color-crown);
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-black);
+}
+
+.round-score__total {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container-lowest);
+}
+
+.round-score__total-label {
+  margin: 0 var(--space-sm) 0 0;
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.04em;
+}
+
+.round-score__total-value {
+  display: block;
+  color: var(--color-on-surface);
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-black);
+  letter-spacing: 0;
+}
+
+.round-score__place {
+  margin: var(--space-xs) 0;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-action) 18%, transparent);
+  color: var(--color-primary);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-extrabold);
+}
