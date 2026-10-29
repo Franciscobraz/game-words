@@ -1,0 +1,44 @@
+/* Page layout shared by every screen: a fluid column from 320 to 480 px and beyond (AD-016). */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: var(--space-md) var(--space-margin) var(--space-xl);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--space-lg);
+  padding: var(--space-md);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container-low);
+  border: 1px solid var(--color-card-stroke);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

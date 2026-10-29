@@ -1,0 +1,23 @@
+/* "SALA KBXT" pill (UI-01 AC 6). */
+.room-tag {
+  display: inline-flex;
+  align-items: baseline;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-high);
+  white-space: nowrap;
+}
+
+.room-tag__label {
+  margin-right: var(--space-xs);
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-size-small);
+  letter-spacing: 0.08em;
+}
+
+.room-tag__code {
+  color: var(--color-action);
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-black);
+  letter-spacing: 0.06em;
+}

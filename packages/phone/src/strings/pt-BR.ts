@@ -6,6 +6,11 @@ import { MAX_PLAYERS, NICKNAME_MAX, NICKNAME_MIN } from '@bwords/core';
  * values are functions of those values. Gender-neutral forms follow AD-013.
  */
 export const STRINGS = {
+  // App shell (UI-01 AC 6)
+  brand: 'BWords',
+  roomLabel: 'SALA',
+  preferences: 'Preferências',
+
   // Entry (ENTRY-01)
   enterRoom: 'Entrar numa sala',
   continue: 'CONTINUAR',

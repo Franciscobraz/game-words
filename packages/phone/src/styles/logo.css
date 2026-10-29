@@ -1,0 +1,26 @@
+/* "B BWords" mark (phone-code.png, phone-join.png). */
+.logo {
+  display: inline-flex;
+  align-items: center;
+}
+
+.logo__mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-right: var(--space-sm);
+  border-radius: var(--radius-md);
+  background: var(--color-action);
+  color: var(--color-on-action);
+  font-size: var(--font-size-title-md);
+  font-weight: var(--font-weight-black);
+}
+
+.logo__name {
+  color: var(--color-primary);
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-black);
+  letter-spacing: -0.02em;
+}

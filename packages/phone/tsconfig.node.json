@@ -4,8 +4,9 @@
     "rootDir": ".",
     "outDir": "../../node_modules/.cache/tsc/phone-node",
     "tsBuildInfoFile": "../../node_modules/.cache/tsc/phone-node.tsbuildinfo",
-    "lib": ["ES2022"],
+    "lib": ["ES2022", "DOM"],
     "types": ["node"]
   },
-  "include": ["vite.config.ts"]
+  "include": ["vite.config.ts", "playwright.config.ts", "e2e"],
+  "references": [{ "path": "../core" }, { "path": "./tsconfig.json" }]
 }
