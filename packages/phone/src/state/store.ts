@@ -1,5 +1,6 @@
 import { createContext } from 'preact';
 import { useContext } from 'preact/hooks';
+import { createMatchStore, type MatchStore } from './match.ts';
 import { createRoomStore, type RoomDeps, type RoomStore } from './room.ts';
 import { createRoundStore, type RoundDeps, type RoundStore } from './round.ts';
 
@@ -10,6 +11,7 @@ export type PhoneDeps = RoomDeps & Omit<RoundDeps, 'room'>;
 export interface PhoneStore {
   room: RoomStore;
   round: RoundStore;
+  match: MatchStore;
 }
 
 /**
@@ -18,7 +20,7 @@ export interface PhoneStore {
  */
 export function createPhoneStore(deps: PhoneDeps): PhoneStore {
   const room = createRoomStore(deps);
-  return { room, round: createRoundStore({ ...deps, room }) };
+  return { room, round: createRoundStore({ ...deps, room }), match: createMatchStore(room) };
 }
 
 /** Hands the store to the screens. */
