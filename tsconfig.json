@@ -9,6 +9,8 @@
     { "path": "tools/play" },
     { "path": "tools/play/tsconfig.node.json" },
     { "path": "tools/debug" },
-    { "path": "tools/debug/tsconfig.node.json" }
+    { "path": "tools/debug/tsconfig.node.json" },
+    { "path": "packages/phone" },
+    { "path": "packages/phone/tsconfig.node.json" }
   ]
 }

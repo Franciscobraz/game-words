@@ -115,10 +115,10 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] `npm run lint -w @bwords/phone` passa num `.tsx` com hooks, e falha num `useEffect` com dependência faltando (prova de que o parser TS e as regras de hooks estão ativos; o arquivo de prova é apagado depois)
-- [ ] `tsconfig.json` da raiz referencia `packages/phone`; `npx tsc -b` passa
-- [ ] `npm run dev -w @bwords/phone` serve `index.html` em `/` e em `/KBXT`
-- [ ] Gate check passes: build
+- [x] `npm run lint -w @bwords/phone` passa num `.tsx` com hooks, e falha num `useEffect` com dependência faltando (prova de que o parser TS e as regras de hooks estão ativos; o arquivo de prova é apagado depois)
+- [x] `tsconfig.json` da raiz referencia `packages/phone`; `npx tsc -b` passa
+- [x] `npm run dev -w @bwords/phone` serve `index.html` em `/` e em `/KBXT`
+- [x] Gate check passes: build
 
 **Tests**: none
 **Gate**: build
@@ -1366,7 +1366,7 @@ Proof: walk - cada foto em `captures/uncaptured/` com a resposta do user em `## 
 The feature's live state, written as it happens - a compaction gives no warning.
 
 **Settled mid-build:** none
-**Dispatched:** none
+**Dispatched:** batch worker fase 1 (T1-T8) em HEAD 3db40cb
 **Walked:** none
 
 ---
