@@ -3,6 +3,7 @@ import { render } from 'preact';
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import { Board } from './Board.tsx';
 import { Solutions } from './Solutions.tsx';
+import '@bwords/theme/tokens.css';
 import './style.css';
 
 /** Where the pack files are served; `?pack=/e2e-fixture` swaps in the E2E fixture. */

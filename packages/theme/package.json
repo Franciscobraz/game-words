@@ -1,0 +1,9 @@
+{
+  "name": "@bwords/theme",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Design tokens (colors, type, radii, spacing) shared by every BWords screen",
+  "exports": {
+    "./tokens.css": "./tokens.css"
+  }
+}

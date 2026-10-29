@@ -3,6 +3,7 @@ import { render } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { useNow, useRoomSocket, type View } from './socket.ts';
 import { Clock, Header, LogView, PlayersView, PodiumView, ResultsView, SettingsView, StaticBoard, tileText } from './views.tsx';
+import '@bwords/theme/tokens.css';
 import './style.css';
 
 const MAX_PHONES = 4;

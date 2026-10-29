@@ -1,44 +1,10 @@
-/* Design tokens of the phone (UI-01 AC 2, AD-010): dark theme only, taken from the captures.
-   Player colors come from the core PALETTE, never from here. */
+/* Phone-only tokens and the page base (UI-01, AD-010, AD-016). Colors, type sizes, radii and
+   spacing come from @bwords/theme (AD-017); this file only adds what the phone alone needs. */
 :root {
-  /* Surfaces, from the page background to the highest card. */
-  --color-background: #12131a;
-  --color-surface-1: #1a1b22;
-  --color-surface-2: #1f1f27;
-  --color-surface-3: #292932;
-  --color-surface-4: #34343c;
-
-  /* Text. */
-  --color-text: #e3e1ec;
-  --color-text-muted: #a8a6b4;
-  --color-text-on-primary: #2e1500;
-
-  /* Accents. */
-  --color-primary: #ff7a00;
-  --color-valid: #00b869;
-  --color-invalid: #93000a;
-  --color-alert: #ffd23f;
-  --color-neutral: #34343c;
-
-  /* Spacing scale. */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 24px;
-  --space-6: 32px;
-
-  /* Radii. */
-  --radius-small: 8px;
-  --radius-medium: 12px;
-  --radius-large: 20px;
-  --radius-pill: 999px;
-
-  /* Type. */
-  --font-family: 'Nunito Sans', system-ui, sans-serif;
-  --font-size-small: clamp(0.75rem, 3.2vw, 0.875rem);
-  --font-size-body: clamp(0.875rem, 3.8vw, 1rem);
-  --font-size-title: clamp(1.25rem, 6vw, 1.75rem);
+  /* Fluid type for 320-480 px wide screens, bounded by the design system sizes (AD-016). */
+  --font-size-small: clamp(0.75rem, 3.2vw, var(--font-size-label-sm));
+  --font-size-body: clamp(0.875rem, 3.8vw, var(--font-size-body-md));
+  --font-size-title: clamp(1.25rem, 6vw, var(--font-size-headline-lg-mobile));
 
   /* Touch target (UI-01 AC 7). */
   --touch-target: 48px;
@@ -48,6 +14,6 @@ html,
 body {
   margin: 0;
   background: var(--color-background);
-  color: var(--color-text);
+  color: var(--color-on-surface);
   font-family: var(--font-family);
 }

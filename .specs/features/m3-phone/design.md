@@ -191,7 +191,7 @@ Peças sem rede nem store, só props e callbacks (style guide §5):
 ### strings/ e styles/
 
 - `strings/pt-BR.ts`: um objeto `STRINGS` com chaves tipadas e funções para textos com valores (`waitingForHost(name)`, `roundOf(n, m)`). Todo `ErrorCode` e `CloseReason` tem chave (garantido por um teste).
-- `styles/tokens.css`: as cores das captures (fundo `#12131a`, superfícies `#1a1b22` a `#34343c`, primária `#ff7a00`, válida `#00b869`, inválida `#93000a`, alerta em amarelo, texto `#e3e1ec`), espaços e raios. As cores dos jogadores vêm do `PALETTE` do `core`, nunca do CSS.
+- Cores, tipografia, raios e espaços vêm de `@bwords/theme` (`packages/theme/tokens.css`, AD-017), a paleta do design system "BWords Party System" do Stitch. `styles/tokens.css` do celular só acrescenta o alvo de toque e a tipografia fluida. As cores dos jogadores vêm do `PALETTE` do `core`, nunca do CSS.
 
 ---
 

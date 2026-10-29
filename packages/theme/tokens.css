@@ -1,0 +1,157 @@
+/*
+ * BWords design tokens: the single source of colors, type, radii and spacing for every
+ * screen of the project (phone, TV and the dev tools). Values come from the Stitch design
+ * system "BWords Party System" (AD-017). Nothing else in the repo writes a literal color;
+ * it uses these variables.
+ *
+ * Player colors are not here: they come from the core PALETTE, which the server validates.
+ */
+:root {
+  /* ---------------------------------------------------------------------------------
+   * Palette roles of the design system (Material-style names, dark theme).
+   * ------------------------------------------------------------------------------- */
+
+  /* Surfaces, from the page background up to the highest card. */
+  --color-background: #12131a;
+  --color-surface: #12131a;
+  --color-surface-dim: #12131a;
+  --color-surface-bright: #383941;
+  --color-surface-container-lowest: #0d0e15;
+  --color-surface-container-low: #1a1b22;
+  --color-surface-container: #1e1f26;
+  --color-surface-container-high: #292931;
+  --color-surface-container-highest: #34343c;
+  --color-surface-variant: #34343c;
+
+  /* Text and icons on surfaces. */
+  --color-on-background: #e3e1ec;
+  --color-on-surface: #e3e1ec;
+  --color-on-surface-variant: #e0c0af;
+  --color-inverse-surface: #e3e1ec;
+  --color-inverse-on-surface: #2f3038;
+
+  /* Lines. */
+  --color-outline: #a78b7c;
+  --color-outline-variant: #584235;
+
+  /* Primary (orange). */
+  --color-primary: #ffb68b;
+  --color-on-primary: #522300;
+  --color-primary-container: #ff7a00;
+  --color-on-primary-container: #5c2800;
+  --color-inverse-primary: #994700;
+  --color-primary-fixed: #ffdbc8;
+  --color-primary-fixed-dim: #ffb68b;
+  --color-on-primary-fixed: #321200;
+  --color-on-primary-fixed-variant: #753400;
+
+  /* Secondary (sky blue). */
+  --color-secondary: #8fd8ff;
+  --color-on-secondary: #003548;
+  --color-secondary-container: #00c1fd;
+  --color-on-secondary-container: #004b65;
+  --color-secondary-fixed: #c2e8ff;
+  --color-secondary-fixed-dim: #75d1ff;
+  --color-on-secondary-fixed: #001e2b;
+  --color-on-secondary-fixed-variant: #004d67;
+
+  /* Tertiary (green). */
+  --color-tertiary: #36e287;
+  --color-on-tertiary: #00391c;
+  --color-tertiary-container: #00b869;
+  --color-on-tertiary-container: #004121;
+  --color-tertiary-fixed: #5cffa1;
+  --color-tertiary-fixed-dim: #36e287;
+  --color-on-tertiary-fixed: #00210e;
+  --color-on-tertiary-fixed-variant: #00522c;
+
+  /* Error (red). */
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+
+  /* ---------------------------------------------------------------------------------
+   * Brand colors and elevation from the design system guidelines.
+   * ------------------------------------------------------------------------------- */
+
+  --color-brand-orange: #ff7a00;
+  --color-brand-orange-edge: #d46200;
+  --color-brand-sky: #00c2ff;
+  --color-brand-emerald: #10d078;
+  --color-brand-guava: #ff4d8d;
+  --color-brand-gold: #ffd027;
+
+  --color-text-strong: #f8fafc;
+  --color-text-muted: #9ca3af;
+  --color-disconnected: #5c6577;
+
+  --color-card: #1e212d;
+  --color-card-stroke: rgba(255, 255, 255, 0.08);
+  --color-tile: #2a2f40;
+  --color-tile-rim: #1a1d28;
+  --color-modal: #181b24;
+  --color-glow-primary: rgba(255, 122, 0, 0.35);
+
+  /* ---------------------------------------------------------------------------------
+   * Game meanings, mapped to the palette. Screens use these names.
+   * ------------------------------------------------------------------------------- */
+
+  --color-valid: var(--color-tertiary-container);
+  --color-on-valid: var(--color-on-tertiary-container);
+  --color-invalid: var(--color-error-container);
+  --color-on-invalid: var(--color-on-error-container);
+  --color-already-found: var(--color-brand-gold);
+  --color-on-already-found: var(--color-on-primary-fixed);
+  --color-too-short: var(--color-surface-container-highest);
+  --color-on-too-short: var(--color-on-surface-variant);
+  --color-alert: var(--color-brand-gold);
+  --color-action: var(--color-primary-container);
+  --color-on-action: var(--color-on-primary-container);
+  --color-crown: var(--color-brand-gold);
+
+  /* ---------------------------------------------------------------------------------
+   * Type: Nunito Sans; sizes of the design system.
+   * ------------------------------------------------------------------------------- */
+
+  --font-family: 'Nunito Sans', system-ui, sans-serif;
+
+  --font-size-headline-tv-roomcode: 6rem;
+  --font-size-headline-tv-giant: 4.5rem;
+  --font-size-headline-tv-tile: 3.5rem;
+  --font-size-headline-tv-title: 2.5rem;
+  --font-size-headline-lg: 2rem;
+  --font-size-headline-lg-mobile: 1.625rem;
+  --font-size-title-md: 1.375rem;
+  --font-size-body-lg: 1.125rem;
+  --font-size-body-md: 1rem;
+  --font-size-label-mobile-action: 1.25rem;
+  --font-size-label-sm: 0.8125rem;
+
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
+
+  /* ---------------------------------------------------------------------------------
+   * Shape and spacing.
+   * ------------------------------------------------------------------------------- */
+
+  --radius-sm: 0.25rem;
+  --radius-default: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-margin: 1.25rem;
+  --space-gutter: 1.5rem;
+  --space-margin-tv: 4rem;
+  --space-gutter-tv: 2.5rem;
+}

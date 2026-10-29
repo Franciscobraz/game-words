@@ -44,6 +44,7 @@ Jogo de encontrar palavras: uma TV mostra o jogo e cada jogador usa o celular co
 - `.specs/STATE.md` - decisões (`AD-NNN`) e o ponto em que o trabalho parou
 - `.specs/LESSONS.md` - lições de verificações passadas
 - `.specs/features/<feature>/` - spec, design, tasks e provas de cada marco
+- `packages/theme/tokens.css` - paleta, tipografia, raios e espaços de todas as telas; nenhuma cor literal fora dele (AD-017)
 
 ## Ambiente
 

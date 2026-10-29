@@ -24,6 +24,7 @@ O guia descreve o que o código do M0 ao M2 já faz e acrescenta as regras dos c
 ```
 packages/
   core/      regras do jogo e da sala; puro, sem DOM nem Node
+  theme/     tokens.css: paleta, tipografia, raios e espaços de todas as telas (AD-017)
   server/    Worker + Durable Object; casca fina sobre o core
   phone/     cliente do celular (M3), Preact + Vite
   tv/        cliente da TV (M4), Preact + Vite
@@ -61,7 +62,7 @@ src/
   components/       peças reutilizáveis sem conhecimento de rede (Tile, PlayerRow, Chip, Sheet)
   strings/pt-BR.ts  tabela de textos exibidos
   styles/
-    tokens.css      cores, espaços, raios e fontes em variáveis CSS
+    tokens.css      só o que é do pacote (alvo de toque, tipografia fluida), sobre o @bwords/theme
     *.css           um arquivo por tela ou componente
 e2e/                testes Playwright
 ```
@@ -136,12 +137,12 @@ O `tsconfig.base.json` já liga `strict`, `noUncheckedIndexedAccess`, `verbatimM
 
 ### 5.1 CSS
 
-- **Cores, espaços, raios e fontes** só por variáveis de `tokens.css`. Nenhuma cor literal fora dele, exceto a cor do jogador, que vem do dado.
+- **Cores, espaços, raios e fontes** só pelas variáveis de `packages/theme/tokens.css` (`@bwords/theme`, AD-017), importado por todo cliente e ferramenta. Nenhuma cor literal fora dele, exceto a cor do jogador, que vem do dado. Telas usam os nomes de significado (`--color-valid`, `--color-invalid`, `--color-already-found`, `--color-action`, `--color-crown`); os papéis da paleta (`--color-primary-container`, `--color-surface-container`...) servem para superfícies e texto. Um pacote pode ter um `tokens.css` próprio só para o que é dele (alvo de toque, tipografia fluida), sempre a partir das variáveis do tema.
 - **Layout:** só flexbox e margens, sem CSS Grid e sem `gap`. A TV-alvo roda navegadores antigos (DESIGN §4.5).
 - **Responsividade primeiro (AD-016):** layouts fluidos, nunca presos à largura de uma capture. Containers só com `%`, `flex`, `vw`/`vh`, `clamp()` e `min()`; px só em detalhes de até 64 px (ícones, bordas, avatares, o alvo de 48 px). Tipografia com `clamp()`. O celular funciona de 320 a 480 px de largura e de 568 a 932 px de altura; a TV, de 1280×720 a 1920×1080. As captures servem para conferir composição, não pixels.
 - **Animações:** só com `transform` e `opacity`. Sem `blur`, `backdrop-filter` nem `box-shadow` animado.
 - **Classes:** em inglês, no formato `bloco__elemento--modificador` (`player-row__name--muted`). Sem estilo inline, exceto valores dinâmicos (cor do jogador, posição do caminho).
-- **Só tema escuro** (AD-010), mas sempre por tokens, para que um tema novo troque só o `tokens.css`.
+- **Só tema escuro** (AD-010), mas sempre por tokens, para que um tema novo troque só o `packages/theme/tokens.css`.
 
 ---
 
