@@ -138,6 +138,7 @@ O `tsconfig.base.json` já liga `strict`, `noUncheckedIndexedAccess`, `verbatimM
 
 - **Cores, espaços, raios e fontes** só por variáveis de `tokens.css`. Nenhuma cor literal fora dele, exceto a cor do jogador, que vem do dado.
 - **Layout:** só flexbox e margens, sem CSS Grid e sem `gap`. A TV-alvo roda navegadores antigos (DESIGN §4.5).
+- **Responsividade primeiro (AD-016):** layouts fluidos, nunca presos à largura de uma capture. Containers só com `%`, `flex`, `vw`/`vh`, `clamp()` e `min()`; px só em detalhes de até 64 px (ícones, bordas, avatares, o alvo de 48 px). Tipografia com `clamp()`. O celular funciona de 320 a 480 px de largura e de 568 a 932 px de altura; a TV, de 1280×720 a 1920×1080. As captures servem para conferir composição, não pixels.
 - **Animações:** só com `transform` e `opacity`. Sem `blur`, `backdrop-filter` nem `box-shadow` animado.
 - **Classes:** em inglês, no formato `bloco__elemento--modificador` (`player-row__name--muted`). Sem estilo inline, exceto valores dinâmicos (cor do jogador, posição do caminho).
 - **Só tema escuro** (AD-010), mas sempre por tokens, para que um tema novo troque só o `tokens.css`.
