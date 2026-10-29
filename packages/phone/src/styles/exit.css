@@ -1,0 +1,66 @@
+/* Exit screens (EXIT-01, phone-kicked.png, phone-room-closed.png). */
+.exit {
+  align-items: center;
+  padding-top: var(--space-xl);
+}
+
+.exit__icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: min(30vw, 7rem);
+  height: min(30vw, 7rem);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-high);
+  color: var(--color-outline);
+  font-size: clamp(2.5rem, 12vw, 3rem);
+}
+
+.exit__icon--celebration {
+  border: 16px solid color-mix(in srgb, var(--color-action) 12%, transparent);
+  background: var(--color-surface-container-highest);
+  color: var(--color-action);
+  background-clip: padding-box;
+}
+
+.exit__title {
+  margin: var(--space-lg) 0 0;
+  color: var(--color-on-surface);
+  font-size: clamp(1.5rem, 7.2vw, var(--font-size-headline-lg));
+  font-weight: var(--font-weight-black);
+  line-height: 1.25;
+  text-align: center;
+}
+
+.exit__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-xl) var(--space-md);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container);
+}
+
+.exit__card .exit__title {
+  font-size: clamp(1.5rem, 6.4vw, var(--font-size-headline-lg-mobile));
+}
+
+.exit__thanks {
+  margin: var(--space-sm) 0 0;
+  color: var(--color-primary);
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-extrabold);
+}
+
+.exit__action {
+  width: 100%;
+  margin-top: var(--space-xl);
+}
+
+/* "ENTRAR EM OUTRA SALA" fits one line from 320 px up, as in the captures. */
+.exit__action .primary-button {
+  font-size: clamp(1rem, 5vw, var(--font-size-label-mobile-action));
+  letter-spacing: 0.02em;
+}

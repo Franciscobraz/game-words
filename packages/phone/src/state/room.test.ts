@@ -164,6 +164,19 @@ describe('actions', () => {
     expect(connection.sent).toEqual([expected]);
   });
 
+  test('leaving the room closes the connection and forgets the room', () => {
+    // EXIT-01 AC 5: after "ENTRAR EM OUTRA SALA" the phone knows no room, so the code screen shows.
+    const { connection, store } = setup();
+    connection.receive(welcome('p-beto'));
+    connection.receive({ type: 'closed', reason: 'kicked' });
+
+    store.leaveRoom();
+
+    expect(connection.closes).toBe(1);
+    expect(store.room.value.code).toBeNull();
+    expect(store.room.value.closeReason).toBeNull();
+  });
+
   test('retry asks the connection to try again', () => {
     const { connection, store } = setup();
 

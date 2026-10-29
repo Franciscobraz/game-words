@@ -4,6 +4,7 @@ import { useEffect } from 'preact/hooks';
 import { type Screen, screenFor } from './model/screen.ts';
 import { CodeEntryScreen } from './screens/CodeEntryScreen.tsx';
 import { ConnectingScreen } from './screens/ConnectingScreen.tsx';
+import { KickedScreen, ReplacedScreen, RoomClosedScreen } from './screens/ExitScreens.tsx';
 import { HostLobbyScreen } from './screens/HostLobbyScreen.tsx';
 import { JoinScreen } from './screens/JoinScreen.tsx';
 import { LobbyScreen } from './screens/LobbyScreen.tsx';
@@ -27,9 +28,9 @@ const SCREENS: Record<Screen, ComponentType> = {
   spectator: ConnectingScreen,
   'round-result': ConnectingScreen,
   podium: ConnectingScreen,
-  kicked: ConnectingScreen,
-  'room-closed': ConnectingScreen,
-  replaced: ConnectingScreen,
+  kicked: KickedScreen,
+  'room-closed': RoomClosedScreen,
+  replaced: ReplacedScreen,
 };
 
 /** Shows the screen for the room as the server describes it, at the server's time (UI-01). */

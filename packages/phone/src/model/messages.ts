@@ -1,4 +1,4 @@
-import type { CloseReason, ErrorCode } from '@bwords/core';
+import type { CloseReason, ErrorCode, PlayerInfo } from '@bwords/core';
 import type { StringKey } from '../strings/pt-BR.ts';
 
 /**
@@ -67,4 +67,14 @@ export function errorKey(code: ErrorCode): StringKey {
 /** The string key for a close reason; `idle` and `tv-gone` share one text (EXIT-01 AC 3). */
 export function closeKey(reason: CloseReason): StringKey {
   return CLOSE_KEYS[reason];
+}
+
+/**
+ * The nickname for "<anfitrião> encerrou a sala": only when the host closed the room
+ * and the phone still knows who the host was; otherwise the screen says "A sala foi
+ * encerrada" (EXIT-01 AC 2-3).
+ */
+export function closingHostName(reason: CloseReason, players: readonly PlayerInfo[], hostId: string | null): string | null {
+  if (reason !== 'closed-by-host') return null;
+  return players.find((p) => p.id === hostId)?.nickname ?? null;
 }

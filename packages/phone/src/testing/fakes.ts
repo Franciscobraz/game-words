@@ -99,6 +99,7 @@ export interface FakeConnection {
   connects: { code: string; token: string | null }[];
   sent: ClientMessage[];
   retries: number;
+  closes: number;
   /** Delivers a server message to the store. */
   receive(msg: ServerMessage): void;
   /** The handlers the store registered. */
@@ -112,6 +113,7 @@ export function fakeConnection(serverTime = 0): FakeConnection {
     connects: [],
     sent: [],
     retries: 0,
+    closes: 0,
     openConnection(handlers) {
       registered = handlers;
       const connection: RoomConnection = {
@@ -120,7 +122,9 @@ export function fakeConnection(serverTime = 0): FakeConnection {
         retry: () => {
           fake.retries += 1;
         },
-        close: () => {},
+        close: () => {
+          fake.closes += 1;
+        },
         serverNow: () => serverTime,
       };
       return connection;

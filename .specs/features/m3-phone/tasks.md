@@ -514,10 +514,10 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] Telas iguais a `.specs/features/m3-phone/captures/phone-kicked.png` e `phone-room-closed.png`, fotos em `phone-kicked.running.png` e `phone-room-closed.running.png`
-- [ ] C95, C97, C98 passam
-- [ ] Gate check passes: full
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Telas iguais a `.specs/features/m3-phone/captures/phone-kicked.png` e `phone-room-closed.png`, fotos em `phone-kicked.running.png` e `phone-room-closed.running.png`
+- [x] C95, C97, C98 passam
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: e2e
 **Gate**: full

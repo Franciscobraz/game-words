@@ -1,7 +1,7 @@
-import { CLOSE_REASONS, type CloseReason, ERROR_CODES, type ErrorCode } from '@bwords/core';
+import { CLOSE_REASONS, type CloseReason, ERROR_CODES, type ErrorCode, type PlayerInfo } from '@bwords/core';
 import { describe, expect, test } from 'vitest';
 import { STRINGS, type StringKey } from '../strings/pt-BR.ts';
-import { closeKey, errorKey, type JoinErrorPlace, joinErrorPlace } from './messages.ts';
+import { closeKey, closingHostName, errorKey, type JoinErrorPlace, joinErrorPlace } from './messages.ts';
 
 /** The text of a key, with `name` filled in when the text takes a value. */
 function textOf(key: StringKey, name = 'Ana'): string {
@@ -79,5 +79,22 @@ const JOIN_ERROR_PLACES: Record<ErrorCode, JoinErrorPlace> = {
 describe('joinErrorPlace', () => {
   test.each(ERROR_CODES)('places %s on the join screen', (code) => {
     expect(joinErrorPlace(code)).toBe(JOIN_ERROR_PLACES[code]);
+  });
+});
+
+describe('closingHostName', () => {
+  const ana: PlayerInfo = { id: 'p-ana', nickname: 'Ana', color: '#ff7a00', connected: true, spectator: false, score: 0, wins: 0 };
+  const beto: PlayerInfo = { id: 'p-beto', nickname: 'Beto', color: '#00c2ff', connected: true, spectator: false, score: 0, wins: 0 };
+
+  test('names the host who closed the room', () => {
+    // EXIT-01 AC 2: "Ana encerrou a sala".
+    expect(closingHostName('closed-by-host', [ana, beto], 'p-ana')).toBe('Ana');
+  });
+
+  test('names nobody when the room closed on its own or the host is unknown', () => {
+    // EXIT-01 AC 3: idle and tv-gone say "A sala foi encerrada"; so does a host the phone never saw.
+    expect(closingHostName('idle', [ana, beto], 'p-ana')).toBeNull();
+    expect(closingHostName('tv-gone', [ana, beto], 'p-ana')).toBeNull();
+    expect(closingHostName('closed-by-host', [beto], 'p-ana')).toBeNull();
   });
 });

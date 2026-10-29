@@ -46,6 +46,8 @@ export interface RoomStore {
   closeRoom(): void;
   /** "Tentar de novo" after "Sem conexão" (RECON-01 AC 4). */
   retry(): void;
+  /** "ENTRAR EM OUTRA SALA": forgets this room, which brings back the code screen (EXIT-01 AC 5). */
+  leaveRoom(): void;
 }
 
 /** Close reasons that end this phone's place in the room, so its token is useless (EXIT-01 AC 1-3). */
@@ -112,5 +114,9 @@ export function createRoomStore(deps: RoomDeps): RoomStore {
     backToLobby: () => send({ type: 'back-to-lobby' }),
     closeRoom: () => send({ type: 'close-room' }),
     retry: () => link.retry(),
+    leaveRoom() {
+      link.close();
+      room.value = INITIAL_VIEW;
+    },
   };
 }
