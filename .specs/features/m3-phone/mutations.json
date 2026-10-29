@@ -1,0 +1,86 @@
+[
+  {
+    "file": "packages/phone/src/state/round.ts",
+    "old": "return listed ? { kind: 'already-found', word: judged.word } : judged;",
+    "new": "return judged;",
+    "proof": "npx vitest run packages/phone/src/state/round.test.ts",
+    "label": "a word listed by a quicker swipe while this one was judged stays valid twice (PLAY-01 AC 8)"
+  },
+  {
+    "file": "packages/phone/src/model/board-lock.ts",
+    "old": "serverNow >= view.round.endsAt",
+    "new": "serverNow > view.round.endsAt",
+    "proof": "npx vitest run packages/phone/src/model/board-lock.test.ts",
+    "label": "the board stays open at exactly endsAt (PLAY-01 AC 20)"
+  },
+  {
+    "file": "packages/phone/src/model/submit-queue.ts",
+    "old": "remainingMs <= SUBMIT_AT_ONCE_MS",
+    "new": "remainingMs < SUBMIT_AT_ONCE_MS",
+    "proof": "npx vitest run packages/phone/src/model/submit-queue.test.ts -t \"waits 500 ms or sends at once in the last 3 seconds\"",
+    "label": "send-at-once bound of 3,000 ms shifted by one (PLAY-01 AC 12, C57)"
+  },
+  {
+    "file": "packages/phone/src/state/prefs.ts",
+    "old": "return view.phase === 'lobby' || view.phase === 'round';",
+    "new": "return view.phase === 'lobby';",
+    "proof": "npx vitest run packages/phone/src/state/prefs.test.ts -t \"holds the wake lock in the lobby and the round and asks again when visible\"",
+    "label": "wake lock let go during the round (PREF-01 AC 4, C106)"
+  },
+  {
+    "file": "packages/phone/src/model/path.ts",
+    "old": "if (path.includes(tile) || !isNeighbor(size, last, tile)) return path;",
+    "new": "if (!isNeighbor(size, last, tile)) return path;",
+    "proof": "npx vitest run packages/phone/src/model/path.test.ts -t \"ignores tiles that are not neighbors or already used\"",
+    "label": "a tile already in the path joins it again (PLAY-01 AC 4, C49)"
+  },
+  {
+    "file": "packages/phone/src/model/room-view.ts",
+    "old": "const recovered = msg.found.map((word) => confirmedWord(word)).reverse();",
+    "new": "const recovered = msg.found.map((word) => confirmedWord(word));",
+    "proof": "npx vitest run packages/phone/src/model/room-view.test.ts",
+    "label": "words recovered by the welcome lose newest-first order (RECON-01 AC 3, PLAY-01 AC 17)"
+  },
+  {
+    "file": "packages/phone/src/model/results.ts",
+    "old": "const accepted = new Set(found.filter((entry) => entry.confirmed).map((entry) => entry.word));",
+    "new": "const accepted = new Set(found.map((entry) => entry.word));",
+    "proof": "npx vitest run packages/phone/src/model/results.test.ts",
+    "label": "shared words listed without the server's acceptance (RES-01 AC 5)"
+  },
+  {
+    "file": "packages/phone/src/model/found.ts",
+    "old": "return found.filter((entry) => entry.confirmed || !refused.has(entry.word));",
+    "new": "return found.filter((entry) => !refused.has(entry.word));",
+    "proof": "npx vitest run packages/phone/src/model/found.test.ts",
+    "label": "a refusal removes a word the server had already accepted (PLAY-01 AC 13)"
+  },
+  {
+    "file": "packages/phone/src/model/screen.ts",
+    "old": "if (view.round === null || serverNow < view.round.startsAt) return 'countdown';",
+    "new": "if (view.round === null || serverNow <= view.round.startsAt) return 'countdown';",
+    "proof": "npx vitest run packages/phone/src/model/screen.test.ts -t \"keeps the countdown screen until startsAt on the server clock\"",
+    "label": "the board opens 1 ms after startsAt (COUNT-01 AC 2, C43)"
+  },
+  {
+    "file": "packages/phone/src/model/clock.ts",
+    "old": "const seconds = Math.min(COUNTDOWN_FIRST_NUMBER, Math.ceil(remainingMs / MS_PER_SECOND));",
+    "new": "const seconds = Math.min(COUNTDOWN_FIRST_NUMBER, Math.floor(remainingMs / MS_PER_SECOND) + 1);",
+    "proof": "npx vitest run packages/phone/src/model/clock.test.ts",
+    "label": "countdown number changes 1 ms late at each second (COUNT-01 AC 1)"
+  },
+  {
+    "file": "packages/phone/src/model/connection-banner.ts",
+    "old": "if (event.type === 'welcome') return isWaitingForWelcome(banner) ? 'connected' : banner;",
+    "new": "if (event.type === 'welcome') return 'connected';",
+    "proof": "npx vitest run packages/phone/src/model/connection-banner.test.ts",
+    "label": "the first welcome of a fresh connection flashes Conectado (RECON-01 AC 3)"
+  },
+  {
+    "file": "packages/phone/src/state/match.ts",
+    "old": "if (msg.type === 'round-start' && msg.index === 0) history.value = [];",
+    "new": "if (msg.type === 'round-start' && msg.index === 0 && history.value.length === 0) history.value = [];",
+    "proof": "npx vitest run packages/phone/src/state/match.test.ts",
+    "label": "history kept across matches (POD-01 AC 4)"
+  }
+]
