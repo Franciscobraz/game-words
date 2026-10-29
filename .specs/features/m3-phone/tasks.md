@@ -599,10 +599,10 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] Hashes de teste gerados com `hashPrefixes` e um salt fixo
-- [ ] C52, C53, C54 passam
-- [ ] Gate check passes: `npx vitest run packages/phone`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Hashes de teste gerados com `hashPrefixes` e um salt fixo
+- [x] C52, C53, C54 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick
