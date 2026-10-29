@@ -303,10 +303,10 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] Tela igual a `.specs/features/m3-phone/captures/phone-code.png`, foto em `phone-code.running.png`
-- [ ] C2, C3, C4, C5 passam
-- [ ] Gate check passes: full
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Tela igual a `.specs/features/m3-phone/captures/phone-code.png`, foto em `phone-code.running.png`
+- [x] C2, C3, C4, C5 passam
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: e2e
 **Gate**: full

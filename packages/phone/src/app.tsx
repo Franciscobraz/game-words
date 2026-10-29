@@ -2,6 +2,7 @@ import { type ReadonlySignal, useComputed, useSignal } from '@preact/signals';
 import type { ComponentType } from 'preact';
 import { useEffect } from 'preact/hooks';
 import { type Screen, screenFor } from './model/screen.ts';
+import { CodeEntryScreen } from './screens/CodeEntryScreen.tsx';
 import { ConnectingScreen } from './screens/ConnectingScreen.tsx';
 import { JoinScreen } from './screens/JoinScreen.tsx';
 import { useStore } from './state/store.ts';
@@ -14,7 +15,7 @@ const SERVER_CLOCK_TICK_MS = 100;
  * Screens of later tasks show the connecting screen until they are built.
  */
 const SCREENS: Record<Screen, ComponentType> = {
-  'code-entry': ConnectingScreen,
+  'code-entry': CodeEntryScreen,
   connecting: ConnectingScreen,
   join: JoinScreen,
   lobby: ConnectingScreen,

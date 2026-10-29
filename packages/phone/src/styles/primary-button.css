@@ -1,0 +1,35 @@
+/* Full-width main button (UI-01 AC 7). */
+.primary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  padding: var(--space-sm) var(--space-md);
+  border: 0;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-label-mobile-action);
+  font-weight: var(--font-weight-black);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.primary-button .icon {
+  margin: 0 var(--space-sm);
+  font-size: 1.25em;
+}
+
+.primary-button--action {
+  background: var(--color-action);
+  color: var(--color-on-action);
+  box-shadow: 0 8px 24px var(--color-glow-primary);
+}
+
+.primary-button--valid {
+  background: var(--color-valid);
+  color: var(--color-on-valid);
+}
+
+.primary-button:active {
+  transform: translateY(2px);
+}

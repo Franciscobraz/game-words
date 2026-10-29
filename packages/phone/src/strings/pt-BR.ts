@@ -13,6 +13,8 @@ export const STRINGS = {
 
   // Entry (ENTRY-01)
   enterRoom: 'Entrar numa sala',
+  enterRoomHint: 'Digite o código de 4 letras exibido na TV',
+  codeLetter: (position: number) => `Letra ${position} do código`,
   continue: 'CONTINUAR',
   roomNotFound: 'Sala não encontrada',
   roomTag: (code: string) => `SALA ${code}`,

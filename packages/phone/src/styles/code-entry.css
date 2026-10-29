@@ -1,0 +1,88 @@
+/* "Entrar numa sala" (ENTRY-01 AC 2-5, phone-code.png). */
+.code-entry {
+  align-items: center;
+  text-align: center;
+}
+
+.code-entry__logo {
+  margin-top: var(--space-sm);
+}
+
+.code-entry__title {
+  margin: var(--space-lg) 0 0;
+  color: var(--color-on-surface);
+  font-size: clamp(1.5rem, 7.5vw, var(--font-size-headline-lg));
+  font-weight: var(--font-weight-black);
+  letter-spacing: -0.01em;
+}
+
+.code-entry__hint {
+  margin: var(--space-sm) 0 0;
+  color: var(--color-on-surface-variant);
+  font-size: clamp(0.875rem, 4.4vw, var(--font-size-body-lg));
+}
+
+.code-entry__form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.code-entry__boxes {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-lg);
+}
+
+.code-entry__box {
+  width: clamp(48px, 16.5vw, 64px);
+  aspect-ratio: 4 / 5;
+  margin: 0 clamp(4px, 1.5vw, 6px);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container-high);
+  color: var(--color-primary);
+  font-size: clamp(2rem, 12.5vw, 3.5rem);
+  font-weight: var(--font-weight-black);
+  text-align: center;
+  text-transform: uppercase;
+  caret-color: transparent;
+  outline: none;
+}
+
+.code-entry__box::placeholder {
+  color: var(--color-action);
+  opacity: 0;
+}
+
+.code-entry__box:focus {
+  background: color-mix(in srgb, var(--color-action) 22%, var(--color-surface-container-high));
+}
+
+.code-entry__box:focus::placeholder {
+  opacity: 1;
+}
+
+.code-entry__error {
+  display: inline-flex;
+  align-items: center;
+  margin: var(--space-md) 0 0;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-error-container) 30%, var(--color-background));
+  color: var(--color-error);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-bold);
+}
+
+.code-entry__error .icon {
+  margin-right: var(--space-sm);
+  font-size: 1.4em;
+}
+
+.code-entry__continue {
+  width: 100%;
+  margin-top: 2rem;
+}

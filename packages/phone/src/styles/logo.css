@@ -4,6 +4,12 @@
   align-items: center;
 }
 
+.logo--boxed {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container-high);
+}
+
 .logo__mark {
   display: flex;
   align-items: center;
@@ -18,9 +24,18 @@
   font-weight: var(--font-weight-black);
 }
 
+.logo--boxed .logo__mark {
+  width: 32px;
+  height: 32px;
+}
+
 .logo__name {
-  color: var(--color-primary);
+  color: var(--color-on-surface);
   font-size: var(--font-size-title);
   font-weight: var(--font-weight-black);
   letter-spacing: -0.02em;
+}
+
+.logo--boxed .logo__name {
+  color: var(--color-primary);
 }
