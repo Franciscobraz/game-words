@@ -188,6 +188,55 @@ describe('reconnecting', () => {
     expect(sockets.opened).toHaveLength(attempts);
   });
 
+  test('keeps the 30 second deadline while sockets open and drop before any welcome', () => {
+    // RECON-01 AC 4: an attempt only succeeds when the room is back; a server that accepts the socket and drops it
+    // again does not restart the 30 s.
+    const { sockets, connection, status, clock } = setup();
+    connection.connect('KBXT', 'secret-beto');
+    sockets.last().open();
+    sockets.last().drop();
+
+    let handled = sockets.opened.length;
+    for (let elapsed = 0; elapsed < 29_999; elapsed += 1) {
+      clock.advance(1);
+      for (; handled < sockets.opened.length; handled++) {
+        sockets.opened[handled]?.open();
+        sockets.opened[handled]?.drop();
+      }
+    }
+    expect(sockets.opened.length).toBeGreaterThan(5);
+    expect(status()).toBe('reconnecting');
+    clock.advance(1);
+
+    expect(status()).toBe('offline');
+  });
+
+  test('a welcome after the socket opens ends the reconnection', () => {
+    const { sockets, connection, status, clock } = setup();
+    connection.connect('KBXT', 'secret-beto');
+    sockets.last().open();
+    sockets.last().drop();
+    clock.advance(500);
+    sockets.last().open();
+
+    sockets.last().receive({
+      type: 'welcome',
+      role: 'player',
+      code: 'KBXT',
+      phase: 'lobby',
+      settings: { size: 4, seconds: 60, rounds: 1, minLength: 3, filterProfanity: true, fastMode: false, pack: 'pt-BR', volume: 100, muted: false },
+      players: [],
+      hostId: null,
+      round: null,
+      playerId: null,
+      found: [],
+      salt: null,
+    });
+    clock.advance(60_000);
+
+    expect(status()).toBe('open');
+  });
+
   test('retry starts reconnecting again with a fresh 30 second window', () => {
     const { sockets, connection, status, advanceFailing } = setup();
     connection.connect('KBXT', 'secret-beto');

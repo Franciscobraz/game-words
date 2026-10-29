@@ -112,7 +112,9 @@ export function createRoomConnection(options: ConnectionOptions): RoomConnection
   function handleOpen(): void {
     isOpen = true;
     attempt = 0;
-    stopTimers();
+    // The offline deadline stays until the welcome: a socket that opens and drops again has not brought the room back.
+    cancelReconnect?.();
+    cancelReconnect = null;
     setStatus('open');
     sendNow(token === null ? { type: 'hello', role: 'player' } : { type: 'hello', role: 'player', token });
     for (let i = 0; i < CLOCK_SYNC_SAMPLES; i++) sendNow({ type: 'time', clientTime: now() });
@@ -127,6 +129,7 @@ export function createRoomConnection(options: ConnectionOptions): RoomConnection
     }
     const msg = JSON.parse(data) as ServerMessage;
     if (msg.type === 'time') clock = addTimeSample(clock, msg, now());
+    if (msg.type === 'welcome') stopTimers();
     if (msg.type === 'joined') token = msg.token;
     if (msg.type === 'closed') endByServer();
     // The server closes right after `room-not-found`; only a new "CONTINUAR" opens the room again (Edge Cases).
