@@ -1,0 +1,134 @@
+/* Participant lobby (LOBBY-01, phone-lobby.png). */
+.lobby {
+  padding-top: var(--space-xs);
+}
+
+.lobby__me {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container);
+}
+
+/* The tinted circle behind the wins, as in the capture. */
+.lobby__me::after {
+  content: '';
+  position: absolute;
+  top: 10%;
+  right: -12%;
+  width: 45%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-secondary-container) 14%, transparent);
+}
+
+.lobby__me .player-avatar {
+  box-shadow: 0 0 20px color-mix(in srgb, var(--color-secondary-container) 40%, transparent);
+}
+
+.lobby__me-who {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  min-width: 0;
+  margin-left: var(--space-md);
+}
+
+.lobby__me-name {
+  max-width: 100%;
+  margin-right: var(--space-sm);
+  color: var(--color-on-surface);
+  font-size: clamp(1.125rem, 6vw, var(--font-size-headline-lg-mobile));
+  font-weight: var(--font-weight-black);
+  overflow-wrap: anywhere;
+}
+
+.lobby__me-wins {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  padding-left: var(--space-sm);
+}
+
+.lobby__me-wins .wins-badge {
+  padding: var(--space-sm) var(--space-md);
+  background: color-mix(in srgb, var(--color-surface-container-highest) 80%, transparent);
+  font-size: clamp(1.125rem, 5.6vw, var(--font-size-title-md));
+}
+
+.lobby__rules {
+  margin-top: var(--space-md);
+}
+
+.lobby__players-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-lg);
+}
+
+.lobby__players-title {
+  margin: 0;
+  color: var(--color-on-surface);
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-black);
+  letter-spacing: -0.01em;
+}
+
+.lobby__count {
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-high);
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-bold);
+}
+
+.lobby__players {
+  margin: var(--space-xs) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lobby__waiting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: var(--space-xl);
+  padding: var(--space-lg) var(--space-md);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container-low);
+}
+
+.lobby__waiting-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-high);
+  color: var(--color-primary);
+  font-size: 1.75rem;
+}
+
+.lobby__waiting-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--space-md) 0 0;
+  color: var(--color-on-surface);
+  font-size: clamp(1.125rem, 5.6vw, var(--font-size-title-md));
+  font-weight: var(--font-weight-extrabold);
+  text-align: center;
+}
+
+.lobby__waiting-text .waiting-dots {
+  flex: none;
+  margin-left: var(--space-md);
+}

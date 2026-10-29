@@ -1,0 +1,42 @@
+/* A player of the lobby list (LOBBY-01 AC 2-5). */
+.player-row {
+  display: flex;
+  align-items: center;
+  margin-top: var(--space-sm);
+  padding: var(--space-md);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container);
+}
+
+.player-row--dimmed {
+  opacity: 0.5;
+}
+
+.player-row__who {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  min-width: 0;
+  margin: 0 var(--space-sm) 0 var(--space-md);
+}
+
+.player-row__name {
+  flex-shrink: 0;
+  max-width: 100%;
+  margin-right: var(--space-sm);
+  overflow: hidden;
+  color: var(--color-on-surface);
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-bold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.player-row__crown {
+  display: inline-flex;
+  flex: none;
+  margin-right: var(--space-sm);
+  color: var(--color-crown);
+  font-size: 1.25rem;
+}

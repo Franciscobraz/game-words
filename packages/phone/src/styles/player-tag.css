@@ -1,0 +1,31 @@
+/* Tags next to a nickname (LOBBY-01 AC 3-5). */
+.player-tag {
+  flex: none;
+  margin: 2px var(--space-sm) 2px 0;
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-black);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.player-tag--host {
+  background: var(--color-action);
+  color: var(--color-on-action);
+}
+
+.player-tag--you {
+  background: var(--color-secondary);
+  color: var(--color-on-secondary);
+}
+
+.player-tag--disconnected {
+  background: var(--color-surface-container-highest);
+  color: var(--color-text-muted);
+}
+
+.player-tag--spectator {
+  background: var(--color-error-container);
+  color: var(--color-on-error-container);
+}

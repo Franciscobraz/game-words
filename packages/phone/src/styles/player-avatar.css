@@ -22,7 +22,7 @@
 }
 
 .player-avatar--large {
-  width: 56px;
-  height: 56px;
+  width: clamp(44px, 14vw, 56px);
+  height: clamp(44px, 14vw, 56px);
   font-size: 1.75rem;
 }

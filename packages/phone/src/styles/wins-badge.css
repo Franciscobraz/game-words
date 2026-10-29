@@ -1,0 +1,18 @@
+/* Trophy and session wins (LOBBY-01 AC 2). */
+.wins-badge {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-container-high);
+  color: var(--color-on-surface);
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-black);
+}
+
+.wins-badge .icon {
+  margin-right: var(--space-xs);
+  color: var(--color-crown);
+  font-size: 1.25em;
+}

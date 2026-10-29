@@ -39,6 +39,8 @@ export const STRINGS = {
 
   // Lobby (LOBBY-01, AD-013)
   playersTitle: 'Jogadores',
+  winsLabel: (wins: number) => (wins === 1 ? '1 vitória' : `${wins} vitórias`),
+  crown: 'Mais vitórias',
   youTag: 'VOCÊ',
   hostTag: 'ANFITRIÃO(Ã)',
   disconnectedTag: 'DESCONECTADO',
