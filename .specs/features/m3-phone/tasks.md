@@ -557,10 +557,10 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] As 8 direções, cantos e bordas em 4x4 e 6x6
-- [ ] C46, C48, C49, C50 passam
-- [ ] Gate check passes: `npx vitest run packages/phone`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] As 8 direções, cantos e bordas em 4x4 e 6x6
+- [x] C46, C48, C49, C50 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick
