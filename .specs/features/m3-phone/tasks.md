@@ -957,10 +957,10 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] O teste falha num CSS de exemplo com cada violação (casos de prova no próprio teste)
-- [ ] C113, C114, C103, C120 passam
-- [ ] Gate check passes: `npx vitest run packages/phone`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] O teste falha num CSS de exemplo com cada violação (casos de prova no próprio teste)
+- [x] C113, C114, C103, C120 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick
