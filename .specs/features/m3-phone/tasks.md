@@ -998,9 +998,9 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] C117 passa
-- [ ] Gate check passes: build
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] C117 passa
+- [x] Gate check passes: build
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: e2e
 **Gate**: build

@@ -24,6 +24,8 @@ interface ServerSocket {
 /** A room created like the TV creates it, with the TV socket kept open. */
 export interface TvRoom {
   code: string;
+  /** Every message the TV got so far, in order: the boards come in its `round-start`. */
+  messages(): readonly ServerMessage[];
   close(): void;
 }
 
@@ -46,7 +48,7 @@ export async function createRoom(): Promise<TvRoom> {
   const tv = await openSocket(code);
   tv.send({ type: 'hello', role: 'tv', token: tvToken });
   await tv.waitFor(isType('welcome'));
-  return { code, close: () => tv.close() };
+  return { code, messages: tv.messages, close: () => tv.close() };
 }
 
 /** Joins room `code` from Node with `nickname` and `color`. */
