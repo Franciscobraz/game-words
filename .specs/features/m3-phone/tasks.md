@@ -1008,6 +1008,994 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 ---
 
+## Checks` usa exatamente o nome entre aspas da prova, porque `check_proofs.py` seleciona por `-t` (Vitest) e `-g` (Playwright).
+- **Captures:** cada tela com capture é fotografada a 390 px de largura (2x), no estado que a capture desenha, em `captures/<capture>.running.png`, com os dados de exemplo das captures (Ana, Beto, Caio, Duda; sala KBXT quando o teste controla o código, ou o código real da sala).
+- **Responsividade (AD-016):** as fotos das captures são tiradas a 390 px, mas nenhuma tela pode depender dessa largura. Todo container é fluido; os testes de layout passam por 320, 360, 390, 430 e 480 px de largura e 568 e 932 px de altura.
+- **Telas sem capture** (reconexão, preferências, confirmações, variantes de participante e espectador) usam os mesmos componentes e tokens das telas com capture.
+- **Código em inglês (AD-001):** identificadores, nomes de teste e mensagens de commit em inglês; o texto deste arquivo em português.
+- **Histórico:** subagentes nunca usam `rebase`, `--amend` em commit já registrado nem `push --force`.
+- **Ambiente Windows:** os scripts da skill rodam com `PYTHONUTF8=1` e `PYTHONPATH` apontando para a pasta do `sitecustomize.py` (ver `.specs/STATE.md`).
+
+---
+
+## Test Coverage Matrix
+
+> Generated from codebase, project guidelines, and spec - confirm before Execute. Guidelines found: `docs/style-guide.md` §9 (Vitest para o puro, Playwright para navegador, fakes em vez de mocks, L-001, L-007); `docs/DESIGN.md` §7; `vitest.config.ts` (o projeto `core` já inclui `packages/*/src/**/*.test.ts`); testes existentes em `packages/core/src/room/*.test.ts` e `tools/play/e2e/*.spec.ts`.
+
+| Code Layer | Required Test Type | Coverage Expectation | Location Pattern | Run Command |
+| --- | --- | --- | --- | --- |
+| Regras do cliente (`model/`) | unit | Todos os ramos; 1:1 com os ACs; todo edge case; limites exatos (L-001); um caso por ramo de tabela (L-007) | `packages/phone/src/model/*.test.ts` | `npx vitest run packages/phone` |
+| Estado e rede (`state/`, `net/`) | unit, com fakes (socket, relógio, storage, device) | Cada ação e cada transição de conexão; ACs de RECON, PREF e PLAY que vivem no estado | `packages/phone/src/{state,net}/*.test.ts` | `npx vitest run packages/phone` |
+| Estilos (`styles/`) | unit (varredura estática do CSS) | Sem grid, `gap`, `blur`, `backdrop-filter`; animações só de `transform`/`opacity`; cores só por variáveis | `packages/phone/src/styles/*.test.ts` | `npx vitest run packages/phone` |
+| Telas, componentes, `app.tsx`, `device/` | e2e (Playwright, servidor real) + foto contra a capture | Todo AC de tela: caminho feliz + erro + variantes de papel (anfitrião, participante, espectador) | `packages/phone/e2e/*.spec.ts` | `npx playwright test -c packages/phone/playwright.config.ts` |
+| Config (`package.json`, `vite.config.ts`, `tsconfig`, `eslint.config.js`, `index.html`, `tokens.css`) | none | - (build gate only) | - | build gate only |
+
+## Gate Check Commands
+
+> Generated from codebase - confirm before Execute.
+
+| Gate Level | When to Use | Command |
+| --- | --- | --- |
+| Quick | Tasks de `model/`, `state/`, `net/`, `styles/` | `npx vitest run packages/phone` |
+| Full | Tasks de telas e E2E | `npx vitest run packages/phone; npx playwright test -c packages/phone/playwright.config.ts` |
+| Build | Fim de cada fase e tasks só de config | `npx tsc -b; npm run lint -w @bwords/phone; npx vitest run; npx playwright test; npx playwright test -c packages/phone/playwright.config.ts` |
+
+---
+
+## Execution Plan
+
+Phases are ordered and run sequentially - each phase completes before the next begins, and tasks within a phase execute in order. Cada fase é um batch de subagente e termina com parada para o usuário.
+
+### Phase 1: Workspace, rede e estado da sala
+
+```
+T1 → T2 → T3 → T4 → T5 → T6 → T7 → T8
+```
+
+### Phase 2: Entrada e lobby do participante
+
+```
+T9 → T10 → T11 → T12 → T13 → T14
+```
+
+### Phase 3: Lobby do anfitrião e saída da sala
+
+```
+T43 → T44 → T15 → T16 → T17 → T18 → T19
+```
+
+### Phase 4: Regras da rodada
+
+```
+T20 → T21 → T22 → T23 → T24 → T25 → T26
+```
+
+### Phase 5: Telas da rodada
+
+```
+T27 → T28 → T29 → T30
+```
+
+### Phase 6: Resultado e pódio
+
+```
+T31 → T32 → T33 → T34 → T35
+```
+
+### Phase 7: Preferências, reconexão e acabamento
+
+```
+T36 → T37 → T38 → T39 → T40 → T41 → T42
+```
+
+---
+
+## Task Breakdown
+
+#### Phase 1: Workspace, rede e estado da sala
+
+### T1: Phone workspace
+
+**What**: Workspace `@bwords/phone`: dependências (`preact`, `@preact/signals`, `@fontsource/nunito-sans`, `vite`, `@preact/preset-vite`, `eslint` 9, `eslint-config-preact`, `typescript-eslint`, `@playwright/test`), `vite.config.ts` (porta 5175, proxy `/api` → 8787), `tsconfig.json`, `eslint.config.js` (preset do Preact com o parser do `typescript-eslint` nos `.ts`/`.tsx`), `index.html`, `src/main.tsx` mínimo, `src/styles/tokens.css` e scripts `dev` e `lint`.
+**Where**: `packages/phone/package.json`
+**Depends on**: None
+**Reuses**: `tools/debug/vite.config.ts`, `tools/debug/tsconfig.json`
+**Requirement**: UI-01
+
+**Done when**:
+
+- [x] `npm run lint -w @bwords/phone` passa num `.tsx` com hooks, e falha num `useEffect` com dependência faltando (prova de que o parser TS e as regras de hooks estão ativos; o arquivo de prova é apagado depois)
+- [x] `tsconfig.json` da raiz referencia `packages/phone`; `npx tsc -b` passa
+- [x] `npm run dev -w @bwords/phone` serve `index.html` em `/` e em `/KBXT`
+- [x] Gate check passes: build
+
+**Tests**: none
+**Gate**: build
+**Commit**: `build(phone): workspace with vite, signals and eslint-config-preact`
+
+---
+
+### T2: Strings and message keys
+
+**What**: `strings/pt-BR.ts` com todas as frases do spec e `model/messages.ts` com `errorKey(code)` e `closeKey(reason)`.
+**Where**: `packages/phone/src/model/messages.ts`
+**Depends on**: T1
+**Reuses**: `ERROR_CODES`, `CLOSE_REASONS` (`@bwords/core`)
+**Requirement**: UI-01, EXIT-01
+
+**Done when**:
+
+- [x] Um caso por `ErrorCode` e por `CloseReason` (L-007)
+- [x] C107, C96 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): pt-BR strings and message keys`
+
+---
+
+### T3: Room view reducer
+
+**What**: `model/room-view.ts`: `RoomView`, `INITIAL_VIEW` e `applyServerMessage(view, msg)` para todo `ServerMessage`, mais o quadro de hashes da rodada.
+**Where**: `packages/phone/src/model/room-view.ts`
+**Depends on**: T2
+**Reuses**: tipos do protocolo, `decodeHashFrame`; o padrão de `tools/debug/src/socket.ts` (sem a parte de UI)
+**Requirement**: ENTRY-01, RECON-01
+
+**Done when**:
+
+- [x] Um caso por tipo de mensagem (L-007); `welcome` reconstrói a visão do zero e recupera `found`
+- [x] C115, C116 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): room view reducer`
+
+---
+
+### T4: Clock sync
+
+**What**: `net/clock-sync.ts`: amostras de `time` e o offset da amostra de menor ida e volta.
+**Where**: `packages/phone/src/net/clock-sync.ts`
+**Depends on**: T3
+**Reuses**: mensagem `time` do protocolo
+**Requirement**: COUNT-01
+
+**Done when**:
+
+- [x] C44 passa
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): server clock sync`
+
+---
+
+### T5: Room connection
+
+**What**: `net/room-connection.ts`: `hello` com ou sem token, quadro binário, reconexão com espera crescente, `offline` em 30 s, `retry`, sem reconexão depois de `closed`.
+**Where**: `packages/phone/src/net/room-connection.ts`
+**Depends on**: T4
+**Reuses**: `decodeHashFrame`, o `wsUrl` de `tools/debug/src/socket.ts`
+**Requirement**: RECON-01, EXIT-01
+
+**Done when**:
+
+- [x] Testes com WebSocket falso e relógio injetado; 29.999 ms ainda reconectando, 30.000 ms `offline` (L-001)
+- [x] C102, C105, C99 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): room connection with reconnect`
+
+---
+
+### T6: Phone store and room actions
+
+**What**: `state/store.ts` (`createPhoneStore(deps)` e o contexto `useStore`) e `state/room.ts`: signals `room` e `connection`, token por sala no storage, e as ações `openRoom`, `join`, `changeSettings`, `start`, `next`, `transferHost`, `kick`, `playAgain`, `backToLobby`, `closeRoom`.
+**Where**: `packages/phone/src/state/room.ts`
+**Depends on**: T5
+**Reuses**: `cleanNickname` (`@bwords/core`), `applyServerMessage` (T3)
+**Requirement**: ENTRY-01, JOIN-01
+
+**Done when**:
+
+- [x] Cada ação manda a mensagem certa por um `RoomConnection` falso (um caso por ação, L-007)
+- [x] C7, C12 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): store and room actions`
+
+---
+
+### T7: Room code input rules
+
+**What**: `model/room-code.ts`: `parseRoomPath(pathname)` e `typeCodeLetter(code, index, letter)` (maiúscula, só `ROOM_CODE_ALPHABET`).
+**Where**: `packages/phone/src/model/room-code.ts`
+**Depends on**: T6
+**Reuses**: `ROOM_CODE_ALPHABET`, `ROOM_CODE_LENGTH`, `isRoomCode`
+**Requirement**: ENTRY-01
+
+**Done when**:
+
+- [x] `/kbxt`, `/KBXT`, `/`, `/KBX`, `/KBXTA` e `/KBIO` (letras fora do alfabeto) cobertos
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): room code rules`
+
+---
+
+### T8: Screen selection
+
+**What**: `model/screen.ts`: `screenFor(view, connection, now)` escolhe a tela pela fase, pelo papel, pelo `closeReason` e pelo relógio do servidor (contagem até `startsAt`).
+**Where**: `packages/phone/src/model/screen.ts`
+**Depends on**: T7
+**Reuses**: `RoomView` (T3)
+**Requirement**: COUNT-01, SPEC-01, EXIT-01
+
+**Done when**:
+
+- [x] Um caso por `Screen` (L-007); `startsAt - 1` é contagem e `startsAt` é tabuleiro (L-001)
+- [x] C43 passa
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): screen selection`
+
+---
+
+#### Phase 2: Entrada e lobby do participante
+
+### T9: App shell and E2E harness
+
+**What**: `app.tsx` (tabela `Screen → tela`, `TopBar`, `RoomTag`, `icons.tsx`), `main.tsx` com o store real, e o harness E2E: `playwright.config.ts` (viewport 390×844, `hasTouch`, `webServer` com `wrangler dev` e o Vite do celular) e `e2e/tv.ts` (cria a sala e mantém o socket da TV).
+**Where**: `packages/phone/e2e/tv.ts`
+**Depends on**: T8
+**Reuses**: `POST /api/rooms`, `tools/debug/vite.config.ts`
+**Requirement**: ENTRY-01, UI-01
+
+**Done when**:
+
+- [x] O teste "opens the join screen for a room path" abre `/<código>` de uma sala criada pelo helper e vê "Seu Apelido"
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(phone): app shell and e2e harness`
+
+---
+
+### T10: Code entry screen
+
+**What**: `screens/CodeEntryScreen.tsx`: quatro caixas, teclado do sistema em maiúsculas, "CONTINUAR" e "Sala não encontrada".
+**Where**: `packages/phone/src/screens/CodeEntryScreen.tsx`
+**Depends on**: T9
+**Reuses**: `typeCodeLetter` (T7), `PrimaryButton`
+**Requirement**: ENTRY-01
+
+**Done when**:
+
+- [x] Tela igual a `.specs/features/m3-phone/captures/phone-code.png`, foto em `phone-code.running.png`
+- [x] C2, C3, C4, C5 passam
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(phone): code entry screen`
+
+---
+
+### T11: Color slots
+
+**What**: `model/colors.ts`: `colorSlots(PALETTE, players, myId)` (livre, minha, bloqueada com dono, personalizada) e `closestColorOwner(color, players)`.
+**Where**: `packages/phone/src/model/colors.ts`
+**Depends on**: T10
+**Reuses**: `PALETTE`, `ciede2000`
+**Requirement**: JOIN-01
+
+**Done when**:
+
+- [x] C9, C10 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): color slots`
+
+---
+
+### T12: Join screen
+
+**What**: `screens/JoinScreen.tsx` com `ColorPicker`, `PlayerAvatar`, `Chip` e as mensagens de erro de entrada.
+**Where**: `packages/phone/src/screens/JoinScreen.tsx`
+**Depends on**: T11
+**Reuses**: `colorSlots`, `closestColorOwner` (T11), `NICKNAME_MAX`, `errorKey` (T2)
+**Requirement**: ENTRY-01, JOIN-01
+
+**Done when**:
+
+- [x] Tela igual a `.specs/features/m3-phone/captures/phone-join.png`, foto em `phone-join.running.png`
+- [x] C1, C6, C8, C11, C13, C14, C15, C16, C17, C18 passam
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(phone): join screen`
+
+---
+
+### T13: Player lists
+
+**What**: `model/players.ts`: `lobbyRows`, `quickScoreboard`, `podiumRows` e `myPlacement` (ordem, coroa, etiquetas "ANFITRIÃO(Ã)", "VOCÊ", "DESCONECTADO", "ESPECTADOR(A)", espectadores por último).
+**Where**: `packages/phone/src/model/players.ts`
+**Depends on**: T12
+**Reuses**: `crownedPlayers`
+**Requirement**: LOBBY-01, RES-01, POD-01
+
+**Done when**:
+
+- [x] Empate no placar e na coroa cobertos
+- [x] C20, C21, C22, C23, C70, C77, C82 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): player list rules`
+
+---
+
+### T14: Participant lobby screen
+
+**What**: `screens/LobbyScreen.tsx` com `PlayerRow`, cartão "Você", chips das regras e "Aguardando <anfitrião> iniciar a partida".
+**Where**: `packages/phone/src/screens/LobbyScreen.tsx`
+**Depends on**: T13
+**Reuses**: `lobbyRows` (T13), `PlayerAvatar`, `Chip`
+**Requirement**: LOBBY-01
+
+**Done when**:
+
+- [x] Tela igual a `.specs/features/m3-phone/captures/phone-lobby.png`, foto em `phone-lobby.running.png`
+- [x] C19, C24, C25 passam
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(phone): participant lobby`
+
+---
+
+#### Phase 3: Lobby do anfitrião e saída da sala
+
+### T43: Stop reconnecting after room-not-found
+
+**What**: A conexão para de reconectar quando o servidor responde `room-not-found`; a tela de código só tenta de novo quando o jogador usa "CONTINUAR".
+**Where**: `packages/phone/src/net/room-connection.ts` (modify)
+**Depends on**: T14
+**Reuses**: `createRoomConnection` (T5), ação `openRoom` (T6)
+**Requirement**: ENTRY-01, RECON-01
+
+**Done when**:
+
+- [x] C123 passa
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `fix(phone): stop reconnecting after room-not-found`
+
+---
+
+### T44: Host name in the join screen waiting line
+
+**What**: Na tela de entrada, "Aguardando <anfitrião> iniciar a partida…" com o nome do anfitrião na cor de ação e as reticências, como em `phone-join.png`; nova foto `phone-join.running.png`.
+**Where**: `packages/phone/src/screens/JoinScreen.tsx` (modify)
+**Depends on**: T43
+**Reuses**: `WaitingDots`, `strings/pt-BR.ts`
+**Requirement**: JOIN-01
+
+**Done when**:
+
+- [x] Tela igual a `.specs/features/m3-phone/captures/phone-join.png` nesse trecho, foto refeita em `phone-join.running.png`
+- [x] C1 continua passando
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `fix(phone): host name in the join screen waiting line`
+
+---
+
+### T15: Settings steps
+
+**What**: `model/settings.ts`: `stepSeconds`, `stepRounds`, `canStep` e `formatSeconds` ("2:00").
+**Where**: `packages/phone/src/model/settings.ts`
+**Depends on**: T44
+**Reuses**: `Settings` (`@bwords/core`)
+**Requirement**: HOST-01
+
+**Done when**:
+
+- [x] 30/180 s e 1/5 rodadas no limite e fora dele (L-001)
+- [x] C28, C29, C30 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): settings steps`
+
+---
+
+### T16: Host lobby screen
+
+**What**: `screens/HostLobbyScreen.tsx` com `Segmented`, `Stepper`, `Toggle`, `VolumeSlider`, o seletor de dicionário e "INICIAR PARTIDA".
+**Where**: `packages/phone/src/screens/HostLobbyScreen.tsx`
+**Depends on**: T15
+**Reuses**: `stepSeconds`, `stepRounds` (T15), `lobbyRows` (T13), `PlayerRow`
+**Requirement**: HOST-01
+
+**Done when**:
+
+- [x] Tela igual a `.specs/features/m3-phone/captures/phone-host-lobby.png`, foto em `phone-host-lobby.running.png`
+- [x] C26, C27, C31, C32, C33, C34, C39 passam
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(phone): host lobby`
+
+---
+
+### T17: Player actions sheet
+
+**What**: `screens/PlayerActionsSheet.tsx` com `Sheet` e `ConfirmDialog`: "Tornar anfitrião", "Remover da sala" com confirmação e "Cancelar"; troca de lobby quando o anfitrião muda.
+**Where**: `packages/phone/src/screens/PlayerActionsSheet.tsx`
+**Depends on**: T16
+**Reuses**: ações `transferHost`, `kick` (T6)
+**Requirement**: HOST-01
+
+**Done when**:
+
+- [x] Folha igual a `.specs/features/m3-phone/captures/phone-host-actions.png` (só a folha; fundo é o lobby atual), foto em `phone-host-actions.running.png`
+- [x] C35, C36, C37, C38, C41 passam
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(phone): player actions sheet`
+
+---
+
+### T18: Exit screens
+
+**What**: `screens/ExitScreens.tsx`: removido, sala encerrada (pelo anfitrião, por inatividade, sem TV) e "aberta em outra aba", com "ENTRAR EM OUTRA SALA".
+**Where**: `packages/phone/src/screens/ExitScreens.tsx`
+**Depends on**: T17
+**Reuses**: `closeKey` (T2)
+**Requirement**: EXIT-01
+
+**Done when**:
+
+- [x] Telas iguais a `.specs/features/m3-phone/captures/phone-kicked.png` e `phone-room-closed.png`, fotos em `phone-kicked.running.png` e `phone-room-closed.running.png`
+- [x] C95, C97, C98 passam
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(phone): exit screens`
+
+---
+
+### T19: Host menu with close room
+
+**What**: Menu (⋮) do `TopBar` para o anfitrião, com "Encerrar sala" e confirmação.
+**Where**: `packages/phone/src/components/HostMenu.tsx`
+**Depends on**: T18
+**Reuses**: `ConfirmDialog` (T17), ação `closeRoom` (T6)
+**Requirement**: HOST-01
+
+**Done when**:
+
+- [x] C40 passa
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(phone): host menu`
+
+---
+
+#### Phase 4: Regras da rodada
+
+### T20: Swipe path
+
+**What**: `model/path.ts`: `isNeighbor`, `extendPath` (acrescenta vizinho, volta na penúltima, ignora o resto) e `wordOfPath` ("Qu" = q-u).
+**Where**: `packages/phone/src/model/path.ts`
+**Depends on**: T19
+**Reuses**: `boardTiles`, `Board`
+**Requirement**: PLAY-01
+
+**Done when**:
+
+- [x] As 8 direções, cantos e bordas em 4x4 e 6x6
+- [x] C46, C48, C49, C50 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): swipe path rules`
+
+---
+
+### T21: Tile hit test
+
+**What**: `model/hit-test.ts`: `tileAtPoint(point, boardRect, size, hitRatio)` com o círculo central de raio 35% do lado.
+**Where**: `packages/phone/src/model/hit-test.ts`
+**Depends on**: T20
+**Reuses**: -
+**Requirement**: PLAY-01
+
+**Done when**:
+
+- [x] Ponto a 35% do centro (dentro) e logo além (fora) (L-001)
+- [x] C47 passa
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): tile hit test`
+
+---
+
+### T22: Word judge
+
+**What**: `model/judge.ts`: `judgeWord(word, ctx)` na ordem muito curta → já encontrada → hash, com os pontos do `core`.
+**Where**: `packages/phone/src/model/judge.ts`
+**Depends on**: T21
+**Reuses**: `hashPrefix`, `wordPoints`
+**Requirement**: PLAY-01
+
+**Done when**:
+
+- [x] Hashes de teste gerados com `hashPrefixes` e um salt fixo
+- [x] C52, C53, C54 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): local word judge`
+
+---
+
+### T23: Submit queue
+
+**What**: `model/submit-queue.ts`: `submitDelay(now, endsAt)` e `takeBatch(pending, sentInWindow)`.
+**Where**: `packages/phone/src/model/submit-queue.ts`
+**Depends on**: T22
+**Reuses**: `RATE_LIMIT_PATHS`, `RATE_WINDOW_MS`
+**Requirement**: PLAY-01
+
+**Done when**:
+
+- [x] 3.000 ms e 3.001 ms restantes; 10º e 11º caminho na janela (L-001)
+- [x] C57 passa
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): submit batching`
+
+---
+
+### T24: Found words reconciliation
+
+**What**: `model/found.ts`: `addFound`, `reconcileFound(found, results)` e `foundTotals` ("N pal · N pts").
+**Where**: `packages/phone/src/model/found.ts`
+**Depends on**: T23
+**Reuses**: `SubmitResult`
+**Requirement**: PLAY-01
+
+**Done when**:
+
+- [x] C58 passa
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): found words reconciliation`
+
+---
+
+### T25: Round clock
+
+**What**: `model/clock.ts`: `formatClock`, `countdownNumber` e `isAlert`.
+**Where**: `packages/phone/src/model/clock.ts`
+**Depends on**: T24
+**Reuses**: -
+**Requirement**: PLAY-01, COUNT-01
+
+**Done when**:
+
+- [x] 10.000 ms e 10.001 ms (L-001); 0 e negativos viram "00:00"
+- [x] C59, C60 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): round clock`
+
+---
+
+### T26: Round state
+
+**What**: `state/round.ts`: `path`, `feedback`, `pendingPaths`, `extendPathTo`, `releasePath`, feedback por 500 ms, timer de envio, vibração e som pelas dependências de `device/`.
+**Where**: `packages/phone/src/state/round.ts`
+**Depends on**: T25
+**Reuses**: T20-T25, ação `send` (T6)
+**Requirement**: PLAY-01
+
+**Done when**:
+
+- [x] Testes com relógio, device e conexão falsos
+- [x] C55, C56, C63, C64, C110, C112 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): round state`
+
+---
+
+#### Phase 5: Telas da rodada
+
+### T27: Countdown screen
+
+**What**: `screens/CountdownScreen.tsx`: "RODADA N DE M", "SALA <código>", número gigante e "Prepare o dedo!".
+**Where**: `packages/phone/src/screens/CountdownScreen.tsx`
+**Depends on**: T26
+**Reuses**: `countdownNumber` (T25)
+**Requirement**: COUNT-01
+
+**Done when**:
+
+- [x] Tela igual a `.specs/features/m3-phone/captures/phone-countdown.png`, foto em `phone-countdown.running.png`
+- [x] C42 passa
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(phone): countdown screen`
+
+---
+
+### T28: Board screen
+
+**What**: `screens/BoardScreen.tsx` com `BoardGrid` (peças + linha SVG), `Tile`, `WordRack`, `FeedbackPill`, `FoundWords`, pointer events e "Tempo!".
+**Where**: `packages/phone/src/screens/BoardScreen.tsx`
+**Depends on**: T27
+**Reuses**: `tileAtPoint` (T21), `round` state (T26), `formatClock` (T25)
+**Requirement**: PLAY-01
+
+**Done when**:
+
+- [x] Tela igual a `.specs/features/m3-phone/captures/phone-board.png` e feedbacks como `phone-feedbacks.png`, fotos em `phone-board.running.png` e `phone-feedbacks.running.png`
+- [x] O `BoardGrid` mede o espaço livre (`ResizeObserver`) e usa o maior quadrado que cabe
+- [x] C45, C51, C61, C62, C65, C111, C119 passam
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(phone): board screen with swipe`
+
+---
+
+### T29: Host menu during the match
+
+**What**: "Voltar ao lobby" no menu (⋮) durante a contagem e a rodada, com confirmação.
+**Where**: `packages/phone/src/components/HostMenu.tsx` (modify)
+**Depends on**: T28
+**Reuses**: `ConfirmDialog` (T17), ação `backToLobby` (T6)
+**Requirement**: HOSTPLAY-01
+
+**Done when**:
+
+- [x] C66, C67 passam
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(phone): back to lobby during the match`
+
+---
+
+### T30: Spectator screen
+
+**What**: `screens/SpectatorScreen.tsx`: tabuleiro esmaecido e travado, faixa, timer com barra e "JOGADORES NA SALA" sem contagem.
+**Where**: `packages/phone/src/screens/SpectatorScreen.tsx`
+**Depends on**: T29
+**Reuses**: `BoardGrid` (T28), `PlayerRow`
+**Requirement**: SPEC-01
+
+**Done when**:
+
+- [x] Tela igual a `.specs/features/m3-phone/captures/phone-spectator.png`, foto em `phone-spectator.running.png`
+- [x] C68, C69 passam
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(phone): spectator screen`
+
+---
+
+#### Phase 6: Resultado e pódio
+
+### T31: Round result rules
+
+**What**: `model/results.ts`: `myRoundSummary` (pontos, total, posição) e `myWordRows` ("ÚNICA ×2", "em comum", grafias, "base +N").
+**Where**: `packages/phone/src/model/results.ts`
+**Depends on**: T30
+**Reuses**: `RoundResultsMessage`, `ResultWord`
+**Requirement**: RES-01
+
+**Done when**:
+
+- [x] C71, C72, C73, C74 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): round result rules`
+
+---
+
+### T32: Match summary
+
+**What**: `model/match-summary.ts`: `addRound(history, words)` e `matchSummary(history)` (total de palavras e maior palavra com grafias, pontos e letras).
+**Where**: `packages/phone/src/model/match-summary.ts`
+**Depends on**: T31
+**Reuses**: `myWordRows` (T31)
+**Requirement**: POD-01
+
+**Done when**:
+
+- [x] Empate de tamanho na maior palavra coberto (fica a primeira em ordem alfabética, como no DESIGN §4.3)
+- [x] C83, C84 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): match summary`
+
+---
+
+### T33: Match history state
+
+**What**: `state/match.ts`: `matchHistory` cresce a cada `round-results` e zera na contagem da rodada 0.
+**Where**: `packages/phone/src/state/match.ts`
+**Depends on**: T32
+**Reuses**: `addRound` (T32)
+**Requirement**: POD-01
+
+**Done when**:
+
+- [x] C85 passa
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): match history`
+
+---
+
+### T34: Round result screen
+
+**What**: `screens/RoundResultScreen.tsx`: cartões, palavras, "PLACAR RÁPIDO DA MESA" e as variantes de anfitrião, participante e espectador.
+**Where**: `packages/phone/src/screens/RoundResultScreen.tsx`
+**Depends on**: T33
+**Reuses**: `myRoundSummary`, `myWordRows` (T31), `quickScoreboard` (T13)
+**Requirement**: RES-01
+
+**Done when**:
+
+- [x] Tela igual a `.specs/features/m3-phone/captures/phone-round-result.jpg`, foto em `phone-round-result.running.png`
+- [x] C70a, C75, C76, C78, C79 passam
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(phone): round result screen`
+
+---
+
+### T35: Podium screen
+
+**What**: `screens/PodiumScreen.tsx` com `Confetti`, destaque pessoal, "SEU RENDIMENTO", "MAIOR PALAVRA ENCONTRADA", classificação e as variantes de papel.
+**Where**: `packages/phone/src/screens/PodiumScreen.tsx`
+**Depends on**: T34
+**Reuses**: `podiumRows`, `myPlacement` (T13), `matchSummary` (T32)
+**Requirement**: POD-01
+
+**Done when**:
+
+- [x] Tela igual a `.specs/features/m3-phone/captures/phone-podium.jpg`, foto em `phone-podium.running.png`
+- [x] C80, C81, C86, C87, C88, C89, C90, C91 passam
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(phone): podium screen`
+
+---
+
+#### Phase 7: Preferências, reconexão e acabamento
+
+### T36: Preferences and wake lock state
+
+**What**: `state/prefs.ts`: `prefs` no storage e a regra da Wake Lock (pede no lobby e na rodada, solta no resto, pede de novo ao ficar visível).
+**Where**: `packages/phone/src/state/prefs.ts`
+**Depends on**: T35
+**Reuses**: dependências `device` do store (T6)
+**Requirement**: PREF-01
+
+**Done when**:
+
+- [x] Storage que lança exceção não quebra o store
+- [x] C109, C106 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(phone): preferences and wake lock rules`
+
+---
+
+### T37: Device adapters and preferences sheet
+
+**What**: `device/` (wake lock, vibrate, bipe com Web Audio, storage) e `components/PrefsSheet.tsx` aberta pelo ícone de pessoa.
+**Where**: `packages/phone/src/components/PrefsSheet.tsx`
+**Depends on**: T36
+**Reuses**: `Sheet`, `Toggle`
+**Requirement**: PREF-01
+
+**Done when**:
+
+- [x] C108, C104 passam
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(phone): device adapters and preferences`
+
+---
+
+### T38: Reconnect banner
+
+**What**: `components/ReconnectBanner.tsx`: "Reconectando…", "Conectado" por 1 s, "Sem conexão" + "Tentar de novo", e o tabuleiro travado durante a reconexão.
+**Where**: `packages/phone/src/components/ReconnectBanner.tsx`
+**Depends on**: T37
+**Reuses**: signal `connection` (T6), `retry` (T5)
+**Requirement**: RECON-01
+
+**Done when**:
+
+- [x] C100, C101 passam
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(phone): reconnect banner`
+
+---
+
+### T39: Style audit
+
+**What**: `styles/styles.test.ts`: varre o CSS do pacote atrás de `display: grid`, `gap`, `blur`, `backdrop-filter`, transições e animações de outras propriedades, cores literais (todo CSS do pacote usa as variáveis de `@bwords/theme`) e larguras ou alturas em px acima de 64 px.
+**Where**: `packages/phone/src/styles/styles.test.ts`
+**Depends on**: T38
+**Reuses**: -
+**Requirement**: UI-01
+
+**Done when**:
+
+- [x] O teste falha num CSS de exemplo com cada violação (casos de prova no próprio teste)
+- [x] C113, C114, C103, C120 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `test(phone): style audit`
+
+---
+
+### T40: Responsive layout checks
+
+**What**: `e2e/layout.spec.ts`: cada tela em 320, 360, 390, 430 e 480 px de largura (e 568 e 932 px de altura) sem rolagem horizontal nem texto cortado, topo só com etiqueta, preferências e menu do anfitrião, botões com 48 px ou mais.
+**Where**: `packages/phone/e2e/layout.spec.ts`
+**Depends on**: T39
+**Reuses**: harness (T9)
+**Requirement**: UI-01
+
+**Done when**:
+
+- [x] C92, C93, C94, C122 passam; C121 fica para o sub-agente de telas na verificação
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `test(phone): responsive layout from 320 to 480 px`
+
+---
+
+### T41: Full match
+
+**What**: `e2e/full-match.spec.ts`: TV pelo helper e 3 celulares jogam 2 rodadas, do lobby ao "JOGAR DE NOVO".
+**Where**: `packages/phone/e2e/full-match.spec.ts`
+**Depends on**: T40
+**Reuses**: harness (T9)
+**Requirement**: PLAY-01, RES-01, POD-01
+
+**Done when**:
+
+- [x] C117 passa
+- [x] Gate check passes: build
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: build
+**Commit**: `test(phone): full match with three phones`
+
+---
+
 ### T42: Photos of screens without capture
 
 **What**: Fotos a 390 px das telas sem capture (reconexão, sem conexão, preferências, as três confirmações, resultado e pódio de participante e de espectador, "Tempo!", sala encerrada por inatividade, outra aba), salvas em `captures/uncaptured/` e mostradas ao user. As aprovadas viram captures para os próximos marcos.
@@ -1411,7 +2399,7 @@ Proof: walk - cada foto em `captures/uncaptured/` com a resposta do user em `## 
 The feature's live state, written as it happens - a compaction gives no warning.
 
 **Settled mid-build:** defaults da fase 2 aceitos, com a correção do nome do anfitrião em laranja com "…" na tela de entrada (T44) e da reconexão depois de `room-not-found` (T43); user: "Aceito, seguir" (resposta à pergunta "Aceita os defaults da fase 2 e sigo para a fase 3, já corrigindo os dois achados?"); paleta do design system "BWords Party System" em `packages/theme/tokens.css`, usada pelo celular e pelas ferramentas (AD-017); user: "Aceito seguir, mas antes disso, registre a paleta de cores do projeto de acordo com as cores que tem definidas no MCP do layout, crie as variaveis css e reutilize em todo o projeto"; default da T43 aceito: depois de `room-not-found` a conexão fica `closed` e CONTINUAR abre um socket novo; user: "Aceito como está."; defaults da fase 3 aceitos (textos de confirmação, telas de saída, sem bandeira e foguete, volume ao soltar); as diferenças visuais do lobby do anfitrião (etiquetas da Ana e do espectador, "Tempo da Rodada" em duas linhas, ícone de preferências laranja) ficam para o sub-agente de telas; user: "Aceito, seguir" (resposta à pergunta "Aceita os defaults da fase 3 e sigo para a fase 4?"); defaults da fase 4 aceitos (relógio arredondado para cima, contagem em 3 acima de 3 s, caminho descartado sem aviso depois de `endsAt` ou reconectando, INVÁLIDA antes do salt, recusa não tira palavra confirmada, janela de 10 caminhos/s, segunda corrida da mesma palavra é JÁ ENCONTRADA) e o desvio de `reconcileFound`; a perda da fila na reconexão fica para a T38; user: "Aceito, seguir" (resposta à pergunta "Aceita os defaults da fase 4 e sigo para a fase 5?"); defaults da fase 5 aceitos (barra de topo comum na contagem, "Tempo!" em cartão sobre o tabuleiro esmaecido, palavra na cor do jogador e depois na do veredito por 0,5 s, chips em maiúsculas sem acento, lista do espectador sem vitórias e com "N jogadores", anfitrião espectador com "Voltar ao lobby", tabuleiro do espectador na largura com rolagem); diferenças visuais ficam para o sub-agente de telas; user: "Aceito, seguir" (resposta à pergunta "Aceita os defaults da fase 5 e sigo para a fase 6?"); defaults da fase 6 aceitos (ordem por pontos e depois alfabética, "+1 pt", maior palavra com os pontos ganhos e oculta sem palavras, subtítulo do cartão da TV, "Voltar ao Lobby" sem confirmação só no pódio, "Encerrar sala" no menu das duas telas, rendimento só das rodadas vistas, espectador sem espera no pódio, placar rápido com rolagem lateral, desconectado esmaecido); defeitos de layout do pódio vistos pelo orquestrador (letras de CORACOES quebram e o "S" desce sozinho; "DESCONECTADO" cortado na linha do Caio; confetes sobre os textos) vão para a T40 e o sub-agente de telas; user: "Aceito, seguir" (resposta à pergunta "Aceita os defaults da fase 6 e sigo para a fase 7?")
-**Dispatched:** batch worker fase 1 (T1-T8) em HEAD 3db40cb - returned (T1-T8 em b3e2638..a0418b6; phone 116 testes, vitest total 551, build gate verde). Desvios marcados com SPEC_DEVIATION, a confirmar pelo user: `screenFor(view, serverNow)` sem o parâmetro de conexão e com a tela extra `connecting`; `openSocket` é `(path, events) => {send, close}` com `schedule` injetado, e o adaptador do navegador fica em `net/browser.ts`. Defaults do worker, a confirmar: token em `bwords.token.<CODE>`; textos próprios para `bad-message`, `wrong-phase`, `not-host`, `bad-token`, `bad-color`, `bad-settings`, `bad-target`; `bad-token` apaga o token e reconecta sem ele; `replaced` mantém o token; `join` manda o apelido aparado mesmo inválido, para o servidor responder `bad-nickname`; cores de alerta #ffd23f, texto secundário #a8a6b4 e texto sobre primária #2e1500. Para a fase 2: `main.tsx` monta o store com `createRoomConnection` + `browserSocket`; `app.tsx` precisa de um relógio que bata para trocar a contagem pelo tabuleiro; fakes de teste em `src/testing/fakes.ts`; batch worker fase 2 (T9-T14) em HEAD 4c677ca - returned (T9-T14 em 49aaa6d..2df4134, com o 765c0d1 do orquestrador no meio; phone vitest 153, phone e2e 18, vitest total 588, play e2e 10; build gate verde). Fotos `phone-code`, `phone-join` e `phone-lobby` `.running.png` a 390 px, por uma config separada (`playwright.pictures.config.ts`) com sala simulada (`e2e/fake-room.ts`). Defaults do worker, a confirmar: textos novos ("Jogadores", "Você", aria-labels); cor pré-selecionada = primeira livre do PALETTE; campo de apelido limitado a 12 caracteres; erros de apelido sob o campo, de cor sob as cores, o resto acima de ENTRAR; CONTINUAR incompleto foca a primeira caixa vazia; tela de entrada sem ícone de preferências; ícone de preferências sem ação até a T37. Diferenças visuais pendentes: em `phone-join` o nome do anfitrião não está em laranja e falta o "…" de "Aguardando Ana iniciar a partida…". Achado: em `room-not-found` o servidor fecha sem `closed` e a conexão segue tentando reconectar em segundo plano; batch worker fase 3 (T43, T44, T15-T19) em HEAD 2b19d53 - pausado pelo user depois da T43 (`9e61a18`); T44 e T15-T19 por fazer; batch worker fase 3, resto (T44, T15-T19), a partir de 47801cc + o registro do default da T43 - returned (T44 db23629, T15 93979cf, T16 721e4aa, T17 101f0c6, T18 d2ac898, T19 no commit desta nota; phone vitest 160, phone e2e 38, vitest total 595, play e2e 10; build gate verde). Fotos a 390 px: `phone-join` refeita, `phone-host-lobby`, `phone-host-actions`, `phone-kicked` e `phone-room-closed` `.running.png`; as do anfitrião numa janela da altura da página, para o botão fixo e a folha ficarem no pé, como na capture. Defaults do worker, a confirmar: `formatRoundTime` no lugar de `formatSeconds`; contagem do lobby do anfitrião só com o número ("4"), como na capture; sem a bandeira no seletor de dicionário e sem o foguete em INICIAR PARTIDA; confirmação de remover com o botão "Remover"; confirmação de encerrar com "Encerrar a sala? Todos os jogadores saem." e o botão "Encerrar sala"; "Encerrar sala" em vermelho no menu; `idle`/`tv-gone` sem "Obrigado por jogar!"; tela `replaced` só com o texto, sem botão; volume enviado no `change` do slider (ao soltar). Lacuna: C39 confere que o servidor mandou `round-start` e que os celulares saíram do lobby; a contagem ainda é a tela de conexão até a fase 5. Para a fase 4+: `HostMenu` recebe itens com confirmação (servirá a "Voltar ao lobby"), `ConfirmDialog` e `Sheet` prontos; jogadores Node do E2E têm `waitFor` e `messages()`; batch worker fase 4 (T20-T26) a partir de 7f22f91 + este registro - returned (T20 6ee6f60, T21 15bcf7d, T22 7ff0293, T23 1d8b1da, T24 f78d5af, T25 0eb68bf, T26 1e4bf03; phone vitest 220, phone e2e 38, vitest total 655, play e2e 10; build gate verde; as 18 provas Vitest da fase (C46-C50, C52-C60, C63, C64, C110, C112) selecionam um teste cada). Desvio marcado com SPEC_DEVIATION: `reconcileFound(found, sentWords, results)`, porque a recusa no `submit-result` não traz a palavra. Fora do Where das tarefas, para ligar o estado da rodada: `RoomStore` ganhou `submit(paths)` e `listen(listener)`; `model/board-lock.ts` (`isBoardOpen`, com teste) decide quando o tabuleiro aceita o dedo; `fakeConnection` aceita um relógio e `fakeDevice` entrou em `testing/fakes.ts`. Defaults do worker, a confirmar: o timer arredonda o segundo para cima ("00:00" só no fim); a contagem fica em 3 com mais de 3 s; soltar o dedo depois do `endsAt` ou durante a reconexão descarta o caminho sem feedback; antes de chegar o salt, toda palavra é "INVÁLIDA"; uma palavra recusada que o servidor já tinha confirmado fica na lista; o envio respeita a janela de 10 caminhos por segundo e espera a janela abrir para o resto; o relógio do servidor (`serverNow`) conta a janela e o `submitDelay`. Para a fase 5: `store.round` expõe `path`, `feedback`, `pendingPaths`, `extendPathTo(tile)` e `releasePath()`; o `BoardScreen` liga os pointer events a `tileAtPoint(..., HIT_RADIUS_RATIO)` e `extendPathTo`, e o soltar/sair do tabuleiro a `releasePath`; `formatClock`, `isAlert`, `countdownNumber` e `foundTotals` estão prontos; `main.tsx` passa vibração, som e preferências desligados até a T36-T37. Lacuna: caminhos ainda na fila quando a conexão cai se perdem no `welcome` da volta (o servidor só devolve o que aceitou); avaliar na T38; batch worker fase 5 (T27-T30) a partir de c446235 + este registro - returned (T27 acf9a2f, T28 370106d, T29 646d817, T30 9c7476f; phone vitest 234, phone e2e 48, vitest total 669, play e2e 10; build gate verde). Fotos a 390 px: `phone-countdown`, `phone-board`, `phone-feedbacks` e `phone-spectator` `.running.png`; a do espectador numa janela da altura da página; a de `phone-feedbacks` é uma folha com os quatro cartões da palavra fotografados no app rodando, empilhados numa página de 390 px, sem redimensionar. O E2E da C39 agora confere a contagem ("Prepare o dedo!") nos dois celulares. Defaults do worker, a confirmar: a contagem tem o topo comum (etiqueta da sala à esquerda, preferências e menu do anfitrião) no lugar da linha "SALA KBXT" centralizada da capture, e mantém "As letras aparecem em instantes…", que está na capture e não na lista do AD-005; "Tempo!" aparece num cartão sobre o tabuleiro esmaecido, com o timer em 00:00; a palavra acima do tabuleiro mostra as peças do dedo na cor do jogador e, ao soltar, a palavra julgada na cor do veredito por 0,5 s, com o selo embaixo das peças, como em `phone-board`; a última peça do caminho ganha um contorno; o chip mais recente das palavras encontradas fica na cor do jogador; as palavras aparecem em maiúsculas sem acento (o celular só conhece a forma normalizada); o espectador vê a lista sem vitórias e sem coroa, como na capture, com "N jogadores"; o anfitrião espectador também tem o menu (⋮) com "Voltar ao lobby"; o tabuleiro do espectador ocupa a largura e a página rola se faltar altura. Diferenças visuais para o sub-agente de telas: na contagem a etiqueta da sala fica no topo e não abaixo do selo da rodada; em `phone-board` a cor do Beto (PALETTE[4]) é mais escura que o azul da capture e o placar é "5 pal · 9 pts" (coerente com as 5 palavras) no lugar de "12 pal · 18 pts"; em `phone-spectator` a página fica mais alta (as linhas da lista são as do lobby), as etiquetas da Duda quebram em duas linhas, a linha da Duda não tem fundo destacado e "ESPECTADOR(A)" segue a cor do lobby (vermelha). Para a fase 6: `useServerClock` foi para `state/server-clock.ts`; `roundPosition` (`model/round-position.ts`) dá "Rodada N de M"; `MatchHostMenu` está em `components/HostMenu.tsx`; `PlayerRow` aceita `wins` opcional; `fakeRoom` devolve `{ push, sent }` e aceita quadros binários; `e2e/round-room.ts` tem `openRound`, `swipe`, `slideOver` e `tileCenter`, e `e2e/samples.ts` tem `SAMPLE_BOARD`, `SAMPLE_WORDS`, `roundWelcome` e `sampleHashFrame`; as fotos com feedback usam `page.clock.install` para o feedback não sumir; em `app.tsx`, `round-result` e `podium` ainda apontam para `ConnectingScreen`.; batch worker fase 6 (T31-T35) a partir de ed1a916 + este registro - returned (T31 9c2bd87, T32 bbdad44, T33 624f3b1, T34 3dff169, T35 no commit desta nota; phone vitest 254, phone e2e 61, vitest total 689, play e2e 10; build gate verde). Fotos a 390 px: `phone-round-result` e `phone-podium` `.running.png`, numa janela da altura da página por causa dos botões fixos; na do pódio o confete fica parado no meio da queda (animações pausadas em pontos diferentes), como na capture. As E2E do resultado e do pódio usam a sala simulada (`fakeRoom`), com `resultsWelcome`, `sampleResults`, `PODIUM_PLAYERS` e `SAMPLE_PODIUM` em `e2e/samples.ts`. Fora do Where das tarefas: `resultRounds` em `model/results.ts` (rodada que acabou e a próxima, pelo `last` do servidor) e `podiumTags` em `model/players.ts`, ambos com teste; componentes novos `RoundScoreCard`, `ResultWordList`, `QuickScoreboard`, `ResultHostActions`, `SecondaryButton`, `WaitingNote`, `PodiumHighlight`, `MatchPerformance`, `RankingList`, `PodiumHostActions` e `Confetti`; `PhoneStore` ganhou `match`. Defaults do worker, a confirmar: subtítulo do cartão da TV "Acompanhe no telão a revelação das palavras" (a capture corta o texto); "somados nesta rodada!" e "PLACAR ACUMULADO" ficam, por terem dado por trás; palavras do resultado ordenadas por pontos (maior primeiro) e depois em ordem alfabética; só entram as palavras em comum que o servidor confirmou para este celular; "+1 pt" no singular; pontos da maior palavra = os que o jogador ganhou com ela (dobrados se única); o bloco da maior palavra some se o jogador não achou nenhuma; uma rodada recebida de novo (reconexão nos resultados) substitui a anterior no histórico; o histórico zera no `round-start` da rodada 0; o anfitrião tem o menu (⋮) com "Encerrar sala" no resultado e no pódio (UI-01 AC 6), além do botão ENCERRAR SALA do pódio; "Voltar ao Lobby" do pódio age sem confirmação (POD-01 AC 10), o do resultado pede; confirmação do ENCERRAR SALA com o texto e o botão do lobby; o espectador da partida inteira não vê "Aguardando…" no pódio; no resultado o espectador vê "Aguardando <anfitrião> avançar…"; "Aguardando…" sem os pontinhos animados, porque o texto já termina em "…"; linha desconectada no pódio com a etiqueta DESCONECTADO e esmaecida; mais de 4 jogadores rolam de lado dentro do placar rápido. Diferenças visuais para o sub-agente de telas: no resultado a pílula "Você está em 1º lugar" fica embaixo de "32 pts" e não ao lado; o selo da posição é um círculo dourado; o espectador do placar rápido não tem "4º" em cima (a regra da T13 não dá posição a espectador); faltam o foguete de PRÓXIMA RODADA e de JOGAR DE NOVO (como na fase 3); pontos coerentes com as palavras (CORACOES +12, base +6) no lugar de +16/base +8; no pódio o resumo mostra 4 palavras (só a rodada vista) no lugar de 28, o círculo de posição da Duda fica vazio, as etiquetas da Ana quebram em duas linhas e a porta de "Voltar ao Lobby" é outro desenho. Para a fase 7: `match.summary` só conta o que o celular viu; o T41 (partida inteira) pode conferir "SEU RENDIMENTO" contra as palavras enviadas; `WaitingNote` e `SecondaryButton` servem às telas que faltam; o layout das telas novas ainda não passou pelas larguras 320-480 (T40).; batch worker fase 7 (T36-T42) a partir de 27267e2 + este registro - dispatched
+**Dispatched:** batch worker fase 1 (T1-T8) em HEAD 3db40cb - returned (T1-T8 em b3e2638..a0418b6; phone 116 testes, vitest total 551, build gate verde). Desvios marcados com SPEC_DEVIATION, a confirmar pelo user: `screenFor(view, serverNow)` sem o parâmetro de conexão e com a tela extra `connecting`; `openSocket` é `(path, events) => {send, close}` com `schedule` injetado, e o adaptador do navegador fica em `net/browser.ts`. Defaults do worker, a confirmar: token em `bwords.token.<CODE>`; textos próprios para `bad-message`, `wrong-phase`, `not-host`, `bad-token`, `bad-color`, `bad-settings`, `bad-target`; `bad-token` apaga o token e reconecta sem ele; `replaced` mantém o token; `join` manda o apelido aparado mesmo inválido, para o servidor responder `bad-nickname`; cores de alerta #ffd23f, texto secundário #a8a6b4 e texto sobre primária #2e1500. Para a fase 2: `main.tsx` monta o store com `createRoomConnection` + `browserSocket`; `app.tsx` precisa de um relógio que bata para trocar a contagem pelo tabuleiro; fakes de teste em `src/testing/fakes.ts`; batch worker fase 2 (T9-T14) em HEAD 4c677ca - returned (T9-T14 em 49aaa6d..2df4134, com o 765c0d1 do orquestrador no meio; phone vitest 153, phone e2e 18, vitest total 588, play e2e 10; build gate verde). Fotos `phone-code`, `phone-join` e `phone-lobby` `.running.png` a 390 px, por uma config separada (`playwright.pictures.config.ts`) com sala simulada (`e2e/fake-room.ts`). Defaults do worker, a confirmar: textos novos ("Jogadores", "Você", aria-labels); cor pré-selecionada = primeira livre do PALETTE; campo de apelido limitado a 12 caracteres; erros de apelido sob o campo, de cor sob as cores, o resto acima de ENTRAR; CONTINUAR incompleto foca a primeira caixa vazia; tela de entrada sem ícone de preferências; ícone de preferências sem ação até a T37. Diferenças visuais pendentes: em `phone-join` o nome do anfitrião não está em laranja e falta o "…" de "Aguardando Ana iniciar a partida…". Achado: em `room-not-found` o servidor fecha sem `closed` e a conexão segue tentando reconectar em segundo plano; batch worker fase 3 (T43, T44, T15-T19) em HEAD 2b19d53 - pausado pelo user depois da T43 (`9e61a18`); T44 e T15-T19 por fazer; batch worker fase 3, resto (T44, T15-T19), a partir de 47801cc + o registro do default da T43 - returned (T44 db23629, T15 93979cf, T16 721e4aa, T17 101f0c6, T18 d2ac898, T19 no commit desta nota; phone vitest 160, phone e2e 38, vitest total 595, play e2e 10; build gate verde). Fotos a 390 px: `phone-join` refeita, `phone-host-lobby`, `phone-host-actions`, `phone-kicked` e `phone-room-closed` `.running.png`; as do anfitrião numa janela da altura da página, para o botão fixo e a folha ficarem no pé, como na capture. Defaults do worker, a confirmar: `formatRoundTime` no lugar de `formatSeconds`; contagem do lobby do anfitrião só com o número ("4"), como na capture; sem a bandeira no seletor de dicionário e sem o foguete em INICIAR PARTIDA; confirmação de remover com o botão "Remover"; confirmação de encerrar com "Encerrar a sala? Todos os jogadores saem." e o botão "Encerrar sala"; "Encerrar sala" em vermelho no menu; `idle`/`tv-gone` sem "Obrigado por jogar!"; tela `replaced` só com o texto, sem botão; volume enviado no `change` do slider (ao soltar). Lacuna: C39 confere que o servidor mandou `round-start` e que os celulares saíram do lobby; a contagem ainda é a tela de conexão até a fase 5. Para a fase 4+: `HostMenu` recebe itens com confirmação (servirá a "Voltar ao lobby"), `ConfirmDialog` e `Sheet` prontos; jogadores Node do E2E têm `waitFor` e `messages()`; batch worker fase 4 (T20-T26) a partir de 7f22f91 + este registro - returned (T20 6ee6f60, T21 15bcf7d, T22 7ff0293, T23 1d8b1da, T24 f78d5af, T25 0eb68bf, T26 1e4bf03; phone vitest 220, phone e2e 38, vitest total 655, play e2e 10; build gate verde; as 18 provas Vitest da fase (C46-C50, C52-C60, C63, C64, C110, C112) selecionam um teste cada). Desvio marcado com SPEC_DEVIATION: `reconcileFound(found, sentWords, results)`, porque a recusa no `submit-result` não traz a palavra. Fora do Where das tarefas, para ligar o estado da rodada: `RoomStore` ganhou `submit(paths)` e `listen(listener)`; `model/board-lock.ts` (`isBoardOpen`, com teste) decide quando o tabuleiro aceita o dedo; `fakeConnection` aceita um relógio e `fakeDevice` entrou em `testing/fakes.ts`. Defaults do worker, a confirmar: o timer arredonda o segundo para cima ("00:00" só no fim); a contagem fica em 3 com mais de 3 s; soltar o dedo depois do `endsAt` ou durante a reconexão descarta o caminho sem feedback; antes de chegar o salt, toda palavra é "INVÁLIDA"; uma palavra recusada que o servidor já tinha confirmado fica na lista; o envio respeita a janela de 10 caminhos por segundo e espera a janela abrir para o resto; o relógio do servidor (`serverNow`) conta a janela e o `submitDelay`. Para a fase 5: `store.round` expõe `path`, `feedback`, `pendingPaths`, `extendPathTo(tile)` e `releasePath()`; o `BoardScreen` liga os pointer events a `tileAtPoint(..., HIT_RADIUS_RATIO)` e `extendPathTo`, e o soltar/sair do tabuleiro a `releasePath`; `formatClock`, `isAlert`, `countdownNumber` e `foundTotals` estão prontos; `main.tsx` passa vibração, som e preferências desligados até a T36-T37. Lacuna: caminhos ainda na fila quando a conexão cai se perdem no `welcome` da volta (o servidor só devolve o que aceitou); avaliar na T38; batch worker fase 5 (T27-T30) a partir de c446235 + este registro - returned (T27 acf9a2f, T28 370106d, T29 646d817, T30 9c7476f; phone vitest 234, phone e2e 48, vitest total 669, play e2e 10; build gate verde). Fotos a 390 px: `phone-countdown`, `phone-board`, `phone-feedbacks` e `phone-spectator` `.running.png`; a do espectador numa janela da altura da página; a de `phone-feedbacks` é uma folha com os quatro cartões da palavra fotografados no app rodando, empilhados numa página de 390 px, sem redimensionar. O E2E da C39 agora confere a contagem ("Prepare o dedo!") nos dois celulares. Defaults do worker, a confirmar: a contagem tem o topo comum (etiqueta da sala à esquerda, preferências e menu do anfitrião) no lugar da linha "SALA KBXT" centralizada da capture, e mantém "As letras aparecem em instantes…", que está na capture e não na lista do AD-005; "Tempo!" aparece num cartão sobre o tabuleiro esmaecido, com o timer em 00:00; a palavra acima do tabuleiro mostra as peças do dedo na cor do jogador e, ao soltar, a palavra julgada na cor do veredito por 0,5 s, com o selo embaixo das peças, como em `phone-board`; a última peça do caminho ganha um contorno; o chip mais recente das palavras encontradas fica na cor do jogador; as palavras aparecem em maiúsculas sem acento (o celular só conhece a forma normalizada); o espectador vê a lista sem vitórias e sem coroa, como na capture, com "N jogadores"; o anfitrião espectador também tem o menu (⋮) com "Voltar ao lobby"; o tabuleiro do espectador ocupa a largura e a página rola se faltar altura. Diferenças visuais para o sub-agente de telas: na contagem a etiqueta da sala fica no topo e não abaixo do selo da rodada; em `phone-board` a cor do Beto (PALETTE[4]) é mais escura que o azul da capture e o placar é "5 pal · 9 pts" (coerente com as 5 palavras) no lugar de "12 pal · 18 pts"; em `phone-spectator` a página fica mais alta (as linhas da lista são as do lobby), as etiquetas da Duda quebram em duas linhas, a linha da Duda não tem fundo destacado e "ESPECTADOR(A)" segue a cor do lobby (vermelha). Para a fase 6: `useServerClock` foi para `state/server-clock.ts`; `roundPosition` (`model/round-position.ts`) dá "Rodada N de M"; `MatchHostMenu` está em `components/HostMenu.tsx`; `PlayerRow` aceita `wins` opcional; `fakeRoom` devolve `{ push, sent }` e aceita quadros binários; `e2e/round-room.ts` tem `openRound`, `swipe`, `slideOver` e `tileCenter`, e `e2e/samples.ts` tem `SAMPLE_BOARD`, `SAMPLE_WORDS`, `roundWelcome` e `sampleHashFrame`; as fotos com feedback usam `page.clock.install` para o feedback não sumir; em `app.tsx`, `round-result` e `podium` ainda apontam para `ConnectingScreen`.; batch worker fase 6 (T31-T35) a partir de ed1a916 + este registro - returned (T31 9c2bd87, T32 bbdad44, T33 624f3b1, T34 3dff169, T35 no commit desta nota; phone vitest 254, phone e2e 61, vitest total 689, play e2e 10; build gate verde). Fotos a 390 px: `phone-round-result` e `phone-podium` `.running.png`, numa janela da altura da página por causa dos botões fixos; na do pódio o confete fica parado no meio da queda (animações pausadas em pontos diferentes), como na capture. As E2E do resultado e do pódio usam a sala simulada (`fakeRoom`), com `resultsWelcome`, `sampleResults`, `PODIUM_PLAYERS` e `SAMPLE_PODIUM` em `e2e/samples.ts`. Fora do Where das tarefas: `resultRounds` em `model/results.ts` (rodada que acabou e a próxima, pelo `last` do servidor) e `podiumTags` em `model/players.ts`, ambos com teste; componentes novos `RoundScoreCard`, `ResultWordList`, `QuickScoreboard`, `ResultHostActions`, `SecondaryButton`, `WaitingNote`, `PodiumHighlight`, `MatchPerformance`, `RankingList`, `PodiumHostActions` e `Confetti`; `PhoneStore` ganhou `match`. Defaults do worker, a confirmar: subtítulo do cartão da TV "Acompanhe no telão a revelação das palavras" (a capture corta o texto); "somados nesta rodada!" e "PLACAR ACUMULADO" ficam, por terem dado por trás; palavras do resultado ordenadas por pontos (maior primeiro) e depois em ordem alfabética; só entram as palavras em comum que o servidor confirmou para este celular; "+1 pt" no singular; pontos da maior palavra = os que o jogador ganhou com ela (dobrados se única); o bloco da maior palavra some se o jogador não achou nenhuma; uma rodada recebida de novo (reconexão nos resultados) substitui a anterior no histórico; o histórico zera no `round-start` da rodada 0; o anfitrião tem o menu (⋮) com "Encerrar sala" no resultado e no pódio (UI-01 AC 6), além do botão ENCERRAR SALA do pódio; "Voltar ao Lobby" do pódio age sem confirmação (POD-01 AC 10), o do resultado pede; confirmação do ENCERRAR SALA com o texto e o botão do lobby; o espectador da partida inteira não vê "Aguardando…" no pódio; no resultado o espectador vê "Aguardando <anfitrião> avançar…"; "Aguardando…" sem os pontinhos animados, porque o texto já termina em "…"; linha desconectada no pódio com a etiqueta DESCONECTADO e esmaecida; mais de 4 jogadores rolam de lado dentro do placar rápido. Diferenças visuais para o sub-agente de telas: no resultado a pílula "Você está em 1º lugar" fica embaixo de "32 pts" e não ao lado; o selo da posição é um círculo dourado; o espectador do placar rápido não tem "4º" em cima (a regra da T13 não dá posição a espectador); faltam o foguete de PRÓXIMA RODADA e de JOGAR DE NOVO (como na fase 3); pontos coerentes com as palavras (CORACOES +12, base +6) no lugar de +16/base +8; no pódio o resumo mostra 4 palavras (só a rodada vista) no lugar de 28, o círculo de posição da Duda fica vazio, as etiquetas da Ana quebram em duas linhas e a porta de "Voltar ao Lobby" é outro desenho. Para a fase 7: `match.summary` só conta o que o celular viu; o T41 (partida inteira) pode conferir "SEU RENDIMENTO" contra as palavras enviadas; `WaitingNote` e `SecondaryButton` servem às telas que faltam; o layout das telas novas ainda não passou pelas larguras 320-480 (T40).; batch worker fase 7 (T36-T42) a partir de 27267e2 + este registro - returned (T36 42f1eab, T37 25c28bc, T38 0c41b1e, T39 f5aa502, T40 01b964c, T41 8f05722, fix 4ddaf41, T42 no commit desta nota; phone vitest 289, phone e2e 71, vitest total 724, play e2e 10; build gate verde). T36: `state/prefs.ts` (preferências em `bwords.prefs`, Wake Lock pedida no lobby e na rodada e de novo ao ficar visível); `state/safe-storage.ts` guarda todo acesso ao storage, então um storage que lança exceção não quebra o store. T37: `device/` (wake lock, vibração, bipe Web Audio) ligado no `main.tsx`; `PrefsSheet` aberta pelo ícone de pessoa, renderizada pelo `app.tsx`. T38: faixa em `components/ReconnectBanner.tsx`, montada por `screens/RoomTopBar.tsx` (topo + faixa) em toda tela de sala, e por `ConnectionBanner` na entrada e na tela de conexão; a regra fica em `model/connection-banner.ts` e `state/banner.ts`. Lacuna da fila resolvida: caminhos na fila ou enviados sem resposta antes da queda são guardados; depois do `welcome` da mesma rodada, os que o `welcome` não lista voltam à lista (não confirmados) e são reenviados (`stillUnsent` em `model/submit-queue.ts`); durante a reconexão nada é enviado. Achado corrigido (4ddaf41): um socket que abre e cai antes do `welcome` reiniciava a janela de 30 s, e o "Sem conexão" nunca chegava; agora o prazo só some com o `welcome`. T39: auditoria lê os CSS do disco (o Vitest entrega `.css` vazio, mesmo com `?raw`); o CSS já passava. T40: `e2e/layout.spec.ts` com 21 telas e estados (`e2e/screen-states.ts`) em 320-480 × 568/932, deitado e tablet; defeitos do pódio corrigidos: peças da maior palavra numa linha só (encolhem), confete dentro do cartão do vencedor e por baixo dos textos, etiquetas compactas nas listas; fotos refeitas: `phone-board`, `phone-host-actions`, `phone-host-lobby`, `phone-lobby`, `phone-podium`, `phone-spectator`. T41: o teste lê o pacote pt-BR de `tools/dict-build/dist` só no Node para achar palavras do tabuleiro real; confere SEU RENDIMENTO 4/2/2 contra as palavras enviadas. T42: 13 fotos em `captures/uncaptured/` (reconectando, sem conexão, preferências, confirmações de remover, encerrar e cancelar rodada, resultado e pódio de participante e de espectador, Tempo!, inatividade, outra aba); falta a resposta do user sobre cada foto (C118). Defaults do worker, a confirmar: faixa dentro do fluxo logo abaixo do topo (empurra o conteúdo; o tabuleiro encolhe); "Conectado" só depois do `welcome`, não na abertura do socket; "Sem conexão" em vermelho com "Tentar de novo" ao lado; folha de preferências com título "Preferências"; palavras reenviadas depois da reconexão voltam à lista como não confirmadas; etiquetas menores nas listas (lobby e pódio). Diferenças visuais restantes: no lobby do anfitrião as etiquetas da Ana ainda quebram em duas linhas a 390 px (no pódio cabem); o círculo de posição do espectador no pódio fica vazio (laranja na própria linha); o resto das diferenças das fases anteriores segue para o sub-agente de telas.
 **Walked:** none
 
 ---

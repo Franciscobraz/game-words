@@ -63,6 +63,11 @@ function encode(reply: Reply): string | Buffer {
 
 const captures = join(dirname(fileURLToPath(import.meta.url)), '../../../.specs/features/m3-phone/captures');
 
+/** Where the picture of a screen without a capture goes, for the user to judge (T42). */
+export function uncapturedPath(name: string): string {
+  return join(captures, 'uncaptured', `${name}.png`);
+}
+
 /** Where the picture of `capture` goes, beside the capture itself. */
 export function picturePath(capture: string): string {
   return join(captures, `${capture}.running.png`);
