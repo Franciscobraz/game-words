@@ -260,10 +260,10 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] Um caso por `Screen` (L-007); `startsAt - 1` é contagem e `startsAt` é tabuleiro (L-001)
-- [ ] C43 passa
-- [ ] Gate check passes: `npx vitest run packages/phone`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Um caso por `Screen` (L-007); `startsAt - 1` é contagem e `startsAt` é tabuleiro (L-001)
+- [x] C43 passa
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick
