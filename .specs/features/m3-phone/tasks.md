@@ -1366,7 +1366,7 @@ Proof: walk - cada foto em `captures/uncaptured/` com a resposta do user em `## 
 The feature's live state, written as it happens - a compaction gives no warning.
 
 **Settled mid-build:** none
-**Dispatched:** batch worker fase 1 (T1-T8) em HEAD 3db40cb
+**Dispatched:** batch worker fase 1 (T1-T8) em HEAD 3db40cb - returned (T1-T8 em b3e2638..a0418b6; phone 116 testes, vitest total 551, build gate verde). Desvios marcados com SPEC_DEVIATION, a confirmar pelo user: `screenFor(view, serverNow)` sem o parâmetro de conexão e com a tela extra `connecting`; `openSocket` é `(path, events) => {send, close}` com `schedule` injetado, e o adaptador do navegador fica em `net/browser.ts`. Defaults do worker, a confirmar: token em `bwords.token.<CODE>`; textos próprios para `bad-message`, `wrong-phase`, `not-host`, `bad-token`, `bad-color`, `bad-settings`, `bad-target`; `bad-token` apaga o token e reconecta sem ele; `replaced` mantém o token; `join` manda o apelido aparado mesmo inválido, para o servidor responder `bad-nickname`; cores de alerta #ffd23f, texto secundário #a8a6b4 e texto sobre primária #2e1500. Para a fase 2: `main.tsx` monta o store com `createRoomConnection` + `browserSocket`; `app.tsx` precisa de um relógio que bata para trocar a contagem pelo tabuleiro; fakes de teste em `src/testing/fakes.ts`
 **Walked:** none
 
 ---
