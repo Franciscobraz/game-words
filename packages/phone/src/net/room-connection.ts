@@ -1,0 +1,210 @@
+import { type ClientMessage, decodeHashFrame, type ServerMessage } from '@bwords/core';
+import type { HashFrame } from '../model/room-view.ts';
+import { addTimeSample, CLOCK_SYNC_SAMPLES, type ClockSample, serverNow } from './clock-sync.ts';
+
+/** Where the connection stands, for the reconnect banner and the screens (RECON-01). */
+export type ConnectionStatus = 'connecting' | 'open' | 'reconnecting' | 'offline' | 'closed';
+
+/** Waits before each reconnect attempt: 0.5 s, 1 s, 2 s, then 4 s (RECON-01 AC 1). */
+export const RECONNECT_DELAYS_MS = [500, 1_000, 2_000, 4_000] as const;
+
+/** Time without a successful reconnect before the phone gives up and shows "Sem conexão" (RECON-01 AC 4). */
+export const OFFLINE_AFTER_MS = 30_000;
+
+/** What a socket reports back to the connection. */
+export interface SocketEvents {
+  onOpen(): void;
+  onMessage(data: string | ArrayBuffer): void;
+  onClose(): void;
+}
+
+/** The two things the connection does to an open socket. */
+export interface SocketHandle {
+  send(text: string): void;
+  close(): void;
+}
+
+// SPEC_DEVIATION: design.md types `openSocket` as `(url) => WebSocket`.
+// Reason: a factory that takes the events and returns a small handle lets the Node
+// tests pass a fake socket without DOM types; `browserSocket` adapts the real one.
+/** Opens a socket to `path` (e.g. `/api/rooms/KBXT/ws`) and reports its events. */
+export type OpenSocket = (path: string, events: SocketEvents) => SocketHandle;
+
+/** Runs `run` after `ms`; the returned function cancels it. */
+export type Schedule = (run: () => void, ms: number) => () => void;
+
+/** Everything the connection needs from the outside world (style guide §4, D). */
+export interface ConnectionOptions {
+  openSocket: OpenSocket;
+  now: () => number;
+  schedule: Schedule;
+  onMessage(msg: ServerMessage): void;
+  onHashes(frame: HashFrame): void;
+  onStatus(status: ConnectionStatus): void;
+}
+
+/** One room connection: `hello`, reconnection, clock sync and message delivery (RECON-01, EXIT-01, COUNT-01). */
+export interface RoomConnection {
+  /** Opens the room `code`, saying `hello` with `token` when the phone has one (ENTRY-01 AC 6). */
+  connect(code: string, token: string | null): void;
+  /** Sends a message when the socket is open; drops it otherwise, since the screens lock while reconnecting. */
+  send(msg: ClientMessage): void;
+  /** "Tentar de novo": starts reconnecting again with a fresh 30 s window (RECON-01 AC 4). */
+  retry(): void;
+  /** Closes on purpose; nothing reconnects. */
+  close(): void;
+  /** The server clock now, from the best `time` sample (COUNT-01 AC 3). */
+  serverNow(): number;
+}
+
+/** Creates a connection; nothing opens until `connect`. */
+export function createRoomConnection(options: ConnectionOptions): RoomConnection {
+  const { openSocket, now, schedule } = options;
+
+  let code: string | null = null;
+  let token: string | null = null;
+  let socket: SocketHandle | null = null;
+  let isOpen = false;
+  let attempt = 0;
+  let cancelReconnect: (() => void) | null = null;
+  let cancelOffline: (() => void) | null = null;
+  let clock: ClockSample | null = null;
+  let status: ConnectionStatus = 'closed';
+
+  function setStatus(next: ConnectionStatus): void {
+    status = next;
+    options.onStatus(next);
+  }
+
+  function stopTimers(): void {
+    cancelReconnect?.();
+    cancelReconnect = null;
+    cancelOffline?.();
+    cancelOffline = null;
+  }
+
+  /** Forgets the current socket, so its late events are ignored, and closes it. */
+  function dropSocket(): void {
+    const old = socket;
+    socket = null;
+    isOpen = false;
+    old?.close();
+  }
+
+  function open(): void {
+    if (code === null) return;
+    let handle: SocketHandle | null = null;
+    const isCurrent = () => handle !== null && socket === handle;
+    handle = openSocket(`/api/rooms/${code}/ws`, {
+      onOpen: () => {
+        if (isCurrent()) handleOpen();
+      },
+      onMessage: (data) => {
+        if (isCurrent()) handleData(data);
+      },
+      onClose: () => {
+        if (isCurrent()) handleUnexpectedClose();
+      },
+    });
+    socket = handle;
+  }
+
+  function handleOpen(): void {
+    isOpen = true;
+    attempt = 0;
+    stopTimers();
+    setStatus('open');
+    sendNow(token === null ? { type: 'hello', role: 'player' } : { type: 'hello', role: 'player', token });
+    for (let i = 0; i < CLOCK_SYNC_SAMPLES; i++) sendNow({ type: 'time', clientTime: now() });
+  }
+
+  function handleData(data: string | ArrayBuffer): void {
+    if (typeof data !== 'string') {
+      // A frame that does not decode is not the round's hashes; the next welcome resends them.
+      const frame = decodeHashFrame(data);
+      if (frame !== null) options.onHashes(frame);
+      return;
+    }
+    const msg = JSON.parse(data) as ServerMessage;
+    if (msg.type === 'time') clock = addTimeSample(clock, msg, now());
+    if (msg.type === 'joined') token = msg.token;
+    if (msg.type === 'closed') endByServer();
+    options.onMessage(msg);
+  }
+
+  /** The server said why it closes: no reconnect, whatever the reason (EXIT-01 AC 4). */
+  function endByServer(): void {
+    stopTimers();
+    dropSocket();
+    setStatus('closed');
+  }
+
+  /** A drop without `closed`: retry with growing waits until the offline deadline (RECON-01 AC 1, 4). */
+  function handleUnexpectedClose(): void {
+    socket = null;
+    isOpen = false;
+    if (status !== 'reconnecting') startReconnecting();
+    scheduleNextAttempt();
+  }
+
+  function startReconnecting(): void {
+    setStatus('reconnecting');
+    cancelOffline = schedule(goOffline, OFFLINE_AFTER_MS);
+  }
+
+  function scheduleNextAttempt(): void {
+    const delay = reconnectDelay(attempt);
+    attempt += 1;
+    cancelReconnect = schedule(() => {
+      cancelReconnect = null;
+      open();
+    }, delay);
+  }
+
+  function goOffline(): void {
+    cancelOffline = null;
+    stopTimers();
+    dropSocket();
+    setStatus('offline');
+  }
+
+  function sendNow(msg: ClientMessage): void {
+    socket?.send(JSON.stringify(msg));
+  }
+
+  return {
+    connect(nextCode, nextToken) {
+      stopTimers();
+      dropSocket();
+      code = nextCode;
+      token = nextToken;
+      attempt = 0;
+      setStatus('connecting');
+      open();
+    },
+    send(msg) {
+      if (isOpen) sendNow(msg);
+    },
+    retry() {
+      if (code === null) return;
+      stopTimers();
+      dropSocket();
+      attempt = 0;
+      startReconnecting();
+      open();
+    },
+    close() {
+      stopTimers();
+      dropSocket();
+      setStatus('closed');
+    },
+    serverNow: () => serverNow(clock, now()),
+  };
+}
+
+/** The wait before attempt `attempt` (0-based); the last delay repeats. */
+function reconnectDelay(attempt: number): number {
+  const lastIndex = RECONNECT_DELAYS_MS.length - 1;
+  // The index is clamped to the array, so the entry exists.
+  return RECONNECT_DELAYS_MS[Math.min(attempt, lastIndex)]!;
+}
