@@ -129,10 +129,12 @@ export function createRoomConnection(options: ConnectionOptions): RoomConnection
     if (msg.type === 'time') clock = addTimeSample(clock, msg, now());
     if (msg.type === 'joined') token = msg.token;
     if (msg.type === 'closed') endByServer();
+    // The server closes right after `room-not-found`; only a new "CONTINUAR" opens the room again (Edge Cases).
+    if (msg.type === 'error' && msg.code === 'room-not-found') endByServer();
     options.onMessage(msg);
   }
 
-  /** The server said why it closes: no reconnect, whatever the reason (EXIT-01 AC 4). */
+  /** The server ended this socket on purpose (`closed`, `room-not-found`): no reconnect (EXIT-01 AC 4, Edge Cases). */
   function endByServer(): void {
     stopTimers();
     dropSocket();

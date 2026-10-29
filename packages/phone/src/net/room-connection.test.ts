@@ -249,6 +249,27 @@ describe('closing', () => {
     expect(sockets.opened).toHaveLength(1);
   });
 
+  test('stops reconnecting after room-not-found', () => {
+    // Edge Cases, ENTRY-01: the server closes without `closed`; only a new "CONTINUAR" connects again.
+    const { sockets, connection, status, messages, clock } = setup();
+    connection.connect('ZZZZ', null);
+    sockets.last().open();
+
+    sockets.last().receive({ type: 'error', code: 'room-not-found' });
+    sockets.last().drop();
+    clock.advance(60_000);
+
+    expect(messages.at(-1)).toEqual({ type: 'error', code: 'room-not-found' });
+    expect(status()).toBe('closed');
+    expect(sockets.opened).toHaveLength(1);
+
+    connection.connect('KBXT', null);
+
+    expect(sockets.opened).toHaveLength(2);
+    expect(sockets.last().path).toBe('/api/rooms/KBXT/ws');
+    expect(status()).toBe('connecting');
+  });
+
   test('does not reconnect after the phone closes on purpose', () => {
     const { sockets, connection, status, clock } = setup();
     connection.connect('KBXT', 'secret-beto');
