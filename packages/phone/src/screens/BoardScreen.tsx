@@ -1,6 +1,7 @@
 import { BoardGrid } from '../components/BoardGrid.tsx';
 import { FitSquare } from '../components/FitSquare.tsx';
 import { FoundWords } from '../components/FoundWords.tsx';
+import { MatchHostMenu } from '../components/HostMenu.tsx';
 import { RoundTimer } from '../components/RoundTimer.tsx';
 import { TopBar } from '../components/TopBar.tsx';
 import { WordRack } from '../components/WordRack.tsx';
@@ -29,6 +30,7 @@ export function BoardScreen() {
 
   const size = current.board.length;
   const me = view.players.find((p) => p.id === view.myId);
+  const isHost = view.hostId !== null && view.hostId === view.myId;
   const color = me?.color ?? '';
   const position = roundPosition(current, view.settings);
   const remainingMs = current.endsAt - serverNow;
@@ -41,7 +43,7 @@ export function BoardScreen() {
 
   return (
     <main class="screen board-screen">
-      <TopBar code={view.code ?? ''} />
+      <TopBar code={view.code ?? ''} menu={isHost ? <MatchHostMenu onBackToLobby={room.backToLobby} /> : undefined} />
 
       <RoundTimer
         clock={formatClock(remainingMs)}

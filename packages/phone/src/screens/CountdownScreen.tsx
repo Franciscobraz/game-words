@@ -1,4 +1,5 @@
 import { TimerIcon } from '../components/icons.tsx';
+import { MatchHostMenu } from '../components/HostMenu.tsx';
 import { TopBar } from '../components/TopBar.tsx';
 import { countdownNumber } from '../model/clock.ts';
 import { roundPosition } from '../model/round-position.ts';
@@ -16,12 +17,13 @@ export function CountdownScreen() {
   const { room } = useStore();
   const serverNow = useServerClock(room.serverNow);
   const view = room.room.value;
+  const isHost = view.hostId !== null && view.hostId === view.myId;
   const position = roundPosition(view.round, view.settings);
   const number = view.round === null ? null : countdownNumber(serverNow.value, view.round.startsAt);
 
   return (
     <main class="screen countdown">
-      <TopBar code={view.code ?? ''} />
+      <TopBar code={view.code ?? ''} menu={isHost ? <MatchHostMenu onBackToLobby={room.backToLobby} /> : undefined} />
 
       {position !== null && (
         <p class="countdown__round">

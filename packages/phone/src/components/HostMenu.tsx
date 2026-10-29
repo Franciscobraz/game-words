@@ -65,3 +65,16 @@ export function HostMenu({ items }: HostMenuProps) {
     </div>
   );
 }
+
+/** Props of `MatchHostMenu`. */
+export interface MatchHostMenuProps {
+  onBackToLobby: () => void;
+}
+
+/**
+ * The host's menu during the countdown and the round: "Voltar ao lobby", which asks
+ * "Cancelar a rodada? O placar será zerado." before acting (HOSTPLAY-01 AC 1-2).
+ */
+export function MatchHostMenu({ onBackToLobby }: MatchHostMenuProps) {
+  return <HostMenu items={[{ label: STRINGS.backToLobby, confirm: STRINGS.confirmCancelRound, onConfirm: onBackToLobby }]} />;
+}
