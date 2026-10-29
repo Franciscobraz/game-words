@@ -219,10 +219,10 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] Cada ação manda a mensagem certa por um `RoomConnection` falso (um caso por ação, L-007)
-- [ ] C7, C12 passam
-- [ ] Gate check passes: `npx vitest run packages/phone`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Cada ação manda a mensagem certa por um `RoomConnection` falso (um caso por ação, L-007)
+- [x] C7, C12 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick

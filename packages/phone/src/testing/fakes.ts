@@ -1,5 +1,6 @@
 import type { ClientMessage, ServerMessage } from '@bwords/core';
-import type { OpenSocket, Schedule, SocketEvents } from '../net/room-connection.ts';
+import type { OpenSocket, RoomConnection, Schedule, SocketEvents } from '../net/room-connection.ts';
+import type { ConnectionHandlers, KeyValueStorage, OpenConnection } from '../state/room.ts';
 
 /**
  * Fakes for the Node tests of `net/` and `state/` (style guide §9: fakes, not mocks).
@@ -88,6 +89,62 @@ export function fakeSockets(): { openSocket: OpenSocket; opened: FakeSocket[]; l
       const socket = opened.at(-1);
       if (!socket) throw new Error('No socket was opened');
       return socket;
+    },
+  };
+}
+
+/** A room connection that records what the store asks of it; the test plays the server. */
+export interface FakeConnection {
+  openConnection: OpenConnection;
+  connects: { code: string; token: string | null }[];
+  sent: ClientMessage[];
+  retries: number;
+  /** Delivers a server message to the store. */
+  receive(msg: ServerMessage): void;
+  /** The handlers the store registered. */
+  handlers(): ConnectionHandlers;
+}
+
+/** A fake `RoomConnection` whose server clock reads `serverTime`. */
+export function fakeConnection(serverTime = 0): FakeConnection {
+  let registered: ConnectionHandlers | null = null;
+  const fake: FakeConnection = {
+    connects: [],
+    sent: [],
+    retries: 0,
+    openConnection(handlers) {
+      registered = handlers;
+      const connection: RoomConnection = {
+        connect: (code, token) => fake.connects.push({ code, token }),
+        send: (msg) => fake.sent.push(msg),
+        retry: () => {
+          fake.retries += 1;
+        },
+        close: () => {},
+        serverNow: () => serverTime,
+      };
+      return connection;
+    },
+    receive: (msg) => fake.handlers().onMessage(msg),
+    handlers() {
+      if (registered === null) throw new Error('The store has not opened the connection');
+      return registered;
+    },
+  };
+  return fake;
+}
+
+/** In-memory storage with the browser's semantics. */
+export function fakeStorage(initial: Record<string, string> = {}): KeyValueStorage & { entries: Map<string, string> } {
+  const entries = new Map(Object.entries(initial));
+  return {
+    entries,
+    get: (key) => entries.get(key) ?? null,
+    set: (key, value) => {
+      entries.set(key, value);
+    },
+    remove: (key) => {
+      entries.delete(key);
     },
   };
 }
