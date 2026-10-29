@@ -1,0 +1,41 @@
+/* Rule chips (LOBBY-01 AC 6). */
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: calc(var(--space-sm) * -0.5) calc(var(--space-sm) * -0.5) 0;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  margin: calc(var(--space-sm) * 0.5);
+  padding: var(--space-sm) var(--space-md) var(--space-sm) 0.75rem;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-high);
+  color: var(--color-on-surface);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-bold);
+  white-space: nowrap;
+}
+
+.chip__icon {
+  display: inline-flex;
+  margin-right: var(--space-sm);
+  font-size: 1.25em;
+}
+
+.chip__icon--action {
+  color: var(--color-action);
+}
+
+.chip__icon--secondary {
+  color: var(--color-secondary);
+}
+
+.chip__icon--valid {
+  color: var(--color-valid);
+}
+
+.chip__icon--plain {
+  color: var(--color-on-surface-variant);
+}

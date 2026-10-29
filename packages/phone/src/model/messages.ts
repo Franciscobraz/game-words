@@ -31,6 +31,34 @@ const CLOSE_KEYS: Record<CloseReason, StringKey> = {
   replaced: 'replaced',
 };
 
+/** Where the join screen shows an error: below the nickname, below the colors, or above "ENTRAR". */
+export type JoinErrorPlace = 'nickname' | 'color' | 'form';
+
+/**
+ * The place of each error on the join screen (JOIN-01 AC 6-10). Codes the join
+ * screen never gets go above "ENTRAR", so nothing is lost if one arrives.
+ */
+const JOIN_ERROR_PLACES: Record<ErrorCode, JoinErrorPlace> = {
+  'bad-message': 'form',
+  'wrong-phase': 'form',
+  'not-host': 'form',
+  'bad-token': 'form',
+  'room-not-found': 'form',
+  'bad-nickname': 'nickname',
+  'nickname-taken': 'nickname',
+  'bad-color': 'color',
+  'color-illegible': 'color',
+  'color-too-similar': 'color',
+  'room-full': 'form',
+  'bad-settings': 'form',
+  'bad-target': 'form',
+};
+
+/** Where the join screen shows `code` (JOIN-01 AC 6-10). */
+export function joinErrorPlace(code: ErrorCode): JoinErrorPlace {
+  return JOIN_ERROR_PLACES[code];
+}
+
 /** The string key for a server error code (JOIN-01 AC 6-10, UI-01 AC 5). */
 export function errorKey(code: ErrorCode): StringKey {
   return ERROR_KEYS[code];

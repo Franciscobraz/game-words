@@ -1,0 +1,38 @@
+/* Three blinking dots (opacity only, UI-01 AC 4). */
+.waiting-dots {
+  display: inline-flex;
+  align-items: center;
+}
+
+.waiting-dots__dot {
+  width: 8px;
+  height: 8px;
+  margin: 0 3px;
+  border-radius: var(--radius-full);
+  animation: waiting-dots-blink 1.2s infinite ease-in-out;
+}
+
+.waiting-dots__dot--action {
+  background: var(--color-primary);
+}
+
+.waiting-dots__dot--secondary {
+  background: var(--color-secondary);
+  animation-delay: 0.2s;
+}
+
+.waiting-dots__dot--valid {
+  background: var(--color-tertiary);
+  animation-delay: 0.4s;
+}
+
+@keyframes waiting-dots-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+}

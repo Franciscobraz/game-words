@@ -1,7 +1,7 @@
 import { CLOSE_REASONS, type CloseReason, ERROR_CODES, type ErrorCode } from '@bwords/core';
 import { describe, expect, test } from 'vitest';
 import { STRINGS, type StringKey } from '../strings/pt-BR.ts';
-import { closeKey, errorKey } from './messages.ts';
+import { closeKey, errorKey, type JoinErrorPlace, joinErrorPlace } from './messages.ts';
 
 /** The text of a key, with `name` filled in when the text takes a value. */
 function textOf(key: StringKey, name = 'Ana'): string {
@@ -58,4 +58,26 @@ test('has a string for every error code and close reason', () => {
     expect(Object.hasOwn(STRINGS, key)).toBe(true);
     expect(textOf(key).trim()).not.toBe('');
   }
+});
+
+const JOIN_ERROR_PLACES: Record<ErrorCode, JoinErrorPlace> = {
+  'bad-message': 'form',
+  'wrong-phase': 'form',
+  'not-host': 'form',
+  'bad-token': 'form',
+  'room-not-found': 'form',
+  'bad-nickname': 'nickname',
+  'nickname-taken': 'nickname',
+  'bad-color': 'color',
+  'color-illegible': 'color',
+  'color-too-similar': 'color',
+  'room-full': 'form',
+  'bad-settings': 'form',
+  'bad-target': 'form',
+};
+
+describe('joinErrorPlace', () => {
+  test.each(ERROR_CODES)('places %s on the join screen', (code) => {
+    expect(joinErrorPlace(code)).toBe(JOIN_ERROR_PLACES[code]);
+  });
 });

@@ -36,6 +36,16 @@ export function closestColorOwner(color: string, players: readonly Pick<PlayerIn
   return closest?.nickname ?? null;
 }
 
+/**
+ * The slot that shows `color` as picked: its palette slot, or the custom slot for
+ * any other color; -1 when nothing is picked (JOIN-01 AC 2, 4).
+ */
+export function selectedSlot(slots: readonly ColorSlot[], color: string | null): number {
+  if (color === null) return -1;
+  const index = slots.findIndex((slot) => slot.kind !== 'custom' && sameColor(slot.color, color));
+  return index === -1 ? slots.findIndex((slot) => slot.kind === 'custom') : index;
+}
+
 function paletteSlot(color: string, players: readonly PlayerInfo[], me: PlayerInfo | null): ColorSlot {
   if (me !== null && sameColor(color, me.color)) return { kind: 'mine', color };
   const owner = players.find((p) => sameColor(p.color, color));

@@ -5,6 +5,7 @@ import { type Screen, screenFor } from './model/screen.ts';
 import { CodeEntryScreen } from './screens/CodeEntryScreen.tsx';
 import { ConnectingScreen } from './screens/ConnectingScreen.tsx';
 import { JoinScreen } from './screens/JoinScreen.tsx';
+import { LobbyScreen } from './screens/LobbyScreen.tsx';
 import { useStore } from './state/store.ts';
 
 /** How often the app reads the server clock, so the board replaces the countdown on time (COUNT-01 AC 2). */
@@ -18,7 +19,7 @@ const SCREENS: Record<Screen, ComponentType> = {
   'code-entry': CodeEntryScreen,
   connecting: ConnectingScreen,
   join: JoinScreen,
-  lobby: ConnectingScreen,
+  lobby: LobbyScreen,
   'host-lobby': ConnectingScreen,
   countdown: ConnectingScreen,
   board: ConnectingScreen,

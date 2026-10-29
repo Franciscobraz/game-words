@@ -22,8 +22,12 @@ export const STRINGS = {
   // Nickname and color (JOIN-01)
   nicknameLabel: 'Seu Apelido',
   nicknameCounter: (length: number) => `${length}/${NICKNAME_MAX}`,
+  chooseColor: 'Escolha sua cor no jogo',
+  colorOption: (position: number) => `Cor ${position}`,
+  youLabel: 'Você',
   customColor: 'Personalizada',
   tvPreview: 'Como você aparecerá na TV',
+  matchRules: 'Regras Desta Partida',
   join: 'ENTRAR',
   nicknameLength: `O apelido precisa ter de ${NICKNAME_MIN} a ${NICKNAME_MAX} caracteres`,
   nicknameTaken: 'Esse apelido já está em uso',
@@ -34,6 +38,7 @@ export const STRINGS = {
   badToken: 'Sua vaga nesta sala expirou. Entre de novo.',
 
   // Lobby (LOBBY-01, AD-013)
+  playersTitle: 'Jogadores',
   youTag: 'VOCÊ',
   hostTag: 'ANFITRIÃO(Ã)',
   disconnectedTag: 'DESCONECTADO',

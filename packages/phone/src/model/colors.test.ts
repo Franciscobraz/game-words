@@ -1,6 +1,6 @@
 import { PALETTE, type PlayerInfo } from '@bwords/core';
 import { describe, expect, test } from 'vitest';
-import { closestColorOwner, colorSlots } from './colors.ts';
+import { closestColorOwner, colorSlots, selectedSlot } from './colors.ts';
 
 /** A connected player in the lobby with `color`. */
 function player(id: string, nickname: string, color: string): PlayerInfo {
@@ -71,5 +71,23 @@ describe('closestColorOwner', () => {
 
   test('has nobody to name in an empty room', () => {
     expect(closestColorOwner('#FA8E05', [])).toBeNull();
+  });
+});
+
+describe('selectedSlot', () => {
+  test('finds the palette slot of a palette color, ignoring case', () => {
+    const slots = colorSlots(PALETTE, [], null);
+
+    expect(selectedSlot(slots, CYAN.toLowerCase())).toBe(4);
+  });
+
+  test('picks the custom slot for any other color', () => {
+    const slots = colorSlots(PALETTE, [], null);
+
+    expect(selectedSlot(slots, '#FA8D02')).toBe(10);
+  });
+
+  test('picks nothing before a color is chosen', () => {
+    expect(selectedSlot(colorSlots(PALETTE, [], null), null)).toBe(-1);
   });
 });

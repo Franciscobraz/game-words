@@ -1,0 +1,84 @@
+/* Color row that scrolls sideways (JOIN-01 AC 2-3). */
+.color-picker {
+  display: flex;
+  margin: 0 calc(var(--space-md) * -1);
+  padding: var(--space-sm) var(--space-md);
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: none;
+}
+
+.color-picker__item {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  width: 60px;
+}
+
+.color-picker__item + .color-picker__item {
+  margin-left: var(--space-xs);
+}
+
+.color-picker__swatch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-full);
+  font-size: 1.75rem;
+  cursor: pointer;
+}
+
+.color-picker__swatch .icon {
+  color: var(--color-background);
+}
+
+.color-picker__swatch--selected {
+  box-shadow:
+    0 0 0 3px var(--color-background),
+    0 0 0 6px currentColor;
+}
+
+.color-picker__swatch--locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.color-picker__swatch--custom {
+  background: var(--color-surface-container-highest);
+}
+
+.color-picker__swatch--custom .icon {
+  color: var(--color-on-surface);
+}
+
+.color-picker__swatch--custom.color-picker__swatch--selected .icon {
+  color: var(--color-background);
+}
+
+.color-picker__system {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.color-picker__caption {
+  min-height: 1.25em;
+  margin-top: var(--space-sm);
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+  white-space: nowrap;
+}

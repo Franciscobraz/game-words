@@ -344,10 +344,10 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] Tela igual a `.specs/features/m3-phone/captures/phone-join.png`, foto em `phone-join.running.png`
-- [ ] C1, C6, C8, C11, C13, C14, C15, C16, C17, C18 passam
-- [ ] Gate check passes: full
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Tela igual a `.specs/features/m3-phone/captures/phone-join.png`, foto em `phone-join.running.png`
+- [x] C1, C6, C8, C11, C13, C14, C15, C16, C17, C18 passam
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: e2e
 **Gate**: full

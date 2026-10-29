@@ -1,0 +1,28 @@
+/* The player's circle with the initial (AD-004). */
+.player-avatar {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  color: var(--color-background);
+  font-weight: var(--font-weight-black);
+}
+
+.player-avatar--small {
+  width: 44px;
+  height: 44px;
+  font-size: 1.125rem;
+}
+
+.player-avatar--medium {
+  width: 48px;
+  height: 48px;
+  font-size: 1.5rem;
+}
+
+.player-avatar--large {
+  width: 56px;
+  height: 56px;
+  font-size: 1.75rem;
+}
