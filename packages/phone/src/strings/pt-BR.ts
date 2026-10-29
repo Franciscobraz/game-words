@@ -1,0 +1,139 @@
+import { MAX_PLAYERS, NICKNAME_MAX, NICKNAME_MIN } from '@bwords/core';
+
+/**
+ * Every text the phone shows, in pt-BR (UI-01 AC 5, AD-001). The protocol only
+ * carries codes; `model/messages.ts` maps them to keys of this table. Texts with
+ * values are functions of those values. Gender-neutral forms follow AD-013.
+ */
+export const STRINGS = {
+  // Entry (ENTRY-01)
+  enterRoom: 'Entrar numa sala',
+  continue: 'CONTINUAR',
+  roomNotFound: 'Sala não encontrada',
+  roomTag: (code: string) => `SALA ${code}`,
+
+  // Nickname and color (JOIN-01)
+  nicknameLabel: 'Seu Apelido',
+  nicknameCounter: (length: number) => `${length}/${NICKNAME_MAX}`,
+  customColor: 'Personalizada',
+  tvPreview: 'Como você aparecerá na TV',
+  join: 'ENTRAR',
+  nicknameLength: `O apelido precisa ter de ${NICKNAME_MIN} a ${NICKNAME_MAX} caracteres`,
+  nicknameTaken: 'Esse apelido já está em uso',
+  colorTooSimilar: (nickname: string) => `Muito parecida com a cor de ${nickname}`,
+  colorIllegible: 'Essa cor fica difícil de ver na TV',
+  badColor: 'Essa cor não é válida',
+  roomFull: `Essa sala está cheia (${MAX_PLAYERS} jogadores)`,
+  badToken: 'Sua vaga nesta sala expirou. Entre de novo.',
+
+  // Lobby (LOBBY-01, AD-013)
+  youTag: 'VOCÊ',
+  hostTag: 'ANFITRIÃO(Ã)',
+  disconnectedTag: 'DESCONECTADO',
+  spectatorTag: 'ESPECTADOR(A)',
+  boardChip: (size: number) => `Tabuleiro ${size}x${size}`,
+  timeChip: (clock: string) => `${clock} min`,
+  roundsChip: (rounds: number) => `${rounds} Rodadas`,
+  minLengthChip: (minLength: number) => `Mín. ${minLength} letras`,
+  playersInRoom: (count: number) => `${count} na sala`,
+  waitingForHostToStart: (host: string) => `Aguardando ${host} iniciar a partida`,
+
+  // Host lobby (HOST-01)
+  youAreHost: 'VOCÊ É O(A) ANFITRIÃO(Ã)',
+  roundTime: 'Tempo da Rodada',
+  rounds: 'Rodadas',
+  minLetters: 'MÍN. LETRAS',
+  filterProfanity: 'Filtrar palavrões',
+  fastMode: 'Fast mode',
+  tvVolume: 'Volume da TV',
+  dictionary: 'Dicionário',
+  dictionaryPtBr: 'Português (BR)',
+  makeHost: 'Tornar anfitrião',
+  removeFromRoom: 'Remover da sala',
+  cancel: 'Cancelar',
+  confirmKick: (nickname: string) => `Remover ${nickname}? Ele perde os pontos.`,
+  startMatch: 'INICIAR PARTIDA',
+  closeRoom: 'Encerrar sala',
+  notHost: 'Só o(a) anfitrião(ã) pode fazer isso',
+  badSettings: 'Essa configuração não é válida',
+  badTarget: 'Esse jogador não está mais na sala',
+
+  // Countdown (COUNT-01)
+  roundOfUpper: (round: number, total: number) => `RODADA ${round} DE ${total}`,
+  getReady: 'Prepare o dedo!',
+
+  // Board (PLAY-01)
+  validWord: (points: number) => `VÁLIDA (+${points} PTS)`,
+  alreadyFound: 'JÁ ENCONTRADA',
+  invalidWord: 'INVÁLIDA',
+  tooShort: 'MUITO CURTA',
+  foundWords: 'PALAVRAS ENCONTRADAS',
+  roundShort: (round: number, total: number) => `Rodada ${round}/${total}`,
+  roundTally: (words: number, points: number) => `${words} pal · ${points} pts`,
+  foundTotal: (count: number) => `${count} no total`,
+  timeUp: 'Tempo!',
+  wrongPhase: 'Essa ação não vale nesta fase',
+
+  // Host during the round (HOSTPLAY-01)
+  backToLobby: 'Voltar ao lobby',
+  confirmCancelRound: 'Cancelar a rodada? O placar será zerado.',
+
+  // Spectator (SPEC-01)
+  joinsNextRound: 'Você entra na próxima rodada.',
+  watching: 'Assistindo',
+  playersInRoomTitle: 'JOGADORES NA SALA',
+
+  // Round result (RES-01)
+  roundResultTitle: (round: number, total: number) => `Rodada ${round} de ${total} • RESULTADO`,
+  lookAtTv: 'OLHE PARA A TV',
+  ordinal: (position: number) => `${position}º`,
+  yourPlace: (position: number) => `Você está em ${position}º lugar`,
+  myFoundWords: (count: number) => `MINHAS PALAVRAS ENCONTRADAS (${count})`,
+  uniqueBonus: (points: number) => `ÚNICA ×2 (+${points} pts)`,
+  basePoints: (points: number) => `base +${points}`,
+  shared: 'em comum',
+  quickScoreboard: 'PLACAR RÁPIDO DA MESA',
+  spectatorShort: 'Esp.',
+  nextRound: (round: number, total: number) => `PRÓXIMA RODADA (${round} DE ${total})`,
+  seePodium: 'VER PÓDIO',
+  backToLobbyTitle: 'Voltar ao Lobby',
+  confirmCancelMatch: 'Cancelar a partida? O placar será zerado.',
+  waitingForHostToAdvance: (host: string) => `Aguardando ${host} avançar…`,
+  playsNextRound: 'Você joga na próxima rodada!',
+
+  // Podium (POD-01)
+  yourFinalPlace: (position: number) => `Você ficou em ${position}º Lugar!`,
+  totalScore: 'PONTUAÇÃO TOTAL',
+  inSession: 'NA SESSÃO',
+  yourPerformance: 'SEU RENDIMENTO',
+  longestWord: 'MAIOR PALAVRA ENCONTRADA',
+  tableRanking: 'CLASSIFICAÇÃO DA MESA',
+  spectatorLong: 'Espectador(a)',
+  playAgain: 'JOGAR DE NOVO',
+  closeRoomUpper: 'ENCERRAR SALA',
+  waitingForHostToDecide: (host: string) => `Aguardando ${host} decidir…`,
+  playsNextMatch: 'Você joga na próxima partida',
+
+  // Leaving the room (EXIT-01)
+  kicked: 'Você foi removido da sala',
+  enterAnotherRoom: 'ENTRAR EM OUTRA SALA',
+  hostClosedRoom: (host: string) => `${host} encerrou a sala`,
+  thanksForPlaying: 'Obrigado por jogar!',
+  roomClosed: 'A sala foi encerrada',
+  replaced: 'Você abriu o jogo em outra aba ou aparelho',
+  badMessage: 'Algo deu errado. Tente de novo.',
+
+  // Reconnection (RECON-01)
+  reconnecting: 'Reconectando…',
+  connected: 'Conectado',
+  offline: 'Sem conexão',
+  tryAgain: 'Tentar de novo',
+
+  // Preferences (PREF-01)
+  vibrate: 'Vibrar',
+  hitSound: 'Som ao acertar',
+  close: 'Fechar',
+} as const;
+
+/** A key of the pt-BR table. */
+export type StringKey = keyof typeof STRINGS;

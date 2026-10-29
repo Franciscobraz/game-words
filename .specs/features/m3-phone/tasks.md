@@ -136,10 +136,10 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] Um caso por `ErrorCode` e por `CloseReason` (L-007)
-- [ ] C107, C96 passam
-- [ ] Gate check passes: `npx vitest run packages/phone`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Um caso por `ErrorCode` e por `CloseReason` (L-007)
+- [x] C107, C96 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick
