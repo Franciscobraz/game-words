@@ -140,5 +140,5 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 - **Branch:** `main`. `origin/main` está em `9265abe`; os commits depois disso (regras, tasks, tema, fases 1-3) não foram enviados. Push só com pedido.
 - **Próximo passo:** despachar um subagente para o resto da fase 3 (T44, T15-T19), conferir commits, testes e fotos (`phone-join` refeita, `phone-host-lobby`, `phone-host-actions`, `phone-kicked`, `phone-room-closed`), mostrar ao user e perguntar antes da fase 4.
 - **Modo de execução preferido pelo usuário:** subagentes, uma fase por vez, parando para mostrar o resultado e perguntar antes da próxima fase.
-- **Pendências conhecidas:** o resto da fase 3. Default da T43 a confirmar com o user: depois de `room-not-found` a conexão fica `closed`, e "CONTINUAR" abre um socket novo.
+- **Pendências conhecidas:** o resto da fase 3. Default da T43 aceito pelo user ("Aceito como está."): depois de `room-not-found` a conexão fica `closed`, e "CONTINUAR" abre um socket novo.
 - **Ambiente Windows:** os scripts da skill precisam de `PYTHONUTF8=1`; `check_proofs.py` também precisa de `PYTHONPATH` apontando para uma pasta com um `sitecustomize.py` que mapeia `signal.SIGHUP` para `SIGTERM` e resolve launchers `.cmd` (como o `npx`) via `shutil.which`. Recriar no scratchpad da sessão se sumir.
