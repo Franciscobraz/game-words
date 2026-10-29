@@ -207,3 +207,18 @@ test('returns straight to the current phase with a saved token', async ({ page }
     room.close();
   }
 });
+
+test('names the host in the action color in the waiting line', async ({ page }) => {
+  // ENTRY-01 AC 1, phone-join.png: "Aguardando Ana iniciar a partida…" with Ana in orange.
+  const room = await roomWithAna();
+  try {
+    await page.goto(`/${room.tv.code}`);
+    const waiting = page.locator('.join__waiting');
+
+    await expect(waiting).toHaveText(`${STRINGS.waitingBeforeHost} Ana ${STRINGS.waitingAfterHost}`);
+    await expect(waiting).toHaveText('Aguardando Ana iniciar a partida…');
+    await expect(waiting.getByText('Ana', { exact: true })).toHaveCSS('color', 'rgb(255, 122, 0)');
+  } finally {
+    room.close();
+  }
+});

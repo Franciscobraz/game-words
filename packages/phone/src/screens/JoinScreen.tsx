@@ -85,7 +85,9 @@ export function JoinScreen() {
       {host !== null && (
         <p class="card join__waiting">
           <WaitingDots />
-          {STRINGS.waitingForHostToStart(host.nickname)}
+          <span>
+            {STRINGS.waitingBeforeHost} <strong class="join__host">{host.nickname}</strong> {STRINGS.waitingAfterHost}
+          </span>
         </p>
       )}
 

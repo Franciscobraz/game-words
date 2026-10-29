@@ -125,6 +125,11 @@
   font-size: var(--font-size-body);
 }
 
+.join__host {
+  color: var(--color-action);
+  font-weight: inherit;
+}
+
 .join__waiting .waiting-dots {
   margin-right: var(--space-md);
 }

@@ -29,6 +29,9 @@ export const STRINGS = {
   tvPreview: 'Como você aparecerá na TV',
   matchRules: 'Regras Desta Partida',
   join: 'ENTRAR',
+  // "Aguardando <anfitrião> iniciar a partida…", with the host's name highlighted between the two parts (phone-join.png).
+  waitingBeforeHost: 'Aguardando',
+  waitingAfterHost: 'iniciar a partida…',
   nicknameLength: `O apelido precisa ter de ${NICKNAME_MIN} a ${NICKNAME_MAX} caracteres`,
   nicknameTaken: 'Esse apelido já está em uso',
   colorTooSimilar: (nickname: string) => `Muito parecida com a cor de ${nickname}`,
