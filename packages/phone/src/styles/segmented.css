@@ -1,0 +1,24 @@
+/* Segmented choice (HOST-01 AC 2, 6). */
+.segmented {
+  display: flex;
+  padding: var(--space-xs);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container-lowest);
+}
+
+.segmented__option {
+  flex: 1;
+  min-height: var(--touch-target);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-black);
+  cursor: pointer;
+}
+
+.segmented__option--selected {
+  background: var(--color-action);
+  color: var(--color-on-action);
+}

@@ -30,6 +30,8 @@ export interface TvRoom {
 export interface NodePlayer {
   id: string;
   send(msg: ClientMessage): void;
+  /** Waits for the first message, past or future, that matches. */
+  waitFor<T extends ServerMessage>(match: (msg: ServerMessage) => msg is T): Promise<T>;
   /** Drops the connection without leaving the room. */
   close(): void;
 }
@@ -51,7 +53,7 @@ export async function joinPlayer(code: string, nickname: string, color: string):
   await socket.waitFor(isType('welcome'));
   socket.send({ type: 'join', nickname, color });
   const joined = await socket.waitFor(isType('joined'));
-  return { id: joined.playerId, send: (msg) => socket.send(msg), close: () => socket.close() };
+  return { id: joined.playerId, send: (msg) => socket.send(msg), waitFor: socket.waitFor, close: () => socket.close() };
 }
 
 /** A type guard for server messages of one type. */

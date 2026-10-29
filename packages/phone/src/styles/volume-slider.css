@@ -1,0 +1,61 @@
+/* "Volume da TV" (HOST-01 AC 8). */
+.volume-slider {
+  margin-top: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container-high);
+}
+
+.volume-slider__row {
+  display: flex;
+  align-items: center;
+}
+
+.volume-slider__icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-container-highest);
+  color: var(--color-on-surface-variant);
+  font-size: 1.375rem;
+}
+
+.volume-slider__label {
+  flex: 1;
+  min-width: 0;
+  margin: 0 var(--space-sm) 0 var(--space-md);
+  color: var(--color-on-surface);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-bold);
+}
+
+.volume-slider__mute {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-target);
+  height: var(--touch-target);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-container-highest);
+  color: var(--color-on-surface-variant);
+  font-size: 1.375rem;
+  cursor: pointer;
+}
+
+.volume-slider__mute[aria-pressed='true'] {
+  color: var(--color-action);
+}
+
+.volume-slider__range {
+  width: 100%;
+  height: var(--touch-target);
+  margin: 0;
+  accent-color: var(--color-action);
+  cursor: pointer;
+}

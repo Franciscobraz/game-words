@@ -1,0 +1,78 @@
+/* Host lobby (HOST-01, phone-host-lobby.png). */
+.host-lobby {
+  padding-top: var(--space-xs);
+  padding-bottom: 0;
+}
+
+.host-lobby__badge {
+  display: flex;
+  align-items: center;
+  align-self: center;
+  margin: var(--space-md) 0 0;
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid var(--color-inverse-primary);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-action) 15%, transparent);
+  color: var(--color-action);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-black);
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.host-lobby__badge .icon {
+  flex: none;
+  margin-right: var(--space-sm);
+  font-size: 1.25em;
+}
+
+.host-lobby__title {
+  display: flex;
+  align-items: center;
+  margin: var(--space-lg) 0 0;
+  color: var(--color-on-surface);
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-black);
+}
+
+.host-lobby__title .icon {
+  margin-right: var(--space-sm);
+  color: var(--color-action);
+}
+
+.host-lobby__players-head {
+  display: flex;
+  align-items: center;
+  margin-top: var(--space-xl);
+}
+
+.host-lobby__players-title {
+  margin: 0 var(--space-sm) 0 0;
+  color: var(--color-on-surface);
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-black);
+}
+
+.host-lobby__count {
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-high);
+  color: var(--color-primary);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-black);
+}
+
+.host-lobby__players {
+  margin: var(--space-xs) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The start button stays at the bottom of the screen while the settings scroll by. */
+.host-lobby__start {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+  padding: var(--space-xl) 0 var(--space-md);
+  background: linear-gradient(to bottom, transparent, var(--color-background) 40%);
+}

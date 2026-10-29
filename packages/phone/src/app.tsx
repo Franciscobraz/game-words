@@ -4,6 +4,7 @@ import { useEffect } from 'preact/hooks';
 import { type Screen, screenFor } from './model/screen.ts';
 import { CodeEntryScreen } from './screens/CodeEntryScreen.tsx';
 import { ConnectingScreen } from './screens/ConnectingScreen.tsx';
+import { HostLobbyScreen } from './screens/HostLobbyScreen.tsx';
 import { JoinScreen } from './screens/JoinScreen.tsx';
 import { LobbyScreen } from './screens/LobbyScreen.tsx';
 import { useStore } from './state/store.ts';
@@ -20,7 +21,7 @@ const SCREENS: Record<Screen, ComponentType> = {
   connecting: ConnectingScreen,
   join: JoinScreen,
   lobby: LobbyScreen,
-  'host-lobby': ConnectingScreen,
+  'host-lobby': HostLobbyScreen,
   countdown: ConnectingScreen,
   board: ConnectingScreen,
   spectator: ConnectingScreen,

@@ -57,9 +57,17 @@ export const STRINGS = {
 
   // Host lobby (HOST-01)
   youAreHost: 'VOCÊ É O(A) ANFITRIÃO(Ã)',
+  hostMatchRules: 'Regras da Partida',
+  boardLabel: 'TABULEIRO',
+  boardSizeOption: (size: number) => `${size}×${size}`,
+  decrease: (setting: string) => `Diminuir ${setting}`,
+  increase: (setting: string) => `Aumentar ${setting}`,
+  fastModeHint: 'Resultados rápidos, sem revelar palavra por palavra',
+  muteTv: 'Silenciar a TV',
   roundTime: 'Tempo da Rodada',
   rounds: 'Rodadas',
   minLetters: 'MÍN. LETRAS',
+  minLettersOption: (minLength: number) => `${minLength}`,
   filterProfanity: 'Filtrar palavrões',
   fastMode: 'Fast mode',
   tvVolume: 'Volume da TV',
