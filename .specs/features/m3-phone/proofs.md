@@ -1,8 +1,8 @@
 # m3-phone proofs
 
-**HEAD**: 5c3cff3
+**HEAD**: a2984ce
 **Tree**: clean
-**Result**: 117 pass, 12 fail; mutations 0 killed, 0 not
+**Result**: 119 pass, 12 fail; mutations 0 killed, 0 not
 
 | Check | Proof | Ran | Passed | Result |
 | --- | --- | --- | --- | --- |
@@ -129,6 +129,8 @@
 | C121 | `walk - o sub-agente de telas abre cada tela com capture a 320 e 480 px e compara composição e ordem com a capt` | - | - | pass (Walked) |
 | C122 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/layout.spec.ts -g "scales propor` | 1 | - | pass |
 | C123 | `npx vitest run packages/phone/src/net/room-connection.test.ts -t "stops reconnecting after room-not-found"` | 1 | 1 | pass |
+| C124 | `npx vitest run packages/core/src/room/round.test.ts -t "tells every connection that the former spectator plays` | 1 | 1 | pass |
+| C125 | `npx vitest run packages/phone/src/strings/pt-BR.test.ts -t "says rounds in the singular for one round"` | 1 | 1 | pass |
 | C118 | `walk - cada foto em captures/uncaptured/ com a resposta do user em ## Handoff` | - | - | pass (Walked) |
 | Build | `npx tsc -b` | - | - | pass |
 | Build | `npm run lint -w @bwords/phone` | - | - | pass |
