@@ -179,7 +179,7 @@ Uma tela por arquivo. Cada tela lê os signals e as ações do store e repassa p
 
 Peças sem rede nem store, só props e callbacks (style guide §5):
 
-`TopBar` (etiqueta da sala, ícone de preferências, menu ⋮), `RoomTag`, `PlayerAvatar` (círculo com a inicial), `PlayerRow`, `Chip`, `Tile`, `BoardGrid` (peças + linha do caminho em SVG), `WordRack` (palavra em formação), `FeedbackPill`, `FoundWords`, `Stepper`, `Segmented`, `Toggle`, `VolumeSlider`, `ColorPicker`, `Sheet`, `ConfirmDialog`, `ReconnectBanner`, `PrimaryButton`, `SecondaryButton`, `Confetti`, `icons.tsx` (ícones em SVG inline).
+`TopBar` (etiqueta da sala, ícone de preferências, menu ⋮), `RoomTag`, `PlayerAvatar` (círculo com a inicial), `PlayerRow`, `Chip`, `Tile`, `BoardGrid` (peças + linha do caminho em SVG; lado = o maior quadrado que cabe no espaço livre), `WordRack` (palavra em formação), `FeedbackPill`, `FoundWords`, `Stepper`, `Segmented`, `Toggle`, `VolumeSlider`, `ColorPicker`, `Sheet`, `ConfirmDialog`, `ReconnectBanner`, `PrimaryButton`, `SecondaryButton`, `Confetti`, `icons.tsx` (ícones em SVG inline).
 
 ### device/
 
@@ -296,6 +296,7 @@ interface Prefs {
 | Gestos | Pointer events no elemento do tabuleiro, com `setPointerCapture` e `touch-action: none` | Funciona com dedo e mouse (Playwright) e evita rolar a tela (PLAY-01 AC 16) |
 | Linha do caminho | SVG sobre as peças, coordenadas em fração do tabuleiro | Desenha diagonais sem cálculo de layout no DOM |
 | Fonte e ícones | `@fontsource/nunito-sans` empacotado; ícones em SVG inline | Sem CDN; o DESIGN pede fonte embutida |
+| Responsividade (AD-016) | Layout fluido de 320 a 480 px de largura e 568 a 932 px de altura; containers só com `%`, `flex`, `vw`/`vh`, `clamp()` e `min()`; o `BoardGrid` mede o espaço livre com `ResizeObserver` e usa o maior quadrado que cabe; tipografia com `clamp()` | 390 px é só o tamanho das captures; os celulares variam |
 | Porta do Vite do celular | 5175, com proxy de `/api` para 8787 | 5173 é o `play` e 5174 o `debug` |
 | Lint | `eslint` 9 + `eslint-config-preact` + `typescript-eslint`, script `lint` no pacote | AD-015 |
 | E2E | Playwright com viewport 390×844 e `hasTouch`; a TV é um helper Node que cria a sala e mantém o socket da TV aberto | Testar o celular não depende de dirigir a página de debug |

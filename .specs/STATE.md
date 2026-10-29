@@ -110,6 +110,14 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 - **Motivo:** Signals atualizam só os componentes que leem o dado alterado, o que ajuda celulares e TVs mais fracos. O `eslint-config-preact` é a configuração mantida pelo time do Preact, com as regras de hooks.
 - user: "ok vamos começar o design, pode definir o eslint-config-preact  no /phone utilize o Preact Signals."
 
+### AD-016 - Responsividade acima da largura das captures (active)
+
+- **Data:** 2026-10-29
+- **Decisão:** as captures são conferidas a 390 px, mas o front-end é fluido: funciona de 320 a 480 px de largura e de 568 a 932 px de altura, sem largura fixa em containers (só `%`, `flex`, `vw`/`vh`, `clamp()` e `min()`; px apenas em detalhes de até 64 px, como ícones, bordas e o alvo mínimo de 48 px). O tabuleiro se ajusta ao menor lado disponível e sempre cabe na tela sem rolagem. A comparação com a capture julga composição e proporção nas outras larguras, não pixels.
+- **Motivo:** 390 px é só o tamanho em que as captures foram desenhadas; os celulares dos jogadores variam.
+- user: "Nessas telas tenha cuidado com a resolução fixa em 390px, para os testes pode ser adotado esse padrão mas para o resultado final a Responsividade é adaptabilidade do front-end deve ser prioridade."
+- Complemento (2026-10-29): celular deitado e tablets não têm layout próprio. Fora da faixa de retrato, a tela só ocupa o espaço proporcionalmente; objetos grandes e rolagem vertical são aceitos. user: "não, a aplicação não deve da suporte a celular deitado e ou tablets, via apenas ocupar o espaço proporcionalmente, provavelmente ficara com objetos bem grande e barra de rolagem vertical mas tudo bem."
+
 ## Handoff
 
 - **Data:** 2026-10-27

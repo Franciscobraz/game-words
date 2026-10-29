@@ -4,6 +4,8 @@
 
 **Amended**: 2026-10-29 - RECON-01 AC 4 e o default "Tempo até 'Sem conexão'": 15 s viraram 30 s; user: "a desconeção pode ter um tempo maior para ser exibida, pode ser 30s em vez de 15s"
 
+**Amended**: 2026-10-29 - UI-01 AC 1 (larguras de 320 a 480 px) e AC 8-10 (layout fluido, tabuleiro que cabe na altura, captures julgadas por composição fora de 390 px), AD-016; user: "Nessas telas tenha cuidado com a resolução fixa em 390px, para os testes pode ser adotado esse padrão mas para o resultado final a Responsividade é adaptabilidade do front-end deve ser prioridade."
+
 ## Problem Statement
 
 O M2 deixou a sala pronta no servidor, mas só a página de debug fala com ela. O jogador ainda não tem como entrar numa sala, escolher apelido e cor, jogar deslizando o dedo pelas letras nem acompanhar o resultado no celular. O M3 constrói o controle do celular como cliente do protocolo do M2, seguindo as telas desenhadas no Stitch.
@@ -12,7 +14,7 @@ O M2 deixou a sala pronta no servidor, mas só a página de debug fala com ela. 
 
 - [ ] Um jogador entra numa sala pelo celular, joga uma partida inteira deslizando o dedo e vê o resultado e o pódio, contra o servidor real (`wrangler dev`) com a página de debug como TV
 - [ ] O anfitrião controla a sala inteira pelo celular: configurações, iniciar, avançar, jogar de novo, voltar ao lobby, remover, transferir e encerrar
-- [ ] Cada tela com capture é fotografada a 390 px de largura e julgada contra ela
+- [ ] Cada tela com capture é fotografada a 390 px de largura e julgada contra ela, e funciona de 320 a 480 px (AD-016)
 - [ ] O feedback de uma palavra aparece em menos de 100 ms depois de soltar o dedo, sem esperar o servidor (hash local, M2-Q5)
 
 ## Out of Scope
@@ -24,7 +26,7 @@ O M2 deixou a sala pronta no servidor, mas só a página de debug fala com ela. 
 | Modo tocar letra por letra e botões "Apagar" / "Enviar Palavra" | AD-009: só deslizar, envio ao soltar |
 | Número de palavras de cada jogador na tela do espectador | AD-011: o servidor manda as contagens só para a TV |
 | Barra de abas, chat, perfil, avatares com foto | AD-002, AD-004; DESIGN §9 |
-| Layout em paisagem e tablets | O controle é usado em retrato (screens.md, base visual) |
+| Layout próprio para celular deitado e tablets | O controle é usado em retrato (screens.md, base visual). Fora da faixa de 320 a 480 px, a tela só ocupa o espaço proporcionalmente, com objetos grandes e rolagem vertical aceitos (AD-016) |
 | Deploy, CI e servir o celular pelo Worker | Marco 5 |
 | Mudanças no protocolo ou no servidor | O M3 é só cliente do protocolo do M2 |
 | Novas rodadas de correção no Stitch | AD-012: as telas atuais são a base; o que diverge está em `## Differences from the source` |
@@ -36,7 +38,7 @@ O M2 deixou a sala pronta no servidor, mas só a página de debug fala com ela. 
 
 | Assumption / decision | Chosen default | Rationale | Confirmed? |
 | --- | --- | --- | --- |
-| AD-002 a AD-013 | Diferenças em relação às telas do Stitch, ver `## Differences from the source` | Respostas do user em 2026-10-29 | y - ver STATE.md |
+| AD-002 a AD-016 | Diferenças em relação às telas do Stitch, ver `## Differences from the source` | Respostas do user em 2026-10-29 | y - ver STATE.md |
 | Onde mora o app | Novo pacote `packages/phone` (Preact + Vite), com proxy de `/api` para o `wrangler dev`, como a página de debug | Mesmo padrão já usado em `tools/debug` | y - user: "Aprovo o spec" |
 | Endereço do celular | `/KBXT` abre direto a entrada da sala KBXT; `/` abre a tela de digitar o código | O QR do M4 aponta para `/<código>`; quem digita o endereço cai no código | y - user: "Aprovo o spec" |
 | Token de volta | Guardado no `localStorage` por código de sala; nunca na URL | DESIGN §2 e protocolo (`hello`) | y - user: "Aprovo o spec" |
@@ -337,15 +339,18 @@ O M2 deixou a sala pronta no servidor, mas só a página de debug fala com ela. 
 
 **Acceptance Criteria**:
 
-1. The celular SHALL funcionar entre 360 px e 430 px de largura em retrato, sem rolagem horizontal da página
+1. WHEN a largura da tela é 320, 360, 390, 430 ou 480 px em retrato THEN o celular SHALL mostrar todo o conteúdo de cada tela sem rolagem horizontal e sem texto cortado
 2. The celular SHALL usar só o tema escuro, com as cores em variáveis CSS (AD-010)
 3. The celular SHALL usar só flexbox e margens no layout, sem CSS Grid e sem `gap`
 4. The celular SHALL animar só `transform` e `opacity`, sem `backdrop-filter` nem `blur`
 5. The celular SHALL tirar todo texto exibido de uma tabela de strings pt-BR; o protocolo só traz códigos (AD-001)
 6. WHILE o jogador está numa sala, the topo de cada tela SHALL mostrar só a etiqueta "SALA <código>", o ícone de preferências e, para o anfitrião, o menu (⋮), sem título de tela nem indicador de conexão (AD-005, AD-006)
 7. The botões SHALL ter pelo menos 48 px de altura
+8. The CSS SHALL dimensionar containers só com unidades relativas (`%`, `flex`, `vw`/`vh`, `clamp()`, `min()`); px só em detalhes de até 64 px (ícones, bordas, avatares, o alvo mínimo de 48 px) (AD-016)
+9. WHILE a rodada está aberta, the tabuleiro SHALL ocupar o maior quadrado que cabe na largura e na altura livres, sem rolagem, de 568 a 932 px de altura
+10. The captures SHALL ser conferidas a 390 px; nas outras larguras, a tela SHALL manter a composição e a ordem da capture, sem exigir os mesmos pixels
 
-**Independent Test**: Fotografar cada tela a 360 e 430 px e conferir que nada sai da largura.
+**Independent Test**: Abrir cada tela em 320, 390 e 480 px de largura e 568 e 932 px de altura e conferir que nada sai da tela e o tabuleiro cabe inteiro.
 
 ---
 
@@ -356,6 +361,7 @@ O M2 deixou a sala pronta no servidor, mas só a página de debug fala com ela. 
 - IF chega `round-results` com envios ainda no debounce THEN o celular SHALL descartá-los (o servidor já fechou a rodada)
 - IF o servidor manda `error` com `wrong-phase` ou `not-host` THEN o celular SHALL ignorá-lo e esperar o próximo estado do servidor
 - WHEN o anfitrião muda as configurações rápido THEN o celular SHALL mostrar o valor do último `settings` do servidor
+- WHILE a tela está fora da faixa de retrato (deitada, tablet ou mais larga que 480 px) the celular SHALL ocupar a largura proporcionalmente, sem rolagem horizontal; rolagem vertical é aceita (AD-016)
 
 ---
 
@@ -376,7 +382,7 @@ O M2 deixou a sala pronta no servidor, mas só a página de debug fala com ela. 
 | EXIT-01 | P1: Saída da sala (AC 1-5) | Design | Pending |
 | RECON-01 | P1: Reconexão (AC 1-4) | Design | Pending |
 | PREF-01 | P2: Preferências e tela acesa (AC 1-4) | Design | Pending |
-| UI-01 | P1: Visual e textos (AC 1-7) | Design | Pending |
+| UI-01 | P1: Visual e textos (AC 1-10) | Design | Pending |
 
 **Coverage:** 14 total, 0 mapped to tasks, 14 unmapped ⚠️ (mapeados na fase Tasks)
 
