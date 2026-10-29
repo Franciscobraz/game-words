@@ -128,16 +128,17 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 
 ## Handoff
 
-- **Data:** 2026-10-27
-- **Marcos concluídos:**
-  - M0 (`m0-dictionary-spike`): Done, verificado.
-  - M1 (`m1-dictionary-pack`): Done, verificado (`validate_verification` 0 erros, 64 provas, 3 mutações mortas).
-  - M2 (`m2-room-server`): Done, verificado (`validate_verification` 0 erros, 95 provas, 3 mutações mortas; Verifier achou 3 problemas, todos fechados).
-- **Branch:** `main`. `origin/main` está em `3cf7261` (push de 2026-10-27, pedido pelo user, com o M2 completo e a página de debug).
-- **Ferramenta de debug:** `npm run debug` sobe o `wrangler dev` (8787) e a página `tools/debug` em http://localhost:5174 (commit `f7bb7e4`). Lista de jogadores atualiza placar e vitórias depois do resultado e do pódio (T32, `27ead32`).
-- **Próximo passo:** especificar o M3 (celular).
-- **Pendências conhecidas:** nenhuma. Resolvidas em 2026-10-27: teste do Playwright do M1 que falhava às vezes (`c877042`) e `lastActionAt` de envio recusado gravado no storage.
+- **Data:** 2026-10-29
+- **Marcos concluídos:** M0, M1 e M2 (Done, verificados).
+- **Marco em andamento:** M3 (`m3-phone`), na fase de Execute. Spec, design e tasks aprovados (com emendas registradas nos arquivos).
+  - Fase 1 (T1-T8): feita, `b3e2638..a0418b6`.
+  - Fase 2 (T9-T14): feita, `49aaa6d..2df4134`; fotos `phone-code`, `phone-join` e `phone-lobby` `.running.png`.
+  - Fase 3 (T43, T44, T15-T19): em andamento quando a sessão foi pausada. O subagente recebeu ordem de terminar a tarefa em que estava e parar. Ao retomar, conferir `git log 2b19d53..HEAD` e `git status`: as tarefas com commit estão marcadas `[x]` no `tasks.md`; arquivos sujos são de uma tarefa interrompida, a refazer ou terminar.
+  - Fases 4 a 7 (T20-T42): não começaram. Depois da última tarefa vêm `check_proofs.py`, o Verifier e o sub-agente de telas (implement.md, passo 10).
+- **Onde está o detalhe:** `.specs/features/m3-phone/tasks.md` → `## Handoff` (`Dispatched` com o retorno de cada fase, defaults aceitos e notas para a próxima fase; `Settled mid-build`).
+- **Decisões novas:** AD-002 a AD-017 (telas do Stitch, responsividade, Signals + eslint-config-preact, paleta em `@bwords/theme`, fundo da TV `#12131a`).
+- **Branch:** `main`. `origin/main` está em `9265abe`; os commits depois disso (regras, tasks, tema, fases 1-3) não foram enviados. Push só com pedido.
+- **Próximo passo:** conferir a fase 3 (commits, testes, fotos `phone-host-lobby`, `phone-host-actions`, `phone-kicked`, `phone-room-closed`), mostrar ao user e perguntar antes da fase 4.
 - **Modo de execução preferido pelo usuário:** subagentes, uma fase por vez, parando para mostrar o resultado e perguntar antes da próxima fase.
-- **Bloqueios:** nenhum.
-- **Arquivos não commitados:** nenhum.
-- **Ambiente Windows:** os scripts da skill precisam de `PYTHONUTF8=1` e de `PYTHONPATH` apontando para uma pasta com um `sitecustomize.py`. Esse arquivo mapeia `signal.SIGHUP` para `SIGTERM` e resolve launchers `.cmd` como o `npx` via `shutil.which`. A cópia atual fica no scratchpad da sessão e precisa ser recriada se sumir.
+- **Pendências conhecidas:** nenhuma além da fase 3 em aberto.
+- **Ambiente Windows:** os scripts da skill precisam de `PYTHONUTF8=1`; `check_proofs.py` também precisa de `PYTHONPATH` apontando para uma pasta com um `sitecustomize.py` que mapeia `signal.SIGHUP` para `SIGTERM` e resolve launchers `.cmd` (como o `npx`) via `shutil.which`. Recriar no scratchpad da sessão se sumir.
