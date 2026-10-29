@@ -14,12 +14,15 @@ export interface PlayerRowProps {
   crowned: boolean;
   tags: readonly PlayerTag[];
   dimmed: boolean;
+  /** Makes the row a button, as the host's list where a tap opens the player's actions (HOST-01 AC 10). */
+  onSelect?: () => void;
 }
 
 /** A player of the lobby: circle, nickname, crown, tags and wins; faded while disconnected (LOBBY-01 AC 2-5). */
-export function PlayerRow({ nickname, color, wins, crowned, tags, dimmed }: PlayerRowProps) {
-  return (
-    <li class={`player-row${dimmed ? ' player-row--dimmed' : ''}`}>
+export function PlayerRow({ nickname, color, wins, crowned, tags, dimmed, onSelect }: PlayerRowProps) {
+  const rowClass = `player-row${dimmed ? ' player-row--dimmed' : ''}`;
+  const content = (
+    <>
       <PlayerAvatar nickname={nickname} color={color} size="small" />
       <span class="player-row__who">
         <span class="player-row__name">{nickname}</span>
@@ -33,6 +36,15 @@ export function PlayerRow({ nickname, color, wins, crowned, tags, dimmed }: Play
         ))}
       </span>
       <WinsBadge wins={wins} />
+    </>
+  );
+
+  if (onSelect === undefined) return <li class={rowClass}>{content}</li>;
+  return (
+    <li class="player-row-item">
+      <button type="button" class={`${rowClass} player-row--button`} aria-label={STRINGS.playerActions(nickname)} onClick={onSelect}>
+        {content}
+      </button>
     </li>
   );
 }

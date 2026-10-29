@@ -17,6 +17,7 @@ interface ServerSocket {
   send(msg: ClientMessage): void;
   /** Waits for the first message, past or future, that matches. */
   waitFor<T extends ServerMessage>(match: (msg: ServerMessage) => msg is T): Promise<T>;
+  messages(): readonly ServerMessage[];
   close(): void;
 }
 
@@ -32,6 +33,8 @@ export interface NodePlayer {
   send(msg: ClientMessage): void;
   /** Waits for the first message, past or future, that matches. */
   waitFor<T extends ServerMessage>(match: (msg: ServerMessage) => msg is T): Promise<T>;
+  /** Every message the server sent so far, in order. */
+  messages(): readonly ServerMessage[];
   /** Drops the connection without leaving the room. */
   close(): void;
 }
@@ -53,7 +56,7 @@ export async function joinPlayer(code: string, nickname: string, color: string):
   await socket.waitFor(isType('welcome'));
   socket.send({ type: 'join', nickname, color });
   const joined = await socket.waitFor(isType('joined'));
-  return { id: joined.playerId, send: (msg) => socket.send(msg), waitFor: socket.waitFor, close: () => socket.close() };
+  return { id: joined.playerId, send: (msg) => socket.send(msg), waitFor: socket.waitFor, messages: socket.messages, close: () => socket.close() };
 }
 
 /** A type guard for server messages of one type. */
@@ -88,5 +91,5 @@ async function openSocket(code: string): Promise<ServerSocket> {
     }
   }
 
-  return { send: (msg) => ws.send(JSON.stringify(msg)), waitFor, close: () => ws.close() };
+  return { send: (msg) => ws.send(JSON.stringify(msg)), waitFor, messages: () => received, close: () => ws.close() };
 }

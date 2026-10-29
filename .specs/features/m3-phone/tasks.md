@@ -493,10 +493,10 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] Folha igual a `.specs/features/m3-phone/captures/phone-host-actions.png` (só a folha; fundo é o lobby atual), foto em `phone-host-actions.running.png`
-- [ ] C35, C36, C37, C38, C41 passam
-- [ ] Gate check passes: full
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Folha igual a `.specs/features/m3-phone/captures/phone-host-actions.png` (só a folha; fundo é o lobby atual), foto em `phone-host-actions.running.png`
+- [x] C35, C36, C37, C38, C41 passam
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: e2e
 **Gate**: full

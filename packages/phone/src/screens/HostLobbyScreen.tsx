@@ -1,3 +1,4 @@
+import { useState } from 'preact/hooks';
 import { MedalIcon, PlayArrowIcon, TuneIcon } from '../components/icons.tsx';
 import { PlayerRow } from '../components/PlayerRow.tsx';
 import { PrimaryButton } from '../components/PrimaryButton.tsx';
@@ -6,17 +7,22 @@ import { TopBar } from '../components/TopBar.tsx';
 import { lobbyRows } from '../model/players.ts';
 import { useStore } from '../state/store.ts';
 import { STRINGS } from '../strings/pt-BR.ts';
+import { PlayerActionsSheet } from './PlayerActionsSheet.tsx';
 import '../styles/host-lobby.css';
 
 /**
  * The host's lobby: "VOCÊ É O(A) ANFITRIÃO(Ã)", the editable match settings, the
  * players and "INICIAR PARTIDA", always enabled because the host may play alone
- * (HOST-01 AC 1-9, 14, phone-host-lobby.png).
+ * (HOST-01 AC 1-9, 14, phone-host-lobby.png). A tap on another player opens their
+ * actions (HOST-01 AC 10-13).
  */
 export function HostLobbyScreen() {
   const { room } = useStore();
   const view = room.room.value;
   const rows = lobbyRows(view.players, view.hostId, view.myId);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  // A player who left while the sheet was open closes it.
+  const selected = view.players.find((p) => p.id === selectedId) ?? null;
 
   return (
     <main class="screen host-lobby">
@@ -47,6 +53,7 @@ export function HostLobbyScreen() {
             crowned={row.crowned}
             tags={row.tags}
             dimmed={row.dimmed}
+            onSelect={row.id === view.myId ? undefined : () => setSelectedId(row.id)}
           />
         ))}
       </ul>
@@ -57,6 +64,8 @@ export function HostLobbyScreen() {
           {STRINGS.startMatch}
         </PrimaryButton>
       </div>
+
+      {selected !== null && <PlayerActionsSheet player={selected} onClose={() => setSelectedId(null)} />}
     </main>
   );
 }

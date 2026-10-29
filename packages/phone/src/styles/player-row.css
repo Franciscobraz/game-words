@@ -40,3 +40,15 @@
   color: var(--color-crown);
   font-size: 1.25rem;
 }
+
+/* The host's rows are buttons (HOST-01 AC 10). */
+.player-row-item {
+  display: flex;
+}
+
+.player-row--button {
+  width: 100%;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+}

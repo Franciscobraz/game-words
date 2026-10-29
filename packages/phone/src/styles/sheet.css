@@ -1,0 +1,134 @@
+/* Bottom sheet and confirmation (HOST-01 AC 10-13, phone-host-actions.png). */
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--color-surface-container-lowest) 75%, transparent);
+  animation: sheet-fade 150ms ease-out;
+}
+
+.sheet__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: var(--space-sm) var(--space-margin) var(--space-lg);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  background: var(--color-surface-container-high);
+  animation: sheet-rise 200ms ease-out;
+}
+
+.sheet__handle {
+  align-self: center;
+  width: 40px;
+  height: 5px;
+  margin-bottom: var(--space-md);
+  border-radius: var(--radius-full);
+  background: var(--color-outline-variant);
+}
+
+.sheet__player {
+  display: flex;
+  align-items: center;
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-card-stroke);
+}
+
+.sheet__player-who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin-left: var(--space-md);
+}
+
+.sheet__player-name {
+  overflow: hidden;
+  color: var(--color-on-surface);
+  font-size: var(--font-size-title-md);
+  font-weight: var(--font-weight-bold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sheet__player-wins {
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-size-body);
+}
+
+.sheet__message {
+  margin: var(--space-sm) 0 0;
+  color: var(--color-on-surface);
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+}
+
+.sheet__actions {
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--space-sm);
+}
+
+.sheet-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  margin-top: var(--space-sm);
+  border: 0;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-extrabold);
+  cursor: pointer;
+}
+
+.sheet-action .icon {
+  margin-right: var(--space-sm);
+  font-size: 1.25em;
+}
+
+.sheet-action--plain {
+  background: var(--color-surface-container-highest);
+  color: var(--color-on-surface);
+}
+
+.sheet-action--plain .icon {
+  color: var(--color-primary);
+}
+
+.sheet-action--danger {
+  background: color-mix(in srgb, var(--color-error-container) 55%, transparent);
+  color: var(--color-error);
+}
+
+.sheet-action--quiet {
+  background: var(--color-surface-container-low);
+  color: var(--color-on-surface-variant);
+}
+
+@keyframes sheet-rise {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes sheet-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
