@@ -1,0 +1,19 @@
+/* Podium (POD-01, phone-podium.jpg). */
+.podium {
+  padding-bottom: 0;
+}
+
+.podium .ranking {
+  margin-bottom: var(--space-lg);
+}
+
+.podium__spectator {
+  margin: var(--space-md) 0 0;
+  padding: var(--space-lg) var(--space-md);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container-low);
+  color: var(--color-secondary);
+  font-size: clamp(1.0625rem, 5vw, var(--font-size-title-md));
+  font-weight: var(--font-weight-extrabold);
+  text-align: center;
+}

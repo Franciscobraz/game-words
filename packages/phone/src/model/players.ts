@@ -108,6 +108,16 @@ export function myPlacement(rows: readonly PodiumRow[], myId: string | null): Pl
   return { place: mine.place, total: mine.score, wins: mine.wins };
 }
 
+/**
+ * The tags of a podium line: host, you and disconnected; a spectator is told by
+ * "Espectador(a)" in place of the wins, not by a tag (POD-01 AC 7, phone-podium.jpg).
+ */
+export function podiumTags(players: readonly PlayerInfo[], playerId: string, hostId: string | null, myId: string | null): PlayerTag[] {
+  const player = players.find((p) => p.id === playerId);
+  if (player === undefined) return [];
+  return tagsOf(player, hostId, myId).filter((tag) => tag !== 'spectator');
+}
+
 function tagsOf(player: PlayerInfo, hostId: string | null, myId: string | null): PlayerTag[] {
   const tags: PlayerTag[] = [];
   if (player.id === hostId) tags.push('host');

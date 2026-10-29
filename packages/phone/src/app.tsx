@@ -9,6 +9,7 @@ import { KickedScreen, ReplacedScreen, RoomClosedScreen } from './screens/ExitSc
 import { HostLobbyScreen } from './screens/HostLobbyScreen.tsx';
 import { JoinScreen } from './screens/JoinScreen.tsx';
 import { LobbyScreen } from './screens/LobbyScreen.tsx';
+import { PodiumScreen } from './screens/PodiumScreen.tsx';
 import { RoundResultScreen } from './screens/RoundResultScreen.tsx';
 import { SpectatorScreen } from './screens/SpectatorScreen.tsx';
 import { useServerClock } from './state/server-clock.ts';
@@ -16,7 +17,6 @@ import { useStore } from './state/store.ts';
 
 /**
  * The component of each screen (style guide §4, O): a new screen is a new entry.
- * Screens of later tasks show the connecting screen until they are built.
  */
 const SCREENS: Record<Screen, ComponentType> = {
   'code-entry': CodeEntryScreen,
@@ -28,7 +28,7 @@ const SCREENS: Record<Screen, ComponentType> = {
   board: BoardScreen,
   spectator: SpectatorScreen,
   'round-result': RoundResultScreen,
-  podium: ConnectingScreen,
+  podium: PodiumScreen,
   kicked: KickedScreen,
   'room-closed': RoomClosedScreen,
   replaced: ReplacedScreen,

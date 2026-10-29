@@ -1,0 +1,31 @@
+/* The host's buttons fixed at the foot of the podium; the ranking scrolls above them (POD-01 AC 8-11). */
+.podium-host-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 6;
+  margin-top: auto;
+  padding: var(--space-md) 0 var(--space-sm);
+  border-top: 1px solid var(--color-card-stroke);
+  background: var(--color-background);
+}
+
+.podium-host-actions__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--touch-target);
+  margin-top: var(--space-xs);
+  border: 0;
+  background: transparent;
+  color: var(--color-error);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-black);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.podium-host-actions__close .icon {
+  margin-right: var(--space-xs);
+  font-size: 1.25em;
+}

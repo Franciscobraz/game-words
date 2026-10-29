@@ -1,0 +1,92 @@
+/* The podium's personal card (POD-01 AC 2, phone-podium.jpg). */
+.podium-highlight {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: var(--space-md);
+  padding: var(--space-lg) var(--space-md) var(--space-md);
+  border: 1px solid var(--color-card-stroke);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container);
+}
+
+.podium-highlight__avatar {
+  position: relative;
+  display: flex;
+}
+
+.podium-highlight__avatar .player-avatar {
+  width: clamp(56px, 18vw, 64px);
+  height: clamp(56px, 18vw, 64px);
+  font-size: 2rem;
+}
+
+.podium-highlight__trophy {
+  position: absolute;
+  top: -8px;
+  right: -14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-lowest);
+  color: var(--color-crown);
+  font-size: 1.125rem;
+}
+
+.podium-highlight__place {
+  margin: var(--space-md) 0 0;
+  color: var(--color-primary);
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-black);
+  text-align: center;
+}
+
+.podium-highlight__stats {
+  display: flex;
+  width: 100%;
+  margin-top: var(--space-md);
+}
+
+.podium-highlight__stat {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  margin: 0 0 0 var(--space-sm);
+  padding: var(--space-sm);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container-lowest);
+}
+
+.podium-highlight__stat:first-child {
+  margin-left: 0;
+}
+
+.podium-highlight__label {
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-black);
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.podium-highlight__value {
+  display: flex;
+  align-items: center;
+  color: var(--color-on-surface);
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-black);
+}
+
+.podium-highlight__value--score {
+  color: var(--color-action);
+}
+
+.podium-highlight__value .icon {
+  margin-right: var(--space-xs);
+  color: var(--color-crown);
+}

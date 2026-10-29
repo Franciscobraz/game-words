@@ -6,6 +6,7 @@ import {
   type RoundInfo,
   type RoundResultsMessage,
   type RoundStartMessage,
+  type ServerMessage,
   type Settings,
   type WelcomeMessage,
 } from '@bwords/core';
@@ -152,3 +153,22 @@ export const SCORED_PLAYERS: PlayerInfo[] = [
   { ...CAIO, score: 16 },
   DUDA,
 ];
+
+/** The players of the captures' podium: Ana 46 with her 3rd win, Beto 32, Caio 18, Duda watching. */
+export const PODIUM_PLAYERS: PlayerInfo[] = [
+  { ...ANA, score: 46, wins: 3 },
+  { ...BETO, score: 32, wins: 1 },
+  { ...CAIO, score: 18, wins: 0 },
+  DUDA,
+];
+
+/** The `podium` of the captures: the highest score first, Duda last with 0. */
+export const SAMPLE_PODIUM: ServerMessage = {
+  type: 'podium',
+  ranking: [
+    { playerId: ANA.id, score: 46 },
+    { playerId: BETO.id, score: 32 },
+    { playerId: CAIO.id, score: 18 },
+    { playerId: DUDA.id, score: 0 },
+  ],
+};

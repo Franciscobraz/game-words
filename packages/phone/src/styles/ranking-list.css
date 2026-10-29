@@ -1,0 +1,138 @@
+/* "CLASSIFICAÇÃO DA MESA" (POD-01 AC 7, phone-podium.jpg). */
+.ranking {
+  margin-top: var(--space-lg);
+}
+
+.ranking__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ranking__title {
+  margin: 0;
+  color: var(--color-on-surface);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-black);
+  letter-spacing: 0.06em;
+}
+
+.ranking__count {
+  color: var(--color-on-surface);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+}
+
+.ranking__list {
+  margin: var(--space-xs) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The player's color as a stripe on the left, from the data (style guide §5.1). */
+.ranking__item {
+  display: flex;
+  align-items: center;
+  margin-top: var(--space-sm);
+  padding: var(--space-sm) var(--space-md) var(--space-sm) var(--space-sm);
+  border-left: 4px solid;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container);
+}
+
+.ranking__item--mine {
+  background: var(--color-surface-container-high);
+}
+
+.ranking__item--dimmed {
+  opacity: 0.6;
+}
+
+.ranking__place {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-right: var(--space-sm);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-highest);
+  color: var(--color-on-surface);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-black);
+}
+
+.ranking__item--mine .ranking__place {
+  background: var(--color-action);
+  color: var(--color-on-action);
+}
+
+.ranking__who {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  margin: 0 var(--space-sm);
+}
+
+.ranking__name-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.ranking__name {
+  max-width: 100%;
+  margin-right: var(--space-xs);
+  overflow: hidden;
+  color: var(--color-on-surface);
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-black);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ranking__crown {
+  display: inline-flex;
+  margin-right: var(--space-xs);
+  color: var(--color-crown);
+}
+
+.ranking__eye {
+  display: inline-flex;
+  margin-right: var(--space-xs);
+  color: var(--color-on-surface-variant);
+}
+
+.ranking__name-line .player-tag {
+  margin-right: var(--space-xs);
+}
+
+.ranking__detail {
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-size-small);
+}
+
+.ranking__detail--spectator {
+  font-style: italic;
+}
+
+.ranking__score {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.ranking__points {
+  color: var(--color-on-surface);
+  font-size: var(--font-size-title-md);
+  font-weight: var(--font-weight-black);
+}
+
+.ranking__unit {
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+}

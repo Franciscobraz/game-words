@@ -1,6 +1,6 @@
 import type { PlayerInfo } from '@bwords/core';
 import { describe, expect, test } from 'vitest';
-import { lobbyRows, myPlacement, podiumRows, quickScoreboard } from './players.ts';
+import { lobbyRows, myPlacement, podiumRows, podiumTags, quickScoreboard } from './players.ts';
 
 /** A connected player who is playing, with no points and no wins unless given. */
 function player(id: string, nickname: string, fields: Partial<PlayerInfo> = {}): PlayerInfo {
@@ -140,5 +140,21 @@ describe('myPlacement', () => {
 
     expect(myPlacement(rows, 'p4')).toBeNull();
     expect(myPlacement(rows, null)).toBeNull();
+  });
+});
+
+describe('podiumTags', () => {
+  test('tags the host, the player and the disconnected, never the spectator', () => {
+    // POD-01 AC 7, phone-podium.jpg: Ana reads "VOCÊ" and "ANFITRIÃO(Ã)", Caio is disconnected, Duda only "Espectador(a)".
+    const players = [
+      player('p1', 'Ana'),
+      player('p3', 'Caio', { connected: false }),
+      player('p4', 'Duda', { spectator: true }),
+    ];
+
+    expect(podiumTags(players, 'p1', 'p1', 'p1')).toEqual(['host', 'you']);
+    expect(podiumTags(players, 'p3', 'p1', 'p1')).toEqual(['disconnected']);
+    expect(podiumTags(players, 'p4', 'p1', 'p1')).toEqual([]);
+    expect(podiumTags(players, 'gone', 'p1', 'p1')).toEqual([]);
   });
 });
