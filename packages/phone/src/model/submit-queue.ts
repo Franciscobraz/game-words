@@ -40,3 +40,27 @@ export function windowFreesIn(sentAt: readonly number[], now: number): number {
   if (recent.length === 0) return 0;
   return Math.min(...recent) + RATE_WINDOW_MS - now;
 }
+
+/** A swiped word the phone showed as valid, with its path and points. */
+export interface QueuedWord {
+  path: Path;
+  word: string;
+  points: number;
+}
+
+/**
+ * The words to send again after a reconnect (RECON-01 AC 3, PLAY-01 AC 12): those
+ * the phone queued or sent before the drop and that the `welcome` does not list as
+ * accepted, once each, oldest first. The `welcome` only carries what the server
+ * took, so without this a word shown as valid would vanish without being judged.
+ */
+export function stillUnsent(queued: readonly QueuedWord[], accepted: readonly string[]): QueuedWord[] {
+  const seen = new Set(accepted);
+  const missing: QueuedWord[] = [];
+  for (const entry of queued) {
+    if (seen.has(entry.word)) continue;
+    seen.add(entry.word);
+    missing.push(entry);
+  }
+  return missing;
+}

@@ -1,9 +1,11 @@
 import { RoomTag } from '../components/RoomTag.tsx';
 import { useStore } from '../state/store.ts';
+import { ConnectionBanner } from './RoomTopBar.tsx';
 
 /**
  * Between opening a room and its first `welcome`: only the room tag, so a phone
- * with a saved token does not flash the join screen (ENTRY-01 AC 6).
+ * with a saved token does not flash the join screen (ENTRY-01 AC 6). A first
+ * connection that fails shows the reconnect strip (RECON-01).
  */
 export function ConnectingScreen() {
   const code = useStore().room.room.value.code;
@@ -14,6 +16,7 @@ export function ConnectingScreen() {
           <RoomTag code={code} />
         </header>
       )}
+      <ConnectionBanner />
     </main>
   );
 }

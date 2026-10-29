@@ -1,0 +1,68 @@
+/* The thin connection strip right under the top bar (RECON-01 AC 1, 3, 4). */
+.reconnect-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin: var(--space-sm) 0 0;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-extrabold);
+  text-align: center;
+}
+
+.reconnect-banner .icon {
+  margin-right: var(--space-xs);
+  font-size: 1.25em;
+}
+
+.reconnect-banner--waiting {
+  background: var(--color-surface-container-highest);
+  color: var(--color-on-surface);
+}
+
+.reconnect-banner--connected {
+  background: var(--color-valid);
+  color: var(--color-on-valid);
+}
+
+.reconnect-banner--offline {
+  justify-content: space-between;
+  padding: var(--space-xs) var(--space-xs) var(--space-xs) var(--space-md);
+  border-radius: var(--radius-lg);
+  background: var(--color-invalid);
+  color: var(--color-on-invalid);
+}
+
+.reconnect-banner__text {
+  margin-right: var(--space-sm);
+}
+
+.reconnect-banner__retry {
+  min-height: var(--touch-target);
+  padding: 0 var(--space-md);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-on-invalid);
+  color: var(--color-invalid);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-extrabold);
+  cursor: pointer;
+}
+
+.reconnect-banner__spinner {
+  width: 14px;
+  height: 14px;
+  margin-right: var(--space-sm);
+  border: 2px solid var(--color-outline-variant);
+  border-top-color: var(--color-primary);
+  border-radius: var(--radius-full);
+  animation: reconnect-spin 800ms linear infinite;
+}
+
+@keyframes reconnect-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

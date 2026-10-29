@@ -4,12 +4,12 @@ import { MatchPerformance } from '../components/MatchPerformance.tsx';
 import { PodiumHighlight } from '../components/PodiumHighlight.tsx';
 import { PodiumHostActions } from '../components/PodiumHostActions.tsx';
 import { RankingList } from '../components/RankingList.tsx';
-import { TopBar } from '../components/TopBar.tsx';
 import { WaitingNote } from '../components/WaitingNote.tsx';
 import { myPlacement, podiumRows, podiumTags } from '../model/players.ts';
 import { useStore } from '../state/store.ts';
 import { STRINGS } from '../strings/pt-BR.ts';
 import '../styles/podium.css';
+import { RoomTopBar } from './RoomTopBar.tsx';
 
 /**
  * The end of the match: the personal card with confetti for the winner, the
@@ -18,7 +18,7 @@ import '../styles/podium.css';
  * sees only the ranking and "Você joga na próxima partida" (POD-01, phone-podium.jpg).
  */
 export function PodiumScreen() {
-  const { room, match, prefs } = useStore();
+  const { room, match } = useStore();
   const view = room.room.value;
   if (view.podium === null) return null;
 
@@ -32,9 +32,7 @@ export function PodiumScreen() {
 
   return (
     <main class="screen podium">
-      <TopBar
-        onOpenPrefs={prefs.openSheet}
-        code={view.code ?? ''}
+      <RoomTopBar
         menu={isHost ? <HostMenu items={[{ label: STRINGS.closeRoom, confirm: STRINGS.confirmCloseRoom, onConfirm: room.closeRoom }]} /> : undefined}
       />
 

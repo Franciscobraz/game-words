@@ -1,5 +1,6 @@
 import { createContext } from 'preact';
 import { useContext } from 'preact/hooks';
+import { type BannerStore, createBannerStore } from './banner.ts';
 import { createMatchStore, type MatchStore } from './match.ts';
 import { createPrefsStore, type PrefsDeps, type PrefsStore } from './prefs.ts';
 import { createRoomStore, type RoomDeps, type RoomStore } from './room.ts';
@@ -17,6 +18,7 @@ export interface PhoneStore {
   round: RoundStore;
   match: MatchStore;
   prefs: PrefsStore;
+  banner: BannerStore;
 }
 
 /**
@@ -28,7 +30,7 @@ export function createPhoneStore(deps: PhoneDeps): PhoneStore {
   const room = createRoomStore({ ...deps, storage });
   const prefs = createPrefsStore({ ...deps, storage }, room);
   const round = createRoundStore({ ...deps, room, prefs: () => prefs.prefs.value });
-  return { room, round, match: createMatchStore(room), prefs };
+  return { room, round, match: createMatchStore(room), prefs, banner: createBannerStore(room, deps.schedule) };
 }
 
 /** Hands the store to the screens. */

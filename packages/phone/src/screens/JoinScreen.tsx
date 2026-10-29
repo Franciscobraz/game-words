@@ -14,6 +14,7 @@ import { nicknameLength } from '../model/nickname.ts';
 import { useStore } from '../state/store.ts';
 import { STRINGS } from '../strings/pt-BR.ts';
 import '../styles/join.css';
+import { ConnectionBanner } from './RoomTopBar.tsx';
 
 /** The system picker's color before the player picks one; any off-palette start would do. */
 const CUSTOM_COLOR_START = '#ffffff';
@@ -50,6 +51,7 @@ export function JoinScreen() {
         <Logo />
         <RoomTag code={view.code ?? ''} />
       </header>
+      <ConnectionBanner />
 
       <NicknameCard nickname={nickname} error={errorAt('nickname')} onChange={setNickname} />
 

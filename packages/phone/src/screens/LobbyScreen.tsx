@@ -3,13 +3,13 @@ import { PlayerAvatar } from '../components/PlayerAvatar.tsx';
 import { PlayerRow } from '../components/PlayerRow.tsx';
 import { PlayerTagPill } from '../components/PlayerTagPill.tsx';
 import { RuleChips } from '../components/RuleChips.tsx';
-import { TopBar } from '../components/TopBar.tsx';
 import { WaitingDots } from '../components/WaitingDots.tsx';
 import { WinsBadge } from '../components/WinsBadge.tsx';
 import { lobbyRows } from '../model/players.ts';
 import { useStore } from '../state/store.ts';
 import { STRINGS } from '../strings/pt-BR.ts';
 import '../styles/lobby.css';
+import { RoomTopBar } from './RoomTopBar.tsx';
 
 /**
  * The lobby of a player who is not the host: the "Você" card, the rule chips, the
@@ -17,7 +17,7 @@ import '../styles/lobby.css';
  * follows every `settings` and `players` from the server (LOBBY-01, phone-lobby.png).
  */
 export function LobbyScreen() {
-  const { room, prefs } = useStore();
+  const { room } = useStore();
   const view = room.room.value;
   const rows = lobbyRows(view.players, view.hostId, view.myId);
   const me = view.players.find((p) => p.id === view.myId) ?? null;
@@ -25,7 +25,7 @@ export function LobbyScreen() {
 
   return (
     <main class="screen lobby">
-      <TopBar onOpenPrefs={prefs.openSheet} code={view.code ?? ''} />
+      <RoomTopBar />
 
       {me !== null && (
         <section class="lobby__me" aria-label={STRINGS.youLabel}>

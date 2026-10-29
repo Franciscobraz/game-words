@@ -1,6 +1,6 @@
 import { RATE_LIMIT_PATHS, RATE_WINDOW_MS } from '@bwords/core';
 import { describe, expect, test } from 'vitest';
-import { recentSends, SUBMIT_DEBOUNCE_MS, submitDelay, takeBatch, windowFreesIn } from './submit-queue.ts';
+import { recentSends, stillUnsent, SUBMIT_DEBOUNCE_MS, submitDelay, takeBatch, windowFreesIn } from './submit-queue.ts';
 
 /** The round ends at 100 s on the server clock. */
 const ENDS_AT = 100_000;
@@ -67,5 +67,24 @@ describe('the one second window', () => {
     expect(windowFreesIn([1_000, 1_500], 1_200)).toBe(RATE_WINDOW_MS - 200);
     expect(windowFreesIn([1_000], 1_999)).toBe(1);
     expect(windowFreesIn([], 1_999)).toBe(0);
+  });
+});
+
+describe('stillUnsent', () => {
+  const casa = { path: [0, 1, 2, 3], word: 'casa', points: 2 };
+  const lua = { path: [12, 13, 14], word: 'lua', points: 1 };
+  const quero = { path: [4, 5, 6, 7], word: 'quero', points: 2 };
+
+  test('keeps the words the welcome does not list, oldest first', () => {
+    // RECON-01 AC 3: CASA reached the server before the drop; LUA and QUERO did not.
+    expect(stillUnsent([casa, lua, quero], ['casa'])).toEqual([lua, quero]);
+  });
+
+  test('sends a word twice queued only once', () => {
+    expect(stillUnsent([lua, lua], [])).toEqual([lua]);
+  });
+
+  test('has nothing to send when the welcome lists every word', () => {
+    expect(stillUnsent([casa, lua], ['lua', 'casa'])).toEqual([]);
   });
 });

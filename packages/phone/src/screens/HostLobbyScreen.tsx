@@ -4,12 +4,12 @@ import { MedalIcon, PlayArrowIcon, TuneIcon } from '../components/icons.tsx';
 import { PlayerRow } from '../components/PlayerRow.tsx';
 import { PrimaryButton } from '../components/PrimaryButton.tsx';
 import { SettingsPanel } from '../components/SettingsPanel.tsx';
-import { TopBar } from '../components/TopBar.tsx';
 import { lobbyRows } from '../model/players.ts';
 import { useStore } from '../state/store.ts';
 import { STRINGS } from '../strings/pt-BR.ts';
 import { PlayerActionsSheet } from './PlayerActionsSheet.tsx';
 import '../styles/host-lobby.css';
+import { RoomTopBar } from './RoomTopBar.tsx';
 
 /**
  * The host's lobby: "VOCÊ É O(A) ANFITRIÃO(Ã)", the editable match settings, the
@@ -18,7 +18,7 @@ import '../styles/host-lobby.css';
  * actions (HOST-01 AC 10-13).
  */
 export function HostLobbyScreen() {
-  const { room, prefs } = useStore();
+  const { room } = useStore();
   const view = room.room.value;
   const rows = lobbyRows(view.players, view.hostId, view.myId);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -27,9 +27,7 @@ export function HostLobbyScreen() {
 
   return (
     <main class="screen host-lobby">
-      <TopBar
-        onOpenPrefs={prefs.openSheet}
-        code={view.code ?? ''}
+      <RoomTopBar
         menu={<HostMenu items={[{ label: STRINGS.closeRoom, confirm: STRINGS.confirmCloseRoom, onConfirm: room.closeRoom }]} />}
       />
 

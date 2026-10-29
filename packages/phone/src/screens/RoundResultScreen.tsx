@@ -4,13 +4,13 @@ import { QuickScoreboard } from '../components/QuickScoreboard.tsx';
 import { ResultHostActions } from '../components/ResultHostActions.tsx';
 import { ResultWordList } from '../components/ResultWordList.tsx';
 import { RoundScoreCard } from '../components/RoundScoreCard.tsx';
-import { TopBar } from '../components/TopBar.tsx';
 import { WaitingNote } from '../components/WaitingNote.tsx';
 import { quickScoreboard } from '../model/players.ts';
 import { myRoundSummary, myWordRows, resultRounds } from '../model/results.ts';
 import { useStore } from '../state/store.ts';
 import { STRINGS } from '../strings/pt-BR.ts';
 import '../styles/round-result.css';
+import { RoomTopBar } from './RoomTopBar.tsx';
 
 /**
  * The round result while the TV reveals it: "Rodada N de M • RESULTADO", "OLHE PARA A
@@ -19,7 +19,7 @@ import '../styles/round-result.css';
  * in place of the points and words (RES-01, phone-round-result.jpg).
  */
 export function RoundResultScreen() {
-  const { room, prefs } = useStore();
+  const { room } = useStore();
   const view = room.room.value;
   const results = view.results;
   if (results === null) return null;
@@ -33,9 +33,7 @@ export function RoundResultScreen() {
 
   return (
     <main class="screen round-result">
-      <TopBar
-        onOpenPrefs={prefs.openSheet}
-        code={view.code ?? ''}
+      <RoomTopBar
         menu={isHost ? <HostMenu items={[{ label: STRINGS.closeRoom, confirm: STRINGS.confirmCloseRoom, onConfirm: room.closeRoom }]} /> : undefined}
       />
 

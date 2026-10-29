@@ -334,3 +334,63 @@ describe('the server answer', () => {
     expect(round.feedback.value).toBeNull();
   });
 });
+
+describe('a reconnect in the middle of the round', () => {
+  test('sends again the words the server did not get before the drop', async () => {
+    // RECON-01 AC 3 and PLAY-01 AC 12: CASA went out in a batch that got no answer and MAR still waited when the
+    // socket dropped. The welcome lists neither, so both stay in the list and go out once the room is back.
+    const { clock, connection, room, swipe, submits, foundWords } = await setup();
+    await swipe(CASA);
+    clock.advance(500);
+    await swipe(MAR);
+    connection.handlers().onStatus('reconnecting');
+    clock.advance(5_000);
+    expect(submits()).toEqual([{ type: 'submit', paths: [CASA] }]);
+
+    connection.handlers().onStatus('open');
+    connection.receive(roundWelcome());
+    clock.advance(500);
+
+    expect(foundWords()).toEqual(['mar', 'casa']);
+    expect(submits()).toEqual([
+      { type: 'submit', paths: [CASA] },
+      { type: 'submit', paths: [CASA, MAR] },
+    ]);
+    connection.receive({
+      type: 'submit-result',
+      results: [
+        { ok: true, word: 'casa' },
+        { ok: true, word: 'mar' },
+      ],
+    });
+    expect(room.room.value.found.every((f) => f.confirmed)).toBe(true);
+  });
+
+  test('keeps the words the welcome already lists without sending them again', async () => {
+    // RECON-01 AC 3: CASA reached the server before the drop, so the welcome brings it back and nothing goes out.
+    const { clock, connection, swipe, submits, foundWords } = await setup();
+    await swipe(CASA);
+    clock.advance(500);
+    connection.handlers().onStatus('reconnecting');
+
+    connection.handlers().onStatus('open');
+    connection.receive(roundWelcome(['casa']));
+    clock.advance(1_000);
+
+    expect(foundWords()).toEqual(['casa']);
+    expect(submits()).toHaveLength(1);
+  });
+
+  test('drops the queue when the phone comes back into another round', async () => {
+    const { clock, connection, swipe, submits, foundWords } = await setup();
+    await swipe(MAR);
+    connection.handlers().onStatus('reconnecting');
+
+    connection.handlers().onStatus('open');
+    connection.receive({ ...roundWelcome(), round: { id: ROUND_ID + 1, index: 1, board: BOARD, startsAt: STARTS_AT, endsAt: ENDS_AT } });
+    clock.advance(1_000);
+
+    expect(foundWords()).toEqual([]);
+    expect(submits()).toEqual([]);
+  });
+});

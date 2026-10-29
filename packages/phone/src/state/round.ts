@@ -1,11 +1,11 @@
 import { MIN_WORD_LENGTH, type ServerMessage, type SubmitResult } from '@bwords/core';
-import { type Signal, signal } from '@preact/signals';
+import { effect, type Signal, signal } from '@preact/signals';
 import { isBoardOpen } from '../model/board-lock.ts';
 import { addFound, reconcileFound } from '../model/found.ts';
 import { type Feedback, type JudgeContext, judgeWord } from '../model/judge.ts';
 import { extendPath, type Path, wordOfPath } from '../model/path.ts';
 import type { RoomView } from '../model/room-view.ts';
-import { recentSends, submitDelay, takeBatch, windowFreesIn } from '../model/submit-queue.ts';
+import { type QueuedWord, recentSends, stillUnsent, submitDelay, takeBatch, windowFreesIn } from '../model/submit-queue.ts';
 import type { Schedule } from '../net/room-connection.ts';
 import type { RoomStore } from './room.ts';
 
@@ -38,11 +38,8 @@ export interface RoundDeps {
   prefs: () => HitPrefs;
 }
 
-/** A valid path waiting to be sent, with the word it spells. */
-export interface QueuedPath {
-  path: Path;
-  word: string;
-}
+/** A valid path waiting to be sent, with the word it spells and its points. */
+export type QueuedPath = QueuedWord;
 
 /** The swipe, its feedback and the paths waiting to go to the server (PLAY-01). */
 export interface RoundStore {
@@ -65,14 +62,22 @@ export function createRoundStore(deps: RoundDeps): RoundStore {
   const feedback = signal<Feedback | null>(null);
   const pendingPaths = signal<readonly QueuedPath[]>([]);
 
-  /** Words of each batch sent and not answered yet, oldest first; the server answers in order. */
-  let inFlight: string[][] = [];
+  /** Each batch sent and not answered yet, oldest first; the server answers in order. */
+  let inFlight: QueuedPath[][] = [];
+  /** The round of the queued and sent paths, to send them again after a reconnect into the same round. */
+  let queuedRoundId: number | null = null;
+  /** From a drop until the `welcome` that rebuilds the room: nothing is sent, the queue waits (RECON-01). */
+  let isRejoining = false;
   /** Server time of each path sent, for the 1 s rate window. */
   let sentAt: number[] = [];
   let cancelFlush: (() => void) | null = null;
   let cancelFeedback: (() => void) | null = null;
 
   room.listen((msg) => followServer(msg));
+  effect(() => {
+    const status = room.connection.value;
+    if (status === 'reconnecting' || status === 'offline') isRejoining = true;
+  });
 
   function followServer(msg: ServerMessage): void {
     switch (msg.type) {
@@ -85,6 +90,8 @@ export function createRoundStore(deps: RoundDeps): RoundStore {
         path.value = [];
         return;
       case 'welcome':
+        resumeAfterWelcome();
+        return;
       case 'round-start':
       case 'closed':
         reset();
@@ -96,9 +103,10 @@ export function createRoundStore(deps: RoundDeps): RoundStore {
 
   /** The server answered the oldest batch: refused words leave the list (PLAY-01 AC 13). */
   function settleBatch(results: readonly SubmitResult[]): void {
-    const words = inFlight.shift();
-    if (words === undefined) return;
+    const batch = inFlight.shift();
+    if (batch === undefined) return;
     const view = room.room.value;
+    const words = batch.map((q) => q.word);
     room.room.value = { ...view, found: reconcileFound(view.found, words, results) };
   }
 
@@ -108,10 +116,37 @@ export function createRoundStore(deps: RoundDeps): RoundStore {
     pendingPaths.value = [];
   }
 
+  /**
+   * The `welcome` rebuilt the view with only the words the server accepted. Paths
+   * queued or sent before a drop into this same round are listed again and sent
+   * again, so a word shown as valid is still judged (RECON-01 AC 3, PLAY-01 AC 12).
+   */
+  function resumeAfterWelcome(): void {
+    const carried = [...inFlight.flat(), ...pendingPaths.value];
+    const carriedRoundId = queuedRoundId;
+    reset();
+    isRejoining = false;
+    const view = room.room.value;
+    const round = view.round;
+    if (view.phase !== 'round' || round === null || round.id !== carriedRoundId) return;
+    const missing = stillUnsent(
+      carried,
+      view.found.map((f) => f.word),
+    );
+    if (missing.length === 0) return;
+    let found = view.found;
+    for (const entry of missing) found = addFound(found, entry.word, entry.points);
+    room.room.value = { ...view, found };
+    queuedRoundId = round.id;
+    pendingPaths.value = missing;
+    scheduleFlush(submitDelay(room.serverNow(), round.endsAt));
+  }
+
   /** A new round, a rebuilt view or a closed room: nothing of the old swipes is left. */
   function reset(): void {
     dropPending();
     inFlight = [];
+    queuedRoundId = null;
     path.value = [];
     cancelFeedback?.();
     cancelFeedback = null;
@@ -132,11 +167,12 @@ export function createRoundStore(deps: RoundDeps): RoundStore {
   }
 
   /** A valid word: first in the list, queued for the server, and the device's cheer (PLAY-01 AC 7, 12, 18-19). */
-  function accept(swiped: Path, word: string, points: number, endsAt: number): void {
+  function accept(swiped: Path, word: string, points: number, round: { id: number; endsAt: number }): void {
     const view = room.room.value;
     room.room.value = { ...view, found: addFound(view.found, word, points) };
-    pendingPaths.value = [...pendingPaths.value, { path: swiped, word }];
-    scheduleFlush(submitDelay(room.serverNow(), endsAt));
+    queuedRoundId = round.id;
+    pendingPaths.value = [...pendingPaths.value, { path: swiped, word, points }];
+    scheduleFlush(submitDelay(room.serverNow(), round.endsAt));
     const prefs = deps.prefs();
     if (prefs.vibrate) deps.device.vibrate(HIT_VIBRATION_MS);
     if (prefs.sound) deps.device.playHitSound();
@@ -156,6 +192,8 @@ export function createRoundStore(deps: RoundDeps): RoundStore {
   /** Sends what the rate window allows; the rest waits for the window to free up. */
   function flush(): void {
     cancelFlush = null;
+    // A path sent into a dropped socket is lost; the queue waits for the welcome instead.
+    if (isRejoining) return;
     const now = room.serverNow();
     const recent = recentSends(sentAt, now);
     const queued = pendingPaths.value;
@@ -166,7 +204,7 @@ export function createRoundStore(deps: RoundDeps): RoundStore {
     const sending = queued.slice(0, batch.length);
     if (sending.length > 0) {
       room.submit(sending.map((q) => [...q.path]));
-      inFlight.push(sending.map((q) => q.word));
+      inFlight.push(sending);
     }
     sentAt = [...recent, ...sending.map(() => now)];
     pendingPaths.value = queued.slice(sending.length);
@@ -197,7 +235,7 @@ export function createRoundStore(deps: RoundDeps): RoundStore {
 
       const verdict = recheckFound(judged, latest);
       showFeedback(verdict);
-      if (verdict.kind === 'valid') accept(swiped, verdict.word, verdict.points, round.endsAt);
+      if (verdict.kind === 'valid') accept(swiped, verdict.word, verdict.points, round);
     },
   };
 }

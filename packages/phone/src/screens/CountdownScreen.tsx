@@ -1,12 +1,12 @@
 import { TimerIcon } from '../components/icons.tsx';
 import { MatchHostMenu } from '../components/HostMenu.tsx';
-import { TopBar } from '../components/TopBar.tsx';
 import { countdownNumber } from '../model/clock.ts';
 import { roundPosition } from '../model/round-position.ts';
 import { useServerClock } from '../state/server-clock.ts';
 import { useStore } from '../state/store.ts';
 import { STRINGS } from '../strings/pt-BR.ts';
 import '../styles/countdown.css';
+import { RoomTopBar } from './RoomTopBar.tsx';
 
 /**
  * The countdown before the board: "RODADA N DE M", the room tag, 3, 2 and 1 one per
@@ -14,7 +14,7 @@ import '../styles/countdown.css';
  * here (COUNT-01 AC 1-2, phone-countdown.png).
  */
 export function CountdownScreen() {
-  const { room, prefs } = useStore();
+  const { room } = useStore();
   const serverNow = useServerClock(room.serverNow);
   const view = room.room.value;
   const isHost = view.hostId !== null && view.hostId === view.myId;
@@ -23,7 +23,7 @@ export function CountdownScreen() {
 
   return (
     <main class="screen countdown">
-      <TopBar onOpenPrefs={prefs.openSheet} code={view.code ?? ''} menu={isHost ? <MatchHostMenu onBackToLobby={room.backToLobby} /> : undefined} />
+      <RoomTopBar menu={isHost ? <MatchHostMenu onBackToLobby={room.backToLobby} /> : undefined} />
 
       {position !== null && (
         <p class="countdown__round">

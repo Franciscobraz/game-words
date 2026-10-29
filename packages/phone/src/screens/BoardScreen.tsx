@@ -3,7 +3,6 @@ import { FitSquare } from '../components/FitSquare.tsx';
 import { FoundWords } from '../components/FoundWords.tsx';
 import { MatchHostMenu } from '../components/HostMenu.tsx';
 import { RoundTimer } from '../components/RoundTimer.tsx';
-import { TopBar } from '../components/TopBar.tsx';
 import { WordRack } from '../components/WordRack.tsx';
 import { isBoardOpen } from '../model/board-lock.ts';
 import { boardLabels, feedbackText, foundChips, pathLine, rackContent } from '../model/board-view.ts';
@@ -14,6 +13,7 @@ import { useServerClock } from '../state/server-clock.ts';
 import { useStore } from '../state/store.ts';
 import { STRINGS } from '../strings/pt-BR.ts';
 import '../styles/board-screen.css';
+import { RoomTopBar } from './RoomTopBar.tsx';
 
 /**
  * The round of a player: the timer with the round and the tally, the word under the
@@ -22,7 +22,7 @@ import '../styles/board-screen.css';
  * phone-feedbacks.png).
  */
 export function BoardScreen() {
-  const { room, round, prefs } = useStore();
+  const { room, round } = useStore();
   const serverNow = useServerClock(room.serverNow).value;
   const view = room.room.value;
   const current = view.round;
@@ -43,7 +43,7 @@ export function BoardScreen() {
 
   return (
     <main class="screen board-screen">
-      <TopBar onOpenPrefs={prefs.openSheet} code={view.code ?? ''} menu={isHost ? <MatchHostMenu onBackToLobby={room.backToLobby} /> : undefined} />
+      <RoomTopBar menu={isHost ? <MatchHostMenu onBackToLobby={room.backToLobby} /> : undefined} />
 
       <RoundTimer
         clock={formatClock(remainingMs)}

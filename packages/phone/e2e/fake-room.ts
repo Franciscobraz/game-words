@@ -21,6 +21,8 @@ export interface FakeRoom {
   push(msg: Reply): void;
   /** Every message the page sent, `time` excluded, in order. */
   sent(): readonly ClientMessage[];
+  /** The network drops the page's socket, with no `closed` from the server. */
+  drop(): void;
 }
 
 /** Routes the page's room socket to `script`; `time` gets the page's own clock back. */
@@ -47,6 +49,10 @@ export async function fakeRoom(page: Page, script: Script): Promise<FakeRoom> {
       socket.send(encode(msg));
     },
     sent: () => received,
+    drop() {
+      if (socket === null) throw new Error('The page has not opened the room socket yet');
+      void socket.close({ code: 1006 });
+    },
   };
 }
 

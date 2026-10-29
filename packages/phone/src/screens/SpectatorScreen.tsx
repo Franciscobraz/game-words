@@ -3,7 +3,6 @@ import { MatchHostMenu } from '../components/HostMenu.tsx';
 import { GamepadIcon, GroupIcon } from '../components/icons.tsx';
 import { PlayerRow } from '../components/PlayerRow.tsx';
 import { RoundTimer } from '../components/RoundTimer.tsx';
-import { TopBar } from '../components/TopBar.tsx';
 import { WaitingDots } from '../components/WaitingDots.tsx';
 import { boardLabels } from '../model/board-view.ts';
 import { formatClock, isAlert, remainingShare } from '../model/clock.ts';
@@ -13,6 +12,7 @@ import { useServerClock } from '../state/server-clock.ts';
 import { useStore } from '../state/store.ts';
 import { STRINGS } from '../strings/pt-BR.ts';
 import '../styles/spectator.css';
+import { RoomTopBar } from './RoomTopBar.tsx';
 
 /**
  * The round as a spectator sees it: the timer with its bar, the board faded and
@@ -21,7 +21,7 @@ import '../styles/spectator.css';
  * phone-spectator.png).
  */
 export function SpectatorScreen() {
-  const { room, prefs } = useStore();
+  const { room } = useStore();
   const serverNow = useServerClock(room.serverNow).value;
   const view = room.room.value;
   const current = view.round;
@@ -34,7 +34,7 @@ export function SpectatorScreen() {
 
   return (
     <main class="screen spectator">
-      <TopBar onOpenPrefs={prefs.openSheet} code={view.code ?? ''} menu={isHost ? <MatchHostMenu onBackToLobby={room.backToLobby} /> : undefined} />
+      <RoomTopBar menu={isHost ? <MatchHostMenu onBackToLobby={room.backToLobby} /> : undefined} />
 
       <RoundTimer
         clock={formatClock(remainingMs)}
