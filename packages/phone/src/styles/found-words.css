@@ -1,0 +1,80 @@
+/* "PALAVRAS ENCONTRADAS" (PLAY-01 AC 17, phone-board.png). */
+.found-words {
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-md);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container-low);
+}
+
+.found-words__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: var(--space-sm);
+}
+
+.found-words__title {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  color: var(--color-on-surface);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: 0.04em;
+}
+
+.found-words__title .icon {
+  margin-right: var(--space-sm);
+  color: var(--color-secondary);
+  font-size: 1.25rem;
+}
+
+.found-words__total {
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-bold);
+  white-space: nowrap;
+}
+
+/* One row that scrolls sideways; its height is kept with no word yet, so the board never moves. */
+.found-words__list {
+  display: flex;
+  min-height: 2.5rem;
+  margin: var(--space-sm) 0 0;
+  padding: 0;
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: none;
+}
+
+.found-words__chip {
+  display: flex;
+  flex: none;
+  align-items: center;
+  height: 2.5rem;
+  margin-right: var(--space-sm);
+  padding: 0 var(--space-sm) 0 var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-container-high);
+  color: var(--color-on-surface);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-black);
+}
+
+.found-words__chip--newest {
+  background: var(--path-color);
+  color: var(--color-surface-container-lowest);
+}
+
+.found-words__points {
+  margin-left: var(--space-sm);
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-valid) 25%, transparent);
+  color: var(--color-tertiary);
+  font-size: var(--font-size-small);
+}
+
+.found-words__chip--newest .found-words__points {
+  background: color-mix(in srgb, var(--color-surface-container-lowest) 20%, transparent);
+  color: var(--color-surface-container-lowest);
+}

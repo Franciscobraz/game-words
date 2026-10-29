@@ -1,0 +1,38 @@
+/* The verdict of a word (PLAY-01 AC 7-10, phone-feedbacks.png). */
+.feedback-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  margin: 0;
+  padding: 0 var(--space-md);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-black);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.feedback-pill .icon {
+  margin-right: var(--space-xs);
+  font-size: 1.25em;
+}
+
+.feedback-pill--valid {
+  background: var(--color-valid);
+  color: var(--color-on-valid);
+}
+
+.feedback-pill--invalid {
+  background: var(--color-invalid);
+  color: var(--color-on-invalid);
+}
+
+.feedback-pill--already-found {
+  background: var(--color-already-found);
+  color: var(--color-on-already-found);
+}
+
+.feedback-pill--too-short {
+  background: var(--color-too-short);
+  color: var(--color-on-too-short);
+}

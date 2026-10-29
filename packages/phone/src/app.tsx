@@ -1,6 +1,7 @@
 import { useComputed } from '@preact/signals';
 import type { ComponentType } from 'preact';
 import { type Screen, screenFor } from './model/screen.ts';
+import { BoardScreen } from './screens/BoardScreen.tsx';
 import { CodeEntryScreen } from './screens/CodeEntryScreen.tsx';
 import { CountdownScreen } from './screens/CountdownScreen.tsx';
 import { ConnectingScreen } from './screens/ConnectingScreen.tsx';
@@ -22,7 +23,7 @@ const SCREENS: Record<Screen, ComponentType> = {
   lobby: LobbyScreen,
   'host-lobby': HostLobbyScreen,
   countdown: CountdownScreen,
-  board: ConnectingScreen,
+  board: BoardScreen,
   spectator: ConnectingScreen,
   'round-result': ConnectingScreen,
   podium: ConnectingScreen,

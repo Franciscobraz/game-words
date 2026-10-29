@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { ALERT_REMAINING_MS, countdownNumber, formatClock, isAlert } from './clock.ts';
+import { ALERT_REMAINING_MS, countdownNumber, formatClock, isAlert, isTimeUp, remainingShare } from './clock.ts';
 
 describe('formatClock', () => {
   test('formats the remaining time as MM:SS', () => {
@@ -57,5 +57,29 @@ describe('countdownNumber', () => {
   test('stays at 3 while more than 3 seconds are left', () => {
     // A phone whose clock runs early still starts the count at 3.
     expect(countdownNumber(STARTS_AT - 3_500, STARTS_AT)).toBe(3);
+  });
+});
+
+describe('isTimeUp', () => {
+  test('is up from endsAt on', () => {
+    // PLAY-01 AC 20, L-001: one millisecond before endsAt the round is still open.
+    expect(isTimeUp(59_999, 60_000)).toBe(false);
+    expect(isTimeUp(60_000, 60_000)).toBe(true);
+    expect(isTimeUp(61_000, 60_000)).toBe(true);
+  });
+});
+
+describe('remainingShare', () => {
+  test('goes from 1 at startsAt to 0 at endsAt', () => {
+    // SPEC-01 AC 2: a 120 s round with 30 s gone has three quarters left.
+    expect(remainingShare(0, 0, 120_000)).toBe(1);
+    expect(remainingShare(30_000, 0, 120_000)).toBe(0.75);
+    expect(remainingShare(120_000, 0, 120_000)).toBe(0);
+  });
+
+  test('stays between 0 and 1 outside the round', () => {
+    expect(remainingShare(-1_000, 0, 120_000)).toBe(1);
+    expect(remainingShare(130_000, 0, 120_000)).toBe(0);
+    expect(remainingShare(0, 5, 5)).toBe(0);
   });
 });

@@ -40,3 +40,19 @@ export function countdownNumber(serverNow: number, startsAt: number): CountdownN
   const seconds = Math.min(COUNTDOWN_FIRST_NUMBER, Math.ceil(remainingMs / MS_PER_SECOND));
   return seconds as CountdownNumber;
 }
+
+/** Whether the round's time is up at `serverNow`: from `endsAt` on, the board locks and shows "Tempo!" (PLAY-01 AC 20). */
+export function isTimeUp(serverNow: number, endsAt: number): boolean {
+  return serverNow >= endsAt;
+}
+
+/**
+ * The share of the round still left at `serverNow`, from 1 at `startsAt` down to 0
+ * at `endsAt`, for the spectator's progress bar (SPEC-01 AC 2).
+ */
+export function remainingShare(serverNow: number, startsAt: number, endsAt: number): number {
+  const length = endsAt - startsAt;
+  if (length <= 0) return 0;
+  const share = (endsAt - serverNow) / length;
+  return Math.min(1, Math.max(0, share));
+}

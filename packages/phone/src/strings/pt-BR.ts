@@ -102,6 +102,8 @@ export const STRINGS = {
   roundShort: (round: number, total: number) => `Rodada ${round}/${total}`,
   roundTally: (words: number, points: number) => `${words} pal · ${points} pts`,
   foundTotal: (count: number) => `${count} no total`,
+  plusPoints: (points: number) => `+${points}`,
+  board: 'Tabuleiro',
   timeUp: 'Tempo!',
   wrongPhase: 'Essa ação não vale nesta fase',
 

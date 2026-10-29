@@ -10,12 +10,15 @@ import { fileURLToPath } from 'node:url';
  */
 
 /** What the scripted server answers to each client message; `close` drops the socket after. */
-export type Script = (msg: ClientMessage) => { replies: ServerMessage[]; close?: boolean };
+export type Script = (msg: ClientMessage) => { replies: Reply[]; close?: boolean };
+
+/** A message of the scripted server, or a binary hash frame. */
+export type Reply = ServerMessage | ArrayBuffer;
 
 /** The scripted room after the page connected: the test pushes messages and reads what the phone sent. */
 export interface FakeRoom {
   /** Sends a message, or a binary hash frame, to the page's socket. */
-  push(msg: ServerMessage | ArrayBuffer): void;
+  push(msg: Reply): void;
   /** Every message the page sent, `time` excluded, in order. */
   sent(): readonly ClientMessage[];
 }
@@ -34,17 +37,22 @@ export async function fakeRoom(page: Page, script: Script): Promise<FakeRoom> {
       }
       received.push(msg);
       const { replies, close = false } = script(msg);
-      for (const reply of replies) ws.send(JSON.stringify(reply));
+      for (const reply of replies) ws.send(encode(reply));
       if (close) ws.close();
     });
   });
   return {
     push(msg) {
       if (socket === null) throw new Error('The page has not opened the room socket yet');
-      socket.send(msg instanceof ArrayBuffer ? Buffer.from(msg) : JSON.stringify(msg));
+      socket.send(encode(msg));
     },
     sent: () => received,
   };
+}
+
+/** A reply as the socket carries it: JSON text, or the bytes of a hash frame. */
+function encode(reply: Reply): string | Buffer {
+  return reply instanceof ArrayBuffer ? Buffer.from(reply) : JSON.stringify(reply);
 }
 
 const captures = join(dirname(fileURLToPath(import.meta.url)), '../../../.specs/features/m3-phone/captures');

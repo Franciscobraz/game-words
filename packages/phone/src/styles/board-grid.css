@@ -1,0 +1,74 @@
+/* The board: tiles, the lit path and its line (PLAY-01 AC 2-5, 16, phone-board.png). */
+.board-grid {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 100%;
+  padding: 1.5%;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container-low);
+  container-type: size;
+  /* The swipe owns the finger: no scroll, no zoom, no text selection (PLAY-01 AC 16). */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.board-grid--locked {
+  opacity: 0.35;
+}
+
+.board-grid__line {
+  position: absolute;
+  top: 1.5%;
+  left: 1.5%;
+  width: 97%;
+  height: 97%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.board-grid__line polyline {
+  fill: none;
+  stroke: var(--path-color);
+  stroke-width: 0.035;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.6;
+}
+
+.board-grid__cell {
+  position: relative;
+  display: flex;
+  width: calc(100% / var(--board-size));
+  height: calc(100% / var(--board-size));
+  padding: 1%;
+  pointer-events: none;
+}
+
+.board-grid__tile {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container-high);
+  box-shadow: inset 0 -4px 0 var(--color-surface-container);
+  color: var(--color-on-surface);
+  font-size: calc(100cqw / var(--board-size) * 0.4);
+  font-weight: var(--font-weight-black);
+  line-height: 1;
+}
+
+.board-grid__tile--lit {
+  background: var(--path-color);
+  box-shadow: inset 0 -5px 0 color-mix(in srgb, var(--path-color) 60%, var(--color-surface-container-lowest));
+  color: var(--color-surface-container-lowest);
+}
+
+.board-grid__tile--last {
+  outline: 3px solid var(--color-on-surface);
+  outline-offset: 2px;
+}

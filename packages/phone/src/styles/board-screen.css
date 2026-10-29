@@ -1,0 +1,22 @@
+/* The round of a player (PLAY-01, phone-board.png): exactly one screen tall, the board takes what is left (UI-01 AC 9). */
+.board-screen {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  padding-bottom: var(--space-md);
+  overflow: hidden;
+}
+
+.board-screen__time-up {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: 0;
+  padding: var(--space-md) var(--space-xl);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container-highest);
+  color: var(--color-alert);
+  font-size: var(--font-size-headline-lg);
+  font-weight: var(--font-weight-black);
+  transform: translate(-50%, -50%);
+}

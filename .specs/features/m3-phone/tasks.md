@@ -726,11 +726,11 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] Tela igual a `.specs/features/m3-phone/captures/phone-board.png` e feedbacks como `phone-feedbacks.png`, fotos em `phone-board.running.png` e `phone-feedbacks.running.png`
-- [ ] O `BoardGrid` mede o espaço livre (`ResizeObserver`) e usa o maior quadrado que cabe
-- [ ] C45, C51, C61, C62, C65, C111, C119 passam
-- [ ] Gate check passes: full
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Tela igual a `.specs/features/m3-phone/captures/phone-board.png` e feedbacks como `phone-feedbacks.png`, fotos em `phone-board.running.png` e `phone-feedbacks.running.png`
+- [x] O `BoardGrid` mede o espaço livre (`ResizeObserver`) e usa o maior quadrado que cabe
+- [x] C45, C51, C61, C62, C65, C111, C119 passam
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: e2e
 **Gate**: full

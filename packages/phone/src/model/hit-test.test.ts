@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { HIT_RADIUS_RATIO, tileAtPoint } from './hit-test.ts';
+import { HIT_RADIUS_RATIO, isInsideBoard, tileAtPoint } from './hit-test.ts';
 
 /** A 4x4 board of 400 px at (20, 100): each tile is 100 px, so the hit circle has a 35 px radius. */
 const BOARD_4X4 = { left: 20, top: 100, width: 400, height: 400 };
@@ -49,5 +49,17 @@ describe('tileAtPoint', () => {
   test('finds no tile outside the board', () => {
     expect(tileAtPoint({ x: BOARD_4X4.left - 1, y: 150 }, BOARD_4X4, 4, HIT_RADIUS_RATIO)).toBeNull();
     expect(tileAtPoint({ x: 150, y: BOARD_4X4.top + BOARD_4X4.height + 1 }, BOARD_4X4, 4, HIT_RADIUS_RATIO)).toBeNull();
+  });
+});
+
+describe('isInsideBoard', () => {
+  test('keeps the edges on the board and anything past them off', () => {
+    // Edge Cases: the finger leaving the board releases the path; the edge itself is still the board (L-001).
+    expect(isInsideBoard({ x: 20, y: 100 }, BOARD_4X4)).toBe(true);
+    expect(isInsideBoard({ x: 420, y: 500 }, BOARD_4X4)).toBe(true);
+    expect(isInsideBoard({ x: 19.9, y: 300 }, BOARD_4X4)).toBe(false);
+    expect(isInsideBoard({ x: 420.1, y: 300 }, BOARD_4X4)).toBe(false);
+    expect(isInsideBoard({ x: 200, y: 99.9 }, BOARD_4X4)).toBe(false);
+    expect(isInsideBoard({ x: 200, y: 500.1 }, BOARD_4X4)).toBe(false);
   });
 });

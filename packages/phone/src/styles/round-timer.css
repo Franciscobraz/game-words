@@ -1,0 +1,76 @@
+/* The round's timer card (PLAY-01 AC 14-15, SPEC-01 AC 2, phone-board.png, phone-spectator.png). */
+.round-timer {
+  margin-top: var(--space-sm);
+}
+
+.round-timer__card {
+  display: flex;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md) var(--space-sm) var(--space-sm);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container-high);
+}
+
+.round-timer__icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-container-highest);
+  color: var(--color-secondary);
+  font-size: 1.5rem;
+}
+
+.round-timer__time {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  margin-left: var(--space-md);
+}
+
+.round-timer__clock {
+  color: var(--color-on-surface);
+  font-size: clamp(1.5rem, 7vw, 1.875rem);
+  font-weight: var(--font-weight-black);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.round-timer__clock--alert {
+  color: var(--color-alert);
+}
+
+.round-timer__round {
+  color: var(--color-primary);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-bold);
+}
+
+.round-timer__tally {
+  flex: none;
+  margin-left: var(--space-sm);
+  color: var(--color-on-surface);
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-extrabold);
+}
+
+.round-timer__bar {
+  height: 6px;
+  margin-top: var(--space-sm);
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-low);
+}
+
+.round-timer__bar-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--color-secondary);
+  transform-origin: left center;
+}

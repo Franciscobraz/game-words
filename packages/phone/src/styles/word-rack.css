@@ -1,0 +1,86 @@
+/* The word above the board and its verdict (PLAY-01 AC 5-11, phone-board.png, phone-feedbacks.png). */
+.word-rack {
+  --rack-tile: clamp(2.25rem, 11vw, 2.75rem);
+
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  margin-top: var(--space-sm);
+  padding: clamp(var(--space-sm), 2vh, var(--space-md)) var(--space-md);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container-low);
+  container-type: inline-size;
+}
+
+.word-rack__word {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: var(--rack-tile);
+}
+
+.word-rack__tile {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: min(var(--rack-tile), calc(100cqw / var(--letters) - 4px));
+  height: 100%;
+  margin: 0 2px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-container-high);
+  color: var(--color-on-surface);
+  font-size: min(1.375rem, calc(60cqw / var(--letters)));
+  font-weight: var(--font-weight-black);
+}
+
+/* The swipe and a valid word light in the player's color. */
+.word-rack__word--swiping .word-rack__tile,
+.word-rack__word--valid .word-rack__tile {
+  background: var(--path-color);
+  box-shadow: inset 0 -4px 0 color-mix(in srgb, var(--path-color) 60%, var(--color-surface-container-lowest));
+  color: var(--color-surface-container-lowest);
+}
+
+.word-rack__word--invalid .word-rack__tile {
+  color: var(--color-error);
+}
+
+.word-rack__word--invalid {
+  animation: word-rack-shake 0.4s ease-in-out;
+}
+
+.word-rack__word--already-found .word-rack__tile {
+  box-shadow: inset 0 -3px 0 var(--color-already-found);
+  color: var(--color-already-found);
+}
+
+.word-rack__word--too-short .word-rack__tile {
+  color: var(--color-on-too-short);
+}
+
+/* The verdict keeps its room while empty, so the board below never moves. */
+.word-rack__verdict {
+  display: flex;
+  justify-content: center;
+  min-height: 2rem;
+  margin-top: var(--space-sm);
+}
+
+@keyframes word-rack-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20%,
+  60% {
+    transform: translateX(-8px);
+  }
+
+  40%,
+  80% {
+    transform: translateX(8px);
+  }
+}

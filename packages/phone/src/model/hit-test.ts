@@ -37,3 +37,10 @@ export function tileAtPoint(point: Point, board: BoardRect, size: number, hitRat
   const distance = Math.hypot(point.x - centerX, point.y - centerY);
   return distance <= radius ? row * size + column : null;
 }
+
+/** Whether `point` is on the board, edges included; a finger that leaves it releases the swipe (Edge Cases). */
+export function isInsideBoard(point: Point, board: BoardRect): boolean {
+  const insideX = point.x >= board.left && point.x <= board.left + board.width;
+  const insideY = point.y >= board.top && point.y <= board.top + board.height;
+  return insideX && insideY;
+}
