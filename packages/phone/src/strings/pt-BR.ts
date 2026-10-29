@@ -50,7 +50,7 @@ export const STRINGS = {
   spectatorTag: 'ESPECTADOR(A)',
   boardChip: (size: number) => `Tabuleiro ${size}x${size}`,
   timeChip: (clock: string) => `${clock} min`,
-  roundsChip: (rounds: number) => `${rounds} Rodadas`,
+  roundsChip: (rounds: number) => (rounds === 1 ? '1 Rodada' : `${rounds} Rodadas`),
   minLengthChip: (minLength: number) => `Mín. ${minLength} letras`,
   playersInRoom: (count: number) => `${count} na sala`,
   waitingForHostToStart: (host: string) => `Aguardando ${host} iniciar a partida`,
