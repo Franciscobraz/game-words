@@ -44,6 +44,14 @@ export interface RoomStore {
   playAgain(): void;
   backToLobby(): void;
   closeRoom(): void;
+  /** Sends the swiped paths the phone judged valid (PLAY-01 AC 12). */
+  submit(paths: number[][]): void;
+  /**
+   * Calls `listener` with every server message, after the room signal took it in;
+   * the round state follows `submit-result` and the end of the round this way.
+   * Returns the function that stops listening.
+   */
+  listen(listener: (msg: ServerMessage) => void): () => void;
   /** "Tentar de novo" after "Sem conexão" (RECON-01 AC 4). */
   retry(): void;
   /** "ENTRAR EM OUTRA SALA": forgets this room, which brings back the code screen (EXIT-01 AC 5). */
@@ -63,6 +71,7 @@ export function createRoomStore(deps: RoomDeps): RoomStore {
   const { storage } = deps;
   const room = signal<RoomView>(INITIAL_VIEW);
   const connection = signal<ConnectionStatus>('closed');
+  const listeners = new Set<(msg: ServerMessage) => void>();
 
   const link = deps.openConnection({
     onMessage: (msg) => receive(msg),
@@ -76,6 +85,12 @@ export function createRoomStore(deps: RoomDeps): RoomStore {
 
   function receive(msg: ServerMessage): void {
     room.value = applyServerMessage(room.value, msg);
+    keepToken(msg);
+    for (const listener of listeners) listener(msg);
+  }
+
+  /** Saves, drops or replaces the room's token as the server's message says (ENTRY-01 AC 6-7, EXIT-01 AC 1-3). */
+  function keepToken(msg: ServerMessage): void {
     const code = room.value.code;
     if (code === null) return;
     if (msg.type === 'joined') storage.set(tokenKey(code), msg.token);
@@ -113,6 +128,11 @@ export function createRoomStore(deps: RoomDeps): RoomStore {
     playAgain: () => send({ type: 'play-again' }),
     backToLobby: () => send({ type: 'back-to-lobby' }),
     closeRoom: () => send({ type: 'close-room' }),
+    submit: (paths) => send({ type: 'submit', paths }),
+    listen(listener) {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
     retry: () => link.retry(),
     leaveRoom() {
       link.close();

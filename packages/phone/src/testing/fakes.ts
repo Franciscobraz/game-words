@@ -106,8 +106,9 @@ export interface FakeConnection {
   handlers(): ConnectionHandlers;
 }
 
-/** A fake `RoomConnection` whose server clock reads `serverTime`. */
-export function fakeConnection(serverTime = 0): FakeConnection {
+/** A fake `RoomConnection` whose server clock reads `serverTime`, a fixed time or a clock to follow. */
+export function fakeConnection(serverTime: number | (() => number) = 0): FakeConnection {
+  const readServerTime = typeof serverTime === 'number' ? () => serverTime : serverTime;
   let registered: ConnectionHandlers | null = null;
   const fake: FakeConnection = {
     connects: [],
@@ -125,7 +126,7 @@ export function fakeConnection(serverTime = 0): FakeConnection {
         close: () => {
           fake.closes += 1;
         },
-        serverNow: () => serverTime,
+        serverNow: readServerTime,
       };
       return connection;
     },
@@ -151,4 +152,28 @@ export function fakeStorage(initial: Record<string, string> = {}): KeyValueStora
       entries.delete(key);
     },
   };
+}
+
+/** The device feedback of a valid word, recorded for the test (PLAY-01 AC 18-19). */
+export interface FakeDevice {
+  vibrate(ms: number): void;
+  playHitSound(): void;
+  /** Each vibration asked, in ms. */
+  vibrations: number[];
+  /** How many times the hit sound played. */
+  sounds: number;
+}
+
+export function fakeDevice(): FakeDevice {
+  const device: FakeDevice = {
+    vibrations: [],
+    sounds: 0,
+    vibrate: (ms) => {
+      device.vibrations.push(ms);
+    },
+    playHitSound: () => {
+      device.sounds += 1;
+    },
+  };
+  return device;
 }
