@@ -365,10 +365,10 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] Empate no placar e na coroa cobertos
-- [ ] C20, C21, C22, C23, C70, C77, C82 passam
-- [ ] Gate check passes: `npx vitest run packages/phone`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] Empate no placar e na coroa cobertos
+- [x] C20, C21, C22, C23, C70, C77, C82 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick
