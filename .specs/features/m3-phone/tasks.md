@@ -620,10 +620,10 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] 3.000 ms e 3.001 ms restantes; 10º e 11º caminho na janela (L-001)
-- [ ] C57 passa
-- [ ] Gate check passes: `npx vitest run packages/phone`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] 3.000 ms e 3.001 ms restantes; 10º e 11º caminho na janela (L-001)
+- [x] C57 passa
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick
