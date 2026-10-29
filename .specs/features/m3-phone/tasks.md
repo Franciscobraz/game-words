@@ -791,9 +791,9 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] C71, C72, C73, C74 passam
-- [ ] Gate check passes: `npx vitest run packages/phone`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] C71, C72, C73, C74 passam
+- [x] Gate check passes: `npx vitest run packages/phone`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: unit
 **Gate**: quick
