@@ -134,3 +134,33 @@ test('swaps lobbies when the host changes', async ({ page, browser }) => {
     tv.close();
   }
 });
+
+test('closes the room only after the confirmation', async ({ page }) => {
+  // HOST-01 AC 15: "Encerrar sala" in the menu (⋮) asks first; "Cancelar" sends nothing, confirming sends `close-room`.
+  const room = await hostWithBeto(page);
+  const openCloseRoom = async () => {
+    await page.getByRole('button', { name: STRINGS.hostMenu }).click();
+    await page.getByRole('menuitem', { name: STRINGS.closeRoom }).click();
+    await expect(page.getByRole('alertdialog')).toContainText(STRINGS.confirmCloseRoom);
+  };
+  try {
+    await openCloseRoom();
+    expect(room.beto.messages().some(isType('closed'))).toBe(false);
+    await page.getByRole('alertdialog').getByRole('button', { name: STRINGS.cancel }).click();
+    await expect(page.getByRole('alertdialog')).toBeHidden();
+
+    // The server answers in order: once this later change is back, a `close-room` from "Cancelar" would be too.
+    await page.getByRole('group', { name: STRINGS.boardLabel }).getByRole('button', { name: '5×5' }).click();
+    await room.beto.waitFor((msg): msg is Extract<ServerMessage, { type: 'settings' }> => msg.type === 'settings' && msg.settings.size === 5);
+    expect(room.beto.messages().some(isType('closed'))).toBe(false);
+
+    await openCloseRoom();
+    await page.getByRole('alertdialog').getByRole('button', { name: STRINGS.closeRoom }).click();
+
+    const closed = await room.beto.waitFor(isType('closed'));
+    expect(closed.reason).toBe('closed-by-host');
+    await expect(page.getByRole('heading', { name: STRINGS.hostClosedRoom('Ana') })).toBeVisible();
+  } finally {
+    room.close();
+  }
+});

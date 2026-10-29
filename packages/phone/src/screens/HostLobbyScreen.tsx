@@ -1,4 +1,5 @@
 import { useState } from 'preact/hooks';
+import { HostMenu } from '../components/HostMenu.tsx';
 import { MedalIcon, PlayArrowIcon, TuneIcon } from '../components/icons.tsx';
 import { PlayerRow } from '../components/PlayerRow.tsx';
 import { PrimaryButton } from '../components/PrimaryButton.tsx';
@@ -13,7 +14,7 @@ import '../styles/host-lobby.css';
 /**
  * The host's lobby: "VOCÊ É O(A) ANFITRIÃO(Ã)", the editable match settings, the
  * players and "INICIAR PARTIDA", always enabled because the host may play alone
- * (HOST-01 AC 1-9, 14, phone-host-lobby.png). A tap on another player opens their
+ * (HOST-01 AC 1-9, 14-15, phone-host-lobby.png). A tap on another player opens their
  * actions (HOST-01 AC 10-13).
  */
 export function HostLobbyScreen() {
@@ -26,7 +27,10 @@ export function HostLobbyScreen() {
 
   return (
     <main class="screen host-lobby">
-      <TopBar code={view.code ?? ''} />
+      <TopBar
+        code={view.code ?? ''}
+        menu={<HostMenu items={[{ label: STRINGS.closeRoom, confirm: STRINGS.confirmCloseRoom, onConfirm: room.closeRoom }]} />}
+      />
 
       <p class="host-lobby__badge">
         <MedalIcon />

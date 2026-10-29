@@ -82,6 +82,8 @@ export const STRINGS = {
   confirmKickAction: 'Remover',
   startMatch: 'INICIAR PARTIDA',
   closeRoom: 'Encerrar sala',
+  confirmCloseRoom: 'Encerrar a sala? Todos os jogadores saem.',
+  hostMenu: 'Menu do(a) anfitrião(ã)',
   notHost: 'Só o(a) anfitrião(ã) pode fazer isso',
   badSettings: 'Essa configuração não é válida',
   badTarget: 'Esse jogador não está mais na sala',
