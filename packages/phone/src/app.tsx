@@ -1,17 +1,15 @@
-import { type ReadonlySignal, useComputed, useSignal } from '@preact/signals';
+import { useComputed } from '@preact/signals';
 import type { ComponentType } from 'preact';
-import { useEffect } from 'preact/hooks';
 import { type Screen, screenFor } from './model/screen.ts';
 import { CodeEntryScreen } from './screens/CodeEntryScreen.tsx';
+import { CountdownScreen } from './screens/CountdownScreen.tsx';
 import { ConnectingScreen } from './screens/ConnectingScreen.tsx';
 import { KickedScreen, ReplacedScreen, RoomClosedScreen } from './screens/ExitScreens.tsx';
 import { HostLobbyScreen } from './screens/HostLobbyScreen.tsx';
 import { JoinScreen } from './screens/JoinScreen.tsx';
 import { LobbyScreen } from './screens/LobbyScreen.tsx';
+import { useServerClock } from './state/server-clock.ts';
 import { useStore } from './state/store.ts';
-
-/** How often the app reads the server clock, so the board replaces the countdown on time (COUNT-01 AC 2). */
-const SERVER_CLOCK_TICK_MS = 100;
 
 /**
  * The component of each screen (style guide §4, O): a new screen is a new entry.
@@ -23,7 +21,7 @@ const SCREENS: Record<Screen, ComponentType> = {
   join: JoinScreen,
   lobby: LobbyScreen,
   'host-lobby': HostLobbyScreen,
-  countdown: ConnectingScreen,
+  countdown: CountdownScreen,
   board: ConnectingScreen,
   spectator: ConnectingScreen,
   'round-result': ConnectingScreen,
@@ -40,16 +38,4 @@ export function App() {
   const screen = useComputed(() => screenFor(room.room.value, serverNow.value));
   const Current = SCREENS[screen.value];
   return <Current />;
-}
-
-/** The server clock as a signal, read every `SERVER_CLOCK_TICK_MS` (COUNT-01 AC 3). */
-function useServerClock(read: () => number): ReadonlySignal<number> {
-  const now = useSignal(read());
-  useEffect(() => {
-    const id = setInterval(() => {
-      now.value = read();
-    }, SERVER_CLOCK_TICK_MS);
-    return () => clearInterval(id);
-  }, [now, read]);
-  return now;
 }

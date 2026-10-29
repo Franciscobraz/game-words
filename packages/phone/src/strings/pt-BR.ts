@@ -91,6 +91,7 @@ export const STRINGS = {
   // Countdown (COUNT-01)
   roundOfUpper: (round: number, total: number) => `RODADA ${round} DE ${total}`,
   getReady: 'Prepare o dedo!',
+  lettersSoon: 'As letras aparecem em instantes…',
 
   // Board (PLAY-01)
   validWord: (points: number) => `VÁLIDA (+${points} PTS)`,

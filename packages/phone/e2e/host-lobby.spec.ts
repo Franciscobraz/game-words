@@ -161,7 +161,7 @@ test('offers Portugues (BR) as the only dictionary', async ({ page }) => {
 });
 
 test('start sends start', async ({ page, browser }) => {
-  // HOST-01 AC 14: "INICIAR PARTIDA" sends `start`; the server starts the countdown and every phone leaves the lobby.
+  // HOST-01 AC 14: "INICIAR PARTIDA" sends `start`; the server starts the countdown and every phone shows it.
   const room = await hostRoom(page);
   const caio = await openPhone(browser, room.tv.code);
   try {
@@ -170,6 +170,9 @@ test('start sends start', async ({ page, browser }) => {
 
     await page.getByRole('button', { name: STRINGS.startMatch }).click();
 
+    // Both phones go to the countdown (COUNT-01 AC 1), which lasts 3 s before the board.
+    await expect(page.getByText(STRINGS.getReady)).toBeVisible();
+    await expect(caio.page.getByText(STRINGS.getReady)).toBeVisible();
     const roundStart = await room.beto.waitFor(isType('round-start'));
     expect(roundStart.index).toBe(0);
     await expect(page.getByRole('button', { name: STRINGS.startMatch })).toBeHidden();

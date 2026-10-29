@@ -1,4 +1,13 @@
-import { PALETTE, type PlayerInfo, type Settings, type WelcomeMessage } from '@bwords/core';
+import {
+  encodeHashFrame,
+  hashPrefixes,
+  PALETTE,
+  type PlayerInfo,
+  type RoundInfo,
+  type RoundStartMessage,
+  type Settings,
+  type WelcomeMessage,
+} from '@bwords/core';
 
 /** The sample data of the captures: room KBXT, host Ana, Beto on the phone, Caio and Duda. */
 
@@ -36,4 +45,57 @@ export function lobbyWelcome(players: PlayerInfo[], playerId: string | null): We
     found: [],
     salt: null,
   };
+}
+
+/** The board of the captures: C A S A / Qu E R O / T I N S / L U A M. */
+export const SAMPLE_BOARD: string[][] = [
+  ['c', 'a', 's', 'a'],
+  ['qu', 'e', 'r', 'o'],
+  ['t', 'i', 'n', 's'],
+  ['l', 'u', 'a', 'm'],
+];
+
+/** Words of the sample board the scripted round accepts, with the tiles that spell them (row-major). */
+export const SAMPLE_WORDS = {
+  casa: [0, 1, 2, 3],
+  quero: [4, 5, 6, 7],
+  lua: [12, 13, 14],
+} as const;
+
+/** The scripted round's salt; any fixed bytes do. */
+const SAMPLE_SALT = Uint8Array.from({ length: 16 }, (_, i) => i + 1);
+
+/** The id of the scripted round, carried by its hash frame. */
+export const SAMPLE_ROUND_ID = 7;
+
+/** A round of the sample board opening at `startsAt` and closing at `endsAt` on the page's clock. */
+export function sampleRound(startsAt: number, endsAt: number, index = 0): RoundInfo {
+  return { id: SAMPLE_ROUND_ID, index, board: SAMPLE_BOARD, startsAt, endsAt };
+}
+
+/** The `round-start` of `round`, with the salt a phone gets. */
+export function roundStartOf(round: RoundInfo): RoundStartMessage {
+  return { type: 'round-start', ...round, salt: Buffer.from(SAMPLE_SALT).toString('base64url') };
+}
+
+/** The phase `round` of KBXT as the server describes it to `playerId`, with the words it already found. */
+export function roundWelcome(players: PlayerInfo[], playerId: string, round: RoundInfo, found: string[] = []): WelcomeMessage {
+  return {
+    type: 'welcome',
+    role: 'player',
+    code: SAMPLE_CODE,
+    phase: 'round',
+    settings: { ...SAMPLE_SETTINGS, rounds: 3 },
+    players,
+    hostId: ANA.id,
+    round,
+    playerId,
+    found,
+    salt: Buffer.from(SAMPLE_SALT).toString('base64url'),
+  };
+}
+
+/** The binary hash frame of the scripted round: the salted prefixes of the sample words. */
+export async function sampleHashFrame(): Promise<ArrayBuffer> {
+  return encodeHashFrame(SAMPLE_ROUND_ID, await hashPrefixes(SAMPLE_SALT, Object.keys(SAMPLE_WORDS)));
 }
