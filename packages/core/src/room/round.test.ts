@@ -107,6 +107,28 @@ describe('round start', () => {
     expect(sentTo(r.effects, 'conn-p2')[0]).toMatchObject({ type: 'round-start', salt: prepared.salt });
   });
 
+  test('tells every connection that the former spectator plays, before the round starts', async () => {
+    const ana = makePlayer('p1', { score: 9 });
+    const late = makePlayer('p2', { color: '#E53935', spectator: true });
+    const prepared = await prepare({ ...DEFAULT_SETTINGS, rounds: 2 });
+    const results: RoomState = roomWith([ana, late], {
+      phase: 'results',
+      roundIndex: 0,
+      settings: { ...DEFAULT_SETTINGS, rounds: 2 },
+      round: { id: 1, board: prepared.board, startsAt: 0, endsAt: 1000, salt: 'old' },
+      pendingStart: true,
+    });
+
+    const r = step(results, { kind: 'prepared', round: prepared }, 50_000, deps);
+
+    const broadcasts = sentTo(r.effects, '*');
+    const players = broadcasts.find((m) => m.type === 'players');
+    expect(players).toMatchObject({ players: [{ id: 'p1', spectator: false }, { id: 'p2', spectator: false }] });
+    expect(broadcasts.indexOf(players!)).toBeLessThan(broadcasts.findIndex((m) => m.type === 'round-start'));
+    const playersEffect = r.effects.find((e) => e.kind === 'broadcast' && e.msg.type === 'players');
+    expect(playersEffect).not.toHaveProperty('roles');
+  });
+
   test('start without a prepared board asks for one and starts when it arrives', async () => {
     const alice = makePlayer('p1');
     const lobby = roomWith([alice]);

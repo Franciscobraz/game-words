@@ -227,6 +227,7 @@ O M2 deixou a sala pronta no servidor, mas só a página de debug fala com ela. 
 
 1. WHILE o jogador é espectador e a rodada está aberta, the celular SHALL mostrar a tela em `.specs/features/m3-phone/captures/phone-spectator.png`: o tabuleiro esmaecido, sem reagir ao toque, com a faixa "Você entra na próxima rodada." e "Assistindo"
 2. WHILE o jogador é espectador e a rodada está aberta, the celular SHALL mostrar o timer com a barra de progresso e, no lugar das palavras encontradas, a lista "JOGADORES NA SALA" sem contagem de palavras (AD-011)
+3. WHEN a rodada seguinte começa, the servidor SHALL mandar a todos os aparelhos a lista de jogadores sem a marca de espectador antes do `round-start`, para o celular de quem era espectador abrir o tabuleiro (emenda de 2026-10-29: achado do walk)
 
 **Independent Test**: Entrar durante a rodada e conferir a tela travada; jogar na rodada seguinte.
 

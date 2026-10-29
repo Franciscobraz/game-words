@@ -1020,11 +1020,51 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 - [x] Uma foto por tela ou estado da lista
 - [x] O user respondeu sobre cada foto, com as palavras dele em `## Handoff` → Settled mid-build
-- [ ] C118 passa
+- [x] C118 passa
 
 **Tests**: none
 **Gate**: build
 **Commit**: `docs(phone): photos of screens without capture`
+
+---
+
+### T45: Former spectator plays the next round
+
+**What**: Na contagem da rodada seguinte o servidor manda a lista de jogadores a todos, antes do `round-start`, e o celular de quem era espectador abre o tabuleiro (achado do walk).
+**Where**: `packages/core/src/room/round.ts` (modify)
+**Depends on**: T42
+**Reuses**: `playersMessage` (core)
+**Requirement**: SPEC-01
+
+**Done when**:
+
+- [x] C124 passa
+- [x] Gate check passes: `npx vitest run packages/core`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `fix(core): announce players when a round starts`
+
+---
+
+### T46: Singular rounds chip
+
+**What**: O chip das regras diz "1 Rodada" no singular (achado do walk).
+**Where**: `packages/phone/src/strings/pt-BR.ts` (modify)
+**Depends on**: T45
+**Reuses**: padrão de plural de `playerCount`
+**Requirement**: LOBBY-01
+
+**Done when**:
+
+- [ ] C125 passa
+- [ ] Gate check passes: `npx vitest run packages/phone`
+- [ ] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `fix(phone): singular rounds chip`
 
 ---
 
@@ -1401,6 +1441,12 @@ Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phon
 **C123** - Depois de `room-not-found` a conexão não tenta reconectar; usar "CONTINUAR" de novo abre uma conexão nova (Edge Cases, ENTRY-01)
 Proof: `npx vitest run packages/phone/src/net/room-connection.test.ts -t "stops reconnecting after room-not-found"`
 
+**C124** - Na contagem da rodada seguinte todo aparelho recebe a lista de jogadores sem a marca de espectador antes do `round-start` (SPEC-01, AC 3)
+Proof: `npx vitest run packages/core/src/room/round.test.ts -t "tells every connection that the former spectator plays, before the round starts"`
+
+**C125** - O chip de rodadas diz "1 Rodada" no singular e "N Rodadas" no plural (LOBBY-01)
+Proof: `npx vitest run packages/phone/src/strings/pt-BR.test.ts -t "says rounds in the singular for one round"`
+
 **C118** - As telas sem capture foram fotografadas a 390 px e mostradas ao user (UI-01)
 Proof: walk - cada foto em `captures/uncaptured/` com a resposta do user em `## Handoff`
 
@@ -1427,7 +1473,7 @@ Phase 3:  T43 --→ T44 --→ T15 --→ T16 --→ T17 --→ T18 --→ T19
 Phase 4:  T20 --→ T21 --→ T22 --→ T23 --→ T24 --→ T25 --→ T26
 Phase 5:  T27 --→ T28 --→ T29 --→ T30
 Phase 6:  T31 --→ T32 --→ T33 --→ T34 --→ T35
-Phase 7:  T36 --→ T37 --→ T38 --→ T39 --→ T40 --→ T41 --→ T42
+Phase 7:  T36 --→ T37 --→ T38 --→ T39 --→ T40 --→ T41 --→ T42 --→ T45 --→ T46
 ```
 
 Execution is strictly sequential. Cada fase é um batch de subagente (Phase 1 tem 8 tarefas, o resto ≤ 7), e o orquestrador para entre as fases para mostrar o resultado e perguntar antes da próxima.

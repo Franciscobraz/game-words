@@ -1,4 +1,4 @@
-import { type Effect, type Handler, type PersistKey, roundInfo, type StepResult, unchanged } from './effects.ts';
+import { type Effect, type Handler, type PersistKey, playersMessage, roundInfo, type StepResult, unchanged } from './effects.ts';
 import { type PreparedRound, preparedFor } from './prepare.ts';
 import { encodeHashFrame } from './protocol.ts';
 import type { RoomState, RoundMeta } from './state.ts';
@@ -18,7 +18,8 @@ function hasPrepared(state: RoomState): boolean {
 
 /**
  * Starts the countdown of a round with the prepared board: spectators become
- * players, everyone's round words reset, and every connection gets `round-start`.
+ * players, everyone's round words reset, and every connection gets the new player
+ * list and then `round-start`, so a former spectator's phone opens its board (SPEC-01 AC 3).
  * Outside the results this is the first round of a new match, so every score
  * starts at zero.
  * Only phones get the salt, followed by the binary frame of the hash prefixes;
@@ -51,6 +52,7 @@ export function beginRound(state: RoomState, now: number): StepResult {
   const keys: PersistKey[] = ['room', 'round:solutions', 'round:next', ...next.players.map((p) => `found:${p.id}` as const)];
   const effects: Effect[] = [
     { kind: 'persist', keys },
+    { kind: 'broadcast', msg: playersMessage(next) },
     { kind: 'broadcast', msg: { type: 'round-start', ...info }, roles: ['tv', 'guest'] },
   ];
   const frame = encodeHashFrame(round.id, next.solutions!.prefixes);
