@@ -9,6 +9,7 @@ import { KickedScreen, ReplacedScreen, RoomClosedScreen } from './screens/ExitSc
 import { HostLobbyScreen } from './screens/HostLobbyScreen.tsx';
 import { JoinScreen } from './screens/JoinScreen.tsx';
 import { LobbyScreen } from './screens/LobbyScreen.tsx';
+import { SpectatorScreen } from './screens/SpectatorScreen.tsx';
 import { useServerClock } from './state/server-clock.ts';
 import { useStore } from './state/store.ts';
 
@@ -24,7 +25,7 @@ const SCREENS: Record<Screen, ComponentType> = {
   'host-lobby': HostLobbyScreen,
   countdown: CountdownScreen,
   board: BoardScreen,
-  spectator: ConnectingScreen,
+  spectator: SpectatorScreen,
   'round-result': ConnectingScreen,
   podium: ConnectingScreen,
   kicked: KickedScreen,

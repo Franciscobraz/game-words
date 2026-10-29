@@ -115,6 +115,7 @@ export const STRINGS = {
   joinsNextRound: 'Você entra na próxima rodada.',
   watching: 'Assistindo',
   playersInRoomTitle: 'JOGADORES NA SALA',
+  playerCount: (count: number) => (count === 1 ? '1 jogador' : `${count} jogadores`),
 
   // Round result (RES-01)
   roundResultTitle: (round: number, total: number) => `Rodada ${round} de ${total} • RESULTADO`,

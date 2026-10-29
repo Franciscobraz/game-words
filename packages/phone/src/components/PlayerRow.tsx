@@ -10,7 +10,8 @@ import { WinsBadge } from './WinsBadge.tsx';
 export interface PlayerRowProps {
   nickname: string;
   color: string;
-  wins: number;
+  /** The session wins; left out where the list shows no score, as the spectator's (phone-spectator.png). */
+  wins?: number;
   crowned: boolean;
   tags: readonly PlayerTag[];
   dimmed: boolean;
@@ -35,7 +36,7 @@ export function PlayerRow({ nickname, color, wins, crowned, tags, dimmed, onSele
           <PlayerTagPill key={tag} tag={tag} />
         ))}
       </span>
-      <WinsBadge wins={wins} />
+      {wins !== undefined && <WinsBadge wins={wins} />}
     </>
   );
 

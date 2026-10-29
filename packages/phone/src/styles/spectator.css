@@ -1,0 +1,99 @@
+/* The round as a spectator sees it (SPEC-01, phone-spectator.png). */
+.spectator__board {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1;
+  margin-top: var(--space-md);
+}
+
+.spectator__notice {
+  position: absolute;
+  top: 50%;
+  left: 2%;
+  width: 96%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-lg) var(--space-md);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container-high);
+  text-align: center;
+  transform: translateY(-50%);
+}
+
+.spectator__notice-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-highest);
+  color: var(--color-secondary);
+  font-size: 1.75rem;
+}
+
+.spectator__notice-text {
+  margin: var(--space-md) 0 0;
+  color: var(--color-on-surface);
+  font-size: clamp(1.0625rem, 5vw, var(--font-size-title-md));
+  font-weight: var(--font-weight-extrabold);
+}
+
+.spectator__watching {
+  display: flex;
+  align-items: center;
+  margin: var(--space-sm) 0 0;
+  color: var(--color-secondary);
+  font-size: var(--font-size-body-lg);
+  font-weight: var(--font-weight-bold);
+}
+
+.spectator__watching .waiting-dots {
+  margin-left: var(--space-sm);
+}
+
+.spectator__players {
+  margin-top: var(--space-lg);
+  padding: var(--space-md);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container-low);
+}
+
+.spectator__players-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.spectator__players-title {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  color: var(--color-on-surface);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.06em;
+}
+
+.spectator__players-title .icon {
+  margin-right: var(--space-sm);
+  color: var(--color-primary);
+  font-size: 1.375rem;
+}
+
+.spectator__count {
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-bold);
+  white-space: nowrap;
+}
+
+.spectator__list {
+  margin: var(--space-xs) 0 0;
+  padding: 0;
+  list-style: none;
+}
