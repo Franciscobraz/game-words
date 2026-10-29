@@ -1,6 +1,8 @@
 /* The podium's personal card (POD-01 AC 2, phone-podium.jpg). */
 .podium-highlight {
+  position: relative;
   display: flex;
+  overflow: hidden;
   flex-direction: column;
   align-items: center;
   margin-top: var(--space-md);
@@ -89,4 +91,10 @@
 .podium-highlight__value .icon {
   margin-right: var(--space-xs);
   color: var(--color-crown);
+}
+
+/* Everything to read stays above the confetti (POD-01 AC 3). */
+.podium-highlight > :not(.confetti) {
+  position: relative;
+  z-index: 1;
 }

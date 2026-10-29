@@ -105,10 +105,6 @@
   color: var(--color-on-surface-variant);
 }
 
-.ranking__name-line .player-tag {
-  margin-right: var(--space-xs);
-}
-
 .ranking__detail {
   color: var(--color-on-surface-variant);
   font-size: var(--font-size-small);

@@ -1,5 +1,6 @@
 import { STRINGS } from '../strings/pt-BR.ts';
 import '../styles/podium-highlight.css';
+import { Confetti } from './Confetti.tsx';
 import { TrophyIcon } from './icons.tsx';
 import { PlayerAvatar } from './PlayerAvatar.tsx';
 
@@ -13,11 +14,16 @@ export interface PodiumHighlightProps {
   wins: number;
 }
 
-/** The personal card of the podium: "Você ficou em Nº Lugar!", "PONTUAÇÃO TOTAL" and the wins "NA SESSÃO" (POD-01 AC 2). */
+/**
+ * The personal card of the podium: "Você ficou em Nº Lugar!", "PONTUAÇÃO TOTAL" and
+ * the wins "NA SESSÃO" (POD-01 AC 2). The winner's confetti falls inside the card,
+ * behind its texts, so it never covers anything to read (POD-01 AC 3).
+ */
 export function PodiumHighlight({ nickname, color, place, total, wins }: PodiumHighlightProps) {
   const isWinner = place === 1;
   return (
     <section class="podium-highlight" aria-label={STRINGS.yourFinalPlace(place)}>
+      {isWinner && <Confetti />}
       <span class="podium-highlight__avatar">
         <PlayerAvatar nickname={nickname} color={color} size="large" />
         {isWinner && (

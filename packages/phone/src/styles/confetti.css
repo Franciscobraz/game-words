@@ -1,15 +1,16 @@
-/* The winner's confetti (POD-01 AC 3): only transform and opacity move (UI-01 AC 4). */
+/* The winner's confetti (POD-01 AC 3): only transform and opacity move (UI-01 AC 4).
+   It fills the podium card, under its texts, and the card clips it. */
 .confetti {
-  position: fixed;
+  position: absolute;
   inset: 0;
-  z-index: 5;
+  z-index: 0;
   overflow: hidden;
   pointer-events: none;
 }
 
 .confetti__piece {
   position: absolute;
-  top: -5%;
+  top: -14px;
   width: 10px;
   height: 14px;
   border-radius: 2px;
@@ -53,7 +54,8 @@
 
   100% {
     opacity: 0;
-    transform: translateY(110vh) rotate(540deg);
+    /* In piece heights: past the foot of the card at every width (AD-016). */
+    transform: translateY(3200%) rotate(540deg);
   }
 }
 

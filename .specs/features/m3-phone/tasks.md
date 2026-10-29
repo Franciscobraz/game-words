@@ -978,9 +978,9 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] C92, C93, C94, C122 passam; C121 fica para o sub-agente de telas na verificação
-- [ ] Gate check passes: full
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] C92, C93, C94, C122 passam; C121 fica para o sub-agente de telas na verificação
+- [x] Gate check passes: full
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: e2e
 **Gate**: full

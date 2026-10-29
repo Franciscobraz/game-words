@@ -1,4 +1,3 @@
-import { Confetti } from '../components/Confetti.tsx';
 import { HostMenu } from '../components/HostMenu.tsx';
 import { MatchPerformance } from '../components/MatchPerformance.tsx';
 import { PodiumHighlight } from '../components/PodiumHighlight.tsx';
@@ -38,7 +37,6 @@ export function PodiumScreen() {
 
       {placement !== null && me !== null && (
         <>
-          {placement.place === 1 && <Confetti />}
           <PodiumHighlight nickname={me.nickname} color={me.color} place={placement.place} total={placement.total} wins={placement.wins} />
           <MatchPerformance wordCount={summary.wordCount} longest={summary.longest} />
         </>

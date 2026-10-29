@@ -24,7 +24,7 @@ const CONFETTI_PIECES: readonly ConfettiPiece[] = [
   { left: 95, delayMs: 1350, tone: 2 },
 ];
 
-/** Falling confetti over the whole screen for the winner, animated only with transform and opacity (POD-01 AC 3, UI-01 AC 4). */
+/** Falling confetti behind the winner's card, animated only with transform and opacity (POD-01 AC 3, UI-01 AC 4). */
 export function Confetti() {
   return (
     <div class="confetti" aria-hidden="true">

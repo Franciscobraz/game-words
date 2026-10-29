@@ -29,3 +29,12 @@
   background: var(--color-error-container);
   color: var(--color-on-error-container);
 }
+
+/* In a list row the tags are compact, so a host's two tags fit beside a short nickname, as in the captures. */
+.player-row__who .player-tag,
+.ranking__name-line .player-tag {
+  margin-right: var(--space-xs);
+  padding: 1px 6px;
+  font-size: clamp(0.5625rem, 2.6vw, 0.6875rem);
+  letter-spacing: 0.02em;
+}

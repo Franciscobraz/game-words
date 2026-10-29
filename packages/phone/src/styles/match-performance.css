@@ -97,23 +97,25 @@
 .match-performance__tiles {
   display: flex;
   flex: 1;
-  flex-wrap: wrap;
+  min-width: 0;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+/* The word stays on one line: each tile shrinks from 32 px so a long word still fits at 320 px (AD-016). */
 .match-performance__tile {
   display: flex;
+  flex: 0 1 32px;
   align-items: center;
   justify-content: center;
-  width: 32px;
+  min-width: 0;
   height: 36px;
-  margin: 0 var(--space-xs) var(--space-xs) 0;
+  margin: 0 2px 0 0;
   border-radius: var(--radius-default);
   background: var(--color-tile);
   color: var(--color-text-strong);
-  font-size: var(--font-size-body-lg);
+  font-size: clamp(0.8125rem, 4.2vw, var(--font-size-body-lg));
   font-weight: var(--font-weight-black);
 }
 
