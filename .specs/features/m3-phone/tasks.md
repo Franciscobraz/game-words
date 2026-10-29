@@ -11,6 +11,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 **Design**: `.specs/features/m3-phone/design.md`
 **Status**: Approved
 **Approved**: 2026-10-29 - user: "Aprovo as tasks"
+**Amended**: 2026-10-29 - T43-T44 entram no começo da Phase 3 para corrigir os achados da fase 2; user: "Aceito, seguir"
 **Mutations**: 3
 **Build**: `npx tsc -b; npm run lint -w @bwords/phone; npx vitest run; npx playwright test; npx playwright test -c packages/phone/playwright.config.ts`
 
@@ -72,7 +73,7 @@ T9 → T10 → T11 → T12 → T13 → T14
 ### Phase 3: Lobby do anfitrião e saída da sala
 
 ```
-T15 → T16 → T17 → T18 → T19
+T43 → T44 → T15 → T16 → T17 → T18 → T19
 ```
 
 ### Phase 4: Regras da rodada
@@ -399,11 +400,52 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 #### Phase 3: Lobby do anfitrião e saída da sala
 
+### T43: Stop reconnecting after room-not-found
+
+**What**: A conexão para de reconectar quando o servidor responde `room-not-found`; a tela de código só tenta de novo quando o jogador usa "CONTINUAR".
+**Where**: `packages/phone/src/net/room-connection.ts` (modify)
+**Depends on**: T14
+**Reuses**: `createRoomConnection` (T5), ação `openRoom` (T6)
+**Requirement**: ENTRY-01, RECON-01
+
+**Done when**:
+
+- [ ] C123 passa
+- [ ] Gate check passes: `npx vitest run packages/phone`
+- [ ] Test count: anterior + novos, nenhum removido
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `fix(phone): stop reconnecting after room-not-found`
+
+---
+
+### T44: Host name in the join screen waiting line
+
+**What**: Na tela de entrada, "Aguardando <anfitrião> iniciar a partida…" com o nome do anfitrião na cor de ação e as reticências, como em `phone-join.png`; nova foto `phone-join.running.png`.
+**Where**: `packages/phone/src/screens/JoinScreen.tsx` (modify)
+**Depends on**: T43
+**Reuses**: `WaitingDots`, `strings/pt-BR.ts`
+**Requirement**: JOIN-01
+
+**Done when**:
+
+- [ ] Tela igual a `.specs/features/m3-phone/captures/phone-join.png` nesse trecho, foto refeita em `phone-join.running.png`
+- [ ] C1 continua passando
+- [ ] Gate check passes: full
+- [ ] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `fix(phone): host name in the join screen waiting line`
+
+---
+
 ### T15: Settings steps
 
 **What**: `model/settings.ts`: `stepSeconds`, `stepRounds`, `canStep` e `formatSeconds` ("2:00").
 **Where**: `packages/phone/src/model/settings.ts`
-**Depends on**: T14
+**Depends on**: T44
 **Reuses**: `Settings` (`@bwords/core`)
 **Requirement**: HOST-01
 
@@ -1356,6 +1398,9 @@ Proof: walk - o sub-agente de telas abre cada tela com capture a 320 e 480 px e 
 **C122** - Deitado (844×390) e em tablet (768×1024), cada tela ocupa a largura proporcionalmente, sem rolagem horizontal; rolagem vertical é aceita (Edge Cases, UI-01)
 Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/layout.spec.ts -g "scales proportionally on landscape and tablet without horizontal scroll"`
 
+**C123** - Depois de `room-not-found` a conexão não tenta reconectar; usar "CONTINUAR" de novo abre uma conexão nova (Edge Cases, ENTRY-01)
+Proof: `npx vitest run packages/phone/src/net/room-connection.test.ts -t "stops reconnecting after room-not-found"`
+
 **C118** - As telas sem capture foram fotografadas a 390 px e mostradas ao user (UI-01)
 Proof: walk - cada foto em `captures/uncaptured/` com a resposta do user em `## Handoff`
 
@@ -1365,7 +1410,7 @@ Proof: walk - cada foto em `captures/uncaptured/` com a resposta do user em `## 
 
 The feature's live state, written as it happens - a compaction gives no warning.
 
-**Settled mid-build:** paleta do design system "BWords Party System" em `packages/theme/tokens.css`, usada pelo celular e pelas ferramentas (AD-017); user: "Aceito seguir, mas antes disso, registre a paleta de cores do projeto de acordo com as cores que tem definidas no MCP do layout, crie as variaveis css e reutilize em todo o projeto"
+**Settled mid-build:** defaults da fase 2 aceitos, com a correção do nome do anfitrião em laranja com "…" na tela de entrada (T44) e da reconexão depois de `room-not-found` (T43); user: "Aceito, seguir" (resposta à pergunta "Aceita os defaults da fase 2 e sigo para a fase 3, já corrigindo os dois achados?"); paleta do design system "BWords Party System" em `packages/theme/tokens.css`, usada pelo celular e pelas ferramentas (AD-017); user: "Aceito seguir, mas antes disso, registre a paleta de cores do projeto de acordo com as cores que tem definidas no MCP do layout, crie as variaveis css e reutilize em todo o projeto"
 **Dispatched:** batch worker fase 1 (T1-T8) em HEAD 3db40cb - returned (T1-T8 em b3e2638..a0418b6; phone 116 testes, vitest total 551, build gate verde). Desvios marcados com SPEC_DEVIATION, a confirmar pelo user: `screenFor(view, serverNow)` sem o parâmetro de conexão e com a tela extra `connecting`; `openSocket` é `(path, events) => {send, close}` com `schedule` injetado, e o adaptador do navegador fica em `net/browser.ts`. Defaults do worker, a confirmar: token em `bwords.token.<CODE>`; textos próprios para `bad-message`, `wrong-phase`, `not-host`, `bad-token`, `bad-color`, `bad-settings`, `bad-target`; `bad-token` apaga o token e reconecta sem ele; `replaced` mantém o token; `join` manda o apelido aparado mesmo inválido, para o servidor responder `bad-nickname`; cores de alerta #ffd23f, texto secundário #a8a6b4 e texto sobre primária #2e1500. Para a fase 2: `main.tsx` monta o store com `createRoomConnection` + `browserSocket`; `app.tsx` precisa de um relógio que bata para trocar a contagem pelo tabuleiro; fakes de teste em `src/testing/fakes.ts`; batch worker fase 2 (T9-T14) em HEAD 4c677ca - returned (T9-T14 em 49aaa6d..2df4134, com o 765c0d1 do orquestrador no meio; phone vitest 153, phone e2e 18, vitest total 588, play e2e 10; build gate verde). Fotos `phone-code`, `phone-join` e `phone-lobby` `.running.png` a 390 px, por uma config separada (`playwright.pictures.config.ts`) com sala simulada (`e2e/fake-room.ts`). Defaults do worker, a confirmar: textos novos ("Jogadores", "Você", aria-labels); cor pré-selecionada = primeira livre do PALETTE; campo de apelido limitado a 12 caracteres; erros de apelido sob o campo, de cor sob as cores, o resto acima de ENTRAR; CONTINUAR incompleto foca a primeira caixa vazia; tela de entrada sem ícone de preferências; ícone de preferências sem ação até a T37. Diferenças visuais pendentes: em `phone-join` o nome do anfitrião não está em laranja e falta o "…" de "Aguardando Ana iniciar a partida…". Achado: em `room-not-found` o servidor fecha sem `closed` e a conexão segue tentando reconectar em segundo plano
 **Walked:** none
 
@@ -1378,7 +1423,7 @@ Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5 → Phase 6 → Phase 7
 
 Phase 1:  T1 ---→ T2 ---→ T3 ---→ T4 ---→ T5 ---→ T6 ---→ T7 ---→ T8
 Phase 2:  T9 ---→ T10 --→ T11 --→ T12 --→ T13 --→ T14
-Phase 3:  T15 --→ T16 --→ T17 --→ T18 --→ T19
+Phase 3:  T43 --→ T44 --→ T15 --→ T16 --→ T17 --→ T18 --→ T19
 Phase 4:  T20 --→ T21 --→ T22 --→ T23 --→ T24 --→ T25 --→ T26
 Phase 5:  T27 --→ T28 --→ T29 --→ T30
 Phase 6:  T31 --→ T32 --→ T33 --→ T34 --→ T35

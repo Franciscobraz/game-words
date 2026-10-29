@@ -6,6 +6,8 @@
 
 **Amended**: 2026-10-29 - UI-01 AC 1 (larguras de 320 a 480 px) e AC 8-10 (layout fluido, tabuleiro que cabe na altura, captures julgadas por composição fora de 390 px), AD-016; user: "Nessas telas tenha cuidado com a resolução fixa em 390px, para os testes pode ser adotado esse padrão mas para o resultado final a Responsividade é adaptabilidade do front-end deve ser prioridade."
 
+**Amended**: 2026-10-29 - Edge Cases: parar de reconectar depois de `room-not-found` (achado da fase 2); user: "Aceito, seguir" (resposta à pergunta "Aceita os defaults da fase 2 e sigo para a fase 3, já corrigindo os dois achados?")
+
 ## Problem Statement
 
 O M2 deixou a sala pronta no servidor, mas só a página de debug fala com ela. O jogador ainda não tem como entrar numa sala, escolher apelido e cor, jogar deslizando o dedo pelas letras nem acompanhar o resultado no celular. O M3 constrói o controle do celular como cliente do protocolo do M2, seguindo as telas desenhadas no Stitch.
@@ -360,6 +362,7 @@ O M2 deixou a sala pronta no servidor, mas só a página de debug fala com ela. 
 - IF o dedo sai do tabuleiro durante o deslize THEN o celular SHALL tratar como soltar
 - IF chega `round-results` com envios ainda no debounce THEN o celular SHALL descartá-los (o servidor já fechou a rodada)
 - IF o servidor manda `error` com `wrong-phase` ou `not-host` THEN o celular SHALL ignorá-lo e esperar o próximo estado do servidor
+- IF o servidor responde `room-not-found` THEN o celular SHALL parar de reconectar àquela sala até o jogador usar "CONTINUAR" de novo
 - WHEN o anfitrião muda as configurações rápido THEN o celular SHALL mostrar o valor do último `settings` do servidor
 - WHILE a tela está fora da faixa de retrato (deitada, tablet ou mais larga que 480 px) the celular SHALL ocupar a largura proporcionalmente, sem rolagem horizontal; rolagem vertical é aceita (AD-016)
 
