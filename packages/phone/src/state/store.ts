@@ -1,17 +1,22 @@
 import { createContext } from 'preact';
 import { useContext } from 'preact/hooks';
 import { createMatchStore, type MatchStore } from './match.ts';
+import { createPrefsStore, type PrefsDeps, type PrefsStore } from './prefs.ts';
 import { createRoomStore, type RoomDeps, type RoomStore } from './room.ts';
 import { createRoundStore, type RoundDeps, type RoundStore } from './round.ts';
+import { safeStorage } from './safe-storage.ts';
 
 /** Everything the phone store needs from the outside; the tests pass fakes (style guide §4, D). */
-export type PhoneDeps = RoomDeps & Omit<RoundDeps, 'room'>;
+export type PhoneDeps = RoomDeps &
+  Omit<RoundDeps, 'room' | 'prefs' | 'device'> &
+  Omit<PrefsDeps, 'device'> & { device: RoundDeps['device'] & PrefsDeps['device'] };
 
 /** The phone's state: signals and actions, one store per app (AD-015). */
 export interface PhoneStore {
   room: RoomStore;
   round: RoundStore;
   match: MatchStore;
+  prefs: PrefsStore;
 }
 
 /**
@@ -19,8 +24,11 @@ export interface PhoneStore {
  * test gets its own store with fake dependencies; `main.tsx` builds the real one.
  */
 export function createPhoneStore(deps: PhoneDeps): PhoneStore {
-  const room = createRoomStore(deps);
-  return { room, round: createRoundStore({ ...deps, room }), match: createMatchStore(room) };
+  const storage = safeStorage(deps.storage);
+  const room = createRoomStore({ ...deps, storage });
+  const prefs = createPrefsStore({ ...deps, storage }, room);
+  const round = createRoundStore({ ...deps, room, prefs: () => prefs.prefs.value });
+  return { room, round, match: createMatchStore(room), prefs };
 }
 
 /** Hands the store to the screens. */

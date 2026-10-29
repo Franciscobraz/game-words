@@ -177,3 +177,49 @@ export function fakeDevice(): FakeDevice {
   };
   return device;
 }
+
+/** The screen's wake lock and the page's visibility, as the browser handles them (PREF-01 AC 4). */
+export interface FakeScreen {
+  wakeLock: { request(): void; release(): void };
+  onVisible(listener: () => void): () => void;
+  /** Whether the phone holds the wake lock now. */
+  held: boolean;
+  /** The page goes to the background: the browser lets go of the wake lock on its own. */
+  hide(): void;
+  /** The page is visible again. */
+  show(): void;
+}
+
+export function fakeScreen(): FakeScreen {
+  const listeners = new Set<() => void>();
+  const screen: FakeScreen = {
+    held: false,
+    wakeLock: {
+      request: () => {
+        screen.held = true;
+      },
+      release: () => {
+        screen.held = false;
+      },
+    },
+    onVisible(listener) {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+    hide: () => {
+      screen.held = false;
+    },
+    show: () => {
+      for (const listener of listeners) listener();
+    },
+  };
+  return screen;
+}
+
+/** A storage whose every access throws, as a browser that blocks site data. */
+export function throwingStorage(): KeyValueStorage {
+  const refuse = (): never => {
+    throw new Error('Site data is blocked');
+  };
+  return { get: refuse, set: refuse, remove: refuse };
+}

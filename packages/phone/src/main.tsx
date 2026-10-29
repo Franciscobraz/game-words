@@ -18,9 +18,10 @@ const store = createPhoneStore({
     createRoomConnection({ openSocket: browserSocket, now: () => Date.now(), schedule: browserSchedule, ...handlers }),
   storage: browserStorage,
   schedule: browserSchedule,
-  // Vibration, sound and the preferences arrive with T36-T37; until then both stay off, their default (PREF-01 AC 1).
-  device: { vibrate: () => {}, playHitSound: () => {} },
-  prefs: () => ({ vibrate: false, sound: false }),
+  // The browser adapters of vibration, sound and the wake lock arrive with T37.
+  device: { vibrate: () => {}, playHitSound: () => {}, canVibrate: () => false },
+  wakeLock: { request: () => {}, release: () => {} },
+  onVisible: () => () => {},
 });
 
 // `/KBXT` opens room KBXT; `/` stays on the code screen (ENTRY-01 AC 1-2).
