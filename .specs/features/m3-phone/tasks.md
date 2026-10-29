@@ -1132,7 +1132,7 @@ Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phon
 Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/host-lobby.spec.ts -g "sends the volume on release and the mute toggle"`
 
 **C34** - O seletor "Dicionário" tem só "Português (BR)" (HOST-01, AC 9)
-Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/host-lobby.spec.ts -g "offers Portugues (BR) as the only dictionary"`
+Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/host-lobby.spec.ts -g "offers Portugues \(BR\) as the only dictionary"`
 
 **C35** - Tocar Beto abre a folha de `phone-host-actions.png` (HOST-01, AC 10)
 Proof: browser captures/phone-host-actions.running.png
