@@ -18,7 +18,7 @@ import '../styles/podium.css';
  * sees only the ranking and "Você joga na próxima partida" (POD-01, phone-podium.jpg).
  */
 export function PodiumScreen() {
-  const { room, match } = useStore();
+  const { room, match, prefs } = useStore();
   const view = room.room.value;
   if (view.podium === null) return null;
 
@@ -33,6 +33,7 @@ export function PodiumScreen() {
   return (
     <main class="screen podium">
       <TopBar
+        onOpenPrefs={prefs.openSheet}
         code={view.code ?? ''}
         menu={isHost ? <HostMenu items={[{ label: STRINGS.closeRoom, confirm: STRINGS.confirmCloseRoom, onConfirm: room.closeRoom }]} /> : undefined}
       />

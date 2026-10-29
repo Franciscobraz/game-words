@@ -21,7 +21,7 @@ import '../styles/spectator.css';
  * phone-spectator.png).
  */
 export function SpectatorScreen() {
-  const { room } = useStore();
+  const { room, prefs } = useStore();
   const serverNow = useServerClock(room.serverNow).value;
   const view = room.room.value;
   const current = view.round;
@@ -34,7 +34,7 @@ export function SpectatorScreen() {
 
   return (
     <main class="screen spectator">
-      <TopBar code={view.code ?? ''} menu={isHost ? <MatchHostMenu onBackToLobby={room.backToLobby} /> : undefined} />
+      <TopBar onOpenPrefs={prefs.openSheet} code={view.code ?? ''} menu={isHost ? <MatchHostMenu onBackToLobby={room.backToLobby} /> : undefined} />
 
       <RoundTimer
         clock={formatClock(remainingMs)}

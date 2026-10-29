@@ -18,7 +18,7 @@ import '../styles/host-lobby.css';
  * actions (HOST-01 AC 10-13).
  */
 export function HostLobbyScreen() {
-  const { room } = useStore();
+  const { room, prefs } = useStore();
   const view = room.room.value;
   const rows = lobbyRows(view.players, view.hostId, view.myId);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -28,6 +28,7 @@ export function HostLobbyScreen() {
   return (
     <main class="screen host-lobby">
       <TopBar
+        onOpenPrefs={prefs.openSheet}
         code={view.code ?? ''}
         menu={<HostMenu items={[{ label: STRINGS.closeRoom, confirm: STRINGS.confirmCloseRoom, onConfirm: room.closeRoom }]} />}
       />

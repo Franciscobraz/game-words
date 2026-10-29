@@ -22,7 +22,7 @@ import '../styles/board-screen.css';
  * phone-feedbacks.png).
  */
 export function BoardScreen() {
-  const { room, round } = useStore();
+  const { room, round, prefs } = useStore();
   const serverNow = useServerClock(room.serverNow).value;
   const view = room.room.value;
   const current = view.round;
@@ -43,7 +43,7 @@ export function BoardScreen() {
 
   return (
     <main class="screen board-screen">
-      <TopBar code={view.code ?? ''} menu={isHost ? <MatchHostMenu onBackToLobby={room.backToLobby} /> : undefined} />
+      <TopBar onOpenPrefs={prefs.openSheet} code={view.code ?? ''} menu={isHost ? <MatchHostMenu onBackToLobby={room.backToLobby} /> : undefined} />
 
       <RoundTimer
         clock={formatClock(remainingMs)}

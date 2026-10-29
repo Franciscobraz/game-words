@@ -1,0 +1,12 @@
+/* The preferences sheet (PREF-01 AC 1), with the switches of the host lobby. */
+.prefs-sheet__title {
+  margin: 0;
+  color: var(--color-on-surface);
+  font-size: var(--font-size-title-md);
+  font-weight: var(--font-weight-extrabold);
+  text-align: center;
+}
+
+.prefs-sheet__switches .toggle__row {
+  background: var(--color-surface-container-highest);
+}

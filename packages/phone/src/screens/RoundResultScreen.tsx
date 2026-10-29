@@ -19,7 +19,7 @@ import '../styles/round-result.css';
  * in place of the points and words (RES-01, phone-round-result.jpg).
  */
 export function RoundResultScreen() {
-  const { room } = useStore();
+  const { room, prefs } = useStore();
   const view = room.room.value;
   const results = view.results;
   if (results === null) return null;
@@ -34,6 +34,7 @@ export function RoundResultScreen() {
   return (
     <main class="screen round-result">
       <TopBar
+        onOpenPrefs={prefs.openSheet}
         code={view.code ?? ''}
         menu={isHost ? <HostMenu items={[{ label: STRINGS.closeRoom, confirm: STRINGS.confirmCloseRoom, onConfirm: room.closeRoom }]} /> : undefined}
       />

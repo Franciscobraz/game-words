@@ -14,7 +14,7 @@ import '../styles/countdown.css';
  * here (COUNT-01 AC 1-2, phone-countdown.png).
  */
 export function CountdownScreen() {
-  const { room } = useStore();
+  const { room, prefs } = useStore();
   const serverNow = useServerClock(room.serverNow);
   const view = room.room.value;
   const isHost = view.hostId !== null && view.hostId === view.myId;
@@ -23,7 +23,7 @@ export function CountdownScreen() {
 
   return (
     <main class="screen countdown">
-      <TopBar code={view.code ?? ''} menu={isHost ? <MatchHostMenu onBackToLobby={room.backToLobby} /> : undefined} />
+      <TopBar onOpenPrefs={prefs.openSheet} code={view.code ?? ''} menu={isHost ? <MatchHostMenu onBackToLobby={room.backToLobby} /> : undefined} />
 
       {position !== null && (
         <p class="countdown__round">

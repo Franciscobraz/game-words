@@ -17,14 +17,15 @@ import '../styles/lobby.css';
  * follows every `settings` and `players` from the server (LOBBY-01, phone-lobby.png).
  */
 export function LobbyScreen() {
-  const view = useStore().room.room.value;
+  const { room, prefs } = useStore();
+  const view = room.room.value;
   const rows = lobbyRows(view.players, view.hostId, view.myId);
   const me = view.players.find((p) => p.id === view.myId) ?? null;
   const host = view.players.find((p) => p.id === view.hostId) ?? null;
 
   return (
     <main class="screen lobby">
-      <TopBar code={view.code ?? ''} />
+      <TopBar onOpenPrefs={prefs.openSheet} code={view.code ?? ''} />
 
       {me !== null && (
         <section class="lobby__me" aria-label={STRINGS.youLabel}>

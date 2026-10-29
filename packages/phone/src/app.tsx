@@ -1,5 +1,6 @@
 import { useComputed } from '@preact/signals';
 import type { ComponentType } from 'preact';
+import { PrefsSheet } from './components/PrefsSheet.tsx';
 import { type Screen, screenFor } from './model/screen.ts';
 import { BoardScreen } from './screens/BoardScreen.tsx';
 import { CodeEntryScreen } from './screens/CodeEntryScreen.tsx';
@@ -34,11 +35,28 @@ const SCREENS: Record<Screen, ComponentType> = {
   replaced: ReplacedScreen,
 };
 
-/** Shows the screen for the room as the server describes it, at the server's time (UI-01). */
+/**
+ * Shows the screen for the room as the server describes it, at the server's time,
+ * with the preferences sheet over it when the person icon opened it (UI-01, PREF-01 AC 1).
+ */
 export function App() {
-  const { room } = useStore();
+  const { room, prefs } = useStore();
   const serverNow = useServerClock(room.serverNow);
   const screen = useComputed(() => screenFor(room.room.value, serverNow.value));
   const Current = SCREENS[screen.value];
-  return <Current />;
+  const chosen = prefs.prefs.value;
+  return (
+    <>
+      <Current />
+      {prefs.isSheetOpen.value && (
+        <PrefsSheet
+          vibrate={chosen.vibrate}
+          sound={chosen.sound}
+          canVibrate={prefs.canVibrate}
+          onToggle={(name) => prefs.setPref(name, !chosen[name])}
+          onClose={prefs.closeSheet}
+        />
+      )}
+    </>
+  );
 }
