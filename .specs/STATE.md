@@ -133,12 +133,12 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 - **Marco em andamento:** M3 (`m3-phone`), na fase de Execute. Spec, design e tasks aprovados (com emendas registradas nos arquivos).
   - Fase 1 (T1-T8): feita, `b3e2638..a0418b6`.
   - Fase 2 (T9-T14): feita, `49aaa6d..2df4134`; fotos `phone-code`, `phone-join` e `phone-lobby` `.running.png`.
-  - Fase 3 (T43, T44, T15-T19): em andamento quando a sessão foi pausada. O subagente recebeu ordem de terminar a tarefa em que estava e parar. Ao retomar, conferir `git log 2b19d53..HEAD` e `git status`: as tarefas com commit estão marcadas `[x]` no `tasks.md`; arquivos sujos são de uma tarefa interrompida, a refazer ou terminar.
+  - Fase 3 (T43, T44, T15-T19): pausada. T43 feita (`9e61a18`, phone vitest 154); T44, T15, T16, T17, T18 e T19 não começaram. A árvore está limpa. Retomar pela T44. Notas do subagente: reutilizar `formatRoundTime` de `model/settings.ts` no lugar do `formatSeconds` da T15; faltam em `strings/pt-BR.ts` "TABULEIRO", "Regras da Partida", a dica do Fast mode e os rótulos das confirmações; `TopBar` já aceita `menu`; em `app.tsx`, `host-lobby`, `kicked`, `room-closed` e `replaced` ainda apontam para `ConnectingScreen`.
   - Fases 4 a 7 (T20-T42): não começaram. Depois da última tarefa vêm `check_proofs.py`, o Verifier e o sub-agente de telas (implement.md, passo 10).
 - **Onde está o detalhe:** `.specs/features/m3-phone/tasks.md` → `## Handoff` (`Dispatched` com o retorno de cada fase, defaults aceitos e notas para a próxima fase; `Settled mid-build`).
 - **Decisões novas:** AD-002 a AD-017 (telas do Stitch, responsividade, Signals + eslint-config-preact, paleta em `@bwords/theme`, fundo da TV `#12131a`).
 - **Branch:** `main`. `origin/main` está em `9265abe`; os commits depois disso (regras, tasks, tema, fases 1-3) não foram enviados. Push só com pedido.
-- **Próximo passo:** conferir a fase 3 (commits, testes, fotos `phone-host-lobby`, `phone-host-actions`, `phone-kicked`, `phone-room-closed`), mostrar ao user e perguntar antes da fase 4.
+- **Próximo passo:** despachar um subagente para o resto da fase 3 (T44, T15-T19), conferir commits, testes e fotos (`phone-join` refeita, `phone-host-lobby`, `phone-host-actions`, `phone-kicked`, `phone-room-closed`), mostrar ao user e perguntar antes da fase 4.
 - **Modo de execução preferido pelo usuário:** subagentes, uma fase por vez, parando para mostrar o resultado e perguntar antes da próxima fase.
-- **Pendências conhecidas:** nenhuma além da fase 3 em aberto.
+- **Pendências conhecidas:** o resto da fase 3. Default da T43 a confirmar com o user: depois de `room-not-found` a conexão fica `closed`, e "CONTINUAR" abre um socket novo.
 - **Ambiente Windows:** os scripts da skill precisam de `PYTHONUTF8=1`; `check_proofs.py` também precisa de `PYTHONPATH` apontando para uma pasta com um `sitecustomize.py` que mapeia `signal.SIGHUP` para `SIGTERM` e resolve launchers `.cmd` (como o `npx`) via `shutil.which`. Recriar no scratchpad da sessão se sumir.
