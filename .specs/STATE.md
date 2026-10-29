@@ -11,6 +11,105 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 - **Motivo:** o idioma do jogo muda com o pacote de dicionário (pt-BR hoje, EN depois). O texto que o jogador vê sai do i18n da interface (DESIGN §5.1), nunca do código nem do protocolo.
 - user: "o codigo deve ter todos os termos em ingles, mas pode manter a explicação dos documentos em portuguez"
 
+### AD-002 - Sem barra de abas no celular (active)
+
+- **Data:** 2026-10-29
+- **Decisão:** as telas do Stitch desenham uma barra de abas embaixo (Jogo/Placar/Letras/Chat; Sala/Placar/Perfil/Regras). Ela sai: essas telas não existem e chat não está no MVP.
+- **Motivo:** Pergunta 1 do M3: "Barra de abas embaixo [...] Tirar." Opção escolhida: tirar.
+- user: "os outros ponto eu concordo"
+
+### AD-003 - Sem pontos nas peças (active)
+
+- **Data:** 2026-10-29
+- **Decisão:** as peças do tabuleiro não mostram número de pontos. A pontuação é pelo tamanho da palavra (DESIGN §1.4).
+- **Motivo:** Pergunta 2 do M3: "Pontos em cada peça do tabuleiro [...] Tirar." Opção escolhida: tirar.
+- user: "os outros ponto eu concordo"
+
+### AD-004 - Inicial na cor no lugar do avatar (active)
+
+- **Data:** 2026-10-29
+- **Decisão:** onde as telas do Stitch desenham foto de avatar, o celular mostra um círculo na cor do jogador com a inicial do apelido. Avatares estão fora do MVP (DESIGN §9).
+- **Motivo:** Pergunta 3 do M3: "Avatares com foto [...] Trocar por um círculo na cor do jogador com a inicial." Opção escolhida: a recomendada.
+- user: "os outros ponto eu concordo"
+
+### AD-005 - Sem textos de enfeite (active)
+
+- **Data:** 2026-10-29
+- **Decisão:** todo texto das telas do Stitch sem dado por trás sai: "Party Game", "Competidor Oficial", "Modo Casual", o cartão "Próxima batalha · Caça-Palavras", "ONLINE", "TV Conectada", "Conexão estável com a TV da sala", "Comando total da TV", "Edição ao vivo", "Pronto", "Toque para gerenciar", "Torcendo da TV", "ritmo médio", "Top 1 da Rodada", "Espetacular, Ana!...", "Partida concluída" e "Sinal fraco / Reconectando ping alto" (vira "desconectado").
+- **Motivo:** Pergunta 4 do M3: "Textos de enfeite sem dado por trás [...] Tirar todos." Opção escolhida: tirar todos, inclusive o indicador ONLINE.
+- user: "Os textos de enfeite devem ser todos removidos"
+
+### AD-006 - Sem títulos de tela no celular (active)
+
+- **Data:** 2026-10-29
+- **Decisão:** as telas do celular não têm título de página ("Sala De Espera", "Game Controller", "Placar Da Rodada"). O topo mostra só a etiqueta da sala.
+- **Motivo:** Pergunta 5 do M3: "Títulos com defeito de geração [...] Tirar, ou usar o título certo de cada tela." Opção escolhida: tirar.
+- user: "esses titutos nem precisam existir no celular como por exemplo \"placar da rodada\" , \"sala de espera\", \"game controller\""
+
+### AD-007 - Resumo pessoal do pódio somado no celular (active)
+
+- **Data:** 2026-10-29
+- **Decisão:** o pódio do celular mostra o total de palavras e a maior palavra do jogador na partida, somados no próprio celular a partir dos resultados de cada rodada. A maior palavra aparece em peças sem acento, com a grafia real ao lado.
+- **Motivo:** Pergunta 6 do M3: "Somar no celular a partir dos resultados de cada rodada e mostrar a maior palavra sem acento nas peças, com a grafia real ao lado." Opção escolhida: a recomendada.
+- user: "os outros ponto eu concordo"
+
+### AD-008 - "em comum" sem número de jogadores (active)
+
+- **Data:** 2026-10-29
+- **Decisão:** no resultado da rodada, palavra achada por mais de um jogador mostra só "em comum", sem "(3 jogadores)" nem "(todos)". O protocolo não diz quantos acharam.
+- **Motivo:** Pergunta 7 do M3: "Mostrar só 'em comum'." Opção escolhida: a recomendada.
+- user: "os outros ponto eu concordo"
+
+### AD-009 - Só deslizar; envio ao soltar (active)
+
+- **Data:** 2026-10-29
+- **Decisão:** o celular forma palavras só deslizando o dedo; a palavra é validada e enviada ao soltar. Não existem os botões "Apagar" e "Enviar Palavra" nem o modo tocar letra por letra nesta primeira versão (diverge do DESIGN §3).
+- **Motivo:** Pergunta 8 do M3: "Seguir a capture (sempre visíveis) e a lista de palavras em chips na horizontal." O user escolheu outra opção: tirar os botões e o modo tocar.
+- user: "o apagar e o enviar palavra não precisam existir, assuma que o envio/validação da palavra ocorra ao tirar o dedo da tela, apenas o modo deslizar sobre a tela ficará disponivel nessa primeira versão."
+
+### AD-010 - Só tema escuro (active)
+
+- **Data:** 2026-10-29
+- **Decisão:** o celular tem só o tema escuro, com as cores em tokens CSS. O tema claro automático do DESIGN §3 não é feito.
+- **Motivo:** Pergunta 9 do M3: "Só escuro no M3, com cores em tokens. O tema claro vira pendência do M5." Opção escolhida: só escuro.
+- user: "seguimos apenas com o tema escuro."
+
+### AD-011 - Espectador sem contagem de palavras (active)
+
+- **Data:** 2026-10-29
+- **Decisão:** o celular do espectador mostra a lista de jogadores sem o número de palavras de cada um; o servidor continua mandando as contagens só para a TV.
+- **Motivo:** Pergunta de escopo do M3: "mostrar a lista de jogadores sem os números, em vez de mudar o servidor no M3." Opção escolhida: a recomendada.
+- user: "os outros ponto eu concordo"
+
+### AD-012 - Telas atuais do Stitch como base (active)
+
+- **Data:** 2026-10-29
+- **Decisão:** as telas de celular do Stitch, como estão depois da rodada 2 de correções, viram as captures do M3. O que ainda diverge do spec é corrigido na implementação e fica listado em `## Differences from the source`: a faixa de reconexão sobre o tabuleiro, "JÁ ENCONTRADA" em amarelo, peças sem pontos nos feedbacks, o selo de posição sem coroa no resultado, "em comum" em toda palavra compartilhada, o topo com a etiqueta da sala no pódio e as telas de saída sem textos e botões a mais. O Resultado da Rodada usa a versão da rodada 1, porque a da rodada 2 trouxe de volta a barra de abas e os títulos.
+- **Motivo:** pedir correções ao Stitch não converge; cada rodada volta com erros novos.
+- user: "nós conseguimos seguir utilizando o layout atual como base, sem esperar que o stitch faça o layout perfeito, infelizmente não tem sido muito efetivo pedir as melhorias ele sempre retorna com alguns erros."
+
+### AD-013 - Gênero neutro nos textos (active)
+
+- **Data:** 2026-10-29
+- **Decisão:** os textos do celular usam a forma neutra: "Anfitrião(ã)", "Espectador(a)", "VOCÊ É O(A) ANFITRIÃO(Ã)". O apelido não diz o gênero de ninguém.
+- **Motivo:** pergunta da análise da rodada 1: "Recomendo a forma neutra 'Anfitrião(ã)', igual ao 'Espectador(a)'." O user aprovou o prompt da rodada 2, que pedia essa forma, e o mandou ao Stitch.
+- user: "Gerar o prompt"
+
+### AD-014 - Style guide do projeto (active)
+
+- **Data:** 2026-10-29
+- **Decisão:** as regras de código e de estrutura ficam em `docs/style-guide.md`. O `CLAUDE.md` da raiz importa o guia (`@docs/style-guide.md`), e assim toda sessão nova carrega o guia sem que ninguém precise pedir. O guia parte das convenções do M0 ao M2 e acrescenta a estrutura dos clientes Preact.
+- **Motivo:** o projeto não tinha guia, e as tarefas futuras precisam segui-lo automaticamente.
+- user: "O projeto está sem um Style Guide para codigo e estruturação de projeto, defina um para os projetos de acordo com as tecnologias utilizadas, utilizando boas praticas de programação, princípios do SOLID, Componentização e baixo acoplamento. Qual seria o melhor lugar para manter essas especificações para que em tasks futuras sejam escritas seguindo o style guide do projeto sem que eu precise pedir ?"
+- Complemento (2026-10-29): o guia ganhou o princípio 6 e a seção 3.1 (legibilidade). user: "Lembre-se que todo codigo deve ser organizado para que humanos possam ler"
+
+### AD-015 - Signals e eslint-config-preact nos clientes Preact (active)
+
+- **Data:** 2026-10-29
+- **Decisão:** o estado dos clientes Preact (`packages/phone`, depois `packages/tv`) fica em `@preact/signals`. As regras que mudam o estado continuam em funções puras (`model/`) testadas com Vitest, e os signals só guardam o resultado. Os clientes usam ESLint 9 (flat config) com `eslint-config-preact`, mais `typescript-eslint` como parser dos arquivos `.ts`/`.tsx`, porque o `eslint-config-preact` 2.0.0 usa o parser do Babel.
+- **Motivo:** Signals atualizam só os componentes que leem o dado alterado, o que ajuda celulares e TVs mais fracos. O `eslint-config-preact` é a configuração mantida pelo time do Preact, com as regras de hooks.
+- user: "ok vamos começar o design, pode definir o eslint-config-preact  no /phone utilize o Preact Signals."
+
 ## Handoff
 
 - **Data:** 2026-10-27
