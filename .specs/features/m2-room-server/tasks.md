@@ -799,7 +799,7 @@ Proof: `npx vitest run packages/core/src/room/join.test.ts -t "rejects a nicknam
 **C9** - Cor fora de `#RRGGBB` dá `bad-color` (JOIN-01, AC 4)
 Proof: `npx vitest run packages/core/src/room/join.test.ts -t "rejects a color that is not #RRGGBB"`
 
-**C10** - Cor com contraste < 3:1 sobre `#121417` dá `color-illegible` (JOIN-01, AC 5)
+**C10** - Cor com contraste < 3:1 sobre `#12131a` dá `color-illegible` (JOIN-01, AC 5)
 Proof: `npx vitest run packages/core/src/room/join.test.ts -t "rejects a color below 3:1 on the TV background"`
 
 **C11** - Cor a CIEDE2000 < 20 de outro jogador dá `color-too-similar` (JOIN-01, AC 6)
@@ -817,7 +817,7 @@ Proof: `npx vitest run packages/core/src/room/join.test.ts -t "joins as a specta
 **C15** - Um código sem sala ativa recebe `room-not-found` e a conexão fecha (JOIN-01, AC 8)
 Proof: `npx vitest run packages/server/test/worker.test.ts -t "answers room-not-found for a code without a room"`
 
-**C17** - A paleta tem 10 cores, cada uma com contraste ≥ 3:1 sobre `#121417` e CIEDE2000 ≥ 20 de todas as outras (JOIN-01, AC 11)
+**C17** - A paleta tem 10 cores, cada uma com contraste ≥ 3:1 sobre `#12131a` e CIEDE2000 ≥ 20 de todas as outras (JOIN-01, AC 11)
 Proof: `npx vitest run packages/core/src/room/colors.test.ts -t "palette has 10 legible colors at least 20 apart"`
 
 **C18** - O primeiro jogador vira anfitrião (HOST-01, AC 1)

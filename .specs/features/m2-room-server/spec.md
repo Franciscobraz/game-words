@@ -12,6 +12,8 @@
 
 **Amended**: 2026-10-27 - PROTO-01 AC 8: o pacote de idioma não é servido por HTTP (achado ao rodar `wrangler dev`: `/pt-BR/dict.bin` respondia 200, contra o DESIGN §5.3 e §6.2); user: "faça a correção do dicionario publico a pagina de debug deixa para depois, pois meus tokens estão acabando e so renovam as 17:40"
 
+**Amended**: 2026-10-29 - fundo da TV `#121417` virou `#12131a`, o fundo do design system (AD-017), em JOIN-01 AC 5 e 11 e na tabela de suposições; user: "alinhe as cores ao design system."
+
 ## Problem Statement
 
 O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solver, validação, pontuação e maior palavra), mas só para jogar sozinho numa página local. Ainda não existe sala, nem jeito de vários celulares e uma TV jogarem juntos. O M2 constrói o servidor autoritativo: um Durable Object por sala, que roda a partida inteira e guarda o estado de forma que nada se perca em reconexões, hibernation ou queda da TV. Os marcos 3 (celular) e 4 (TV) passam a ser só clientes desse protocolo.
@@ -56,7 +58,7 @@ O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solv
 | Segunda aba `/tv` | Sem token, cria outra sala; com token válido, retoma a mesma | DESIGN §2 | y |
 | Semelhança e legibilidade de cor | CIEDE2000 < 20 é parecida demais; contraste mínimo 3:1 sobre o fundo da TV | Limiar comum de "cores distinguíveis"; 3:1 é o mínimo WCAG para elementos gráficos | y |
 | Salted hashes | Entram no protocolo do M2; o uso no celular fica para o M3 | DESIGN §6.2 | y |
-| Fundo da TV | `#121417`, exportado pelo `core` como token | O M4 usa o mesmo token; muda num lugar só | y - consequência de "Semelhança e legibilidade de cor" |
+| Fundo da TV | `#12131a`, exportado pelo `core` como token | O M4 usa o mesmo token; muda num lugar só | y - consequência de "Semelhança e legibilidade de cor" |
 | Alfabeto do código da sala | 4 letras de A a Z sem `I` e `O` (24 letras) | DESIGN §2 proíbe letras ambíguas; o código só tem letras | y - consequência do DESIGN |
 | Tabuleiro antes do "já" | O tabuleiro vai junto do aviso de contagem com o timestamp de início; envios antes desse timestamp são recusados | Aparece em todos ao mesmo tempo sem depender da latência do "já" | y - consequência do DESIGN §1.5 |
 | Sala ociosa | Ociosa = nenhuma ação de jogador ou do anfitrião (entrar, configurar, iniciar, enviar, comandar); heartbeat e clock sync não contam | Senão uma TV ligada manteria a sala viva para sempre | y - consequência do DESIGN §2 |
@@ -112,13 +114,13 @@ O M1 deixou as regras do jogo prontas no `core` (pacote de idioma, gerador, solv
 2. IF o apelido, sem espaços nas pontas, tiver menos de 2 ou mais de 12 caracteres THEN o servidor SHALL recusar a entrada com o erro `bad-nickname`
 3. IF o apelido for igual ao de outro jogador da sala ignorando maiúsculas e acentos ("João" = "joao") THEN o servidor SHALL recusar a entrada com o erro `nickname-taken`
 4. IF a cor não for um hexadecimal `#RRGGBB` THEN o servidor SHALL recusar a entrada com o erro `bad-color`
-5. IF a cor tiver contraste menor que 3:1 sobre o fundo da TV `#121417` THEN o servidor SHALL recusar a entrada com o erro `color-illegible`
+5. IF a cor tiver contraste menor que 3:1 sobre o fundo da TV `#12131a` THEN o servidor SHALL recusar a entrada com o erro `color-illegible`
 6. IF a cor tiver distância CIEDE2000 menor que 20 da cor de outro jogador da sala THEN o servidor SHALL recusar a entrada com o erro `color-too-similar`
 7. IF a sala já tiver 10 jogadores, conectados ou não THEN o servidor SHALL recusar a entrada com o erro `room-full`
 8. IF o código não pertencer a uma sala ativa THEN o servidor SHALL recusar a conexão com o erro `room-not-found`
 9. WHILE a sala está na contagem, na rodada ou no resultado, WHEN um jogador novo entra THEN o servidor SHALL registrá-lo como espectador com 0 pontos
 10. WHEN a próxima contagem começa THEN o servidor SHALL tornar jogadores todos os espectadores
-11. The `core` SHALL exportar uma paleta de 10 cores sugeridas, todas com contraste ≥ 3:1 sobre `#121417` e distância CIEDE2000 ≥ 20 entre cada par
+11. The `core` SHALL exportar uma paleta de 10 cores sugeridas, todas com contraste ≥ 3:1 sobre `#12131a` e distância CIEDE2000 ≥ 20 entre cada par
 
 **Independent Test**: Conectar celulares com apelidos e cores válidos e inválidos e conferir aceite, erros e o aviso aos outros.
 

@@ -1,5 +1,5 @@
-/** Background of the TV screen. Player colors are judged against it. */
-export const TV_BACKGROUND = '#121417';
+/** Background of the TV screen; equals `--color-background` of @bwords/theme (AD-017). Player colors are judged against it. */
+export const TV_BACKGROUND = '#12131a';
 
 /** Minimum WCAG 2.x contrast ratio of a player color on the TV background (graphics minimum). */
 export const MIN_CONTRAST = 3;

@@ -124,6 +124,7 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 - **Decisão:** cores, tipografia, raios e espaçamentos do design system "BWords Party System" do Stitch (projeto 13555119467933870727, `assets/30f0ebaaa1e44d198703efbf9bf46822`) ficam em variáveis CSS no pacote `packages/theme/tokens.css` (`@bwords/theme`). É a única fonte: o celular, a TV e as ferramentas `tools/debug` e `tools/play` importam esse arquivo, e nenhum outro CSS escreve uma cor literal. As telas usam os nomes de significado (`--color-valid`, `--color-already-found`, `--color-action`...), que apontam para os papéis da paleta. As cores dos jogadores continuam no `PALETTE` do `core`. As ferramentas de desenvolvimento passaram do tema claro próprio para o tema escuro da paleta. Os defaults de cor da fase 1 (#ffd23f, #a8a6b4, #2e1500) foram trocados pelas cores do design system (ouro #ffd027, texto secundário #9ca3af, texto sobre laranja #5c2800).
 - **Motivo:** uma paleta só, tirada do design system das captures, reaproveitada em todo o projeto.
 - user: "Aceito seguir, mas antes disso, registre a paleta de cores do projeto de acordo com as cores que tem definidas no MCP do layout, crie as variaveis css e reutilize em todo o projeto"
+- Complemento (2026-10-29): o `TV_BACKGROUND` do `core`, usado para julgar a legibilidade das cores dos jogadores, passou de `#121417` para `#12131a`, o fundo do design system; o spec do M2 foi emendado. user: "alinhe as cores ao design system."
 
 ## Handoff
 

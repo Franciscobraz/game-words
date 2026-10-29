@@ -124,7 +124,7 @@ O relógio entra como parâmetro: no Workers o `Date.now()` só avança em I/O (
 
 - **Purpose**: Legibilidade e semelhança de cor (JOIN-01 AC 4-6, 11).
 - **Location**: `packages/core/src/room/colors.ts`
-- **Interfaces**: `TV_BACKGROUND = '#121417'`, `PALETTE: readonly string[]` (10), `parseHex(s)`, `contrastRatio(a, b)` (WCAG 2.x), `ciede2000(a, b)`, `checkColor(color, others): ErrorCode | null`
+- **Interfaces**: `TV_BACKGROUND = '#12131a'`, `PALETTE: readonly string[]` (10), `parseHex(s)`, `contrastRatio(a, b)` (WCAG 2.x), `ciede2000(a, b)`, `checkColor(color, others): ErrorCode | null`
 - **Reuses**: nada; fórmulas de referência (WCAG relative luminance; Sharma et al. 2005 para CIEDE2000, com os pares de teste publicados)
 
 ### Nickname (`core`)
