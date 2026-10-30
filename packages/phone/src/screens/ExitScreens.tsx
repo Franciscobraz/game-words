@@ -1,4 +1,4 @@
-import { ArrowForwardIcon, CelebrationIcon, DoorIcon, TvIcon } from '../components/icons.tsx';
+import { ArrowForwardIcon, CelebrationIcon, DoorIcon, DoorOutlineIcon, TvIcon, WavingHandIcon } from '../components/icons.tsx';
 import { PrimaryButton } from '../components/PrimaryButton.tsx';
 import { closingHostName } from '../model/messages.ts';
 import { useStore } from '../state/store.ts';
@@ -19,8 +19,13 @@ export function KickedScreen() {
   const enterAnotherRoom = useEnterAnotherRoom();
   return (
     <main class="screen exit">
-      <span class="exit__icon">
-        <DoorIcon />
+      <span class="exit__emblem">
+        <span class="exit__icon">
+          <DoorOutlineIcon />
+        </span>
+        <span class="exit__badge">
+          <WavingHandIcon />
+        </span>
       </span>
       <h1 class="exit__title">{STRINGS.kicked}</h1>
       <div class="exit__action">
@@ -47,8 +52,13 @@ export function RoomClosedScreen() {
   return (
     <main class="screen exit">
       <section class="exit__card">
-        <span class="exit__icon exit__icon--celebration">
-          <CelebrationIcon />
+        <span class="exit__emblem" aria-hidden="true">
+          <span class="exit__icon exit__icon--celebration">
+            <CelebrationIcon />
+          </span>
+          <span class="exit__dot exit__dot--large" />
+          <span class="exit__dot exit__dot--small" />
+          <span class="exit__dot exit__dot--medium" />
         </span>
         <h1 class="exit__title">{host === null ? STRINGS.roomClosed : STRINGS.hostClosedRoom(host)}</h1>
         {host !== null && <p class="exit__thanks">{STRINGS.thanksForPlaying}</p>}

@@ -4,6 +4,13 @@
   padding-top: var(--space-xl);
 }
 
+/* The icon with what sits on its ring: the kicked screen's hand, the closed room's dots. */
+.exit__emblem {
+  position: relative;
+  display: flex;
+  flex: none;
+}
+
 .exit__icon {
   display: flex;
   flex: none;
@@ -22,6 +29,54 @@
   background: var(--color-surface-container-highest);
   color: var(--color-action);
   background-clip: padding-box;
+}
+
+/* The waving hand on the door's circle (phone-kicked.png). */
+.exit__badge {
+  position: absolute;
+  top: 11%;
+  left: 89%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-highest);
+  color: var(--color-outline);
+  font-size: 20px;
+  transform: translate(-50%, -50%);
+}
+
+/* Three colored dots around the confetti ring (phone-room-closed.png). */
+.exit__dot {
+  position: absolute;
+  border-radius: var(--radius-full);
+  transform: translate(-50%, -50%);
+}
+
+.exit__dot--large {
+  top: 12.5%;
+  left: 80%;
+  width: 12px;
+  height: 12px;
+  background: var(--color-secondary);
+}
+
+.exit__dot--small {
+  top: 21%;
+  left: 11%;
+  width: 8px;
+  height: 8px;
+  background: var(--color-primary);
+}
+
+.exit__dot--medium {
+  top: 84%;
+  left: 15%;
+  width: 10px;
+  height: 10px;
+  background: var(--color-valid);
 }
 
 .exit__title {

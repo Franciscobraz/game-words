@@ -262,6 +262,27 @@ export function DoorIcon() {
   );
 }
 
+/** An outlined door with its frame and knob (phone-kicked.png). */
+export function DoorOutlineIcon() {
+  return (
+    <Svg>
+      <path d="M19 19V3H5v16H3v2h18v-2h-2zm-2 0H7V5h10v14zm-4-8h2v2h-2z" />
+    </Svg>
+  );
+}
+
+/** A hand waving goodbye, drawn in strokes (phone-kicked.png). */
+export function WavingHandIcon() {
+  return (
+    <Svg>
+      <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8.5 12.5 5.6 7.4a1.3 1.3 0 0 1 2.2-1.3l3 5.1M10.4 10.2 7.8 5.7a1.3 1.3 0 0 1 2.2-1.3l3.3 5.6M12.6 8.9l-1.4-2.4a1.3 1.3 0 0 1 2.2-1.3l3.4 5.8c1.9 3.3.8 7.4-2.4 9.3-2.6 1.5-5.8.9-7.8-1.3L4 15.2a1.3 1.3 0 0 1 1.9-1.7l2.6 2" />
+        <path d="M17 3.5c1.6.4 2.9 1.5 3.6 3M3.5 17c.4 1.6 1.5 2.9 3 3.6" />
+      </g>
+    </Svg>
+  );
+}
+
 export function CelebrationIcon() {
   return (
     <Svg>
