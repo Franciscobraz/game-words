@@ -77,6 +77,7 @@ export const STRINGS = {
 
   // End of the room (TVEXIT-01)
   roomExpired: 'Sala expirada',
+  pressOkForNewRoom: 'Aperte OK no controle para abrir uma sala nova',
   roomClosed: 'A sala foi encerrada',
   openedInAnotherTab: 'A TV foi aberta em outra aba',
 

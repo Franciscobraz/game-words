@@ -9,6 +9,7 @@ import { ReplacedScreen } from './screens/ReplacedScreen.tsx';
 import { ResultScreen } from './screens/ResultScreen.tsx';
 import { RoundScreen } from './screens/RoundScreen.tsx';
 import { WordsScreen } from './screens/WordsScreen.tsx';
+import { useAnyPress } from './state/any-press.ts';
 import { useServerClock } from './state/server-clock.ts';
 import { useStore } from './state/store.ts';
 
@@ -30,6 +31,7 @@ export function App() {
   const { room, reveal } = useStore();
   const serverNow = useServerClock(room.serverNow);
   const screen = useComputed(() => tvScreen(room.room.value, room.status.value, reveal.stageAt(serverNow.value), serverNow.value));
+  useAnyPress(room.pressOk);
   const Current = SCREENS[screen.value];
   return <Current />;
 }
