@@ -189,10 +189,14 @@ const HANDLERS: { [T in ClientMessageType]?: Handler<T> } = {
   'close-room': handleCloseRoom,
 };
 
-/** What follows the welcome in the results and the podium: the message of the phase. */
+/**
+ * What follows the welcome in the results and the podium: the message of the phase.
+ * A podium that came from a match sends its last results first (PROTO-02 AC 5).
+ */
 function afterWelcome(state: RoomState, to: ConnRef): Effect[] {
-  if (state.phase === 'results' && state.results) return [{ kind: 'send', to, msg: state.results }];
-  if (state.phase === 'podium') return [{ kind: 'send', to, msg: podiumMessage(state) }];
+  const results: Effect[] = state.results ? [{ kind: 'send', to, msg: state.results }] : [];
+  if (state.phase === 'results') return results;
+  if (state.phase === 'podium') return [...results, { kind: 'send', to, msg: podiumMessage(state) }];
   return [];
 }
 

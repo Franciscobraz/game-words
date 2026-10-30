@@ -50,7 +50,7 @@ function results(state: RoomState): RoundResultsMessage {
 describe('round results', () => {
   test('sends the final counts before the results', () => {
     // Bob's last word is not on the TV yet: the flush deadline had not come.
-    const state = finishedRound([alice, bob, carol], { tvCounts: { dirty: true, lastSentAt: 129_900 } });
+    const state = finishedRound([alice, bob, carol], { settings: { ...DEFAULT_SETTINGS, rounds: 2 }, tvCounts: { dirty: true, lastSentAt: 129_900 } });
     const r = endRound(state, END, deps);
     const tvCounts = r.effects.findIndex((e) => e.kind === 'send' && e.to.id === 'c-tv' && e.msg.type === 'counts');
     const resultsAt = r.effects.findIndex((e) => e.kind === 'broadcast' && e.msg.type === 'round-results');
@@ -109,7 +109,7 @@ describe('round results', () => {
   });
 
   test('sends the players list with the new scores after the results', () => {
-    const r = endRound(finishedRound([alice, bob, carol]), END, deps);
+    const r = endRound(finishedRound([alice, bob, carol], { settings: { ...DEFAULT_SETTINGS, rounds: 2 } }), END, deps);
     const broadcasts = r.effects.flatMap((e) => (e.kind === 'broadcast' ? [e.msg] : []));
     expect(broadcasts.map((m) => m.type)).toEqual(['round-results', 'players']);
     const list = broadcasts[1];
@@ -272,7 +272,7 @@ describe('round results', () => {
   });
 
   test('whoever connects in the results gets them after the welcome', () => {
-    const r = endRound(finishedRound([alice, bob, carol]), END, deps);
+    const r = endRound(finishedRound([alice, bob, carol], { settings: { ...DEFAULT_SETTINGS, rounds: 2 } }), END, deps);
     const back = step(r.state, message(pending('c-back'), { type: 'hello', role: 'player', token: bob.token }), END + 1, deps);
     expect(sentTo(back.effects, 'c-back').map((m) => m.type)).toEqual(['welcome', 'round-results']);
     expect(sentTo(back.effects, 'c-back')[1]).toEqual(r.state.results);

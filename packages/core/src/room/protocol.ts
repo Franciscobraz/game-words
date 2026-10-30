@@ -208,8 +208,9 @@ interface WelcomeBase {
 }
 
 /**
- * Full state, sent in answer to `hello`. In the results or the podium the room
- * follows it with the `round-results` or `podium` message of the phase.
+ * Full state, sent in answer to `hello`. In the results the room follows it with
+ * `round-results`; on the podium, with `round-results` when it came from a match,
+ * and then `podium`.
  */
 export type WelcomeMessage =
   | (WelcomeBase & { role: 'tv' })
@@ -245,7 +246,7 @@ export interface RoundResultsMessage {
   longest: LongestResult | null;
   /** Valid words of the round, with the room's minimum and filter (PROTO-02 AC 2). */
   possibleWords: number;
-  /** Whether another round follows; when false, `next` shows the podium. */
+  /** Whether this round ended the match; if so, `podium` follows at once. */
   last: boolean;
 }
 

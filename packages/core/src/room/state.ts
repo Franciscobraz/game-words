@@ -94,7 +94,7 @@ export interface RoomState {
   nextSolutions: RoundSolutions | null;
   /** The host asked for the next round before its board was prepared; it starts when the board arrives. */
   pendingStart: boolean;
-  /** Results of the last round, sent again to whoever connects in the results. */
+  /** Results of the last round, sent again to whoever connects in the results or on the podium. */
   results: RoundResultsMessage | null;
   /** Per player, when each path of the last second was taken in (rate limit); kept in memory only. */
   rateWindow: Record<string, number[]>;

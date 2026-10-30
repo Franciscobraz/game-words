@@ -30,6 +30,14 @@ function inResults(extra: Partial<RoomState> = {}): RoomState {
 
 const host = playerConn(ana);
 
+/** The alarm that closes a round of `lastRound`: `endsAt + 300 ms`. */
+const ROUND_END = 60_300;
+
+/** The last of two rounds still open, with nobody's words yet: its end is the end of the match. */
+function lastRound(extra: Partial<RoomState> = {}): RoomState {
+  return inResults({ phase: 'round', roundIndex: 1, ...extra });
+}
+
 describe('match flow', () => {
   test('next starts the countdown with the prepared board', async () => {
     const prepared = await prepareRound(richPack(), TWO_ROUNDS, 4, SALT);
@@ -65,10 +73,12 @@ describe('match flow', () => {
     expect(r.state.round?.startsAt).toBe(73_050);
   });
 
-  test('next after the last round sends the podium', () => {
-    const r = step(inResults({ roundIndex: 1 }), message(host, { type: 'next' }), 70_000, deps);
+  test('ends the match when the last round ends', () => {
+    // No `next`: the alarm of the last round goes straight to the podium (PROTO-02 AC 4).
+    const r = step(lastRound(), { kind: 'alarm' }, ROUND_END, deps);
     expect(r.state.phase).toBe('podium');
-    expect(sentTo(r.effects, '*')[0]).toEqual({
+    expect(sentTo(r.effects, '*').map((m) => m.type)).toEqual(['round-results', 'podium', 'players']);
+    expect(sentTo(r.effects, '*')[1]).toEqual({
       type: 'podium',
       ranking: [
         { playerId: 'p2', score: 12 },
@@ -76,16 +86,21 @@ describe('match flow', () => {
         { playerId: 'p1', score: 5 },
       ],
     });
-    expect(sentTo(r.effects, '*').map((m) => m.type)).toEqual(['podium', 'players']);
     expect(r.effects).toContainEqual({ kind: 'persist', keys: ['room'] });
-    // Whoever connects on the podium gets it after the welcome.
-    const tv = step(r.state, message(pending('c-tv2'), { type: 'hello', role: 'tv', token: TV_TOKEN }), 71_000, deps);
-    expect(sentTo(tv.effects, 'c-tv2').map((m) => m.type)).toEqual(['welcome', 'podium']);
+    // No more rounds, so no board to prepare.
+    expect(r.effects).not.toContainEqual({ kind: 'prepare-next' });
+  });
+
+  test('ends the match when the last round ends: an earlier round still waits for the host', () => {
+    const r = step(lastRound({ roundIndex: 0 }), { kind: 'alarm' }, ROUND_END, deps);
+    expect(r.state.phase).toBe('results');
+    expect(sentTo(r.effects, '*').map((m) => m.type)).toEqual(['round-results', 'players']);
+    expect(r.effects).toContainEqual({ kind: 'prepare-next' });
   });
 
   test('sends the updated players list after the results and the podium', () => {
     // Round end: scores in the list match the new cumulative scores.
-    const ended = step(inResults({ roundIndex: 1 }), message(host, { type: 'next' }), 70_000, deps);
+    const ended = step(lastRound(), { kind: 'alarm' }, ROUND_END, deps);
     const list = sentTo(ended.effects, '*').find((m) => m.type === 'players');
     expect(list).toBeDefined();
     if (list?.type !== 'players') throw new Error('no players list');
@@ -251,36 +266,55 @@ describe('match flow', () => {
 });
 
 describe('session wins', () => {
-  /** The results of the last round of two, with these scores and wins for Ana, Bia and Cid. */
-  const lastResults = (scores: number[], wins: number[]) =>
-    inResults({
-      roundIndex: 1,
+  /** The last of two rounds, with these scores and wins for Ana, Bia and Cid. */
+  const lastRoundWith = (scores: number[], wins: number[]) =>
+    lastRound({
       players: [ana, bia, cid].map((p, i) => ({ ...p, score: scores[i]!, wins: wins[i]! })),
     });
 
   const winsOf = (state: RoomState) => state.players.map((p) => p.wins);
 
+  test('counts the wins when the last round ends', () => {
+    // Ana's 2 points of this round take her from 11 to 13, past Bia's 12: the final score decides (PROTO-02 AC 7).
+    const state = lastRoundWith([11, 12, 3], [0, 0, 0]);
+    const finalRound = { ...state, players: state.players.map((p) => (p.id === 'p1' ? { ...p, found: ['abc'] } : p)) };
+    const r = step(finalRound, { kind: 'alarm' }, ROUND_END, deps);
+    expect(r.state.players.map((p) => p.score)).toEqual([13, 12, 3]);
+    expect(winsOf(r.state)).toEqual([1, 0, 0]);
+    const list = sentTo(r.effects, '*').find((m) => m.type === 'players');
+    if (list?.type !== 'players') throw new Error('no players list');
+    expect(list.players.map((p) => p.wins)).toEqual([1, 0, 0]);
+    expect(r.effects).toContainEqual({ kind: 'persist', keys: ['room'] });
+    // A match where everyone ends with 0 points has no winner.
+    const empty = step(lastRoundWith([0, 0, 0], [1, 2, 0]), { kind: 'alarm' }, ROUND_END, deps);
+    expect(empty.state.phase).toBe('podium');
+    expect(winsOf(empty.state)).toEqual([1, 2, 0]);
+  });
+
   test('awards a win to every top scorer at the podium', () => {
     // Bia and Cid (offline) tie at the top; Ana trails.
-    const r = step(lastResults([5, 12, 12], [1, 0, 2]), message(host, { type: 'next' }), 70_000, deps);
+    const r = step(lastRoundWith([5, 12, 12], [1, 0, 2]), { kind: 'alarm' }, ROUND_END, deps);
     expect(r.state.phase).toBe('podium');
     expect(winsOf(r.state)).toEqual([1, 1, 3]);
     expect(r.effects).toContainEqual({ kind: 'persist', keys: ['room'] });
     // A single leader takes the only win.
-    const one = step(lastResults([20, 12, 3], [0, 0, 0]), message(host, { type: 'next' }), 70_000, deps);
+    const one = step(lastRoundWith([20, 12, 3], [0, 0, 0]), { kind: 'alarm' }, ROUND_END, deps);
     expect(winsOf(one.state)).toEqual([1, 0, 0]);
   });
 
   test('awards no win when the top score is 0', () => {
-    const r = step(lastResults([0, 0, 0], [1, 2, 0]), message(host, { type: 'next' }), 70_000, deps);
+    const r = step(lastRoundWith([0, 0, 0], [1, 2, 0]), { kind: 'alarm' }, ROUND_END, deps);
     expect(r.state.phase).toBe('podium');
     expect(winsOf(r.state)).toEqual([1, 2, 0]);
   });
 
   test('awards no win before the last round ends', () => {
-    // `next` in the results of round 1 of 2 starts round 2 and counts nothing.
-    const state = { ...lastResults([5, 12, 8], [0, 0, 0]), roundIndex: 0 };
-    const r = step(state, message(host, { type: 'next' }), 70_000, deps);
+    // The end of round 1 of 2 counts nothing, and neither does `next` in its results.
+    const first = { ...lastRoundWith([5, 12, 8], [0, 0, 0]), roundIndex: 0 };
+    const ended = step(first, { kind: 'alarm' }, ROUND_END, deps);
+    expect(ended.state.phase).toBe('results');
+    expect(winsOf(ended.state)).toEqual([0, 0, 0]);
+    const r = step(ended.state, message(host, { type: 'next' }), 70_000, deps);
     expect(r.state.phase).toBe('results');
     expect(winsOf(r.state)).toEqual([0, 0, 0]);
   });
@@ -289,12 +323,12 @@ describe('session wins', () => {
   const CANCEL_ROWS: [string, Partial<RoomState>, number][] = [
     ['countdown', { phase: 'round', roundIndex: 1 }, 0],
     ['round', { phase: 'round', roundIndex: 1 }, 30_000],
-    ['results of the last round', { phase: 'results', roundIndex: 1 }, 75_000],
+    ['results of an earlier round', { phase: 'results', roundIndex: 0 }, 75_000],
   ];
 
   test.each(CANCEL_ROWS)('awards no win to a cancelled match: %s', (_name, extra, now) => {
     const round = { id: 1, board: [['a']], startsAt: 10_000, endsAt: 70_000, salt: 's' };
-    const state = { ...lastResults([5, 12, 8], [1, 0, 0]), round, ...extra };
+    const state = { ...lastRoundWith([5, 12, 8], [1, 0, 0]), round, ...extra };
     const back = step(state, message(host, { type: 'back-to-lobby' }), now, deps);
     expect(back.state.phase).toBe('lobby');
     expect(winsOf(back.state)).toEqual([1, 0, 0]);

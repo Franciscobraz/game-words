@@ -136,7 +136,6 @@ describe('persistence', () => {
     await setClock(code, start.endsAt + 300);
     await runDurableObjectAlarm(stubOf(code));
     await a.client.skipTo('round-results');
-    a.client.send({ type: 'next' });
     await a.client.skipTo('podium');
 
     const winsIn = (players: { id: string; wins: number }[]) => players.map((p) => [p.id, p.wins]);

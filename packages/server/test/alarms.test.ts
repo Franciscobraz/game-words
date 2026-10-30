@@ -30,7 +30,7 @@ describe('alarms', () => {
     await setClock(code, start.endsAt + 300);
     expect(await runDurableObjectAlarm(stubOf(code))).toBe(true);
     const room = await storedRoom(code);
-    expect(room?.phase).toBe('results');
+    expect(room?.phase).toBe('podium');
     const points = scoreRound(new Map([[a.playerId, new Set([word.word])], [b.playerId, new Set<string>()]])).totals.get(a.playerId);
     expect(points).toBeGreaterThan(0);
     expect(room?.players.find((p) => p.id === a.playerId)?.score).toBe(points);
@@ -38,9 +38,11 @@ describe('alarms', () => {
     // A phone that comes back finds the results.
     const back = await connect(code);
     back.send({ type: 'hello', role: 'player', token: a.token });
-    expect(await back.next('welcome')).toMatchObject({ phase: 'results', playerId: a.playerId });
+    expect(await back.next('welcome')).toMatchObject({ phase: 'podium', playerId: a.playerId });
     const results = await back.next('round-results');
     expect(results.players.find((p) => p.playerId === a.playerId)?.roundPoints).toBe(points);
+    const podium = await back.next('podium');
+    expect(podium.ranking).toContainEqual({ playerId: a.playerId, score: points });
   });
 
   it('schedules every deadline on the durable object alarm', async () => {

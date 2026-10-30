@@ -1,6 +1,6 @@
-import { type ConnRef, type Effect, type Handler, type PersistKey, playersMessage, type StepResult, welcomeBase } from './effects.ts';
+import { type ConnRef, type Effect, type Handler, type PersistKey, type StepResult, welcomeBase } from './effects.ts';
 import type { CloseReason, ServerMessage } from './protocol.ts';
-import { isLastRound, requestRound } from './round.ts';
+import { requestRound } from './round.ts';
 import type { RoomState } from './state.ts';
 
 /** Players from the highest to the lowest score, ties in joining order (RES-01 AC 6). */
@@ -13,29 +13,17 @@ export function podiumMessage(state: RoomState): ServerMessage {
  * One more win to every player with the highest score of the finished match, all
  * of them on a tie, and to nobody when that score is 0 (WINS-01 AC 1-2).
  */
-function awardWins(players: RoomState['players']): RoomState['players'] {
+export function awardWins(players: RoomState['players']): RoomState['players'] {
   const top = Math.max(0, ...players.map((p) => p.score));
   return top === 0 ? players : players.map((p) => (p.score === top ? { ...p, wins: p.wins + 1 } : p));
 }
 
 /**
  * `next` from the host in the results: the countdown of the next round with the
- * prepared board (RES-01 AC 5), or the podium after the last round (AC 6), which
- * counts the match's wins.
+ * prepared board (RES-01 AC 5). The results only exist while rounds remain, because
+ * the last round goes straight to the podium (PROTO-02 AC 4).
  */
-export const handleNext: Handler<'next'> = ({ state, now }) => {
-  if (!isLastRound(state)) return requestRound(state, now);
-  const next: RoomState = { ...state, phase: 'podium', players: awardWins(state.players) };
-  return {
-    state: next,
-    effects: [
-      { kind: 'persist', keys: ['room'] },
-      { kind: 'broadcast', msg: podiumMessage(next) },
-      // The players list carries the new wins (RES-01 AC 11).
-      { kind: 'broadcast', msg: playersMessage(next) },
-    ],
-  };
-};
+export const handleNext: Handler<'next'> = ({ state, now }) => requestRound(state, now);
 
 /**
  * Back to the lobby with the same players, colors, settings and host: every score

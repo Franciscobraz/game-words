@@ -105,7 +105,6 @@ async function playMatch() {
   const round1 = await playRound(code, tv, phones, sessions, await readStart(tv, phones));
   host.client.send({ type: 'next' });
   const round2 = await playRound(code, tv, phones, sessions, await readStart(tv, phones));
-  host.client.send({ type: 'next' });
   const podium = await tv.skipTo('podium');
   for (const p of phones) expect(await p.client.skipTo('podium')).toEqual(podium);
   const afterPodium = await liveState(code);

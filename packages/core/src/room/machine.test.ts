@@ -7,6 +7,7 @@ import {
   decodeHashFrame,
   ERROR_CODES,
   type Phase,
+  type RoundResultsMessage,
   type ServerMessage,
 } from './protocol.ts';
 import type { RoomState } from './state.ts';
@@ -235,6 +236,50 @@ describe('clock sync', () => {
     // A clock sync is not an action: the idle clock does not move.
     expect(r.state).toBe(state);
     expect(r.state.lastActionAt).toBe(0);
+  });
+});
+
+describe('podium', () => {
+  const LAST_RESULTS: RoundResultsMessage = { type: 'round-results', index: 1, shared: [], players: [], longest: null, possibleWords: 0, last: true };
+  const ana = makePlayer('p1', { nickname: 'Ana', score: 9 });
+  const bia = makePlayer('p2', { nickname: 'Bia', color: '#E53935', score: 4 });
+  const onPodium = (extra: Partial<RoomState> = {}) => roomWith([ana, bia], { phase: 'podium', results: LAST_RESULTS, ...extra });
+  const PODIUM = {
+    type: 'podium',
+    ranking: [
+      { playerId: 'p1', score: 9 },
+      { playerId: 'p2', score: 4 },
+    ],
+  };
+
+  test('sends the last results and the podium after the welcome', () => {
+    // PROTO-02 AC 5: the phone that comes back, a guest and the TV.
+    const phone = step(onPodium(), message(pending('c-back'), { type: 'hello', role: 'player', token: bia.token }), 0, deps);
+    const newcomer = step(onPodium(), message(pending('c-new'), { type: 'hello', role: 'player' }), 0, deps);
+    const tv = step(onPodium(), message(pending('c-tv'), { type: 'hello', role: 'tv', token: TV_TOKEN }), 0, deps);
+    const CONNECTIONS = [
+      [phone.effects, 'c-back'],
+      [newcomer.effects, 'c-new'],
+      [tv.effects, 'c-tv'],
+    ] as const;
+    for (const [effects, id] of CONNECTIONS) {
+      const sent = sentTo(effects, id);
+      expect(sent.map((m) => m.type)).toEqual(['welcome', 'round-results', 'podium']);
+      expect(sent[1]).toEqual(LAST_RESULTS);
+      expect(sent[2]).toEqual(PODIUM);
+    }
+  });
+
+  test('sends the last results and the podium after the welcome: only the podium without results', () => {
+    const r = step(onPodium({ results: null }), message(pending('c-new'), { type: 'hello', role: 'player' }), 0, deps);
+    expect(sentTo(r.effects, 'c-new').map((m) => m.type)).toEqual(['welcome', 'podium']);
+  });
+
+  test('refuses next on the podium', () => {
+    const state = onPodium();
+    const r = step(state, message(playerConn(ana), { type: 'next' }), 0, deps);
+    expect(r.state).toBe(state);
+    expect(allMessages(r.effects)).toEqual([{ type: 'error', code: 'wrong-phase' }]);
   });
 });
 

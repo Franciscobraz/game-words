@@ -4,6 +4,7 @@ import { findPath } from '../path.ts';
 import { scoreRound, wordPoints } from '../scoring.ts';
 import { countsMessage } from './counts.ts';
 import { type Effect, playersMessage, type RoomDeps, type StepResult } from './effects.ts';
+import { awardWins, podiumMessage } from './flow.ts';
 import type { PlayerResult, ResultWord, RoundResultsMessage } from './protocol.ts';
 import { isLastRound } from './round.ts';
 import type { RoomState } from './state.ts';
@@ -27,7 +28,9 @@ function resultWord(pack: LanguagePack, word: string, points: number): ResultWor
  * `possibleWords` counts the round's solutions, which `prepareRound` already kept
  * with the room's minimum and filter (PROTO-02 AC 2).
  * While rounds remain, the adapter is asked to prepare the next board at once
- * (`prepare-next`, RES-01 AC 4).
+ * (`prepare-next`, RES-01 AC 4). The last round ends the match without a `next`:
+ * the room goes to the podium, with the wins counted over the final scores
+ * (PROTO-02 AC 4, AC 7).
  */
 export function endRound(state: RoomState, now: number, deps: RoomDeps): StepResult {
   const pack = deps.pack();
@@ -67,8 +70,8 @@ export function endRound(state: RoomState, now: number, deps: RoomDeps): StepRes
 
   const next: RoomState = {
     ...state,
-    phase: 'results',
-    players,
+    phase: last ? 'podium' : 'results',
+    players: last ? awardWins(players) : players,
     results: msg,
     rateWindow: {},
     tvCounts: { dirty: false, lastSentAt: now },
@@ -76,7 +79,8 @@ export function endRound(state: RoomState, now: number, deps: RoomDeps): StepRes
   const effects: Effect[] = [{ kind: 'persist', keys: ['room'] }];
   if (state.tvConn !== null) effects.push({ kind: 'send', to: { id: state.tvConn, role: 'tv' }, msg: countsMessage(state) });
   effects.push({ kind: 'broadcast', msg });
-  // The players list carries the new scores (RES-01 AC 11).
+  if (last) effects.push({ kind: 'broadcast', msg: podiumMessage(next) });
+  // The players list carries the new scores and wins (RES-01 AC 11).
   effects.push({ kind: 'broadcast', msg: playersMessage(next) });
   if (!last) effects.push({ kind: 'prepare-next' });
   return { state: next, effects };

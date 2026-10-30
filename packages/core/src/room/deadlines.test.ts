@@ -118,8 +118,8 @@ describe('round deadline', () => {
     expect(nextDeadline(gone)).toBe(130_300);
     expect(alarm(gone, 130_299).state.phase).toBe('round');
     const r = alarm(gone, 130_300);
-    expect(r.state.phase).toBe('results');
-    expect(allMessages(r.effects).map((m) => m.type)).toEqual(['round-results', 'players']);
+    expect(r.state.phase).toBe('podium');
+    expect(allMessages(r.effects).map((m) => m.type)).toEqual(['round-results', 'podium', 'players']);
     // Nothing is addressed to the absent TV.
     expect(r.effects.some((e) => e.kind === 'send' && e.to.role === 'tv')).toBe(false);
   });
