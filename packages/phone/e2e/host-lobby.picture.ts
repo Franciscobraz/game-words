@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { STRINGS } from '../src/strings/pt-BR.ts';
-import { fakeRoom, picturePath } from './fake-room.ts';
+import { fakeRoom, picturePath, PICTURE_WIDTH } from './fake-room.ts';
 import { ANA, BETO, CAIO, DUDA, lobbyWelcome, SAMPLE_CODE } from './samples.ts';
 
 test('phone-host-lobby', async ({ page }) => {
@@ -12,6 +12,6 @@ test('phone-host-lobby', async ({ page }) => {
   // The capture draws the whole screen in one window, with the sticky start button at its foot,
   // so the window is as tall as the page (a full-page shot would leave the button mid-page).
   const height = await page.evaluate(() => document.documentElement.scrollHeight);
-  await page.setViewportSize({ width: 390, height });
+  await page.setViewportSize({ width: PICTURE_WIDTH, height });
   await page.screenshot({ path: picturePath('phone-host-lobby') });
 });

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { STRINGS } from '../src/strings/pt-BR.ts';
-import { picturePath } from './fake-room.ts';
+import { picturePath, PICTURE_WIDTH } from './fake-room.ts';
 import { boardOf, openRound, slideOver, swipe } from './round-room.ts';
 import { SAMPLE_WORDS } from './samples.ts';
 
@@ -52,7 +52,7 @@ test('phone-feedbacks', async ({ page, browser }) => {
     await expect(page.getByRole('status')).toHaveCount(0);
   }
 
-  const sheet = await browser.newPage({ viewport: { width: 390, height: 884 }, deviceScaleFactor: 2 });
+  const sheet = await browser.newPage({ viewport: { width: PICTURE_WIDTH, height: 884 }, deviceScaleFactor: 2 });
   const cards = await page.locator('.word-rack').boundingBox();
   const width = cards?.width ?? 350;
   const background = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);

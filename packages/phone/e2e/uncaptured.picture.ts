@@ -1,6 +1,6 @@
 import { expect, type Page, test } from '@playwright/test';
 import { STRINGS } from '../src/strings/pt-BR.ts';
-import { fakeRoom, uncapturedPath } from './fake-room.ts';
+import { fakeRoom, PICTURE_WIDTH, uncapturedPath } from './fake-room.ts';
 import { boardOf } from './round-room.ts';
 import { ANA, BETO, CAIO, DUDA, roundWelcome, SAMPLE_CODE, sampleHashFrame, sampleRound } from './samples.ts';
 import { SCREEN_STATES } from './screen-states.ts';
@@ -17,7 +17,7 @@ const NOW = Date.UTC(2026, 9, 29, 12, 0, 0);
 /** Screens whose buttons stick to the foot of the page: the window is as tall as the page, as in the captures. */
 async function shootWholePage(page: Page, name: string): Promise<void> {
   const height = await page.evaluate(() => document.documentElement.scrollHeight);
-  await page.setViewportSize({ width: 390, height });
+  await page.setViewportSize({ width: PICTURE_WIDTH, height });
   await page.screenshot({ path: uncapturedPath(name), animations: 'disabled' });
 }
 

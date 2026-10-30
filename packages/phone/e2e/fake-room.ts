@@ -63,12 +63,26 @@ function encode(reply: Reply): string | Buffer {
 
 const captures = join(dirname(fileURLToPath(import.meta.url)), '../../../.specs/features/m3-phone/captures');
 
-/** Where the picture of a screen without a capture goes, for the user to judge (T42). */
-export function uncapturedPath(name: string): string {
-  return join(captures, 'uncaptured', `${name}.png`);
+/** The width the captures were drawn at; their pictures are taken there. */
+const CAPTURE_WIDTH = 390;
+
+/**
+ * The width of the pictures: 390 px, or `PICTURE_WIDTH` to see the same screens at 320 or
+ * 480 px (UI-01 AC 10): `PICTURE_WIDTH=320 npx playwright test -c packages/phone/playwright.pictures.config.ts`.
+ */
+export const PICTURE_WIDTH = Number(process.env.PICTURE_WIDTH ?? CAPTURE_WIDTH);
+
+/** Where the other widths go: out of the repository, beside the test results. */
+const otherWidths = join(dirname(fileURLToPath(import.meta.url)), '../test-results/pictures');
+
+/** Where the picture of `capture` goes: beside the capture at 390 px, in `test-results/pictures/<width>/` otherwise. */
+export function picturePath(capture: string): string {
+  if (PICTURE_WIDTH !== CAPTURE_WIDTH) return join(otherWidths, String(PICTURE_WIDTH), `${capture}.png`);
+  return join(captures, `${capture}.running.png`);
 }
 
-/** Where the picture of `capture` goes, beside the capture itself. */
-export function picturePath(capture: string): string {
-  return join(captures, `${capture}.running.png`);
+/** Where the picture of a screen without a capture goes, for the user to judge (T42); other widths as in `picturePath`. */
+export function uncapturedPath(name: string): string {
+  if (PICTURE_WIDTH !== CAPTURE_WIDTH) return join(otherWidths, String(PICTURE_WIDTH), 'uncaptured', `${name}.png`);
+  return join(captures, 'uncaptured', `${name}.png`);
 }

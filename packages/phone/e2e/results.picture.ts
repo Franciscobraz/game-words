@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { STRINGS } from '../src/strings/pt-BR.ts';
-import { fakeRoom, picturePath } from './fake-room.ts';
+import { fakeRoom, picturePath, PICTURE_WIDTH } from './fake-room.ts';
 import { ANA, ANA_FOUND, resultsWelcome, SAMPLE_CODE, sampleResults, SCORED_PLAYERS } from './samples.ts';
 
 test('phone-round-result', async ({ page }) => {
@@ -14,6 +14,6 @@ test('phone-round-result', async ({ page }) => {
   // The capture draws the whole screen in one window, with the sticky buttons at its foot,
   // so the window is as tall as the page.
   const height = await page.evaluate(() => document.documentElement.scrollHeight);
-  await page.setViewportSize({ width: 390, height });
+  await page.setViewportSize({ width: PICTURE_WIDTH, height });
   await page.screenshot({ path: picturePath('phone-round-result') });
 });
