@@ -133,14 +133,42 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 - **Motivo:** as duas captures se contradizem; uma arrumação só, a que o app já usa.
 - user: "Manter como está" (resposta à pergunta "Qual arrumação das etiquetas da Ana vale para todas as telas?")
 
+### AD-019 - Resultado da rodada na TV numa tela só (superseded by AD-021)
+
+- **Data:** 2026-10-30
+- **Decisão:** a TV mostra o resultado da rodada de uma vez, numa tela só, como na capture: placar, palavras únicas, palavras em comum e a maior palavra do tabuleiro. Não há as quatro etapas em sequência de DESIGN §4.3 e `docs/screens.md` §8.
+- **Motivo:** Pergunta 3 do M4: "Seguir as 4 etapas automáticas [...] Uma tela só, como a capture." O user escolheu a segunda opção.
+- user: "no item 3 da revelação do resultado, mantenha uma tela só como no capture. o resultado pode ser mostrado de uma vez"
+
+### AD-020 - Sem fast mode (active)
+
+- **Data:** 2026-10-30
+- **Decisão:** o fast mode sai do jogo: a configuração `fastMode`, o controle no lobby do anfitrião e os chips. Com o resultado numa tela só (AD-019), ele não tem mais função. Diverge de DESIGN §1.2 e §4.3 e de `docs/screens.md`; a remoção do código entra no M4.
+- **Motivo:** pergunta do M4 sobre o fast mode depois do AD-019: "Tirar a opção [...] Manter a opção". O user escolheu tirar.
+- user: "o fast mode pode ser removido."
+
+### AD-021 - Palavras em rolagem e depois resultado final na TV (active)
+
+- **Data:** 2026-10-30
+- **Decisão:** ao fim da rodada a TV abre sozinha uma página com a quantidade de palavras possíveis e a rolagem automática de todas as palavras encontradas: primeiro as em comum, depois as únicas, cada grupo da menor para a maior, com a pontuação e um círculo na cor de quem achou. Cinco segundos depois da última palavra, vai para o resultado final, sem lista de palavras: pódio com 1º, 2º e 3º maiores, os outros jogadores abaixo em ordem de pontos e o tabuleiro com a palavra mais longa marcada. Essa página espera o anfitrião escolher jogar novamente ou voltar ao lobby. Substitui AD-019 e diverge de DESIGN §4.3 e de `docs/screens.md` §6 e §8.
+- **Motivo:** pedido direto do user, depois da análise das telas do Stitch.
+- user: "Adicione uma nova pagina para a tv que vai mostrar a quantidade de palavras possíveis  e vai apresentar uma rolagem automática na tela da televisão com todas as palavras encontradas da menor para maior com a pontuação ao lado, ao lado de cada palavra terá sinalizado com um circulo da cor da pessoa que achou aquela palavra, mostrando antes as palavras em comum e depois as palavras únicas, essa pagina irá aparecer logo após o fim da rodada automaticamente, após mostrar a ultima palavra vai esperar 5s e irá para pagina de resultados final, que não vai mais precisar mostrar as palavras, vai mostrar apenas o podio,  1° 2° 3° maior e todos os outros jogadores em ordem de pontos abaixo, o tabuleiro com a palavra mais longa marcada nele, e essa sim irá esperar o anfitrião clicar em jogar novamente ou voltar para o lobby"
+
+### AD-022 - Telas da TV como base do M4 (active)
+
+- **Data:** 2026-10-30
+- **Decisão:** as telas de TV do Stitch como estão hoje viram as captures do M4, em 1920x1080: rodada, resultado, palavras da rodada e lobby (a tela "TV - Áudio Bloqueado"). O que ainda diverge é corrigido na implementação e fica em `## Differences from the source`. Lobby vazio, contagem, tempo esgotado, reconectando e sala expirada saem só no código, com o visual aprovado por foto da tela rodando. Na tela de palavras ficam o contador de palavras encontradas e os números maiores, e sai "APENAS 1 JOGADOR".
+- **Motivo:** pergunta sobre seguir com o spec: "Escrevo o spec do M4 com as recomendações para as telas restantes?" Opção escolhida: escrever o spec.
+- user: "Sim, escrever spec"
+
 ## Handoff
 
 - **Data:** 2026-10-30
 - **Marcos concluídos:** M0, M1, M2 e M3 (`m3-phone`, Done, verificados).
 - **Fechamento do M3:** T47 `128bb09` (lista do espectador cabe em 390x884, SPEC-01 AC 4, C135) e T48 `9736ad1` (a grafia real não quebra no meio a 320 px, UI-01 AC 12, C136). O "Placar rápido" sob os botões `sticky` de `phone-round-result` fica como está, por decisão do user: os botões continuam à vista e o placar aparece ao rolar. `check_proofs.py --mutations` em 9736ad1: 142 pass, 0 fail, 12 mutações mortas. `validate_verification.py` deu exit 0 em 9736ad1, com o `proofs.md` ainda fora do commit. Lições L-011 a L-015 registradas.
 - **Gate e `proofs.md`:** o gate compara o HEAD de `proofs.md` com o HEAD atual. A ordem é rodar `check_proofs.py`, rodar o gate e só então commitar `proofs.md`. Depois desse commit de docs o gate acusa outro HEAD; isso é esperado e não é regressão.
-- **Próximo passo:** M4 (cliente da TV), a começar pelo Specify, com a skill `tlc-spec-driven`.
-- **Branch:** `main`. `origin/main` está em `47801cc`; nada depois disso foi enviado. Push só com pedido.
+- **Próximo passo:** M4 (`.specs/features/m4-tv/`) em Execute: 37 tarefas, um subagente por batch, com parada entre eles. O estado vivo está em `tasks.md` `## Handoff`.
+- **Branch:** `main`. `origin/main` está em `c4746d1`. Push só com pedido.
 - **Modo de execução preferido pelo usuário:** subagentes, uma fase por vez, parando para mostrar o resultado e perguntar antes da próxima fase.
 - **Teste manual:** o user testou o M3 só no navegador do computador (`npm run debug` como TV em 5174, `npm run dev -w @bwords/phone` em 5175, o segundo celular em janela anônima porque o token fica no `localStorage`). Teste no celular de verdade e produção ficam para depois do M4; não preparar HTTPS na rede local antes disso.
 - **Ambiente Windows:** os scripts da skill precisam de `PYTHONUTF8=1`; `check_proofs.py` também precisa de `PYTHONPATH` apontando para uma pasta com um `sitecustomize.py` que mapeia `signal.SIGHUP` para `SIGTERM` e resolve launchers `.cmd` (como o `npx`) via `shutil.which`. Recriar no scratchpad da sessão se sumir.
