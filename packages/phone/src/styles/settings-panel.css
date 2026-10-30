@@ -1,7 +1,8 @@
 /* The host's match settings (HOST-01 AC 2-9, phone-host-lobby.png). */
 .settings-panel {
   margin-top: var(--space-md);
-  padding: var(--space-md);
+  /* Narrower on small screens, so "Tempo da Rodada" keeps one line beside its stepper. */
+  padding: clamp(var(--space-sm), 3.5vw, var(--space-md));
   border-radius: var(--radius-xl);
   background: var(--color-surface-container);
 }
