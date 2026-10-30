@@ -1453,6 +1453,9 @@ Proof: walk - cada foto em `captures/uncaptured/` com a resposta do user em `## 
 **C126** - Dois deslizes de CASA soltos antes de o primeiro ser julgado dão "JÁ ENCONTRADA" no segundo, CASA uma vez na lista e um só `submit` (PLAY-01, AC 8)
 Proof: `npx vitest run packages/phone/src/state/round.test.ts -t "shows already found for a second swipe of a word released before the first one was judged"`
 
+**C127** - Cada veredito tem a cor de `phone-feedbacks.png` pelo seu token (VÁLIDA `--color-valid`, JÁ ENCONTRADA `--color-already-found`, INVÁLIDA `--color-invalid`, MUITO CURTA `--color-too-short`) e só a palavra inválida treme (PLAY-01, AC 6-10)
+Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/board.spec.ts -g "colors each verdict and shakes an invalid word"`
+
 ---
 
 ## Handoff

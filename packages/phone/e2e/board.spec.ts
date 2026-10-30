@@ -147,3 +147,40 @@ test('fits the whole board on screens from 320x568 to 480x932', async ({ page })
     expect(scroll.width).toBeLessThanOrEqual(viewport.width);
   }
 });
+
+test('colors each verdict and shakes an invalid word', async ({ page }) => {
+  // PLAY-01 AC 7-10, phone-feedbacks.png: valid green, already found yellow, invalid red with the word shaking,
+  // too short grey; each pill's background is its theme token.
+  await openNow(page);
+  await expect(boardOf(page)).toBeVisible();
+  const verdicts = [
+    { tiles: SAMPLE_WORDS.casa, kind: 'valid', token: '--color-valid' },
+    { tiles: [0, 5, 6], kind: 'invalid', token: '--color-invalid' },
+    { tiles: SAMPLE_WORDS.casa, kind: 'already-found', token: '--color-already-found' },
+    { tiles: [0, 1], kind: 'too-short', token: '--color-too-short' },
+  ];
+
+  for (const { tiles, kind, token } of verdicts) {
+    await swipe(page, tiles);
+    const pill = page.getByRole('status');
+    await expect(pill).toHaveClass(`feedback-pill feedback-pill--${kind}`);
+    const background = await pill.evaluate((element) => getComputedStyle(element).backgroundColor);
+    expect(background).toBe(await tokenColor(page, token));
+    const word = page.locator('.word-rack__word');
+    const animation = await word.evaluate((element) => getComputedStyle(element).animationName);
+    expect(animation).toBe(kind === 'invalid' ? 'word-rack-shake' : 'none');
+    await expect(pill).toHaveCount(0);
+  }
+});
+
+/** The computed color of a theme token, read the way the browser resolves it on a background. */
+function tokenColor(page: Page, token: string): Promise<string> {
+  return page.evaluate((name) => {
+    const probe = document.createElement('div');
+    probe.style.backgroundColor = `var(${name})`;
+    document.body.append(probe);
+    const color = getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    return color;
+  }, token);
+}
