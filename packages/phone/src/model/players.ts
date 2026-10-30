@@ -37,9 +37,17 @@ export interface PodiumRow {
   crowned: boolean;
   /** Spectators show 0 points. */
   score: number;
-  /** Shared on a tie; null for a spectator, shown as "Espectador(a)". */
-  place: number | null;
+  /** Shared on a tie; a spectator's place follows the last player's, as Duda's "4" in the capture. */
+  place: number;
+  /** Reads "Espectador(a)" in place of the wins. */
   spectator: boolean;
+}
+
+/** A line of the ranking as drawn: the row, its tag pills, and "(desconectado)" beside the name (phone-podium.jpg). */
+export interface RankingLine {
+  row: PodiumRow;
+  tags: PlayerTag[];
+  disconnected: boolean;
 }
 
 /** Where this phone's player finished the match (POD-01 AC 2). */
@@ -91,7 +99,7 @@ export function quickScoreboard(players: readonly PlayerInfo[]): ScoreRow[] {
 
 /**
  * The podium ranking in the server's order, places shared on a tie, and the
- * spectators last with 0 points (POD-01 AC 7).
+ * spectators last with 0 points, each in the next place after the players (POD-01 AC 7).
  */
 export function podiumRows(ranking: readonly PodiumEntry[], players: readonly PlayerInfo[]): PodiumRow[] {
   const byId = new Map(players.map((p) => [p.id, p] as const));
@@ -110,15 +118,31 @@ export function podiumRows(ranking: readonly PodiumEntry[], players: readonly Pl
   }));
   const spectators: PodiumRow[] = ranked
     .filter(({ player }) => player.spectator)
-    .map(({ player }) => ({ ...podiumFields(player, crowned), score: 0, place: null, spectator: true }));
+    .map(({ player }, index) => ({ ...podiumFields(player, crowned), score: 0, place: playing.length + 1 + index, spectator: true }));
   return [...rows, ...spectators];
 }
 
 /** This phone's place, total and session wins on the podium; null for a spectator or a stranger (POD-01 AC 2). */
 export function myPlacement(rows: readonly PodiumRow[], myId: string | null): Placement | null {
   const mine = rows.find((row) => row.id === myId);
-  if (mine === undefined || mine.place === null) return null;
+  if (mine === undefined || mine.spectator) return null;
   return { place: mine.place, total: mine.score, wins: mine.wins };
+}
+
+/**
+ * The ranking lines: each row with its host and you pills, and a disconnected player
+ * marked "(desconectado)" beside the name in place of a pill (POD-01 AC 7, phone-podium.jpg).
+ */
+export function rankingLines(
+  rows: readonly PodiumRow[],
+  players: readonly PlayerInfo[],
+  hostId: string | null,
+  myId: string | null,
+): RankingLine[] {
+  return rows.map((row) => {
+    const tags = podiumTags(players, row.id, hostId, myId);
+    return { row, tags: tags.filter((tag) => tag !== 'disconnected'), disconnected: tags.includes('disconnected') };
+  });
 }
 
 /**

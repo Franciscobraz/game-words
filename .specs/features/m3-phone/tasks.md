@@ -1318,7 +1318,7 @@ Proof: browser captures/phone-podium.running.png
 **C81** - O confete aparece só para quem ficou em 1º (POD-01, AC 3)
 Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/podium.spec.ts -g "shows confetti only for first place"`
 
-**C82** - A classificação segue a ordem do `podium`, com espectadores por último com "Espectador(a)" e 0 pontos (POD-01, AC 7)
+**C82** - A classificação segue a ordem do `podium`, com espectadores por último, na posição seguinte à do último jogador, com "Espectador(a)" e 0 pontos (POD-01, AC 7)
 Proof: `npx vitest run packages/phone/src/model/players.test.ts -t "orders the podium and puts spectators last with zero"`
 
 **C83** - "SEU RENDIMENTO" soma as palavras do jogador em todas as rodadas da partida (POD-01, AC 4)
@@ -1473,6 +1473,9 @@ Proof: `npx vitest run packages/phone/src/styles/styles.test.ts -t "keeps the in
 
 **C133** - O dev server do celular responde 403 ao pacote `pt-BR.dict.bin` e aos arquivos de `languages/` pedidos por `/@fs/` (UI-01, AC 11, PROTO-01 AC 8)
 Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/dev-server.spec.ts -g "never serves the dictionary through the dev server"`
+
+**C134** - Na classificação do pódio, um jogador desconectado traz "(desconectado)" ao lado do apelido, sem a etiqueta, como em `phone-podium.jpg` (POD-01, AC 7)
+Proof: `npx vitest run packages/phone/src/model/players.test.ts -t "marks a disconnected player beside the name instead of a pill"`
 
 ---
 

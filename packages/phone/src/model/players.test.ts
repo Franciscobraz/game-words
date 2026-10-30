@@ -1,6 +1,6 @@
 import type { PlayerInfo } from '@bwords/core';
 import { describe, expect, test } from 'vitest';
-import { lobbyRows, myPlacement, podiumRows, podiumTags, quickScoreboard } from './players.ts';
+import { lobbyRows, myPlacement, podiumRows, podiumTags, quickScoreboard, rankingLines } from './players.ts';
 
 /** A connected player who is playing, with no points and no wins unless given. */
 function player(id: string, nickname: string, fields: Partial<PlayerInfo> = {}): PlayerInfo {
@@ -106,11 +106,12 @@ describe('podiumRows', () => {
 
     const rows = podiumRows(ranking, players);
 
+    // Duda, the spectator, takes the place after the three players, as the "4" of phone-podium.jpg.
     expect(rows.map((row) => [row.nickname, row.place, row.score, row.wins, row.spectator])).toEqual([
       ['Beto', 1, 41, 1, false],
       ['Ana', 2, 30, 3, false],
       ['Caio', 2, 30, 0, false],
-      ['Duda', null, 0, 0, true],
+      ['Duda', 4, 0, 0, true],
     ]);
     expect(rows.find((row) => row.crowned)?.nickname).toBe('Ana');
   });
@@ -159,5 +160,32 @@ describe('podiumTags', () => {
     expect(podiumTags(players, 'p3', 'p1', 'p1')).toEqual(['disconnected']);
     expect(podiumTags(players, 'p4', 'p1', 'p1')).toEqual([]);
     expect(podiumTags(players, 'gone', 'p1', 'p1')).toEqual([]);
+  });
+});
+
+describe('rankingLines', () => {
+  test('marks a disconnected player beside the name instead of a pill', () => {
+    // phone-podium.jpg: Caio reads "(desconectado)" in italics; Ana keeps her pills; Duda has none.
+    const players = [
+      player('p1', 'Ana', { score: 46 }),
+      player('p3', 'Caio', { score: 18, connected: false }),
+      player('p4', 'Duda', { spectator: true }),
+    ];
+    const rows = podiumRows(
+      [
+        { playerId: 'p1', score: 46 },
+        { playerId: 'p3', score: 18 },
+        { playerId: 'p4', score: 0 },
+      ],
+      players,
+    );
+
+    const lines = rankingLines(rows, players, 'p1', 'p1');
+
+    expect(lines.map((line) => [line.row.nickname, line.tags, line.disconnected])).toEqual([
+      ['Ana', ['host', 'you'], false],
+      ['Caio', [], true],
+      ['Duda', [], false],
+    ]);
   });
 });

@@ -4,7 +4,7 @@ import { PodiumHighlight } from '../components/PodiumHighlight.tsx';
 import { PodiumHostActions } from '../components/PodiumHostActions.tsx';
 import { RankingList } from '../components/RankingList.tsx';
 import { WaitingNote } from '../components/WaitingNote.tsx';
-import { myPlacement, podiumRows, podiumTags } from '../model/players.ts';
+import { myPlacement, podiumRows, rankingLines } from '../model/players.ts';
 import { useStore } from '../state/store.ts';
 import { STRINGS } from '../strings/pt-BR.ts';
 import '../styles/podium.css';
@@ -26,7 +26,7 @@ export function PodiumScreen() {
   const me = view.players.find((p) => p.id === view.myId) ?? null;
   const rows = podiumRows(view.podium, view.players);
   const placement = myPlacement(rows, view.myId);
-  const lines = rows.map((row) => ({ row, tags: podiumTags(view.players, row.id, view.hostId, view.myId) }));
+  const lines = rankingLines(rows, view.players, view.hostId, view.myId);
   const summary = match.summary.value;
 
   return (

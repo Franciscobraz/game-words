@@ -47,6 +47,8 @@ export const STRINGS = {
   youTag: 'VOCÊ',
   hostTag: 'ANFITRIÃO(Ã)',
   disconnectedTag: 'DESCONECTADO',
+  /** Beside a disconnected nickname in the podium ranking (phone-podium.jpg). */
+  disconnectedNote: '(desconectado)',
   spectatorTag: 'ESPECTADOR(A)',
   boardChip: (size: number) => `Tabuleiro ${size}x${size}`,
   timeChip: (clock: string) => `${clock} min`,

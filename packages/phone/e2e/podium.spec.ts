@@ -72,8 +72,8 @@ test('shows the personal card, the performance and the ranking', async ({ page }
   await expect(ranking.getByRole('listitem')).toHaveText([
     new RegExp(`^1AAna.*${STRINGS.youTag}.*${STRINGS.winsInSession(3)}46${STRINGS.pointsUnit}$`),
     new RegExp(`^2BBeto${STRINGS.winsInSession(1)}32${STRINGS.pointsUnit}$`),
-    new RegExp(`^3CCaio${STRINGS.disconnectedTag}${STRINGS.winsInSession(0)}18${STRINGS.pointsUnit}$`),
-    new RegExp(`^DDuda.*${STRINGS.spectatorLong.replace(/[()]/g, '\\$&')}0${STRINGS.pointsUnit}$`),
+    new RegExp(`^3CCaio${STRINGS.disconnectedNote.replace(/[()]/g, '\\$&')}${STRINGS.winsInSession(0)}18${STRINGS.pointsUnit}$`),
+    new RegExp(`^4DDuda.*${STRINGS.spectatorLong.replace(/[()]/g, '\\$&')}0${STRINGS.pointsUnit}$`),
   ]);
 });
 

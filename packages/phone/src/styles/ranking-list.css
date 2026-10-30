@@ -99,6 +99,14 @@
   color: var(--color-crown);
 }
 
+.ranking__disconnected {
+  margin-right: var(--space-xs);
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-size-small);
+  font-style: italic;
+  font-weight: var(--font-weight-semibold);
+}
+
 .ranking__eye {
   display: inline-flex;
   margin-right: var(--space-xs);

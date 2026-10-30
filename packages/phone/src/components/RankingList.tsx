@@ -1,19 +1,13 @@
-import type { PlayerTag, PodiumRow } from '../model/players.ts';
+import type { RankingLine } from '../model/players.ts';
 import { STRINGS } from '../strings/pt-BR.ts';
 import '../styles/ranking-list.css';
 import { CrownIcon, EyeIcon } from './icons.tsx';
 import { PlayerAvatar } from './PlayerAvatar.tsx';
 import { PlayerTagPill } from './PlayerTagPill.tsx';
 
-/** A line of the ranking with its tags. */
-export interface RankingLine {
-  row: PodiumRow;
-  tags: readonly PlayerTag[];
-}
-
 /** Props of `RankingList`. */
 export interface RankingListProps {
-  /** In the order of `podiumRows`: the server's ranking, spectators last. */
+  /** From `rankingLines`: the server's ranking, spectators last. */
   lines: readonly RankingLine[];
 }
 
@@ -42,13 +36,12 @@ interface RankingItemProps {
 }
 
 function RankingItem({ line }: RankingItemProps) {
-  const { row, tags } = line;
+  const { row, tags, disconnected } = line;
   const isMine = tags.includes('you');
-  const isDimmed = tags.includes('disconnected');
-  const itemClass = `ranking__item${isMine ? ' ranking__item--mine' : ''}${isDimmed ? ' ranking__item--dimmed' : ''}`;
+  const itemClass = `ranking__item${isMine ? ' ranking__item--mine' : ''}${disconnected ? ' ranking__item--dimmed' : ''}`;
   return (
     <li class={itemClass} style={{ borderLeftColor: row.color }}>
-      <span class="ranking__place">{row.place ?? ''}</span>
+      <span class="ranking__place">{row.place}</span>
       <PlayerAvatar nickname={row.nickname} color={row.color} size="small" />
       <span class="ranking__who">
         <span class="ranking__name-line">
@@ -58,6 +51,7 @@ function RankingItem({ line }: RankingItemProps) {
               <CrownIcon />
             </span>
           )}
+          {disconnected && <span class="ranking__disconnected">{STRINGS.disconnectedNote}</span>}
           {row.spectator && (
             <span class="ranking__eye">
               <EyeIcon />

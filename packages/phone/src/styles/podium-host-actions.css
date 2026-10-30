@@ -1,12 +1,13 @@
-/* The host's buttons fixed at the foot of the podium; the ranking scrolls above them (POD-01 AC 8-11). */
+/* The host's buttons fixed at the foot of the podium, on a dark band as wide as the screen;
+   the ranking scrolls above them (POD-01 AC 8-11, phone-podium.jpg). */
 .podium-host-actions {
   position: sticky;
   bottom: 0;
   z-index: 6;
-  margin-top: auto;
-  padding: var(--space-md) 0 var(--space-sm);
+  margin: auto calc(-1 * var(--space-margin)) 0;
+  padding: var(--space-md) var(--space-margin) var(--space-sm);
   border-top: 1px solid var(--color-card-stroke);
-  background: var(--color-background);
+  background: var(--color-surface-container-low);
 }
 
 .podium-host-actions__close {
