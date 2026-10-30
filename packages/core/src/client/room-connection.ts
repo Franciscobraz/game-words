@@ -1,4 +1,4 @@
-import { type ClientMessage, decodeHashFrame, type ServerMessage } from '../room/protocol.ts';
+import { type ClientMessage, decodeHashFrame, type HelloMessage, type ServerMessage } from '../room/protocol.ts';
 import { addTimeSample, CLOCK_SYNC_SAMPLES, type ClockSample, serverNow } from './clock-sync.ts';
 
 /** The binary frame of a round's hash prefixes, as `decodeHashFrame` returns it. */
@@ -38,11 +38,25 @@ export type OpenSocket = (path: string, events: SocketEvents) => SocketHandle;
 /** Runs `run` after `ms`; the returned function cancels it. */
 export type Schedule = (run: () => void, ms: number) => () => void;
 
+/** The first message of each socket, from the token the connection holds (design: core client). */
+export type SayHello = (token: string | null) => HelloMessage;
+
+/** A phone's `hello`: with its token to come back, without one to reach the join screen (ENTRY-01 AC 6). */
+export const playerHello: SayHello = (token) => (token === null ? { type: 'hello', role: 'player' } : { type: 'hello', role: 'player', token });
+
+/** The TV's `hello`: it always opens a room with the token that came with it (TVROOM-01 AC 4). */
+export const tvHello: SayHello = (token) => {
+  if (token === null) throw new Error('The TV connects only with the token of its room');
+  return { type: 'hello', role: 'tv', token };
+};
+
 /** Everything the connection needs from the outside world (style guide §4, D). */
 export interface ConnectionOptions {
   openSocket: OpenSocket;
   now: () => number;
   schedule: Schedule;
+  /** What each socket says first; a phone's `hello` unless told otherwise. */
+  hello?: SayHello;
   onMessage(msg: ServerMessage): void;
   /** Only phones get the round's hashes; the TV leaves it out (design: core client). */
   onHashes?(frame: HashFrame): void;
@@ -65,7 +79,7 @@ export interface RoomConnection {
 
 /** Creates a connection; nothing opens until `connect`. */
 export function createRoomConnection(options: ConnectionOptions): RoomConnection {
-  const { openSocket, now, schedule } = options;
+  const { openSocket, now, schedule, hello = playerHello } = options;
 
   let code: string | null = null;
   let token: string | null = null;
@@ -122,7 +136,7 @@ export function createRoomConnection(options: ConnectionOptions): RoomConnection
     cancelReconnect?.();
     cancelReconnect = null;
     setStatus('open');
-    sendNow(token === null ? { type: 'hello', role: 'player' } : { type: 'hello', role: 'player', token });
+    sendNow(hello(token));
     for (let i = 0; i < CLOCK_SYNC_SAMPLES; i++) sendNow({ type: 'time', clientTime: now() });
   }
 

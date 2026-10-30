@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { encodeHashFrame, type ServerMessage } from '../room/protocol.ts';
-import { type ConnectionStatus, createRoomConnection, type HashFrame } from './room-connection.ts';
+import { type ConnectionStatus, createRoomConnection, type HashFrame, playerHello, RECONNECT_DELAYS_MS, tvHello } from './room-connection.ts';
 import { fakeClock, fakeSockets } from './test-helpers.ts';
 
 /** A connection wired to a fake clock and fake sockets, recording what it reports. */
@@ -34,6 +34,46 @@ function setup() {
 
   return { clock, sockets, messages, frames, connection, status, advanceFailing };
 }
+
+describe('choosing the hello', () => {
+  /** A connection saying `hello` as `tvHello` says it. */
+  function tvSetup() {
+    const clock = fakeClock(1_000_000);
+    const sockets = fakeSockets();
+    const connection = createRoomConnection({
+      openSocket: sockets.openSocket,
+      now: clock.now,
+      schedule: clock.schedule,
+      hello: tvHello,
+      onMessage: () => {},
+      onStatus: () => {},
+    });
+    return { clock, sockets, connection };
+  }
+
+  test('says hello as the tv with its token, on every socket', () => {
+    const { clock, sockets, connection } = tvSetup();
+
+    connection.connect('KBXT', 'tv-secret');
+    sockets.last().open();
+    expect(sockets.last().sent[0]).toEqual({ type: 'hello', role: 'tv', token: 'tv-secret' });
+
+    sockets.last().drop();
+    clock.advance(RECONNECT_DELAYS_MS[0]);
+    sockets.last().open();
+    expect(sockets.opened).toHaveLength(2);
+    expect(sockets.last().sent[0]).toEqual({ type: 'hello', role: 'tv', token: 'tv-secret' });
+  });
+
+  test('the tv hello refuses to go without a token', () => {
+    expect(() => tvHello(null)).toThrow();
+  });
+
+  test('the player hello carries the token only when there is one', () => {
+    expect(playerHello(null)).toEqual({ type: 'hello', role: 'player' });
+    expect(playerHello('secret-beto')).toEqual({ type: 'hello', role: 'player', token: 'secret-beto' });
+  });
+});
 
 describe('without a hash listener', () => {
   test('drops the hash frame and keeps delivering messages', () => {
