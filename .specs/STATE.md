@@ -126,6 +126,13 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 - user: "Aceito seguir, mas antes disso, registre a paleta de cores do projeto de acordo com as cores que tem definidas no MCP do layout, crie as variaveis css e reutilize em todo o projeto"
 - Complemento (2026-10-29): o `TV_BACKGROUND` do `core`, usado para julgar a legibilidade das cores dos jogadores, passou de `#121417` para `#12131a`, o fundo do design system; o spec do M2 foi emendado. user: "alinhe as cores ao design system."
 
+### AD-018 - Etiquetas do jogador como no lobby do participante (active)
+
+- **Data:** 2026-10-29
+- **Decisão:** em toda linha de jogador do celular (lobby do participante, lobby do anfitrião, pódio), a etiqueta "ANFITRIÃO(Ã)" fica em laranja ao lado do nome e "VOCÊ" em azul embaixo, como em `phone-lobby.png`. A arrumação de `phone-host-lobby.png` ("VOCÊ" laranja ao lado, "ANFITRIÃO(Ã)" cinza embaixo) não é seguida.
+- **Motivo:** as duas captures se contradizem; uma arrumação só, a que o app já usa.
+- user: "Manter como está" (resposta à pergunta "Qual arrumação das etiquetas da Ana vale para todas as telas?")
+
 ## Handoff
 
 - **Data:** 2026-10-29
@@ -138,7 +145,7 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
   - **Pendente do user:** a ordem das etiquetas da Ana (captures se contradizem): `phone-host-lobby` põe "VOCÊ" laranja ao lado do nome e "ANFITRIÃO(Ã)" cinza embaixo; `phone-lobby` (o que o app usa hoje) põe "ANFITRIÃO(Ã)" laranja ao lado e "VOCÊ" azul embaixo. Afeta C26 e C80 (item 1).
 - **Como retomar:** com a resposta, aplicar a ordem escolhida no lobby do anfitrião e no pódio (e onde mais a etiqueta aparece), refazer as duas fotos, registrar a decisão como AD-018; depois round 2: `check_proofs.py m3-phone --mutations .specs/features/m3-phone/mutations.json` e o sub-agente de telas só nas linhas `differs` de screens.md (`**Round**: 2`), então `validate_verification.py m3-phone` e as lições.
 - **Fechamento da feature (depois da T42):** `check_proofs.py`, depois o Verifier e o sub-agente de telas em paralelo (implement.md, passo 10; validate.md e verify-screens.md). As diferenças visuais acumuladas nas fases 3 a 6 estão anotadas no `tasks.md` para o sub-agente de telas.
-- **Decisões novas:** AD-002 a AD-017 (telas do Stitch, responsividade, Signals + eslint-config-preact, paleta em `@bwords/theme`, fundo da TV `#12131a`).
+- **Decisões novas:** AD-002 a AD-018 (etiquetas do jogador como no lobby do participante, telas do Stitch, responsividade, Signals + eslint-config-preact, paleta em `@bwords/theme`, fundo da TV `#12131a`).
 - **Branch:** `main`. `origin/main` está em `9265abe`; nada depois disso foi enviado. Push só com pedido.
 - **Modo de execução preferido pelo usuário:** subagentes, uma fase por vez, parando para mostrar o resultado e perguntar antes da próxima fase.
 - **Teste manual:** o user testa o M3 só no navegador do computador (`npm run debug` como TV em 5174, `npm run dev -w @bwords/phone` em 5175, o segundo celular em janela anônima porque o token fica no `localStorage`). Teste no celular de verdade e produção ficam para depois do M4; não preparar HTTPS na rede local antes disso.
