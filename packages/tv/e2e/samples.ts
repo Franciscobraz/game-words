@@ -44,3 +44,26 @@ export function lobbyWelcome(players: PlayerInfo[], hostId: string | null): Welc
     round: null,
   };
 }
+
+/** The board of the captures. */
+export const SAMPLE_BOARD: string[][] = [
+  ['c', 'a', 's', 'a'],
+  ['qu', 'e', 'r', 'o'],
+  ['t', 'i', 'n', 's'],
+  ['l', 'u', 'a', 'm'],
+];
+
+/** When the sample round starts, on the clock the tests install. */
+export const SAMPLE_START = Date.UTC(2026, 9, 30, 20, 0, 0);
+
+/** When the sample round ends: two minutes later, as `SAMPLE_SETTINGS` says. */
+export const SAMPLE_END = SAMPLE_START + SAMPLE_SETTINGS.seconds * 1_000;
+
+/** The first round of KBXT as the server describes it to a TV that connects during it. */
+export function roundWelcome(players: PlayerInfo[], hostId: string | null, board: string[][] = SAMPLE_BOARD): WelcomeMessage {
+  return {
+    ...lobbyWelcome(players, hostId),
+    phase: 'round',
+    round: { id: 1, index: 0, board, startsAt: SAMPLE_START, endsAt: SAMPLE_END },
+  };
+}
