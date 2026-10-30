@@ -306,7 +306,7 @@ function HostControls({ view, settings, send }: { view: View; settings: Settings
             style={{ width: '4em' }}
           />
         </label>
-        {(['filterProfanity', 'fastMode', 'muted'] as const).map((key) => (
+        {(['filterProfanity', 'muted'] as const).map((key) => (
           <label key={key}>
             <input type="checkbox" checked={draft[key]} onChange={(e) => set(key, e.currentTarget.checked)} /> {key}
           </label>

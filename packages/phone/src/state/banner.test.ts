@@ -9,7 +9,7 @@ const WELCOME: WelcomeMessage = {
   role: 'player',
   code: 'KBXT',
   phase: 'lobby',
-  settings: { size: 4, seconds: 60, rounds: 2, minLength: 3, filterProfanity: true, fastMode: false, pack: 'pt-BR', volume: 80, muted: false },
+  settings: { size: 4, seconds: 60, rounds: 2, minLength: 3, filterProfanity: true, pack: 'pt-BR', volume: 80, muted: false },
   players: [],
   hostId: null,
   round: null,

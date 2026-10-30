@@ -97,23 +97,28 @@ test('sends the minimum word length', async ({ page }) => {
   }
 });
 
-test('toggles the profanity filter and fast mode', async ({ page }) => {
-  // HOST-01 AC 7: each switch sends its value inverted (filter on → off, fast mode off → on).
+test('toggles the profanity filter', async ({ page }) => {
+  // HOST-01 AC 7: the switch sends its value inverted (filter on → off).
   const room = await hostRoom(page);
   const filter = page.getByRole('switch', { name: STRINGS.filterProfanity });
-  const fastMode = page.getByRole('switch', { name: STRINGS.fastMode });
   try {
     await expect(filter).toHaveAttribute('aria-checked', 'true');
-    await expect(fastMode).toHaveAttribute('aria-checked', 'false');
 
     await filter.click();
     await room.beto.waitFor(settingsWith({ filterProfanity: false }));
     await expect(filter).toHaveAttribute('aria-checked', 'false');
+  } finally {
+    room.close();
+  }
+});
 
-    await fastMode.click();
-    await room.beto.waitFor(settingsWith({ fastMode: true }));
-    await expect(fastMode).toHaveAttribute('aria-checked', 'true');
-    await expect(page.getByText(STRINGS.fastModeHint)).toBeVisible();
+test('has no fast mode control', async ({ page }) => {
+  // FAST-01 AC 2: the panel is on screen, its only switch is the filter, and no text mentions fast mode.
+  const room = await hostRoom(page);
+  try {
+    await expect(page.getByRole('switch', { name: STRINGS.filterProfanity })).toBeVisible();
+    await expect(page.getByRole('switch')).toHaveCount(1);
+    await expect(page.getByText(/fast\s*mode|resultados rápidos/i)).toHaveCount(0);
   } finally {
     room.close();
   }

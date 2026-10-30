@@ -21,7 +21,6 @@ export const SAMPLE_SETTINGS: Settings = {
   rounds: 3,
   minLength: 3,
   filterProfanity: true,
-  fastMode: false,
   pack: 'pt-BR',
   volume: 80,
   muted: false,

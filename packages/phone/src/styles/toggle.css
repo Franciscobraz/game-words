@@ -83,9 +83,3 @@
   background: var(--color-text-strong);
   transform: translateX(28px);
 }
-
-.toggle__hint {
-  margin: var(--space-sm) var(--space-md) 0;
-  color: var(--color-on-surface-variant);
-  font-size: var(--font-size-small);
-}

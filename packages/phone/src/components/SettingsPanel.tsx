@@ -2,7 +2,7 @@ import type { Settings } from '@bwords/core';
 import { canStep, formatRoundTime, stepRounds, stepSeconds } from '../model/settings.ts';
 import { STRINGS } from '../strings/pt-BR.ts';
 import '../styles/settings-panel.css';
-import { ArrowDropDownIcon, BoltIcon, BookIcon, ShieldIcon } from './icons.tsx';
+import { ArrowDropDownIcon, BookIcon, ShieldIcon } from './icons.tsx';
 import { Segmented, type SegmentedOption } from './Segmented.tsx';
 import { Stepper } from './Stepper.tsx';
 import { Toggle } from './Toggle.tsx';
@@ -31,8 +31,8 @@ export interface SettingsPanelProps {
 }
 
 /**
- * The host's match settings: board, round time, rounds, minimum letters, the two
- * switches, the dictionary and the TV volume; each control asks the server for one
+ * The host's match settings: board, round time, rounds, minimum letters, the
+ * profanity switch, the dictionary and the TV volume; each control asks the server for one
  * change (HOST-01 AC 2-9).
  */
 export function SettingsPanel({ settings, onChangeSettings }: SettingsPanelProps) {
@@ -72,14 +72,6 @@ export function SettingsPanel({ settings, onChangeSettings }: SettingsPanelProps
         iconTone="valid"
         checked={settings.filterProfanity}
         onToggle={() => onChangeSettings({ filterProfanity: !settings.filterProfanity })}
-      />
-      <Toggle
-        label={STRINGS.fastMode}
-        icon={<BoltIcon />}
-        iconTone="secondary"
-        checked={settings.fastMode}
-        hint={STRINGS.fastModeHint}
-        onToggle={() => onChangeSettings({ fastMode: !settings.fastMode })}
       />
 
       <div class="settings-panel__dictionary">

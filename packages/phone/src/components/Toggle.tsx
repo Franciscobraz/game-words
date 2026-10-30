@@ -8,13 +8,11 @@ export interface ToggleProps {
   /** The icon's tint, by meaning. */
   iconTone: 'valid' | 'secondary';
   checked: boolean;
-  /** A line under the row that explains the option. */
-  hint?: string;
   onToggle: () => void;
 }
 
-/** An on/off switch with its icon and label, as "Filtrar palavrões" and "Fast mode" (HOST-01 AC 7). */
-export function Toggle({ label, icon, iconTone, checked, hint, onToggle }: ToggleProps) {
+/** An on/off switch with its icon and label, as "Filtrar palavrões" (HOST-01 AC 7). */
+export function Toggle({ label, icon, iconTone, checked, onToggle }: ToggleProps) {
   return (
     <div class="toggle">
       <div class="toggle__row">
@@ -31,7 +29,6 @@ export function Toggle({ label, icon, iconTone, checked, hint, onToggle }: Toggl
           <span class="toggle__knob" />
         </button>
       </div>
-      {hint !== undefined && <p class="toggle__hint">{hint}</p>}
     </div>
   );
 }
