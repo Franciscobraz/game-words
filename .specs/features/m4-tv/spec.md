@@ -340,8 +340,8 @@ O celular já joga uma partida inteira, mas a TV ainda é a página de debug: n�
 | TVWORDS-01 | P1: Palavras da rodada (AC 1-11) | Design | Pending |
 | TVRES-01 | P1: Resultado (AC 1-12) | Design | Pending |
 | TVEXIT-01 | P1: Fim da sala e conexão (AC 1-7) | Design | Pending |
-| PROTO-02 | P1: Resultado no protocolo e no servidor (AC 1-7) | Design | Pending |
-| PHONE-01 | P1: Celular com o fluxo novo (AC 1-4) | Design | Pending |
+| PROTO-02 | P1: Resultado no protocolo e no servidor (AC 1-7) | Design | Implementing |
+| PHONE-01 | P1: Celular com o fluxo novo (AC 1-4) | Design | Implementing |
 | FAST-01 | P1: Sem fast mode (AC 1-4) | Design | Pending |
 | SERVE-01 | P1: Um endereço só (AC 1-5) | Design | Pending |
 | TVAUDIO-01 | P2: Áudio (AC 1-6) | Design | Pending |

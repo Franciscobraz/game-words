@@ -48,7 +48,8 @@ export function screenFor(view: RoomView, serverNow: number): Screen {
     case 'round':
       return roundScreen(view, serverNow);
     case 'results':
-      return 'round-result';
+      // The podium follows the last results at once: their screen would only flash (PHONE-01 AC 1).
+      return view.results?.last === true ? 'podium' : 'round-result';
     case 'podium':
       return 'podium';
     default: {

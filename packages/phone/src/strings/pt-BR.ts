@@ -138,7 +138,6 @@ export const STRINGS = {
   quickScoreboard: 'PLACAR RÁPIDO DA MESA',
   spectatorShort: 'Esp.',
   nextRound: (round: number, total: number) => `PRÓXIMA RODADA (${round} DE ${total})`,
-  seePodium: 'VER PÓDIO',
   backToLobbyTitle: 'Voltar ao Lobby',
   confirmCancelMatch: 'Cancelar a partida? O placar será zerado.',
   waitingForHostToAdvance: (host: string) => `Aguardando ${host} avançar…`,

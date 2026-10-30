@@ -30,7 +30,7 @@ export interface WordRow {
 export interface ResultRounds {
   /** "Rodada 1 de 3 • RESULTADO". */
   ended: RoundPosition;
-  /** "PRÓXIMA RODADA (2 DE 3)"; null after the last round, when the button is "VER PÓDIO". */
+  /** "PRÓXIMA RODADA (2 DE 3)"; null after the last round, which opens the podium (PHONE-01 AC 1). */
   next: RoundPosition | null;
 }
 

@@ -8,7 +8,7 @@ import { SecondaryButton } from './SecondaryButton.tsx';
 
 /** Props of `ResultHostActions`. */
 export interface ResultHostActionsProps {
-  /** "PRÓXIMA RODADA (2 DE 3)" or "VER PÓDIO". */
+  /** "PRÓXIMA RODADA (2 DE 3)". */
   nextLabel: string;
   onNext: () => void;
   /** Called only after the host confirms. */
@@ -16,8 +16,8 @@ export interface ResultHostActionsProps {
 }
 
 /**
- * The host's buttons at the foot of the round result: the main one moves the match
- * on; "Voltar ao Lobby" asks "Cancelar a partida? O placar será zerado." before
+ * The host's buttons at the foot of the round result: the main one starts the next
+ * round, since this screen only exists while rounds remain (PHONE-01 AC 3); "Voltar ao Lobby" asks "Cancelar a partida? O placar será zerado." before
  * acting (RES-01 AC 7-8).
  */
 export function ResultHostActions({ nextLabel, onNext, onBackToLobby }: ResultHostActionsProps) {

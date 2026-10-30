@@ -86,6 +86,12 @@ describe('screenFor', () => {
     expect(screenFor(view({ phase: 'round', round: ROUND, myId: DUDA.id }), BEFORE_START)).toBe('countdown');
   });
 
+  test('podium in the results of the last round, which never show on the phone', () => {
+    const results = view({ phase: 'results', round: ROUND, results: { ...RESULTS, last: true } });
+
+    expect(screenFor(results, 0)).toBe('podium');
+  });
+
   test('round-result in the results', () => {
     expect(screenFor(view({ phase: 'results', round: ROUND, results: RESULTS }), 0)).toBe('round-result');
   });

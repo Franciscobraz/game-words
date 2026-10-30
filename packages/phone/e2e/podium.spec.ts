@@ -2,6 +2,7 @@ import { PALETTE, type PlayerInfo, type ServerMessage } from '@bwords/core';
 import { expect, type Page, test } from '@playwright/test';
 import { STRINGS } from '../src/strings/pt-BR.ts';
 import { type FakeRoom, fakeRoom } from './fake-room.ts';
+import { boardOf } from './round-room.ts';
 import {
   ANA,
   ANA_FOUND,
@@ -9,10 +10,11 @@ import {
   DUDA,
   PODIUM_PLAYERS,
   resultsWelcome,
+  roundWelcome,
   SAMPLE_CODE,
   SAMPLE_PODIUM,
   sampleResults,
-  SCORED_PLAYERS,
+  sampleRound,
 } from './samples.ts';
 
 interface PodiumOptions {
@@ -24,20 +26,16 @@ interface PodiumOptions {
 }
 
 /**
- * Opens KBXT on the phone of `me` in the results of the last round, which the phone
- * sums (AD-007), and then the podium: the new scores and wins, then `podium`.
+ * Opens KBXT on the phone of `me` on the podium, as the server describes it to whoever
+ * connects: the welcome, the results of the last round, which the phone sums (AD-007),
+ * and then `podium` (PROTO-02 AC 5).
  */
 async function openPodium(page: Page, me: PlayerInfo, options: PodiumOptions = {}): Promise<FakeRoom> {
   const { players = PODIUM_PLAYERS, podium = SAMPLE_PODIUM, found = [] } = options;
   const room = await fakeRoom(page, (msg) => ({
     replies:
       msg.type === 'hello'
-        ? [
-            resultsWelcome(SCORED_PLAYERS, me.id, found, 2),
-            sampleResults(2, true),
-            { type: 'players', players, hostId: ANA.id },
-            podium,
-          ]
+        ? [{ ...resultsWelcome(players, me.id, found, 2), phase: 'podium' }, sampleResults(2, true), podium]
         : [],
   }));
   await page.goto(`/${SAMPLE_CODE}`);
@@ -47,6 +45,41 @@ async function openPodium(page: Page, me: PlayerInfo, options: PodiumOptions = {
 
 const sentTypes = (room: FakeRoom) => room.sent().map((msg) => msg.type);
 const confetti = (page: Page) => page.locator('.confetti');
+
+/** The players while the last round runs, before its points. */
+const SCORED_PLAYERS_IN_ROUND = PODIUM_PLAYERS.map((player) => ({ ...player, score: 0 }));
+
+test('opens the podium when the last round ends', async ({ page }) => {
+  // PHONE-01 AC 1: Ana is playing round 3 of 3 with 4 words. The server ends it with the results, the podium and the
+  // new players: the phone goes straight to the podium, never draws the round result, and her summary counts that round.
+  const now = Date.now();
+  const room = await fakeRoom(page, (msg) => ({
+    replies: msg.type === 'hello' ? [roundWelcome(SCORED_PLAYERS_IN_ROUND, ANA.id, sampleRound(now - 60_000, now + 60_000, 2), ANA_FOUND)] : [],
+  }));
+  await page.goto(`/${SAMPLE_CODE}`);
+  await expect(boardOf(page)).toBeVisible();
+  await page.evaluate(() => {
+    const seen = window as unknown as { sawRoundResult: boolean };
+    seen.sawRoundResult = false;
+    new MutationObserver(() => {
+      seen.sawRoundResult ||= document.querySelector('.round-result') !== null;
+    }).observe(document.body, { childList: true, subtree: true });
+  });
+
+  room.push(sampleResults(2, true));
+  room.push(SAMPLE_PODIUM);
+  room.push({ type: 'players', players: PODIUM_PLAYERS, hostId: ANA.id });
+
+  await expect(page.getByRole('heading', { name: STRINGS.yourFinalPlace(1) })).toBeVisible();
+  await expect(page.getByRole('region', { name: STRINGS.tableRanking })).toBeVisible();
+  const performance = page.getByRole('region', { name: STRINGS.yourPerformance });
+  await expect(performance.locator('.match-performance__count')).toHaveText('4');
+  await expect(page.getByRole('region', { name: STRINGS.longestWord }).getByText('(corações)')).toBeVisible();
+  await expect(page.getByRole('button', { name: STRINGS.playAgain })).toBeVisible();
+  await expect(page.getByText(STRINGS.lookAtTv)).toHaveCount(0);
+  expect(await page.evaluate(() => (window as unknown as { sawRoundResult: boolean }).sawRoundResult)).toBe(false);
+  expect(room.sent().map((msg) => msg.type)).toEqual(['hello']);
+});
 
 test('shows the personal card, the performance and the ranking', async ({ page }) => {
   // POD-01 AC 2, 4, 5, 7: Ana is 1st with 46 points and 3 wins; she found 4 words, CORACOES the longest
@@ -137,6 +170,17 @@ test('back to lobby from the podium sends back-to-lobby', async ({ page }) => {
   await page.getByRole('button', { name: STRINGS.backToLobbyTitle }).click();
 
   await expect.poll(() => sentTypes(room)).toEqual(['hello', 'back-to-lobby']);
+});
+
+test('host buttons send play again and back to lobby', async ({ page }) => {
+  // PHONE-01 AC 4: the same messages as in M3, one per button.
+  const room = await openPodium(page, ANA);
+
+  await page.getByRole('button', { name: STRINGS.playAgain }).click();
+  await expect.poll(() => sentTypes(room)).toEqual(['hello', 'play-again']);
+
+  await page.getByRole('button', { name: STRINGS.backToLobbyTitle }).click();
+  await expect.poll(() => sentTypes(room)).toEqual(['hello', 'play-again', 'back-to-lobby']);
 });
 
 test('closes the room from the podium only after the confirmation', async ({ page }) => {

@@ -2,7 +2,7 @@ import type { PlayerInfo } from '@bwords/core';
 import { expect, type Page, test } from '@playwright/test';
 import { STRINGS } from '../src/strings/pt-BR.ts';
 import { type FakeRoom, fakeRoom } from './fake-room.ts';
-import { ANA, ANA_FOUND, BETO, DUDA, resultsWelcome, SAMPLE_CODE, sampleResults, SCORED_PLAYERS } from './samples.ts';
+import { ANA, ANA_FOUND, BETO, DUDA, resultsWelcome, SAMPLE_CODE, SAMPLE_PODIUM, sampleResults, SCORED_PLAYERS } from './samples.ts';
 
 /** Opens KBXT on the phone of `me` in the results of round 1 of 3, as the captures draw them. */
 async function openResults(page: Page, me: PlayerInfo, found: string[] = []): Promise<FakeRoom> {
@@ -56,19 +56,34 @@ test('keeps the real spelling of a word whole at 320 px', async ({ page }) => {
   expect(linesOfText).toBe(1);
 });
 
-test('next round button names the round and the last one shows the podium', async ({ page }) => {
-  // RES-01 AC 7: after round 1 of 3 the host's button reads "PRÓXIMA RODADA (2 DE 3)"; after the last, "VER PÓDIO";
-  // both send `next`.
+test('next round button names the next round', async ({ page }) => {
+  // PHONE-01 AC 3, RES-01 AC 7: after round 1 of 3 the host's button reads "PRÓXIMA RODADA (2 DE 3)", after round 2 it
+  // reads "(3 DE 3)", and both send `next`.
   const room = await openResults(page, ANA, ANA_FOUND);
 
   await page.getByRole('button', { name: STRINGS.nextRound(2, 3) }).click();
   await expect.poll(() => sentTypes(room)).toEqual(['hello', 'next']);
 
-  room.push(sampleResults(2, true));
-  await expect(page.getByText(`${STRINGS.resultRound(3, 3)}${STRINGS.resultTag}`)).toBeVisible();
-  await expect(page.getByRole('button', { name: /PRÓXIMA RODADA/ })).toHaveCount(0);
-  await page.getByRole('button', { name: STRINGS.seePodium }).click();
+  room.push(sampleResults(1, false));
+  await expect(page.getByText(`${STRINGS.resultRound(2, 3)}${STRINGS.resultTag}`)).toBeVisible();
+  await page.getByRole('button', { name: STRINGS.nextRound(3, 3) }).click();
   await expect.poll(() => sentTypes(room)).toEqual(['hello', 'next', 'next']);
+});
+
+test('never offers to see the podium', async ({ page }) => {
+  // PHONE-01 AC 2: neither between the rounds nor at the end of the match; the podium's buttons are the only way on.
+  const room = await openResults(page, ANA, ANA_FOUND);
+  const seePodium = page.getByRole('button', { name: /VER P[ÓO]DIO/i });
+  await expect(page.getByRole('button', { name: STRINGS.nextRound(2, 3) })).toBeVisible();
+  await expect(seePodium).toHaveCount(0);
+
+  room.push(sampleResults(2, true));
+  room.push(SAMPLE_PODIUM);
+
+  await expect(page.getByRole('button', { name: STRINGS.playAgain })).toBeVisible();
+  await expect(seePodium).toHaveCount(0);
+  await expect(page.getByText(/VER P[ÓO]DIO/i)).toHaveCount(0);
+  expect(sentTypes(room)).toEqual(['hello']);
 });
 
 test('goes back to the lobby from the results only after the confirmation', async ({ page }) => {

@@ -29,7 +29,6 @@ export function RoundResultScreen() {
   const rounds = resultRounds(results, view.settings);
   const summary = myRoundSummary(results, view.myId);
   const next = rounds?.next ?? null;
-  const nextLabel = next === null ? STRINGS.seePodium : STRINGS.nextRound(next.round, next.total);
 
   return (
     <main class="screen round-result">
@@ -65,7 +64,9 @@ export function RoundResultScreen() {
 
       <QuickScoreboard rows={quickScoreboard(view.players)} myId={view.myId} />
 
-      {isHost && <ResultHostActions nextLabel={nextLabel} onNext={room.next} onBackToLobby={room.backToLobby} />}
+      {isHost && next !== null && (
+        <ResultHostActions nextLabel={STRINGS.nextRound(next.round, next.total)} onNext={room.next} onBackToLobby={room.backToLobby} />
+      )}
       {!isHost && host !== null && <WaitingNote text={STRINGS.waitingForHostToAdvance(host.nickname)} />}
     </main>
   );

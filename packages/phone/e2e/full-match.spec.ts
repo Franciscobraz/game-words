@@ -57,8 +57,8 @@ async function play(page: Page, entry: { word: string; path: number[] }): Promis
 
 test('plays a two-round match with three phones until play again', async ({ browser }) => {
   // Success Criteria (PLAY-01, RES-01, POD-01): a TV and three phones. Ana hosts and sets 2 rounds of 30 s;
-  // in each round Ana finds two words, Beto one of hers and Caio another; after each round the results show,
-  // the last one leads to the podium, where Ana's "SEU RENDIMENTO" counts the 4 words she sent, and
+  // in each round Ana finds two words, Beto one of hers and Caio another; the first round ends in the results, with
+  // "PRÓXIMA RODADA" for the host; the last one opens the podium with no tap (PHONE-01 AC 1), where Ana's "SEU RENDIMENTO" counts the 4 words she sent, and
   // "JOGAR DE NOVO" takes the three phones to the countdown of a new match.
   test.setTimeout(240_000);
   const pack = loadPack();
@@ -88,14 +88,14 @@ test('plays a two-round match with three phones until play again', async ({ brow
     await play(caio.page, third);
     await expect(ana.page.getByText(STRINGS.roundTally(2, wordPoints(longest.word) + wordPoints(second.word)))).toBeVisible();
 
-    const isLast = round === 1;
-    const advance = isLast ? STRINGS.seePodium : STRINGS.nextRound(2, 2);
+    if (round === 1) break;
+    const advance = STRINGS.nextRound(2, 2);
     await expect(ana.page.getByRole('button', { name: advance })).toBeVisible({ timeout: 45_000 });
     for (const page of [beto.page, caio.page]) await expect(page.getByText(STRINGS.waitingForHostToAdvance('Ana'))).toBeVisible();
     await ana.page.getByRole('button', { name: advance }).click();
   }
 
-  await expect(ana.page.getByRole('button', { name: STRINGS.playAgain })).toBeVisible();
+  await expect(ana.page.getByRole('button', { name: STRINGS.playAgain })).toBeVisible({ timeout: 45_000 });
   await expect(ana.page.getByRole('region', { name: STRINGS.yourPerformance }).locator('.match-performance__count')).toHaveText('4');
   await expect(beto.page.getByRole('region', { name: STRINGS.yourPerformance }).locator('.match-performance__count')).toHaveText('2');
   await expect(caio.page.getByRole('region', { name: STRINGS.yourPerformance }).locator('.match-performance__count')).toHaveText('2');
