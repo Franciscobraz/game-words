@@ -74,6 +74,36 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - evidence: packages/core/src/room/submit.ts (PERSIST-01 AC 1, EXP-01 AC 2) (persistence)
 - last seen: 2026-10-27T20:59:02Z
 
+### L-011 - Test each state recheck made after an await with two operations racing through it
+- signal: `surviving_mutant` · recurrence: 1 feature(s) · scope: `client-state` · harmful: 0
+- features: m3-phone
+- evidence: packages/phone/src/state/round.ts:257 (client-state)
+- last seen: 2026-10-30T13:06:52Z
+
+### L-012 - Prove a color or animation fixed by a criterion in a browser test, not with the kind of a value
+- signal: `spec_precision_gap` · recurrence: 1 feature(s) · scope: `e2e` · harmful: 0
+- features: m3-phone
+- evidence: C127 (e2e)
+- last seen: 2026-10-30T13:06:52Z
+
+### L-013 - Split a check with a picture proof when its claim includes behavior a picture cannot show
+- signal: `spec_precision_gap` · recurrence: 1 feature(s) · scope: `checks` · harmful: 0
+- features: m3-phone
+- evidence: C68, C95, C97 (checks)
+- last seen: 2026-10-30T13:06:52Z
+
+### L-014 - Point audits of forbidden literals at every source file type, not only stylesheets
+- signal: `ac_gap` · recurrence: 1 feature(s) · scope: `audits` · harmful: 0
+- features: m3-phone
+- evidence: packages/phone/index.html:6 (audits)
+- last seen: 2026-10-30T13:06:52Z
+
+### L-015 - Check that dev servers refuse server-only files, including through their file system routes
+- signal: `ac_gap` · recurrence: 1 feature(s) · scope: `dev-server` · harmful: 0
+- features: m3-phone
+- evidence: packages/phone/vite.config.ts (dev-server)
+- last seen: 2026-10-30T13:06:52Z
+
 ## Quarantined (failed when applied - ignore)
 
 A confirmed lesson that recurred alongside failure. Kept for the maintainer to review.

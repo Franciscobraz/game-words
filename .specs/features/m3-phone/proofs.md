@@ -1,8 +1,8 @@
 # m3-phone proofs
 
-**HEAD**: 553ed14
+**HEAD**: 9736ad1
 **Tree**: clean
-**Result**: 140 pass, 0 fail; mutations 12 killed, 0 not
+**Result**: 142 pass, 0 fail; mutations 12 killed, 0 not
 
 | Check | Proof | Ran | Passed | Result |
 | --- | --- | --- | --- | --- |
@@ -141,6 +141,8 @@
 | C132 | `npx vitest run packages/phone/src/styles/styles.test.ts -t "keeps the index.html theme-color equal to the them` | 1 | 1 | pass |
 | C133 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/dev-server.spec.ts -g "never ser` | 1 | - | pass |
 | C134 | `npx vitest run packages/phone/src/model/players.test.ts -t "marks a disconnected player beside the name instea` | 1 | 1 | pass |
+| C135 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/spectator.spec.ts -g "fits the f` | 1 | - | pass |
+| C136 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/results.spec.ts -g "keeps the re` | 1 | - | pass |
 | Build | `npx tsc -b` | - | - | pass |
 | Build | `npm run lint -w @bwords/phone` | - | - | pass |
 | Build | `npx vitest run` | - | - | pass |
