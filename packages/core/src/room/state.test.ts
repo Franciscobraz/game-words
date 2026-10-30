@@ -6,17 +6,17 @@ const CFG = { idleMin: 30, tvGoneMin: 10 };
 describe('createRoom', () => {
   test('creates rooms with the default settings', () => {
     const room = createRoom('ABCD', 'tv-token', 1000, CFG);
-    // CFG-01 AC 1: 4x4, 120 s, 1 round, minimum 3, filter on, fast mode off, pt-BR, sound on.
+    // CFG-01 AC 1: 4x4, 120 s, 1 round, minimum 3, filter on, pt-BR, sound on.
     expect(room.settings).toMatchObject({
       size: 4,
       seconds: 120,
       rounds: 1,
       minLength: 3,
       filterProfanity: true,
-      fastMode: false,
       pack: 'pt-BR',
       muted: false,
     });
+    expect(room.settings).not.toHaveProperty('fastMode');
     expect(room.phase).toBe('lobby');
     expect(room.code).toBe('ABCD');
     expect(room.tvToken).toBe('tv-token');
@@ -52,6 +52,7 @@ describe('validateSettingsPatch', () => {
     ['minLength', 5],
     ['filterProfanity', 'yes'],
     ['fastMode', 1],
+    ['fastMode', true],
     ['pack', 'en-US'],
     ['unknownOption', true],
   ];
@@ -79,7 +80,6 @@ describe('validateSettingsPatch', () => {
     ['minLength', 3],
     ['minLength', 4],
     ['filterProfanity', false],
-    ['fastMode', true],
     ['pack', 'pt-BR'],
   ];
 

@@ -23,6 +23,19 @@ const durable = (s: RoomState | null) =>
   };
 
 describe('persistence', () => {
+  it('ignores fast mode in a stored room', async () => {
+    // FAST-01 AC 4: a room saved before AD-020, rebuilt from storage.
+    const { code } = await roomWithTv();
+    await runInDurableObject(stubOf(code), async (_, state) => {
+      const room = await state.storage.get<RoomState>('room');
+      await state.storage.put('room', { ...room, settings: { ...room!.settings, size: 6, fastMode: true } });
+    });
+    await evictDurableObject(stubOf(code));
+    const rebuilt = await liveState(code);
+    expect(rebuilt?.settings.size).toBe(6);
+    expect(rebuilt?.settings).not.toHaveProperty('fastMode');
+  });
+
   it('stores the state before the client sees it', async () => {
     const { code, tv } = await roomWithTv();
     const a = await joinPhone(code, 'Ana', 0);

@@ -1,4 +1,5 @@
 import { type Handler, reject } from './effects.ts';
+import type { Settings } from './protocol.ts';
 import { type RoomState, validateSettingsPatch } from './state.ts';
 
 /**
@@ -18,3 +19,12 @@ export const handleSettings: Handler<'settings'> = ({ state, conn }, msg) => {
     ],
   };
 };
+
+/**
+ * The settings of a stored room, as the game knows them today: a room saved before
+ * AD-020 may still carry `fastMode`, which is dropped on load (FAST-01 AC 4).
+ */
+export function sanitizeLoadedSettings(stored: Settings & { fastMode?: unknown }): Settings {
+  const { fastMode: _dropped, ...settings } = stored;
+  return settings;
+}

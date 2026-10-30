@@ -1,4 +1,4 @@
-import type { PersistKey, Player, PreparedBoard, RoomState, RoundSolutions } from '@bwords/core';
+import { type PersistKey, type Player, type PreparedBoard, type RoomState, type RoundSolutions, sanitizeLoadedSettings } from '@bwords/core';
 
 /**
  * The room in the Durable Object storage (KV API on SQLite), one key per group of
@@ -60,6 +60,7 @@ export async function loadRoom(storage: DurableObjectStorage): Promise<RoomState
   ]);
   return {
     ...record,
+    settings: sanitizeLoadedSettings(record.settings),
     players: record.players.map((p) => ({ ...p, found: found.get(`${FOUND}${p.id}`) ?? [] })),
     solutions: solutions ?? null,
     nextRound: next?.board ?? null,

@@ -94,7 +94,6 @@ export interface Settings {
   rounds: 1 | 2 | 3 | 4 | 5;
   minLength: 3 | 4;
   filterProfanity: boolean;
-  fastMode: boolean;
   pack: 'pt-BR';
   /** 0-100 */
   volume: number;
