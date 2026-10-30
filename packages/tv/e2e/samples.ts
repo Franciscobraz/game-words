@@ -22,7 +22,7 @@ const GREEN = '#10D078';
 const PINK = '#FF4D8D';
 
 /** A player in the shape the server sends. */
-function samplePlayer(id: string, nickname: string, color: string, overrides: Partial<PlayerInfo> = {}): PlayerInfo {
+export function samplePlayer(id: string, nickname: string, color: string, overrides: Partial<PlayerInfo> = {}): PlayerInfo {
   return { id, nickname, color, connected: true, spectator: false, score: 0, wins: 0, ...overrides };
 }
 

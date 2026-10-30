@@ -1,0 +1,82 @@
+/* A player during the round (TVPLAY-01 AC 5-8, tv-round.png). */
+.round-player {
+  display: flex;
+  align-items: center;
+  height: 9.3125rem;
+  padding: 0 1.3125rem;
+  border: 0.0625rem solid var(--color-card-stroke);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container-low);
+}
+
+.round-player--dimmed > * {
+  opacity: 0.5;
+}
+
+.round-player__identity {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  margin-left: 1rem;
+}
+
+.round-player__name-line {
+  display: flex;
+  align-items: center;
+}
+
+.round-player__name {
+  min-width: 0;
+  color: var(--color-text-strong);
+  font-size: 1.75rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.round-player__crown {
+  display: flex;
+  flex: none;
+  margin-left: 0.75rem;
+  color: var(--color-crown);
+  font-size: 1.625rem;
+}
+
+.round-player__tag {
+  margin-top: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-container-high);
+  color: var(--color-on-surface-variant);
+  font-size: 1rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+}
+
+.round-player__tag--host {
+  color: var(--color-primary);
+}
+
+.round-player__words {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: 0.75rem;
+}
+
+.round-player__count {
+  font-size: 2.05rem;
+  font-weight: var(--font-weight-black);
+  line-height: 1.1;
+}
+
+.round-player__label {
+  margin-top: 0.5rem;
+  color: var(--color-on-surface);
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+}

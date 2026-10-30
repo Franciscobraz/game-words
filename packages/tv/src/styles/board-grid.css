@@ -1,0 +1,28 @@
+/* The board (TVPLAY-01 AC 2, 11, tv-round.png). The parent sets --board-side; --board-size comes from the data. */
+.board-grid {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 100%;
+}
+
+.board-grid__cell {
+  display: flex;
+  width: calc(100% / var(--board-size));
+  height: calc(100% / var(--board-size));
+  padding: 1.25%;
+}
+
+.board-grid__tile {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container-high);
+  box-shadow: inset 0 -0.25rem 0 var(--color-surface-container);
+  color: var(--color-text-strong);
+  font-size: calc(var(--board-side) / var(--board-size) * 0.45);
+  font-weight: var(--font-weight-black);
+  line-height: 1;
+}

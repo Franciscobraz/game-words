@@ -1,0 +1,98 @@
+/* The round (TVPLAY-01, tv-round.png). Everything in rem: the root scales the whole screen (AD-016). */
+.round {
+  padding: 2.1875rem 4rem 0;
+}
+
+.round__header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  height: 4.625rem;
+  margin-bottom: 2.875rem;
+}
+
+.round__body {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  min-height: 0;
+}
+
+.round__column {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  width: 27.5rem;
+}
+
+.round__player {
+  margin-bottom: 1.5rem;
+}
+
+.round__center {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  width: 43.75rem;
+  margin-top: 1.625rem;
+}
+
+.round__bar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  height: 4.625rem;
+  margin-bottom: 1rem;
+  padding: 0 2.5rem 0 2rem;
+  border: 0.0625rem solid var(--color-card-stroke);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container-low);
+}
+
+.round__title {
+  margin: 0;
+  color: var(--color-text-strong);
+  font-size: 2.33rem;
+  font-weight: var(--font-weight-black);
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.round__clock {
+  color: var(--color-brand-sky);
+  font-size: 2.875rem;
+  font-weight: var(--font-weight-black);
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.round__clock--alert {
+  color: var(--color-alert);
+  animation: round-clock-pulse 1s ease-in-out infinite;
+}
+
+@keyframes round-clock-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: scale(1.08);
+  }
+}
+
+.round__board {
+  --board-side: 41.125rem;
+  flex: none;
+  width: 43.75rem;
+  height: 43.75rem;
+  padding: 0.75rem;
+  border: 0.0625rem solid var(--color-card-stroke);
+  border-radius: 1.75rem;
+  background: var(--color-surface-container-low);
+}

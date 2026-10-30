@@ -58,7 +58,7 @@
 
 .room-card--small .room-card__code {
   color: var(--color-action);
-  font-size: 1.875rem;
+  font-size: 2rem;
   letter-spacing: 0.04em;
 }
 
