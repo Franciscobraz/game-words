@@ -20,10 +20,12 @@ function resultWord(pack: LanguagePack, word: string, points: number): ResultWor
 /**
  * Ends the round: the TV first gets the final counts (ROUND-01 AC 10), then every
  * connection gets `round-results`, scored with `scoreRound` over the players of the
- * round (spectators and kicked players are out). Shared words go shortest first;
- * players go from the lowest to the highest accumulated score, ties in joining
+ * round (spectators and kicked players are out). Shared words go shortest first,
+ * with who found each (PROTO-02 AC 1); players go from the lowest to the highest accumulated score, ties in joining
  * order; each player's unique words go shortest first with the doubled points they
  * earned. The longest word comes from `pickLongestWord`, with its path and finders.
+ * `possibleWords` counts the round's solutions, which `prepareRound` already kept
+ * with the room's minimum and filter (PROTO-02 AC 2).
  * While rounds remain, the adapter is asked to prepare the next board at once
  * (`prepare-next`, RES-01 AC 4).
  */
@@ -49,13 +51,17 @@ export function endRound(state: RoomState, now: number, deps: RoomDeps): StepRes
   const msg: RoundResultsMessage = {
     type: 'round-results',
     index: state.roundIndex,
-    shared: [...score.shared].sort(shortestFirst).map((w) => resultWord(pack, w, wordPoints(w))),
+    shared: [...score.shared].sort(shortestFirst).map((w) => ({
+      ...resultWord(pack, w, wordPoints(w)),
+      foundBy: playing.filter((p) => found.get(p.id)!.has(w)).map((p) => p.id),
+    })),
     players: ranked,
     longest: longest && {
       ...resultWord(pack, longest.word, wordPoints(longest.word)),
       path: findPath(state.round!.board, longest.word)!,
       foundBy: longest.foundBy,
     },
+    possibleWords: state.solutions?.words.length ?? 0,
     last,
   };
 

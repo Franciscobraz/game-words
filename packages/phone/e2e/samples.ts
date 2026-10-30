@@ -132,9 +132,9 @@ export function sampleResults(index = 0, last = false): RoundResultsMessage {
     type: 'round-results',
     index,
     shared: [
-      { word: 'lua', points: 1 },
-      { word: 'casa', points: 2 },
-      { word: 'quero', points: 3 },
+      { word: 'lua', points: 1, foundBy: [ANA.id, BETO.id] },
+      { word: 'casa', points: 2, foundBy: [ANA.id, CAIO.id] },
+      { word: 'quero', points: 3, foundBy: [BETO.id, CAIO.id] },
     ],
     players: [
       { playerId: CAIO.id, unique: [], roundPoints: 6, score: 16 },
@@ -142,6 +142,7 @@ export function sampleResults(index = 0, last = false): RoundResultsMessage {
       { playerId: ANA.id, unique: [{ word: 'coracoes', points: 12, spellings: ['corações'] }], roundPoints: 18, score: 32 },
     ],
     longest: null,
+    possibleWords: 142,
     last,
   };
 }

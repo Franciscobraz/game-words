@@ -45,7 +45,7 @@ const lobby = (): RoomView => applyServerMessage(INITIAL_VIEW, welcome());
 /** Beto's view during round 7, with the hash frame not yet in. */
 const inRound = (): RoomView => applyServerMessage(lobby(), { type: 'round-start', ...ROUND, salt: SALT_TEXT });
 
-const RESULTS: RoundResultsMessage = { type: 'round-results', index: 0, shared: [], players: [], longest: null, last: false };
+const RESULTS: RoundResultsMessage = { type: 'round-results', index: 0, shared: [], players: [], longest: null, possibleWords: 0, last: false };
 
 describe('applyServerMessage', () => {
   test('welcome builds the view of the room for this phone', () => {

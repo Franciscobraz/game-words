@@ -152,6 +152,12 @@ export interface LongestResult extends ResultWord {
   foundBy: string[];
 }
 
+/** A shared word with who found it, sent only once the round is over (PROTO-02 AC 1, AC 3). */
+export interface SharedWord extends ResultWord {
+  /** Ids of the players who found it, in joining order. */
+  foundBy: string[];
+}
+
 export interface PodiumEntry {
   playerId: string;
   score: number;
@@ -232,11 +238,13 @@ export interface RoundResultsMessage {
   /** 0-based round of the match. */
   index: number;
   /** Words found by two or more players, shortest first. */
-  shared: ResultWord[];
+  shared: SharedWord[];
   /** Players from the lowest to the highest accumulated score. */
   players: PlayerResult[];
   /** Null when the board has no solution. */
   longest: LongestResult | null;
+  /** Valid words of the round, with the room's minimum and filter (PROTO-02 AC 2). */
+  possibleWords: number;
   /** Whether another round follows; when false, `next` shows the podium. */
   last: boolean;
 }

@@ -155,9 +155,9 @@ T33 → T34 → T35 → T36 → T37
 
 **Done when**:
 
-- [ ] C1-C3
-- [ ] Gate check passes
-- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+- [x] C1-C3
+- [x] Gate check passes
+- [x] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: unit
 **Gate**: quick
@@ -1212,7 +1212,7 @@ Proof: walk - cada foto de `captures/uncaptured/` mostrada ao user, com a respos
 The feature's live state, written as it happens - a compaction gives no warning.
 
 **Settled mid-build:** execução com subagentes, um batch por vez, com parada entre eles (preferência do user no M3, repetida na apresentação das tarefas); user: "Aprovo as tasks"
-**Dispatched:** none
+**Dispatched:** batch worker fase 1 (T1-T6) a partir de 5440218
 **Walked:** none
 
 ---

@@ -167,7 +167,7 @@ describe('wake lock', () => {
     screen.show();
     expect(screen.held).toBe(true);
 
-    connection.receive({ type: 'round-results', index: 0, shared: [], players: [], longest: null, last: true });
+    connection.receive({ type: 'round-results', index: 0, shared: [], players: [], longest: null, possibleWords: 0, last: true });
     expect(screen.held).toBe(false);
     screen.hide();
     screen.show();

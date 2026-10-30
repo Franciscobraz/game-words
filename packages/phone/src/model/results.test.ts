@@ -1,4 +1,4 @@
-import type { PlayerResult, RoundResultsMessage, Settings } from '@bwords/core';
+import type { PlayerResult, ResultWord, RoundResultsMessage, Settings } from '@bwords/core';
 import { describe, expect, test } from 'vitest';
 import type { FoundWord } from './room-view.ts';
 import { myRoundSummary, myWordRows, resultRounds, spellingsLabel, wordLabel } from './results.ts';
@@ -9,8 +9,9 @@ function line(playerId: string, roundPoints: number, score: number, unique: Play
 }
 
 /** The end of round 1 of 3: players from the lowest to the highest score, as the server sends them. */
-function results(players: PlayerResult[], shared: RoundResultsMessage['shared'] = []): RoundResultsMessage {
-  return { type: 'round-results', index: 0, shared, players, longest: null, last: false };
+function results(players: PlayerResult[], shared: readonly ResultWord[] = []): RoundResultsMessage {
+  const sharedWords = shared.map((word) => ({ ...word, foundBy: ['p1', 'p2'] }));
+  return { type: 'round-results', index: 0, shared: sharedWords, players, longest: null, possibleWords: 0, last: false };
 }
 
 /** A word the server accepted from this phone. */

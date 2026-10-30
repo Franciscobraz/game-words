@@ -72,7 +72,7 @@ function roundWelcome(found: string[] = []): WelcomeMessage {
   };
 }
 
-const RESULTS: RoundResultsMessage = { type: 'round-results', index: 0, shared: [], players: [], longest: null, last: false };
+const RESULTS: RoundResultsMessage = { type: 'round-results', index: 0, shared: [], players: [], longest: null, possibleWords: 0, last: false };
 
 /** Beto's phone in the open round, 10 s in, with fake server, clock and device. */
 async function setup(options: { prefs?: HitPrefs; at?: number } = {}) {

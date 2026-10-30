@@ -21,7 +21,7 @@ const DUDA: PlayerInfo = { id: 'p-duda', nickname: 'Duda', color: '#3D8BFF', con
 
 const STARTS_AT = 50_000;
 const ROUND = { id: 1, index: 0, board: [['c', 'a'], ['s', 'a']], startsAt: STARTS_AT, endsAt: STARTS_AT + 120_000 };
-const RESULTS: RoundResultsMessage = { type: 'round-results', index: 0, shared: [], players: [], longest: null, last: false };
+const RESULTS: RoundResultsMessage = { type: 'round-results', index: 0, shared: [], players: [], longest: null, possibleWords: 0, last: false };
 
 /** Beto's view of room KBXT, where Ana hosts and Duda watches. */
 function view(extra: Partial<RoomView> = {}): RoomView {

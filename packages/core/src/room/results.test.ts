@@ -1,10 +1,11 @@
 import { describe, expect, test } from 'vitest';
-import { validateSubmission } from '../validate.ts';
+import { boardSolutions, validateSubmission } from '../validate.ts';
 import { step } from './machine.ts';
+import { roundOptions } from './prepare.ts';
 import type { RoundResultsMessage } from './protocol.ts';
 import { endRound } from './results.ts';
 import { DEFAULT_SETTINGS, type Player, type RoomState } from './state.ts';
-import { allMessages, fakeDeps, makePack, makePlayer, message, pending, playerConn, roomWith, sentTo } from './test-helpers.ts';
+import { allMessages, fakeDeps, makePack, makePlayer, message, pending, playerConn, roomWith, run, sentTo, TV_TOKEN } from './test-helpers.ts';
 
 const BOARD = [
   ['c', 'a', 's', 'a'],
@@ -120,9 +121,9 @@ describe('round results', () => {
 
   test('attaches real spellings only when they differ', () => {
     const msg = results(finishedRound([alice, bob, carol]));
-    expect(msg.shared.find((w) => w.word === 'ate')).toEqual({ word: 'ate', points: 1, spellings: ['ate', 'até'] });
+    expect(msg.shared.find((w) => w.word === 'ate')).toEqual({ word: 'ate', points: 1, spellings: ['ate', 'até'], foundBy: ['p1', 'p2'] });
     // Words whose only spelling is the normalized one carry nothing, in shared and unique words alike.
-    expect(msg.shared.find((w) => w.word === 'cor')).toEqual({ word: 'cor', points: 1 });
+    expect(msg.shared.find((w) => w.word === 'cor')).toEqual({ word: 'cor', points: 1, foundBy: ['p1', 'p2', 'p3'] });
     expect(msg.players[0]!.unique).toEqual([{ word: 'sal', points: 2 }]);
   });
 
@@ -140,19 +141,96 @@ describe('round results', () => {
     expect(check).toEqual({ ok: true, word: 'casa' });
   });
 
+  test('lists who found each shared word', () => {
+    const msg = results(finishedRound([alice, bob, carol]));
+    expect(msg.shared.map((w) => [w.word, w.foundBy])).toEqual([
+      ['ate', ['p1', 'p2']],
+      ['cor', ['p1', 'p2', 'p3']],
+      ['arte', ['p1', 'p3']],
+    ]);
+  });
+
+  test('lists who found each shared word: kicked players and spectators are left out', () => {
+    const late = makePlayer('p4', { color: '#43A047', spectator: true, found: ['cor'] });
+    const dan = makePlayer('p5', { color: '#FDD835', found: ['cor'] });
+    const state = finishedRound([alice, bob, late, dan]);
+    const kicked = step(state, message(playerConn(alice), { type: 'kick', playerId: 'p5' }), 60_000, deps).state;
+    expect(results(kicked).shared.map((w) => [w.word, w.foundBy])).toEqual([
+      ['ate', ['p1', 'p2']],
+      ['cor', ['p1', 'p2']],
+    ]);
+  });
+
+  test('counts the possible words with the room minimum and filter', () => {
+    // Every word fits the board; the room's minimum and filter decide which ones count.
+    const words = ['arte', 'ate', 'casa', 'cor'];
+    const pack = makePack({ words, common: words, profanity: ['arte', 'cor'] });
+    const possibleWith = (minLength: 3 | 4, filterProfanity: boolean) => {
+      const solutions = [...boardSolutions(BOARD, pack, { minLength, filterProfanity }).words];
+      const state = finishedRound([makePlayer('p1')], {
+        solutions: { words: solutions, prefixes: new Uint8Array(solutions.length * 6) },
+      });
+      const r = endRound(state, END, fakeDeps(pack));
+      return (allMessages(r.effects).find((m) => m.type === 'round-results') as RoundResultsMessage).possibleWords;
+    };
+    expect(possibleWith(3, false)).toBe(4); // arte, ate, casa, cor
+    expect(possibleWith(4, false)).toBe(2); // arte, casa
+    expect(possibleWith(3, true)).toBe(2); // ate, casa
+    expect(possibleWith(4, true)).toBe(1); // casa
+  });
+
+  test('sends finders and possible words only in the results', () => {
+    const ana = makePlayer('p1', { nickname: 'Ana' });
+    const bia = makePlayer('p2', { nickname: 'Bia', color: '#E53935' });
+    const lobby = finishedRound([ana, bia], {
+      phase: 'lobby',
+      round: null,
+      solutions: null,
+      nextRound: { board: BOARD, salt: 'salt', options: roundOptions(DEFAULT_SETTINGS) },
+      nextSolutions: { words: SOLUTIONS, prefixes: new Uint8Array(SOLUTIONS.length * 6) },
+    });
+    const start = step(lobby, message(playerConn(ana), { type: 'start' }), 0, deps);
+    const inRound = start.state.round!.startsAt + 5_000;
+    const CASA_PATH = [0, 1, 2, 3];
+    const beforeTheEnd = run(
+      start.state,
+      [
+        message(pending('c-tv2'), { type: 'hello', role: 'tv', token: TV_TOKEN }),
+        message(pending('c-back'), { type: 'hello', role: 'player', token: bia.token }),
+        message(pending('c-guest'), { type: 'hello', role: 'player' }),
+        message({ ...playerConn(ana) }, { type: 'submit', paths: [CASA_PATH] }),
+      ],
+      inRound,
+      deps,
+    );
+    const flushed = step(beforeTheEnd.state, { kind: 'alarm' }, inRound + 1_000, deps);
+    const messages = allMessages([...start.effects, ...beforeTheEnd.effects, ...flushed.effects]);
+    // The walk really went through a round-start, a welcome, an accepted word and the counts.
+    const types = new Set(messages.map((m) => m.type));
+    for (const type of ['round-start', 'welcome', 'submit-result', 'counts', 'players'] as const) expect(types).toContain(type);
+    expect(types).not.toContain('round-results');
+    for (const m of messages) expect(JSON.stringify(m)).not.toMatch(/foundBy|possibleWords/);
+    // Both fields are there the moment the round ends.
+    const ended = step(flushed.state, { kind: 'alarm' }, flushed.state.round!.endsAt + 300, deps);
+    const msg = allMessages(ended.effects).find((m) => m.type === 'round-results') as RoundResultsMessage;
+    expect(msg.possibleWords).toBe(SOLUTIONS.length);
+    expect(msg.players.find((p) => p.playerId === 'p1')?.unique).toEqual([{ word: 'casa', points: 4 }]);
+  });
+
   test('has no longest word when the board has no solution', () => {
     const empty = makePlayer('p1');
     const msg = results(finishedRound([empty], { solutions: { words: [], prefixes: new Uint8Array() } }));
     expect(msg.longest).toBeNull();
     expect(msg.shared).toEqual([]);
     expect(msg.players).toEqual([{ playerId: 'p1', unique: [], roundPoints: 0, score: 0 }]);
+    expect(msg.possibleWords).toBe(0);
   });
 
   test('a word found by two players is shared', () => {
     const a = makePlayer('p1', { found: ['tela'] });
     const b = makePlayer('p2', { color: '#E53935', found: ['tela'] });
     const msg = results(finishedRound([a, b]));
-    expect(msg.shared).toEqual([{ word: 'tela', points: 2 }]);
+    expect(msg.shared).toEqual([{ word: 'tela', points: 2, foundBy: ['p1', 'p2'] }]);
     // It counts for both, once each, and is nobody's unique word.
     expect(msg.players).toEqual([
       { playerId: 'p1', unique: [], roundPoints: 2, score: 2 },

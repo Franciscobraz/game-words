@@ -53,7 +53,7 @@ function roundResults(index: number, unique: string[], shared: string[]): RoundR
   const words = (list: string[], factor: number) => list.map((word) => ({ word, points: (word.length - 2) * factor }));
   const beto: PlayerResult = { playerId: 'beto', unique: words(unique, 2), roundPoints: 0, score: 0 };
   const ana: PlayerResult = { playerId: 'ana', unique: [], roundPoints: 0, score: 0 };
-  return { type: 'round-results', index, shared: words(shared, 1), players: [ana, beto], longest: null, last: index === 2 };
+  return { type: 'round-results', index, shared: words(shared, 1).map((word) => ({ ...word, foundBy: ['ana', 'beto'] })), players: [ana, beto], longest: null, possibleWords: 0, last: index === 2 };
 }
 
 /** The phone's room and match stores over a fake server. */
