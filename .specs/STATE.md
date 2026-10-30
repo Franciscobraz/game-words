@@ -171,10 +171,10 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
   1. Sub-agente de telas, round 1, com `verify-screens.md` (captures `tv-lobby`, `tv-round`, `tv-words`, `tv-round-result`), sem o resto do Handoff.
   2. Depois dele, o Verifier, com `validate.md`, um de cada vez, porque as mutações mudam a árvore em que o app roda.
   3. Corrigir os achados numa passada, `check_proofs.py --mutations`, round 2 só nas linhas `differs`.
-  4. Mostrar ao user as 12 fotos e as decisões abaixo. Rodar `check_proofs.py` por último e o gate antes de commitar `proofs.md`.
+  4. Mostrar ao user as decisões abaixo. Rodar `check_proofs.py` por último e o gate antes de commitar `proofs.md`.
   5. Lições. O push e o deploy só com pedido do user.
 - **Pendente do user:**
-  1. Aprovar as 12 fotos de `.specs/features/m4-tv/captures/uncaptured/` (C105). O `check_proofs.py` mostra C105 como pass por causa do `**Walked:**`, mas isso não é aprovação.
+  1. Fotos de `.specs/features/m4-tv/captures/uncaptured/` (C105): aprovadas; user: "as telas que estão em /uncaptured estão otimas pode aprovar elas".
   2. Bug existente em `packages/core/src/client/room-connection.ts`: um socket que abre e cai antes do `welcome` deixa um prazo órfão, que derruba uma conexão saudável (30 s no celular, 10 min na TV). Correção proposta: `cancelOffline ??= schedule(...)`. Muda o celular nesse caso.
   3. A pasta `C:\c\`, fora do repositório, criada por um spec temporário, com 3 PNGs: a remoção foi bloqueada, e ela continua lá.
   4. A faixa de conexão cobre a borda de cima do cartão do código na rodada: aceitar ou ajustar?
