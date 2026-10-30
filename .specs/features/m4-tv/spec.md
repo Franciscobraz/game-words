@@ -366,6 +366,7 @@ O celular já joga uma partida inteira, mas a TV ainda é a página de debug: n�
 | `tv-lobby.png`: "Mínimo 2 para iniciar" | Nada; o servidor aceita iniciar com 1 jogador | y - AD-022 |
 | `tv-lobby.png`: chip "Fast mode desligado" | Nada | y - AD-020 |
 | `tv-lobby.png`: "BWORDS" em maiúsculas | "BWords", como nas outras telas | y - AD-022 |
+| `tv-lobby.png`: QR de exemplo, com poucos módulos | QR real da sala, mais denso | y - AD-022 |
 | `tv-lobby.png`: endereço `bwords.exemplo` | O endereço real onde a TV está aberta | y - AD-022 |
 | `tv-round.png` e `tv-round-result.png`: QR de exemplo | QR real da sala | y - AD-022 |
 | `tv-round-result.png`: "Caio (offline)" | "Caio (desconectado)" | y - AD-022 |

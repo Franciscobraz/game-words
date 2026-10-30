@@ -1,10 +1,12 @@
 import { createContext } from 'preact';
 import { useContext } from 'preact/hooks';
+import { createRevealClock, type RevealClock } from './reveal.ts';
 import { createRoomStore, type RoomDeps, type RoomStore } from './room.ts';
 
 /** The TV's state: signals and actions, one store per app (AD-015). */
 export interface TvStore {
   room: RoomStore;
+  reveal: RevealClock;
 }
 
 /**
@@ -12,7 +14,8 @@ export interface TvStore {
  * test gets its own store with fake dependencies; `main.tsx` builds the real one.
  */
 export function createTvStore(deps: RoomDeps): TvStore {
-  return { room: createRoomStore(deps) };
+  const room = createRoomStore(deps);
+  return { room, reveal: createRevealClock({ room: room.room, serverNow: room.serverNow }) };
 }
 
 /** Hands the store to the screens. */

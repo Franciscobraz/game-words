@@ -27,10 +27,9 @@ const SCREENS: Record<Screen, ComponentType> = {
 
 /** Shows the screen for the room as the server describes it, at the server's time (TVUI-01). */
 export function App() {
-  const { room } = useStore();
+  const { room, reveal } = useStore();
   const serverNow = useServerClock(room.serverNow);
-  // No reveal runs until the reveal clock exists (TVWORDS-01).
-  const screen = useComputed(() => tvScreen(room.room.value, room.status.value, null, serverNow.value));
+  const screen = useComputed(() => tvScreen(room.room.value, room.status.value, reveal.stageAt(serverNow.value), serverNow.value));
   const Current = SCREENS[screen.value];
   return <Current />;
 }
