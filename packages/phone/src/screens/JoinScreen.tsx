@@ -1,4 +1,4 @@
-import { cleanNickname, type ErrorCode, NICKNAME_MAX, PALETTE } from '@bwords/core';
+import { cleanNickname, CUSTOM_COLOR_START, type ErrorCode, NICKNAME_MAX, PALETTE } from '@bwords/core';
 import { useState } from 'preact/hooks';
 import { ColorPicker } from '../components/ColorPicker.tsx';
 import { BadgeIcon, CheckCircleIcon, ErrorIcon, LoginIcon, PaletteIcon, TuneIcon, TvIcon } from '../components/icons.tsx';
@@ -15,9 +15,6 @@ import { useStore } from '../state/store.ts';
 import { STRINGS } from '../strings/pt-BR.ts';
 import '../styles/join.css';
 import { ConnectionBanner } from './RoomTopBar.tsx';
-
-/** The system picker's color before the player picks one; any off-palette start would do. */
-const CUSTOM_COLOR_START = '#ffffff';
 
 /**
  * The join screen: nickname with its "N/12" counter, the color picker, the TV

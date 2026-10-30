@@ -19,6 +19,24 @@ function readStylesheets(dir: URL): Record<string, string> {
   return sheets;
 }
 
+/** Every `.tsx` of `src/` but the tests, by path from `src/`: no component or screen writes a color (AD-017). */
+const SOURCE_TSX = readSources(new URL('../', import.meta.url));
+
+function readSources(dir: URL): Record<string, string> {
+  const sources: Record<string, string> = {};
+  const names = readdirSync(dir, { recursive: true, encoding: 'utf8' }).map((name) => name.replaceAll('\\', '/'));
+  for (const name of names.filter((file) => file.endsWith('.tsx') && !file.endsWith('.test.tsx'))) {
+    sources[name] = readFileSync(new URL(name, dir), 'utf8');
+  }
+  return sources;
+}
+
+/** The phone's `index.html`, whose `theme-color` repeats a theme token. */
+const INDEX_HTML = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
+
+/** The theme every client reads its colors from (`@bwords/theme`, AD-017). */
+const THEME_TOKENS = readFileSync(new URL('../../../theme/tokens.css', import.meta.url), 'utf8');
+
 /** The largest px size a width or height may use: icons, borders, avatars, the 48 px target (AD-016). */
 const MAX_PX_DETAIL = 64;
 
@@ -137,6 +155,29 @@ function literalColors(css: string): string[] {
   return problems;
 }
 
+/** Literal colors in source text: a quoted hex color, or rgb(), hsl() and their kin (AD-017). */
+function sourceLiteralColors(text: string): string[] {
+  const quotedHex = /(['"`])#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})\1/gi;
+  const colorFunction = /\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch)\([^)]*\)/gi;
+  return [...text.matchAll(quotedHex), ...text.matchAll(colorFunction)].map((match) => match[0]);
+}
+
+/** The content of `<meta name="theme-color">`, or null when the page has none. */
+function themeColorOf(html: string): string | null {
+  return /<meta\s+name="theme-color"\s+content="([^"]*)"/i.exec(html)?.[1] ?? null;
+}
+
+/** The value a CSS file gives to the custom property `name`, or null when it gives none. */
+function tokenValue(css: string, name: string): string | null {
+  const declaration = declarations(css).find((d) => d.property === name);
+  return declaration?.value ?? null;
+}
+
+/** The page without comments and without its `theme-color` meta, the one color it must write. */
+function htmlWithoutThemeColor(html: string): string {
+  return html.replace(/<!--[\s\S]*?-->/g, '').replace(/<meta\s+name="theme-color"[^>]*>/i, '');
+}
+
 /** Widths and heights in px above 64 px; containers size with relative units (UI-01 AC 8, AD-016). */
 function largePixelSizes(css: string): string[] {
   const problems: string[] = [];
@@ -217,6 +258,41 @@ describe('UI-01 AC 2 (AD-017)', () => {
         '.a { color: var(--color-primary); background: color-mix(in srgb, var(--color-valid) 20%, transparent); fill: currentColor; }',
       ),
     ).toEqual([]);
+  });
+});
+
+describe('UI-01 AC 2 (AD-017) outside the stylesheets', () => {
+  test('writes no literal color in the components and screens', () => {
+    expect(Object.keys(SOURCE_TSX)).toContain('screens/JoinScreen.tsx');
+    const report: Record<string, string[]> = {};
+    for (const [path, text] of Object.entries(SOURCE_TSX)) {
+      const problems = sourceLiteralColors(text);
+      if (problems.length > 0) report[path] = problems;
+    }
+    expect(report).toEqual({});
+  });
+
+  test('catches literal colors in a sample source', () => {
+    expect(sourceLiteralColors("const start = '#ffffff';")).toEqual(["'#ffffff'"]);
+    expect(sourceLiteralColors('<p style={{ color: "#12131a80" }} />')).toHaveLength(1);
+    expect(sourceLiteralColors('const shade = `rgb(0 0 0)`;')).toEqual(['rgb(0 0 0)']);
+    expect(sourceLiteralColors("const tint = 'hsl(0 100% 50%)';")).toHaveLength(1);
+    expect(sourceLiteralColors('<a href="#main" style={{ color: player.color }} />')).toEqual([]);
+  });
+
+  test('keeps the index.html theme-color equal to the theme background and writes no other color', () => {
+    // The meta is read before any stylesheet, so it holds the value of --color-background itself.
+    const background = tokenValue(THEME_TOKENS, '--color-background');
+    expect(background).not.toBeNull();
+    expect(themeColorOf(INDEX_HTML)?.toLowerCase()).toBe(background?.toLowerCase());
+    expect(sourceLiteralColors(htmlWithoutThemeColor(INDEX_HTML))).toEqual([]);
+  });
+
+  test('catches a theme-color that drifts from the token in a sample page', () => {
+    const page = '<head><meta name="theme-color" content="#000000" /><meta name="x" content="#ff0000" /></head>';
+    expect(themeColorOf(page)).toBe('#000000');
+    expect(tokenValue(':root { --color-background: #12131a; }', '--color-background')).toBe('#12131a');
+    expect(sourceLiteralColors(htmlWithoutThemeColor(page))).toEqual(['"#ff0000"']);
   });
 });
 

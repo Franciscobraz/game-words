@@ -1465,6 +1465,12 @@ Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phon
 **C130** - O tabuleiro do espectador não reage ao toque (SPEC-01, AC 1)
 Proof: `npx vitest run packages/phone/src/model/board-lock.test.ts -t "locks the board for a spectator and for a phone that has not joined"`
 
+**C131** - Os `.tsx` do celular não escrevem cor literal; a cor inicial do seletor personalizado vem do `core`, como a `PALETTE` (UI-01, AC 2, AD-017)
+Proof: `npx vitest run packages/phone/src/styles/styles.test.ts -t "writes no literal color in the components and screens"`
+
+**C132** - O `theme-color` do `index.html` é o `--color-background` de `packages/theme/tokens.css`, e a página não escreve outra cor (UI-01, AC 2, AD-017)
+Proof: `npx vitest run packages/phone/src/styles/styles.test.ts -t "keeps the index.html theme-color equal to the theme background and writes no other color"`
+
 ---
 
 ## Handoff

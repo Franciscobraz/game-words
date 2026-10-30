@@ -174,3 +174,10 @@ export const PALETTE: readonly string[] = [
   '#8D6E63',
   '#FFFFFF',
 ];
+
+/**
+ * Where the system color picker of the custom slot starts before the player picks a
+ * color (JOIN-01 AC 2). It is player color data, like `PALETTE`, so it lives here and
+ * not in the theme; white passes the TV contrast check.
+ */
+export const CUSTOM_COLOR_START = '#FFFFFF';
