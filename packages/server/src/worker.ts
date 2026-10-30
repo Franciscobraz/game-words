@@ -1,4 +1,5 @@
 import { createWithFreeCode, isRoomCode } from '@bwords/core';
+import { clientAsset } from './client-routes.ts';
 import { readConfig } from './config.ts';
 import type { Env } from './env.ts';
 import { roomNotFound } from './socket.ts';
@@ -29,12 +30,20 @@ function connect(request: Request, env: Env, code: string): Promise<Response> | 
   return env.ROOM.get(env.ROOM.idFromName(code)).fetch(request);
 }
 
+/** A page or file of the clients, or null when `request` asks for anything else (SERVE-01 AC 1-4). */
+function serveClient(request: Request, env: Env, pathname: string): Promise<Response> | null {
+  if (request.method !== 'GET' && request.method !== 'HEAD') return null;
+  const asset = clientAsset(pathname);
+  if (asset === null) return null;
+  return env.ASSETS.fetch(new Request(new URL(asset, request.url), request));
+}
+
 export default {
   async fetch(request, env): Promise<Response> {
     const { pathname } = new URL(request.url);
     if (pathname === '/api/rooms' && request.method === 'POST') return createRoom(env);
     const ws = WS_ROUTE.exec(pathname);
     if (ws && request.method === 'GET') return connect(request, env, ws[1]!);
-    return new Response('Not found', { status: 404 });
+    return (await serveClient(request, env, pathname)) ?? new Response('Not found', { status: 404 });
   },
 } satisfies ExportedHandler<Env>;

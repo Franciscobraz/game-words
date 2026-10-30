@@ -32,9 +32,24 @@ describe('worker routes', () => {
     await client.waitClosed();
   });
 
+  it('keeps the room api routes', async () => {
+    const created = await exports.default.fetch(new Request('https://bwords.test/api/rooms', { method: 'POST' }));
+    expect(created.status).toBe(200);
+    const { code, tvToken } = (await created.json()) as { code: string; tvToken: string };
+
+    const withoutUpgrade = await exports.default.fetch(new Request(`https://bwords.test/api/rooms/${code}/ws`));
+    expect(withoutUpgrade.status).toBe(426);
+    await withoutUpgrade.body?.cancel();
+
+    const tv = await connect(code);
+    tv.send({ type: 'hello', role: 'tv', token: tvToken });
+    expect(await tv.next('welcome')).toMatchObject({ role: 'tv', code, phase: 'lobby' });
+  });
+
   it('answers 404 to other routes', async () => {
     for (const [method, path] of [
-      ['GET', '/'],
+      ['POST', '/'],
+      ['GET', '/nothing/here'],
       ['GET', '/api/rooms'],
       ['POST', '/api/rooms/ABCD/ws'],
     ] as const) {

@@ -275,9 +275,9 @@ T33 → T34 → T35 → T36 → T37
 
 **Done when**:
 
-- [ ] C15-C19
-- [ ] Gate check passes
-- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+- [x] C15-C19
+- [x] Gate check passes
+- [x] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: integration
 **Gate**: full
@@ -1202,7 +1202,7 @@ Proof: `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/
 Proof: `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/full-match.spec.ts -g "plays a whole match through the worker"`
 
 **C105** - As fotos de lobby vazio, contagem, Tempo!, reconectando, sem conexão, sala expirada e outra aba foram aprovadas pelo user (TVUI-01, AC 7)
-Proof: walk - cada foto de `captures/uncaptured/` mostrada ao user, com a resposta dele em `**Settled mid-build:**`
+Proof: walk - cada foto de `captures/uncaptured/` mostrada ao user, com a resposta dele em `**Settled mid-build:**`; defaults da fase 1 aceitos (pódio do celular abre com `results.last`, `foundBy` em ordem de entrada, limpeza do que só o fast mode usava, debug sem as palavras da última rodada) e histórico mantido com os commits intermediários vermelhos; user: "Aceito, seguir" (resposta à pergunta "Aceita os defaults da fase 1 e sigo para as fases 2 e 3?")
 
 
 ---
@@ -1212,7 +1212,7 @@ Proof: walk - cada foto de `captures/uncaptured/` mostrada ao user, com a respos
 The feature's live state, written as it happens - a compaction gives no warning.
 
 **Settled mid-build:** execução com subagentes, um batch por vez, com parada entre eles (preferência do user no M3, repetida na apresentação das tarefas); user: "Aprovo as tasks"
-**Dispatched:** batch worker fase 1 (T1-T6) a partir de 5440218
+**Dispatched:** batch worker fase 1 (T1-T6) a partir de 5440218 - returned (T1 0fda5dc, T2 7c15cd2, T3 6d72757, T4 dc71406, T5 07f7142, T6 59539e6; vitest 749, phone e2e 79, tsc e lint verdes, conferidos pelo orquestrador em 59539e6). Nos commits intermediários, o gate quick deixou tsc vermelho em 6d72757 e o full-match do celular vermelho de 7c15cd2 até 07f7142; a partir da fase 2, todo commit passa pelo gate do CLAUDE.md. Defaults a confirmar: com `results.last` o celular já escolhe `podium`, com o pódio vazio por um instante; `foundBy` em ordem de entrada na sala; saíram `BoltIcon`, a prop `hint` do `Toggle` e `.toggle__hint`; `HashFrame` subiu para o core; `tools/debug` não mostra as palavras da última rodada. Para a T11: `createRoomConnection` precisa de uma opção para `hello` com `role: tv`, e `bad-token` chega como `error` antes do fechamento do socket; batch worker fases 2 e 3 (T7-T12) a partir de 59539e6 + este registro
 **Walked:** none
 
 ---

@@ -110,7 +110,7 @@ sequenceDiagram
 
 - **Purpose**: A conexão e as posições, usadas pelos dois clientes.
 - **Location**: `packages/core/src/client/` (`room-connection.ts`, `clock-sync.ts`, `places.ts`)
-- **Interfaces**: as atuais, sem mudança. `onHashes` fica opcional, porque a TV não recebe hashes.
+- **Interfaces**: as atuais. `onHashes` fica opcional, porque a TV não recebe hashes. A T11 acrescenta a escolha do `hello` (emenda de 2026-10-30, retorno da fase 1): o celular manda `role: player`, com token opcional, e a TV manda `role: tv`, com token obrigatório.
 - **Dependencies**: nenhuma de DOM; `openSocket`, `now` e `schedule` continuam injetados.
 
 ### Worker e assets
