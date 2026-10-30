@@ -1099,9 +1099,9 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 **Done when**:
 
-- [ ] C136 passa
-- [ ] Gate check passes: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/results.spec.ts packages/phone/e2e/layout.spec.ts`
-- [ ] Test count: anterior + novos, nenhum removido
+- [x] C136 passa
+- [x] Gate check passes: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/results.spec.ts packages/phone/e2e/layout.spec.ts`
+- [x] Test count: anterior + novos, nenhum removido
 
 **Tests**: e2e
 **Gate**: quick

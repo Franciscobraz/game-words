@@ -41,7 +41,7 @@ function ResultWordLine({ row }: ResultWordLineProps) {
     <li class="result-words__item">
       <div class="result-words__word">
         <p class="result-words__text">
-          {wordLabel(row.word)}
+          <span class="result-words__label">{wordLabel(row.word)}</span>
           {spellings !== null && <span class="result-words__spellings">{spellings}</span>}
         </p>
         {isUnique ? (

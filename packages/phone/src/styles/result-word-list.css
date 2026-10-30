@@ -53,8 +53,14 @@
   font-weight: var(--font-weight-black);
 }
 
+.result-words__label {
+  margin-right: var(--space-sm);
+}
+
+/* Moves to the next line as a block when it does not fit; a spelling never breaks mid-word (UI-01 AC 12). */
 .result-words__spellings {
-  margin-left: var(--space-sm);
+  display: inline-block;
+  overflow-wrap: normal;
   color: var(--color-on-surface-variant);
   font-size: var(--font-size-small);
   font-weight: var(--font-weight-semibold);

@@ -40,6 +40,22 @@ test('shows the round card, the words and the quick scoreboard', async ({ page }
   await expect(scoreboard).toHaveText(['1ºAAna32', '2ºBBeto25', '3ºCCaio16', `4ºDDuda${STRINGS.spectatorShort}`]);
 });
 
+test('keeps the real spelling of a word whole at 320 px', async ({ page }) => {
+  // UI-01 AC 12: beside CORACOES and "+12 pts" there is no room for "(corações)", so it moves down whole, on one line.
+  await page.setViewportSize({ width: 320, height: 844 });
+  await openResults(page, ANA, ANA_FOUND);
+
+  const spelling = page.getByText('(corações)');
+  const linesOfText = await spelling.evaluate((el) => {
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    return new Set(Array.from(range.getClientRects()).map((rect) => Math.round(rect.top))).size;
+  });
+
+  await expect(spelling).toBeVisible();
+  expect(linesOfText).toBe(1);
+});
+
 test('next round button names the round and the last one shows the podium', async ({ page }) => {
   // RES-01 AC 7: after round 1 of 3 the host's button reads "PRÓXIMA RODADA (2 DE 3)"; after the last, "VER PÓDIO";
   // both send `next`.
