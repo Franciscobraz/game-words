@@ -1,12 +1,13 @@
 import type { RoundInfo } from '@bwords/core';
-import type { ReadonlySignal } from '@preact/signals';
+import { type ReadonlySignal, useComputed } from '@preact/signals';
 import { useMemo } from 'preact/hooks';
 import { BoardGrid } from '../components/BoardGrid.tsx';
 import { BrandHeader } from '../components/BrandHeader.tsx';
 import { RoomCard } from '../components/RoomCard.tsx';
 import { RoundPlayerCard } from '../components/RoundPlayerCard.tsx';
+import { TimeUpOverlay } from '../components/TimeUpOverlay.tsx';
 import { boardLabels } from '../model/board-labels.ts';
-import { formatClock, isAlert } from '../model/clock.ts';
+import { formatClock, isAlert, isTimeUp } from '../model/clock.ts';
 import { qrMatrix, roomUrl } from '../model/qr.ts';
 import { type RoundPlayerRow, roundColumns } from '../model/round-columns.ts';
 import { roundTitle } from '../model/round-title.ts';
@@ -22,6 +23,7 @@ export function RoundScreen() {
   const { code, round, settings, players, hostId, counts } = room.room.value;
   const roomCode = code ?? '';
   const matrix = useMemo(() => qrMatrix(roomUrl(location.origin, roomCode)), [roomCode]);
+  const timeUp = useComputed(() => round !== null && isTimeUp(serverNow.value, round.endsAt));
   if (round === null || settings === null) return null;
   const { left, right } = roundColumns(players, counts, hostId);
   return (
@@ -37,8 +39,9 @@ export function RoundScreen() {
             <h1 class="round__title">{roundTitle(round.index, settings.rounds)}</h1>
             <RoundClock round={round} serverNow={serverNow} />
           </div>
-          <div class="round__board">
+          <div class={timeUp.value ? 'round__board round__board--time-up' : 'round__board'}>
             <BoardGrid labels={boardLabels(round.board)} size={settings.size} />
+            {timeUp.value && <TimeUpOverlay />}
           </div>
         </div>
         <PlayerColumn rows={right} />
@@ -72,8 +75,14 @@ interface RoundClockProps {
 function RoundClock({ round, serverNow }: RoundClockProps) {
   const remainingMs = round.endsAt - serverNow.value;
   return (
-    <span class={isAlert(remainingMs) ? 'round__clock round__clock--alert' : 'round__clock'} data-testid="round-clock">
+    <span class={clockClass(remainingMs)} data-testid="round-clock">
       {formatClock(remainingMs)}
     </span>
   );
+}
+
+/** The timer's look: plain, then in the alert color and pulsing, and still at "0:00" (TVPLAY-01 AC 4, 10). */
+function clockClass(remainingMs: number): string {
+  if (remainingMs <= 0) return 'round__clock round__clock--alert round__clock--over';
+  return isAlert(remainingMs) ? 'round__clock round__clock--alert' : 'round__clock';
 }

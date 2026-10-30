@@ -6,6 +6,9 @@ import { ANA, BETO, CAIO, DUDA, roundWelcome, SAMPLE_END, SAMPLE_START } from '.
 /** A screen reads the clock this often, so a change shows up to this late (`SERVER_CLOCK_TICK_MS`). */
 const TICK_MS = 150;
 
+/** How long "Tempo!" stays on the screen (TVPLAY-01 AC 10). */
+const TIME_UP_MS = 2_000;
+
 /** Opens the TV with the clock stopped at `at`, in the round that starts at `SAMPLE_START`. */
 async function openRound(page: Page, at: number, welcome = roundWelcome([ANA, BETO, CAIO], ANA.id)) {
   await page.clock.install({ time: at });
@@ -90,6 +93,29 @@ test('lists only who plays, in the right columns, with the tags', async ({ page 
   await expect(page.getByTestId(`round-player-${CAIO.id}`)).toContainText('DESCONECTADO');
   await expect(page.getByTestId(`round-player-${CAIO.id}`)).toHaveClass(/round-player--dimmed/);
   await expect(page.getByTestId(`round-player-${DUDA.id}`)).toHaveCount(0);
+});
+
+test('marks the end of the round for two seconds', async ({ page }) => {
+  const room = await openRound(page, SAMPLE_END - 500);
+  const board = page.getByTestId('board');
+  await expect(page.getByTestId('round-clock')).toHaveText('0:01');
+  await expect(page.getByTestId('time-up')).toHaveCount(0);
+  await expect(board).toHaveCSS('opacity', '1');
+
+  await page.clock.runFor(500 + TICK_MS);
+
+  await expect(page.getByTestId('round-clock')).toHaveText('0:00');
+  await expect(page.getByTestId('time-up')).toHaveText('Tempo!');
+  await expect(board).toHaveCSS('opacity', '0.25');
+
+  // Still there just before the two seconds; the results then take the screen (T21 keeps the same limit).
+  await page.clock.runFor(TIME_UP_MS - TICK_MS - 1);
+  await expect(page.getByTestId('time-up')).toBeVisible();
+  await expect(page.getByTestId('round-clock')).toHaveText('0:00');
+
+  room.push({ type: 'round-results', index: 0, shared: [], players: [], longest: null, possibleWords: 0, last: false });
+
+  await expect(page.getByTestId('round-screen')).toHaveCount(0);
 });
 
 test('fits larger boards in the same square', async ({ page }) => {
