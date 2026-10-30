@@ -17,7 +17,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '../../..');
 const PACK_ID = 'pt-BR';
 const PACK_DIR = join(root, 'tools/dict-build/dist', PACK_ID);
 const PUBLIC_DIR = join(root, 'packages/server/public');
-const CLIENTS = ['phone'] as const;
+const CLIENTS = ['phone', 'tv'] as const;
 
 /** Runs a command, stopping the whole build when it fails. */
 function run(command: string, cwd: string): void {

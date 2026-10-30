@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "../../node_modules/.cache/tsc/tv-node",
+    "tsBuildInfoFile": "../../node_modules/.cache/tsc/tv-node.tsbuildinfo",
+    "lib": ["ES2022", "DOM"],
+    "types": ["node"]
+  },
+  "include": ["vite.config.ts", "playwright.config.ts", "e2e"],
+  "references": [{ "path": "../core" }, { "path": "./tsconfig.json" }]
+}

@@ -12,6 +12,8 @@
     { "path": "tools/debug" },
     { "path": "tools/debug/tsconfig.node.json" },
     { "path": "packages/phone" },
-    { "path": "packages/phone/tsconfig.node.json" }
+    { "path": "packages/phone/tsconfig.node.json" },
+    { "path": "packages/tv" },
+    { "path": "packages/tv/tsconfig.node.json" }
   ]
 }

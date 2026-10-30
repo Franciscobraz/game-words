@@ -1,0 +1,14 @@
+/* TV-only base (TVUI-01, AD-010, AD-016). Colors, type sizes, radii and spacing come from @bwords/theme (AD-017).
+   Every layout size is written in rem: the root grows with the screen, 16 px at 1920x1080 and about 10.67 px at
+   1280x720, so the whole screen scales in one composition (design: TV escalada por rem). */
+html {
+  font-size: min(100vw / 120, 100vh / 67.5);
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-on-surface);
+  font-family: var(--font-family);
+}
