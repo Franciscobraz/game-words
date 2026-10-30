@@ -295,9 +295,9 @@ T33 → T34 → T35 → T36 → T37
 
 **Done when**:
 
-- [ ] `npm run debug` sobe com o pacote
-- [ ] Gate check passes
-- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+- [x] `npm run debug` sobe com o pacote
+- [x] Gate check passes
+- [x] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: none
 **Gate**: build

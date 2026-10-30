@@ -1,6 +1,7 @@
 node_modules/
 dist/
 tools/dict-build/dist/
+packages/server/public/
 .wrangler/
 *.tsbuildinfo
 test-results/

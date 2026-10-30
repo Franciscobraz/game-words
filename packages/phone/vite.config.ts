@@ -11,14 +11,18 @@ const SERVER = 'http://127.0.0.1:8787';
 /** 5173 is `play` and 5174 is `debug`; the phone takes 5175. */
 const PHONE_PORT = 5175;
 
+/** Where the Worker serves the built phone's files (SERVE-01 AC 3); the dev server stays at the root. */
+const BUILD_BASE = '/phone/';
+
 /**
  * Files the dev server never serves, not even through `/@fs/`: Vite's own defaults, plus the
  * dictionary, which stays on the server only (PROTO-01 AC 8): the built packs and the edit files.
  */
 const DENIED_FILES = ['.env', '.env.*', '*.{crt,pem}', '**/.git/**', '**/*.dict.bin', '**/languages/**', '**/tools/dict-build/**'];
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   root: here,
+  base: command === 'build' ? BUILD_BASE : '/',
   plugins: [preact()],
   server: {
     port: PHONE_PORT,
@@ -27,4 +31,4 @@ export default defineConfig({
     // HTTP and WebSocket go through Vite, so the page is same-origin with the server.
     proxy: { '/api': { target: SERVER, ws: true } },
   },
-});
+}));

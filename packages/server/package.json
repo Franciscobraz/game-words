@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev"
+    "dev": "node ../../tools/assets-build/src/build.ts --pack-only && wrangler dev"
   },
   "dependencies": {
     "@bwords/core": "*"

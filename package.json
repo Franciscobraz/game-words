@@ -11,6 +11,7 @@
     "build": "tsc -b",
     "test": "vitest run",
     "dict:build": "node --max-old-space-size=1024 tools/dict-build/src/build.ts",
+    "assets:build": "node tools/assets-build/src/build.ts",
     "bench:node": "node --expose-gc spikes/m0/src/bench-node.ts",
     "bench:cf": "node spikes/m0/src/bench-cf.ts",
     "report": "node spikes/m0/src/report.ts",
