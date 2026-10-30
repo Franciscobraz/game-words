@@ -1,7 +1,7 @@
 import type { CloseReason } from '@bwords/core';
 import { expect, test } from '@playwright/test';
 import { STRINGS } from '../src/strings/pt-BR.ts';
-import { fakeRoom, picturePath } from './fake-room.ts';
+import { fakeRoom, picturePath, pictureWindow } from './fake-room.ts';
 import { ANA, BETO, CAIO, DUDA, lobbyWelcome, SAMPLE_CODE } from './samples.ts';
 
 /** Beto's phone in KBXT's lobby, closed by the server with `reason` right after `welcome`. */
@@ -11,14 +11,18 @@ const PICTURES: { capture: string; reason: CloseReason; heading: string }[] = [
 ];
 
 for (const { capture, reason, heading } of PICTURES) {
-  test(capture, async ({ page }) => {
-    await fakeRoom(page, (msg) => ({
-      replies: msg.type === 'hello' ? [lobbyWelcome([ANA, BETO, CAIO, DUDA], BETO.id), { type: 'closed', reason }] : [],
-      close: msg.type === 'hello',
-    }));
-    await page.goto(`/${SAMPLE_CODE}`);
-    await expect(page.getByRole('heading', { name: heading })).toBeVisible();
+  test.describe(capture, () => {
+    test.use(pictureWindow(capture));
 
-    await page.screenshot({ path: picturePath(capture), fullPage: true });
+    test(capture, async ({ page }) => {
+      await fakeRoom(page, (msg) => ({
+        replies: msg.type === 'hello' ? [lobbyWelcome([ANA, BETO, CAIO, DUDA], BETO.id), { type: 'closed', reason }] : [],
+        close: msg.type === 'hello',
+      }));
+      await page.goto(`/${SAMPLE_CODE}`);
+      await expect(page.getByRole('heading', { name: heading })).toBeVisible();
+
+      await page.screenshot({ path: picturePath(capture), animations: 'disabled' });
+    });
   });
 }

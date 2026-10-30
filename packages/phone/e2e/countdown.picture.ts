@@ -1,10 +1,12 @@
 import { expect, test } from '@playwright/test';
 import { STRINGS } from '../src/strings/pt-BR.ts';
-import { fakeRoom, picturePath } from './fake-room.ts';
+import { fakeRoom, picturePath, pictureWindow } from './fake-room.ts';
 import { ANA, BETO, CAIO, DUDA, roundWelcome, SAMPLE_CODE, sampleRound } from './samples.ts';
 
 /** The page's frozen clock; the timers still run. */
 const NOW = Date.UTC(2026, 9, 29, 12, 0, 0);
+
+test.use(pictureWindow('phone-countdown'));
 
 test('phone-countdown', async ({ page }) => {
   // The capture's state: Beto's phone in round 1 of 3, half a second before the board, so the number is 1.

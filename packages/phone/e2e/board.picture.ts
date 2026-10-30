@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { STRINGS } from '../src/strings/pt-BR.ts';
-import { picturePath, PICTURE_WIDTH } from './fake-room.ts';
+import { picturePath, pictureWindow } from './fake-room.ts';
 import { boardOf, openRound, slideOver, swipe } from './round-room.ts';
 import { SAMPLE_WORDS } from './samples.ts';
 
@@ -9,6 +9,8 @@ const NOW = Date.UTC(2026, 9, 29, 12, 0, 0);
 
 /** 1 min 47 s left, as in the capture. */
 const REMAINING_MS = 107_000;
+
+test.use(pictureWindow('phone-board'));
 
 test('phone-board', async ({ page }) => {
   // The capture's state: Beto's phone in round 1 of 3, CASA just judged valid and swiped again, so the
@@ -52,12 +54,12 @@ test('phone-feedbacks', async ({ page, browser }) => {
     await expect(page.getByRole('status')).toHaveCount(0);
   }
 
-  const sheet = await browser.newPage({ viewport: { width: PICTURE_WIDTH, height: 884 }, deviceScaleFactor: 2 });
+  const sheet = await browser.newPage(pictureWindow('phone-feedbacks'));
   const cards = await page.locator('.word-rack').boundingBox();
   const width = cards?.width ?? 350;
   const background = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   await sheet.setContent(sheetHtml(shots, width, background));
-  await sheet.screenshot({ path: picturePath('phone-feedbacks') });
+  await sheet.screenshot({ path: picturePath('phone-feedbacks'), animations: 'disabled' });
   await sheet.close();
 });
 

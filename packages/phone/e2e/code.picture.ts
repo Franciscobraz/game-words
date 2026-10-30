@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test';
 import { STRINGS } from '../src/strings/pt-BR.ts';
-import { fakeRoom, picturePath } from './fake-room.ts';
+import { fakeRoom, picturePath, pictureWindow } from './fake-room.ts';
+
+test.use(pictureWindow('phone-code'));
 
 test('phone-code', async ({ page }) => {
   // The capture's state: "KBX" typed, the fourth box focused, and "Sala não encontrada".
@@ -11,5 +13,5 @@ test('phone-code', async ({ page }) => {
   await page.getByLabel(STRINGS.codeLetter(4)).focus();
   await page.keyboard.press('Backspace');
 
-  await page.screenshot({ path: picturePath('phone-code'), fullPage: true });
+  await page.screenshot({ path: picturePath('phone-code'), animations: 'disabled' });
 });

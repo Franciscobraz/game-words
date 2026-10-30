@@ -72,6 +72,42 @@ const CAPTURE_WIDTH = 390;
  */
 export const PICTURE_WIDTH = Number(process.env.PICTURE_WIDTH ?? CAPTURE_WIDTH);
 
+/** A capture's window: its CSS height and its scale; the width is the capture's pixel width divided by the scale. */
+interface CaptureWindow {
+  readonly cssHeight: number;
+  readonly scale: number;
+}
+
+/**
+ * The window each capture was drawn in: its pixel size divided by its scale, so a picture taken
+ * there has the capture's pixel size and lays out as the capture does (no full-page shot, no resize).
+ */
+const CAPTURE_WINDOWS: Readonly<Record<string, CaptureWindow>> = {
+  'phone-board': { cssHeight: 884, scale: 2 },
+  'phone-code': { cssHeight: 884, scale: 2 },
+  'phone-countdown': { cssHeight: 884, scale: 2 },
+  'phone-feedbacks': { cssHeight: 884, scale: 2 },
+  'phone-host-actions': { cssHeight: 1472, scale: 2 },
+  'phone-host-lobby': { cssHeight: 1457, scale: 2 },
+  'phone-join': { cssHeight: 884, scale: 2 },
+  'phone-kicked': { cssHeight: 884, scale: 2 },
+  'phone-lobby': { cssHeight: 884, scale: 2 },
+  'phone-podium': { cssHeight: 1233, scale: 1 },
+  'phone-room-closed': { cssHeight: 884, scale: 2 },
+  'phone-round-result': { cssHeight: 1031, scale: 1 },
+  'phone-spectator': { cssHeight: 884, scale: 2 },
+};
+
+/**
+ * The browser options of the picture of `capture`, for `test.use`: the capture's window, at
+ * `PICTURE_WIDTH` CSS px wide when that is set to another width.
+ */
+export function pictureWindow(capture: string): { viewport: { width: number; height: number }; deviceScaleFactor: number } {
+  const size = CAPTURE_WINDOWS[capture];
+  if (size === undefined) throw new Error(`No capture window for "${capture}"`);
+  return { viewport: { width: PICTURE_WIDTH, height: size.cssHeight }, deviceScaleFactor: size.scale };
+}
+
 /** Where the other widths go: out of the repository, beside the test results. */
 const otherWidths = join(dirname(fileURLToPath(import.meta.url)), '../test-results/pictures');
 
