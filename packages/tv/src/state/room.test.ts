@@ -1,8 +1,8 @@
-import { createRoomConnection, type ErrorCode, type Phase, RECONNECT_DELAYS_MS, type Settings, tvHello, type WelcomeMessage } from '@bwords/core';
+import { type CloseReason, createRoomConnection, type ErrorCode, type Phase, RECONNECT_DELAYS_MS, type Settings, tvHello, type WelcomeMessage } from '@bwords/core';
 import { describe, expect, test } from 'vitest';
 import { STRINGS } from '../strings/pt-BR.ts';
 import { fakeClock, fakeLocalStorage, fakeSockets, type FakeSocket } from '../testing/fakes.ts';
-import { createRoomStore, ROOM_RETRY_MS } from './room.ts';
+import { type CloseAction, closeAction, createRoomStore, ROOM_RETRY_MS } from './room.ts';
 import { createTokenStore, type SavedRoom } from './token-store.ts';
 
 const SETTINGS: Settings = {
@@ -174,5 +174,115 @@ describe('opening the room', () => {
     clock.advance(ROOM_RETRY_MS);
     await settle();
     expect(requests()).toBe(3);
+  });
+});
+
+describe('when the room ends', () => {
+  /** A store with room `SAVED_ROOM` open and running. */
+  async function openRoom(rooms: readonly (SavedRoom | null)[] = [NEW_ROOM]) {
+    const context = setup(SAVED_ROOM, rooms);
+    context.store.open();
+    await settle();
+    context.sockets.last().open();
+    context.sockets.last().receive(welcome(SAVED_ROOM.code, 'lobby'));
+    return context;
+  }
+
+  test.each<[CloseReason, CloseAction]>([
+    ['closed-by-host', 'open-new-room'],
+    ['kicked', 'open-new-room'],
+    ['idle', 'wait-for-press'],
+    ['tv-gone', 'wait-for-press'],
+    ['replaced', 'stop'],
+  ])('decides what follows the close reason %s: %s', (reason, action) => {
+    expect(closeAction(reason)).toBe(action);
+  });
+
+  test('opens a new room when the host closes it', async () => {
+    const { sockets, tokens, store, requests } = await openRoom();
+
+    sockets.last().receive({ type: 'closed', reason: 'closed-by-host' });
+
+    expect(tokens.load()).toBeNull();
+    expect(store.room.value.closeReason).toBeNull();
+    expect(store.room.value.code).toBeNull();
+    await settle();
+    sockets.last().open();
+    sockets.last().receive(welcome(NEW_ROOM.code, 'lobby'));
+    expect(requests()).toBe(1);
+    expect(tokens.load()).toEqual(NEW_ROOM);
+    expect(sockets.last().path).toBe('/api/rooms/WXYZ/ws');
+    expect(store.room.value.code).toBe(NEW_ROOM.code);
+    expect(store.room.value.phase).toBe('lobby');
+  });
+
+  test('opens a new room when the server kicks the tv', async () => {
+    const { sockets, tokens, store, requests } = await openRoom();
+
+    sockets.last().receive({ type: 'closed', reason: 'kicked' });
+    await settle();
+
+    expect(requests()).toBe(1);
+    expect(tokens.load()).toEqual(NEW_ROOM);
+    expect(store.room.value.closeReason).toBeNull();
+  });
+
+  test.each<CloseReason>(['idle', 'tv-gone'])('waits on the expired screen without creating a room: %s', async (reason) => {
+    const { clock, sockets, tokens, store, requests } = await openRoom();
+    const socketsBefore = sockets.opened.length;
+
+    sockets.last().receive({ type: 'closed', reason });
+    clock.advance(ROOM_RETRY_MS * 100);
+    await settle();
+
+    expect(tokens.load()).toBeNull();
+    expect(requests()).toBe(0);
+    expect(sockets.opened).toHaveLength(socketsBefore);
+    expect(store.room.value.closeReason).toBe(reason);
+    expect(store.status.value).toBe('closed');
+  });
+
+  test.each<CloseReason>(['idle', 'tv-gone'])('opens a new room when asked on the expired screen: %s', async (reason) => {
+    const { sockets, tokens, store, requests } = await openRoom();
+    sockets.last().receive({ type: 'closed', reason });
+
+    store.pressOk();
+    expect(store.room.value.closeReason).toBeNull();
+    await settle();
+    sockets.last().open();
+    sockets.last().receive(welcome(NEW_ROOM.code, 'lobby'));
+
+    expect(requests()).toBe(1);
+    expect(tokens.load()).toEqual(NEW_ROOM);
+    expect(store.room.value.code).toBe(NEW_ROOM.code);
+  });
+
+  test('a press does nothing while the room is running', async () => {
+    const { sockets, tokens, store, requests } = await openRoom();
+
+    store.pressOk();
+    await settle();
+
+    expect(requests()).toBe(0);
+    expect(tokens.load()).toEqual(SAVED_ROOM);
+    expect(store.room.value.code).toBe(SAVED_ROOM.code);
+    expect(sockets.opened).toHaveLength(1);
+  });
+
+  test('stops reconnecting when replaced', async () => {
+    const { clock, sockets, tokens, store, requests } = await openRoom();
+    const socketsBefore = sockets.opened.length;
+
+    sockets.last().receive({ type: 'closed', reason: 'replaced' });
+    sockets.last().drop();
+    clock.advance(Math.max(...RECONNECT_DELAYS_MS) * 100);
+    store.pressOk();
+    await settle();
+
+    expect(sockets.opened).toHaveLength(socketsBefore);
+    expect(store.room.value.closeReason).toBe('replaced');
+    expect(store.status.value).toBe('closed');
+    expect(requests()).toBe(0);
+    expect(tokens.load()).toEqual(SAVED_ROOM);
   });
 });
