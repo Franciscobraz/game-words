@@ -4,6 +4,17 @@
  */
 export const STRINGS = {
   brand: 'BWords',
+
+  // Opening the room (TVROOM-01)
+  roomOpenFailed: 'Não foi possível abrir a sala',
+
+  // End of the room (TVEXIT-01)
+  roomExpired: 'Sala expirada',
+  roomClosed: 'A sala foi encerrada',
+  openedInAnotherTab: 'A TV foi aberta em outra aba',
+
+  // Codes the TV does not expect (style guide §8)
+  unexpectedError: 'Algo deu errado',
 } as const;
 
 /** A key of the text table. */
