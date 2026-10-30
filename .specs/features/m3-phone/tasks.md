@@ -12,6 +12,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 **Status**: Approved
 **Approved**: 2026-10-29 - user: "Aprovo as tasks"
 **Amended**: 2026-10-29 - T43-T44 entram no começo da Phase 3 para corrigir os achados da fase 2; user: "Aceito, seguir"
+**Amended**: 2026-10-30 - T47-T48 e C135-C136, das dúvidas visuais das fotos no tamanho da capture; user: "Sim, aplicar"
 **Mutations**: 3
 **Build**: `npx tsc -b; npm run lint -w @bwords/phone; npx vitest run; npx playwright test; npx playwright test -c packages/phone/playwright.config.ts`
 
@@ -1068,6 +1069,46 @@ T36 → T37 → T38 → T39 → T40 → T41 → T42
 
 ---
 
+### T47: Spectator list fits the capture's window
+
+**What**: Linhas mais baixas e margens menores na tela do espectador, para os 4 jogadores da capture caberem em 390x884 sem rolagem.
+**Where**: `packages/phone/src/styles/spectator.css` (modify)
+**Depends on**: T46
+**Reuses**: `PlayerRow`
+**Requirement**: SPEC-01
+
+**Done when**:
+
+- [x] C135 passa
+- [x] Gate check passes: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/spectator.spec.ts packages/phone/e2e/layout.spec.ts`
+- [x] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: quick
+**Commit**: `fix(phone): fit the spectator list in the capture window`
+
+---
+
+### T48: Whole spelling on a narrow screen
+
+**What**: A 320 px a grafia real da palavra desce inteira para a linha de baixo, em vez de quebrar no meio.
+**Where**: `packages/phone/src/components/ResultWordList.tsx`, `packages/phone/src/styles/result-word-list.css` (modify)
+**Depends on**: T47
+**Reuses**: -
+**Requirement**: UI-01
+
+**Done when**:
+
+- [ ] C136 passa
+- [ ] Gate check passes: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/results.spec.ts packages/phone/e2e/layout.spec.ts`
+- [ ] Test count: anterior + novos, nenhum removido
+
+**Tests**: e2e
+**Gate**: quick
+**Commit**: `fix(phone): keep a word's spelling whole at 320 px`
+
+---
+
 ## Checks
 
 Os testes Vitest ficam em `packages/phone/src/**`; os E2E em `packages/phone/e2e/*.spec.ts`, rodados com `npx playwright test -c packages/phone/playwright.config.ts`.
@@ -1477,6 +1518,12 @@ Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phon
 **C134** - Na classificação do pódio, um jogador desconectado traz "(desconectado)" ao lado do apelido, sem a etiqueta, como em `phone-podium.jpg` (POD-01, AC 7)
 Proof: `npx vitest run packages/phone/src/model/players.test.ts -t "marks a disconnected player beside the name instead of a pill"`
 
+**C135** - Numa janela de 390x884 px, o espectador vê os 4 jogadores de `phone-spectator.png` inteiros, sem rolagem vertical (SPEC-01, AC 4)
+Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/spectator.spec.ts -g "fits the four players of the capture without vertical scroll"`
+
+**C136** - A 320 px o resultado da rodada mostra a grafia real de uma palavra inteira, numa linha só (UI-01, AC 12)
+Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/results.spec.ts -g "keeps the real spelling of a word whole at 320 px"`
+
 ---
 
 ## Handoff
@@ -1500,7 +1547,7 @@ Phase 3:  T43 --→ T44 --→ T15 --→ T16 --→ T17 --→ T18 --→ T19
 Phase 4:  T20 --→ T21 --→ T22 --→ T23 --→ T24 --→ T25 --→ T26
 Phase 5:  T27 --→ T28 --→ T29 --→ T30
 Phase 6:  T31 --→ T32 --→ T33 --→ T34 --→ T35
-Phase 7:  T36 --→ T37 --→ T38 --→ T39 --→ T40 --→ T41 --→ T42 --→ T45 --→ T46
+Phase 7:  T36 --→ T37 --→ T38 --→ T39 --→ T40 --→ T41 --→ T42 --→ T45 --→ T46 --→ T47 --→ T48
 ```
 
 Execution is strictly sequential. Cada fase é um batch de subagente (Phase 1 tem 8 tarefas, o resto ≤ 7), e o orquestrador para entre as fases para mostrar o resultado e perguntar antes da próxima.

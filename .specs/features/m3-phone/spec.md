@@ -8,6 +8,8 @@
 
 **Amended**: 2026-10-29 - Edge Cases: parar de reconectar depois de `room-not-found` (achado da fase 2); user: "Aceito, seguir" (resposta à pergunta "Aceita os defaults da fase 2 e sigo para a fase 3, já corrigindo os dois achados?")
 
+**Amended**: 2026-10-30 - SPEC-01 AC 4 e UI-01 AC 12 (dúvidas visuais das fotos no tamanho da capture); user: "Sim, aplicar" (resposta à pergunta "Aplico as recomendações para os três pontos visuais antes de fechar o M3?")
+
 ## Problem Statement
 
 O M2 deixou a sala pronta no servidor, mas só a página de debug fala com ela. O jogador ainda não tem como entrar numa sala, escolher apelido e cor, jogar deslizando o dedo pelas letras nem acompanhar o resultado no celular. O M3 constrói o controle do celular como cliente do protocolo do M2, seguindo as telas desenhadas no Stitch.
@@ -228,6 +230,7 @@ O M2 deixou a sala pronta no servidor, mas só a página de debug fala com ela. 
 1. WHILE o jogador é espectador e a rodada está aberta, the celular SHALL mostrar a tela em `.specs/features/m3-phone/captures/phone-spectator.png`: o tabuleiro esmaecido, sem reagir ao toque, com a faixa "Você entra na próxima rodada." e "Assistindo"
 2. WHILE o jogador é espectador e a rodada está aberta, the celular SHALL mostrar o timer com a barra de progresso e, no lugar das palavras encontradas, a lista "JOGADORES NA SALA" sem contagem de palavras (AD-011)
 3. WHEN a rodada seguinte começa, the servidor SHALL mandar a todos os aparelhos a lista de jogadores sem a marca de espectador antes do `round-start`, para o celular de quem era espectador abrir o tabuleiro (emenda de 2026-10-29: achado do walk)
+4. WHILE o jogador é espectador numa janela de 390x884 px, the celular SHALL mostrar a lista com os 4 jogadores de `phone-spectator.png` inteira, sem rolagem vertical (emenda de 2026-10-30)
 
 **Independent Test**: Entrar durante a rodada e conferir a tela travada; jogar na rodada seguinte.
 
@@ -353,6 +356,7 @@ O M2 deixou a sala pronta no servidor, mas só a página de debug fala com ela. 
 9. WHILE a rodada está aberta, the tabuleiro SHALL ocupar o maior quadrado que cabe na largura e na altura livres, sem rolagem, de 568 a 932 px de altura
 10. The captures SHALL ser conferidas a 390 px; nas outras larguras, a tela SHALL manter a composição e a ordem da capture, sem exigir os mesmos pixels
 11. The servidor de desenvolvimento do celular SHALL recusar os arquivos do dicionário (os pacotes `.dict.bin` e `languages/`), também pelo caminho `/@fs/`, porque o dicionário fica só no servidor (PROTO-01 AC 8) (emenda de 2026-10-29: achado do Verifier)
+12. WHEN a largura da tela é 320 px, the resultado da rodada SHALL mostrar a grafia real de uma palavra inteira, numa linha só, sem quebrá-la no meio (emenda de 2026-10-30)
 
 **Independent Test**: Abrir cada tela em 320, 390 e 480 px de largura e 568 e 932 px de altura e conferir que nada sai da tela e o tabuleiro cabe inteiro.
 
@@ -387,7 +391,7 @@ O M2 deixou a sala pronta no servidor, mas só a página de debug fala com ela. 
 | EXIT-01 | P1: Saída da sala (AC 1-5) | Design | Pending |
 | RECON-01 | P1: Reconexão (AC 1-4) | Design | Pending |
 | PREF-01 | P2: Preferências e tela acesa (AC 1-4) | Design | Pending |
-| UI-01 | P1: Visual e textos (AC 1-11) | Design | Pending |
+| UI-01 | P1: Visual e textos (AC 1-12) | Design | Pending |
 
 **Coverage:** 14 total, 0 mapped to tasks, 14 unmapped ⚠️ (mapeados na fase Tasks)
 

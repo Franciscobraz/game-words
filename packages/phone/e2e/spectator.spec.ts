@@ -2,9 +2,30 @@ import { PALETTE } from '@bwords/core';
 import { expect, test } from '@playwright/test';
 import { STRINGS } from '../src/strings/pt-BR.ts';
 import { joinOnPhone } from './phones.ts';
+import { openRound } from './round-room.ts';
+import { DUDA } from './samples.ts';
 import { createRoom, isType, joinPlayer } from './tv.ts';
 
 const ORANGE = PALETTE[1]!;
+
+/** The window of `phone-spectator.png` (SPEC-01 AC 4). */
+const CAPTURE_VIEWPORT = { width: 390, height: 884 };
+const CAPTURE_ROOM_PLAYERS = 4;
+
+test('fits the four players of the capture without vertical scroll', async ({ page }) => {
+  // SPEC-01 AC 4: at the capture's size Duda sees the whole list down to Duda's own row, and the page does not scroll.
+  await page.setViewportSize(CAPTURE_VIEWPORT);
+  const now = Date.now();
+  await openRound(page, { me: DUDA, startsAt: now - 13_000, endsAt: now + 107_000 });
+  const rows = page.getByRole('region', { name: STRINGS.playersInRoomTitle }).getByRole('listitem');
+  await expect(rows).toHaveCount(CAPTURE_ROOM_PLAYERS);
+
+  const lastRow = (await rows.last().boundingBox())!;
+  const pageHeight = await page.evaluate(() => document.documentElement.scrollHeight);
+
+  expect(lastRow.y + lastRow.height).toBeLessThanOrEqual(CAPTURE_VIEWPORT.height);
+  expect(pageHeight).toBeLessThanOrEqual(CAPTURE_VIEWPORT.height);
+});
 
 test('shows the timer and the players without word counts', async ({ page }) => {
   // SPEC-01 AC 1-2: Duda joins while Ana's round runs, so Duda watches: the timer with its bar, the faded board

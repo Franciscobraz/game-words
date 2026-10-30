@@ -1,4 +1,8 @@
 /* The round as a spectator sees it (SPEC-01, phone-spectator.png). */
+.spectator {
+  padding-bottom: var(--space-md);
+}
+
 .spectator__board {
   position: relative;
   display: flex;
@@ -57,7 +61,7 @@
 }
 
 .spectator__players {
-  margin-top: var(--space-lg);
+  margin-top: var(--space-md);
   padding: var(--space-md);
   border-radius: var(--radius-xl);
   background: var(--color-surface-container-low);
@@ -96,6 +100,11 @@
   margin: var(--space-xs) 0 0;
   padding: 0;
   list-style: none;
+}
+
+/* Shorter rows than the lobby's, so the capture's four players fit under the board (SPEC-01 AC 4). */
+.spectator__players .player-row {
+  padding: var(--space-sm) var(--space-md);
 }
 
 /* The spectator's list has no wins, so the tags go to the right end of the row (phone-spectator.png). */
