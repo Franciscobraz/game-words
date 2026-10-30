@@ -129,7 +129,7 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 ### AD-018 - Etiquetas do jogador como no lobby do participante (active)
 
 - **Data:** 2026-10-29
-- **Decisão:** em toda linha de jogador do celular (lobby do participante, lobby do anfitrião, pódio), a etiqueta "ANFITRIÃO(Ã)" fica em laranja ao lado do nome e "VOCÊ" em azul embaixo, como em `phone-lobby.png`. A arrumação de `phone-host-lobby.png` ("VOCÊ" laranja ao lado, "ANFITRIÃO(Ã)" cinza embaixo) não é seguida.
+- **Decisão:** em toda linha de jogador do celular (lobby do participante, lobby do anfitrião, pódio), a etiqueta "ANFITRIÃO(Ã)" vem primeiro, em laranja, e "VOCÊ" depois, em azul, como em `phone-lobby.png`; "VOCÊ" fica ao lado ou desce de linha conforme o espaço da linha (no pódio fica ao lado, porque a linha de baixo traz as vitórias). A arrumação de `phone-host-lobby.png` ("VOCÊ" laranja ao lado, "ANFITRIÃO(Ã)" cinza embaixo) não é seguida.
 - **Motivo:** as duas captures se contradizem; uma arrumação só, a que o app já usa.
 - user: "Manter como está" (resposta à pergunta "Qual arrumação das etiquetas da Ana vale para todas as telas?")
 

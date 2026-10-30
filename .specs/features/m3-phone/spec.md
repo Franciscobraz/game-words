@@ -414,7 +414,7 @@ O M2 deixou a sala pronta no servidor, mas só a página de debug fala com ela. 
 | `phone-countdown.png`: "SINCRONIZADO" antes de "SALA KBXT" | Só "SALA KBXT" | y - AD-005 |
 | `phone-spectator.png`: ponto verde na etiqueta "SALA KBXT" | Etiqueta sem ponto | y - AD-005 |
 | `phone-feedbacks.png`: pontos ("1") no canto das peças | Peças só com a letra | y - AD-003 |
-| `phone-host-lobby.png` e `phone-podium.png`: "VOCÊ" laranja ao lado do nome e "ANFITRIÃO(Ã)" cinza embaixo | "ANFITRIÃO(Ã)" laranja ao lado do nome e "VOCÊ" azul embaixo, como em `phone-lobby.png` | y - AD-018 |
+| `phone-host-lobby.png` e `phone-podium.png`: "VOCÊ" laranja ao lado do nome e "ANFITRIÃO(Ã)" cinza embaixo | "ANFITRIÃO(Ã)" laranja primeiro e "VOCÊ" azul depois, como em `phone-lobby.png` | y - AD-018 |
 | `phone-feedbacks.png`: "JÁ ENCONTRADA" em laranja | "JÁ ENCONTRADA" em amarelo | y - AD-012 |
 | `phone-feedbacks.png`: X no topo e a folha com os quatro feedbacks juntos | A folha é só referência dos quatro estados; o feedback aparece na área da palavra do tabuleiro, um por vez, e não há X | y - AD-012 |
 | `phone-host-actions.png`: fundo com uma versão antiga do lobby ("Controles da partida liberados", volume em "80%") | Fundo é o lobby atual de `phone-host-lobby.png`, escurecido | y - AD-012 |
