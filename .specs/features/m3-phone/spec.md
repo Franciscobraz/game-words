@@ -352,6 +352,7 @@ O M2 deixou a sala pronta no servidor, mas só a página de debug fala com ela. 
 8. The CSS SHALL dimensionar containers só com unidades relativas (`%`, `flex`, `vw`/`vh`, `clamp()`, `min()`); px só em detalhes de até 64 px (ícones, bordas, avatares, o alvo mínimo de 48 px) (AD-016)
 9. WHILE a rodada está aberta, the tabuleiro SHALL ocupar o maior quadrado que cabe na largura e na altura livres, sem rolagem, de 568 a 932 px de altura
 10. The captures SHALL ser conferidas a 390 px; nas outras larguras, a tela SHALL manter a composição e a ordem da capture, sem exigir os mesmos pixels
+11. The servidor de desenvolvimento do celular SHALL recusar os arquivos do dicionário (os pacotes `.dict.bin` e `languages/`), também pelo caminho `/@fs/`, porque o dicionário fica só no servidor (PROTO-01 AC 8) (emenda de 2026-10-29: achado do Verifier)
 
 **Independent Test**: Abrir cada tela em 320, 390 e 480 px de largura e 568 e 932 px de altura e conferir que nada sai da tela e o tabuleiro cabe inteiro.
 
@@ -386,7 +387,7 @@ O M2 deixou a sala pronta no servidor, mas só a página de debug fala com ela. 
 | EXIT-01 | P1: Saída da sala (AC 1-5) | Design | Pending |
 | RECON-01 | P1: Reconexão (AC 1-4) | Design | Pending |
 | PREF-01 | P2: Preferências e tela acesa (AC 1-4) | Design | Pending |
-| UI-01 | P1: Visual e textos (AC 1-10) | Design | Pending |
+| UI-01 | P1: Visual e textos (AC 1-11) | Design | Pending |
 
 **Coverage:** 14 total, 0 mapped to tasks, 14 unmapped ⚠️ (mapeados na fase Tasks)
 

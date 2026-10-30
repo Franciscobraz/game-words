@@ -1471,6 +1471,9 @@ Proof: `npx vitest run packages/phone/src/styles/styles.test.ts -t "writes no li
 **C132** - O `theme-color` do `index.html` é o `--color-background` de `packages/theme/tokens.css`, e a página não escreve outra cor (UI-01, AC 2, AD-017)
 Proof: `npx vitest run packages/phone/src/styles/styles.test.ts -t "keeps the index.html theme-color equal to the theme background and writes no other color"`
 
+**C133** - O dev server do celular responde 403 ao pacote `pt-BR.dict.bin` e aos arquivos de `languages/` pedidos por `/@fs/` (UI-01, AC 11, PROTO-01 AC 8)
+Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/dev-server.spec.ts -g "never serves the dictionary through the dev server"`
+
 ---
 
 ## Handoff
