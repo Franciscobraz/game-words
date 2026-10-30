@@ -59,6 +59,13 @@ export const STRINGS = {
   spellings: (spellings: readonly string[]) => `(${spellings.join(', ')})`,
   wordPoints: (points: number) => `+${points}`,
 
+  // Result of the round (TVRES-01)
+  resultLabel: 'Resultado',
+  winnerTitle: (nickname: string) => `${nickname} venceu!`,
+  tieTitle: 'Empate!',
+  waitingToAdvance: (nickname: string) => `Aguardando ${nickname} avançar…`,
+  waitingAfterMatch: (nickname: string) => `Aguardando ${nickname}: jogar de novo ou voltar ao lobby`,
+
   // End of the room (TVEXIT-01)
   roomExpired: 'Sala expirada',
   roomClosed: 'A sala foi encerrada',
