@@ -37,7 +37,7 @@ Este documento descreve o layout das telas para servir de prompt a uma IA gerado
 
 - Código da sala: **KBXT**.
 - Tabuleiro 4x4: `C A S A / Qu E R O / T I N S / L U A M`.
-- Configurações: 4x4, 120 s, 3 rodadas, mínimo de 3 letras, filtro de palavrões ligado, fast mode desligado, Português (BR).
+- Configurações: 4x4, 120 s, 3 rodadas, mínimo de 3 letras, filtro de palavrões ligado, Português (BR).
 
 ---
 
@@ -56,7 +56,7 @@ Este documento descreve o layout das telas para servir de prompt a uma IA gerado
   - Jogador desconectado aparece **esmaecido** (opacidade baixa), com um ícone de sinal cortado.
   - Contador "4 / 10 jogadores".
   - Linhas vazias (pontilhadas) até 10, para mostrar que ainda cabe gente **(sugestão)**.
-  - **Painel de configurações** (abaixo da lista, ou como uma faixa no rodapé): tabuleiro, tempo, rodadas, mínimo de letras, palavrões, fast mode, idioma. Os valores ficam em "chips" grandes. Quando o anfitrião muda um valor no celular, o chip correspondente pisca ou pulsa por um instante.
+  - **Painel de configurações** (abaixo da lista, ou como uma faixa no rodapé): tabuleiro, tempo, rodadas, mínimo de letras, palavrões, idioma. Os valores ficam em "chips" grandes. Quando o anfitrião muda um valor no celular, o chip correspondente pisca ou pulsa por um instante.
 - **Rodapé:** "Aguardando a anfitriã (Ana) iniciar a partida".
 
 **Estados:**
@@ -105,7 +105,6 @@ A contagem regressiva e as telas de passagem do celular (código digitado, remov
   - Rodadas por partida: − / + de 1 a 5.
   - Tamanho mínimo da palavra: segmentado 3 / 4.
   - Filtrar palavrões: interruptor (ligado).
-  - Fast mode (resultados rápidos): interruptor (desligado), com uma linha de explicação.
   - Dicionário: um seletor com "Português (BR)" (a única opção no MVP).
   - Volume da TV: um controle deslizante e um botão de mudo.
 - **Lista de jogadores com ações:** ao tocar num jogador, abre uma folha de baixo (bottom sheet) com "Tornar anfitrião" e "Remover da sala". Remover pede confirmação ("Remover Beto? Ele perde os pontos.").
@@ -126,10 +125,10 @@ A contagem regressiva e as telas de passagem do celular (código digitado, remov
 - **Topo, sobre o tabuleiro ou à direita:**
   - **Timer** grande, em contagem regressiva ("1:47"), com uma barra ou um anel de progresso. Nos **últimos 10 s**, ele muda para uma cor de alerta e pulsa.
   - "Rodada 1 de 3".
-- **Coluna da direita: jogadores ao vivo.** Uma linha por jogador: cor, apelido e o **número de palavras** encontradas ("12 palavras"), sem mostrar quais são. O número dá um "pulo" quando aumenta. Os espectadores (quem entrou atrasado) aparecem num grupo separado, "Assistindo: Duda". Desconectados ficam esmaecidos.
-- **Canto inferior:** o código da sala, pequeno ("Sala KBXT"). Sem QR durante a rodada.
+- **Coluna da direita: jogadores ao vivo.** Uma linha por jogador: cor, apelido e o **número de palavras** encontradas ("12 palavras"), sem mostrar quais são. O número dá um "pulo" quando aumenta. A lista traz só quem joga a rodada, sem os espectadores. Desconectados ficam esmaecidos.
+- **Topo:** o código da sala e um QR pequeno (AD-022).
 
-**Estado de fim:** quando o tempo acaba, aparece "Tempo!" sobre o tabuleiro, e depois a tela vai para o resultado da rodada.
+**Estado de fim:** quando o tempo acaba, o timer mostra "0:00", o tabuleiro fica esmaecido e "Tempo!" aparece sobre ele, por 2 s. Depois a tela vai sozinha para a página de palavras (§8).
 
 ---
 
@@ -170,22 +169,13 @@ A contagem regressiva e as telas de passagem do celular (código digitado, remov
 
 ## 6. Pódio na TV
 
-**Objetivo:** celebrar o vencedor da partida (depois da última rodada).
-
-**Layout (1920×1080):**
-
-- **Título:** "Fim de jogo!", ou "Ana venceu!".
-- **Pódio central** com três blocos de alturas diferentes: o 1º no meio (o mais alto), o 2º à esquerda e o 3º à direita. Em cima de cada bloco: a bolinha grande na cor do jogador, o apelido e os pontos totais. O 1º lugar ganha a coroa ou um troféu e uma animação de confete (só com transform e opacity).
-- **Empate:** os jogadores empatados dividem o mesmo bloco, lado a lado.
-- **Abaixo do pódio:** os demais colocados (do 4º em diante), em uma lista compacta, com a posição, a cor, o apelido e os pontos.
-- **Faixa de vitórias da sessão:** cada jogador com as vitórias atualizadas ("Ana 🏆 3"), e a coroa para quem lidera.
-- **Rodapé:** "Aguardando a anfitriã: jogar de novo, voltar ao lobby ou encerrar".
+Esta tela saiu (AD-021). O fim da partida na TV é o resultado da última rodada (§8), com o vencedor e o confete.
 
 ---
 
 ## 7. Pódio no celular (todos)
 
-**Objetivo:** mostrar ao jogador como ele foi, e ao anfitrião, o que fazer em seguida.
+**Objetivo:** mostrar ao jogador como ele foi, e ao anfitrião, o que fazer em seguida. Abre direto ao fim da última rodada, sem nenhum toque (AD-021), com o resumo pessoal somando também essa rodada.
 
 **Para todos:**
 
@@ -204,47 +194,36 @@ A contagem regressiva e as telas de passagem do celular (código digitado, remov
 
 ---
 
-## 8. Resultado da rodada na TV
+## 8. Depois da rodada na TV (AD-021)
 
-**Objetivo:** revelar, como num show, quem achou o quê e como o placar mudou. É a tela mais complexa do jogo (DESIGN §4.3). Ela aparece depois de cada rodada; depois da última, vem o pódio.
+**Objetivo:** mostrar todas as palavras encontradas e quem achou cada uma, e depois o placar. O mesmo fluxo vale para toda rodada, e a TV o percorre sozinha. As captures binding são `tv-words.png` e `tv-round-result.png`, em `.specs/features/m4-tv/captures/`.
 
-**Moldura fixa (fica igual nas quatro etapas):**
+**Grafias reais:** as palavras aparecem em maiúsculas sem acento, seguidas das grafias do dicionário em letra menor e mais clara: "FACA (faca, faça)", "CORACOES (corações)". Quando a única grafia é igual à palavra, não aparece nada a mais.
 
-- **Topo:** "Resultado · Rodada 1 de 3".
-- **Tabuleiro da rodada em tamanho médio**, à esquerda (~40% da largura). Quando uma palavra é revelada, as peças dela acendem na cor de quem a achou, e uma linha liga as peças.
-- **Área de revelação**, à direita (~60%), onde as etapas se sucedem.
-- **Canto inferior direito:** um QR pequeno (~160 px) com o código da sala e o texto "Chegou agora? Entre para a próxima rodada".
-- **Rodapé:** "Aguardando Ana avançar".
+### 8a. Palavras da rodada
 
-**Grafias reais:** em todas as etapas, as palavras aparecem em maiúsculas sem acento, seguidas das grafias do dicionário em letra menor e mais clara: "FACA (faca, faça)", "CORACOES (corações)". Quando a única grafia é igual à palavra, não aparece nada a mais.
+- **Topo:** o logo, "Palavras · Rodada 1 de 3", o código da sala e um QR pequeno.
+- **Faixa que não rola:** o total de palavras possíveis e o de palavras encontradas.
+- **Lista em rolagem automática:** primeiro "Palavras em comum", depois "Palavras Únicas", com "pontos em dobro". Cada grupo vai da menor palavra para a maior e, no mesmo tamanho, em ordem alfabética.
+- **Cada linha:** a palavra, as grafias reais, um círculo na cor de cada jogador que a achou, com a inicial, e os pontos ("+1").
+- **Velocidade:** 2 palavras por segundo, acelerando para durar no máximo 60 s. Quando a última palavra aparece inteira, a tela espera 5 s e vai para o resultado.
+- **Ninguém achou nada:** "Nenhuma palavra encontrada", por 5 s.
 
-**Etapas, em sequência automática:**
+### 8b. Resultado
 
-1. **Palavras em comum** (achadas por 2 ou mais jogadores).
-   - Título: "Palavras em comum".
-   - As palavras aparecem uma de cada vez, **da menor para a maior**, cada uma numa linha: a palavra, as bolinhas das cores de quem a achou e os pontos ("+1").
-   - Ao mesmo tempo, a pontuação de todos que a acharam sobe junto, numa mini lista de jogadores com o placar da rodada (no topo da área de revelação).
-   - Se não houver nenhuma: "Nenhuma palavra em comum".
-2. **Palavras únicas** (achadas por um único jogador, que valem o dobro).
-   - Os jogadores aparecem um de cada vez, **do menor placar para o maior** (o líder por último, para criar suspense).
-   - Cada jogador tem um cabeçalho com a cor, o apelido e o placar da rodada subindo. Embaixo, as palavras dele surgem em chips na cor dele, com os pontos dobrados ("+4 ×2").
-   - Quem não tiver palavras únicas aparece com "nenhuma palavra só sua".
-3. **Maior palavra possível.**
-   - Título: "A maior palavra do tabuleiro".
-   - A palavra aparece grande, com as grafias reais. No tabuleiro, o **caminho é desenhado peça por peça**, com animação.
-   - Se alguém a achou: "Ana encontrou!", com a cor dela. Se ninguém achou: "Ninguém encontrou".
-4. **Placar acumulado.**
-   - Uma lista de jogadores, do maior placar para o menor: posição, cor, apelido, os pontos ganhos nesta rodada ("+18") e o total.
-   - As linhas **trocam de lugar com animação** quando alguém ultrapassa outro jogador.
-   - Espectadores e desconectados não entram na lista de posições.
+Uma tela só, que espera o anfitrião.
 
-**Variante fast mode** (resultados rápidos): uma única tela, sem revelar palavra por palavra e quase sem animação. Ela mostra direto o placar acumulado, e cada linha traz também o número de palavras do jogador, quantas eram só dele e a maior palavra que ele achou. A maior palavra possível do tabuleiro aparece numa faixa embaixo, com o caminho estático no tabuleiro.
+- **Topo:** o logo, o título, o código da sala e um QR pequeno.
+- **Esquerda:** o tabuleiro da rodada e, ao abrir a tela, as peças da maior palavra acendendo uma por vez, a cada 400 ms, sem linha ligando. Abaixo, "A maior palavra do tabuleiro", a palavra com as grafias reais e "Ana encontrou!" ou "Ninguém encontrou". Se o tabuleiro não tem palavra mais longa, não há peças acesas nem esse cartão.
+- **Direita:** "Classificação da Partida". 1º, 2º e 3º em cartões da mesma altura, com apelido, posição e pontos acumulados. Do 4º em diante, uma lista em ordem de pontos, com posição, círculo, apelido e pontos. Com até 3 jogadores, a lista some. Quem está desconectado leva "(desconectado)" ao lado do apelido.
+- **Entre as rodadas:** o título é "Resultado · Rodada 1 de 3", e o rodapé é "Aguardando Ana avançar…".
+- **Última rodada:** o título é "Ana venceu!", ou "Empate!" se a partida empatar, com confete. O rodapé é "Aguardando Ana: jogar de novo ou voltar ao lobby".
 
 ---
 
 ## 9. Resultado da rodada no celular
 
-**Objetivo:** enquanto a TV faz o show, mostrar ao jogador o resumo dele e, ao anfitrião, o botão de avançar. **(sugestão:** o DESIGN não detalha esta tela.)
+**Objetivo:** enquanto a TV mostra as palavras e o resultado, mostrar ao jogador o resumo dele e, ao anfitrião, o botão de avançar. **(sugestão:** o DESIGN não detalha esta tela.)
 
 **Para todos:**
 
@@ -257,7 +236,7 @@ A contagem regressiva e as telas de passagem do celular (código digitado, remov
 
 **Só para o anfitrião:**
 
-- **Botão principal fixo embaixo:** "Próxima rodada" (ou "Ver pódio", depois da última rodada).
+- **Botão principal fixo embaixo:** "Próxima rodada". Depois da última rodada esta tela não aparece: o celular vai direto para o pódio (§7).
 - Menu (⋮) com "Voltar ao lobby", que pede confirmação (cancela a partida e zera o placar).
 
 **Só para participantes:** a mensagem embaixo "Aguardando Ana avançar…".
@@ -268,7 +247,7 @@ A contagem regressiva e as telas de passagem do celular (código digitado, remov
 
 **Objetivo:** criar expectativa e garantir que todos vejam o tabuleiro ao mesmo tempo.
 
-- **TV:** tela cheia, com "Rodada 1 de 3" no topo e os números **3, 2, 1** gigantes (~500 px) no centro, um por segundo. Cada número entra crescendo e some com fade. No final, um "Já!" e a tela vira a da rodada.
+- **TV:** tela cheia, com "Rodada 1 de 3" no topo e os números **3, 2, 1** gigantes (~500 px) no centro, um por segundo. Cada número entra crescendo e some com fade. No `startsAt`, a tela vira a da rodada, sem um quadro "Já!" à parte.
 - **Celular:** a mesma contagem, em tela cheia, com números grandes, e a lembrança "Prepare o dedo!" **(sugestão)**. No "Já!", o tabuleiro aparece.
 - O tabuleiro **não pode aparecer antes do "Já!"**, nem na TV nem no celular.
 - **Espectador:** vê a contagem e, depois, a sua tela de espectador.
@@ -300,3 +279,24 @@ A contagem regressiva e as telas de passagem do celular (código digitado, remov
 - O jogador continua na tela em que estava (com o tabuleiro travado, se estiver numa rodada), sem perder o que já fez.
 - Quando a conexão volta, a faixa fica verde por um instante ("Conectado") e some.
 - Se demorar muito, a faixa vira "Sem conexão", com o botão "Tentar de novo".
+
+---
+
+## 12. Telas de passagem da TV
+
+A TV não tem botões: tudo aqui acontece sozinho ou com "OK" no controle. As fotos estão em `.specs/features/m4-tv/captures/uncaptured/`.
+
+**Não foi possível abrir a sala:** o texto no centro, e a TV tenta de novo a cada 5 s.
+
+**Sala expirada:** logo no topo, "Sala expirada" no centro e "Aperte OK no controle para abrir uma sala nova". Sem rodapé, código nem QR. A TV não cria sala até alguém apertar uma tecla ou clicar.
+
+**Sala encerrada pelo anfitrião:** a TV abre uma sala nova sozinha, sem tela própria.
+
+**Aberta em outra aba:** logo no topo e "A TV foi aberta em outra aba" no centro. A TV para de reconectar, e nenhuma tecla muda nada.
+
+**Conexão caída:**
+
+- A tela atual fica, e o timer continua pelo relógio do servidor, com uma faixa fina no topo: "Reconectando…".
+- Depois de 30 s sem reconectar, a faixa fica vermelha e vira "Sem conexão". A TV continua tentando, com esperas de 0,5 s, 1 s, 2 s, 4 s, 8 s, 16 s, 32 s e depois 60 s.
+- Depois de 10 min, a TV para de tentar, e a faixa acrescenta "Aperte OK no controle para tentar de novo". Uma tecla ou um clique recomeçam as tentativas do início.
+- Quando a conexão volta, a faixa some e a tela mostra o estado atual da sala.

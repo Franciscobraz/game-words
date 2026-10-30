@@ -49,7 +49,7 @@ Jogo de encontrar palavras: uma TV mostra o jogo e cada jogador usa o celular co
 ## Ambiente
 
 - **Pacote do dicionário:** o binário pt-BR é git-ignored. Rode `npm run dict:build` uma vez antes de `npm run debug`, `npm run play` ou do servidor; os testes usam um pacote de fixture e não precisam dele.
-- **Portas:** 8787 `wrangler dev`, 5173 `play`, 5174 `debug`, 5175 celular.
+- **Portas:** 8787 `wrangler dev`, 5173 `play`, 5174 `debug`, 5175 celular, 5176 TV.
 - **Windows:** os scripts Python da skill rodam com `PYTHONUTF8=1` (ver o Handoff em `.specs/STATE.md`).
 
 ## Comandos
@@ -57,5 +57,8 @@ Jogo de encontrar palavras: uma TV mostra o jogo e cada jogador usa o celular co
 - `npm test` - Vitest (core e server)
 - `npm run build` - `tsc -b` em todos os pacotes
 - `npm run dict:build` - gera o pacote pt-BR em `tools/dict-build/dist`
+- `npm run assets:build` - gera os dois clientes e monta `packages/server/public/`, que o Worker serve (`/tv` e `/<CÓDIGO>`)
 - `npm run debug` - `wrangler dev` (8787) e a página de debug (5174)
-- `npx playwright test` - E2E
+- `npx playwright test` - E2E do `play`
+- `npx playwright test -c packages/phone/playwright.config.ts` - E2E do celular
+- `npx playwright test -c packages/tv/playwright.config.ts` - E2E da TV; roda `assets:build` antes, porque a partida inteira joga pelo Worker

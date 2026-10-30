@@ -24,11 +24,12 @@ O guia descreve o que o código do M0 ao M2 já faz e acrescenta as regras dos c
 ```
 packages/
   core/      regras do jogo e da sala; puro, sem DOM nem Node
+             src/client/: a conexão, o relógio e as posições que os dois clientes usam
   theme/     tokens.css: paleta, tipografia, raios e espaços de todas as telas (AD-017)
   server/    Worker + Durable Object; casca fina sobre o core
   phone/     cliente do celular (M3), Preact + Vite
   tv/        cliente da TV (M4), Preact + Vite
-tools/       ferramentas de desenvolvimento (dict-build, play, debug)
+tools/       ferramentas de desenvolvimento (dict-build, assets-build, play, debug)
 spikes/      experimentos descartáveis; nada em packages/ importa daqui
 languages/   arquivos de edição dos dicionários (.txt)
 docs/        documentos de projeto
@@ -55,7 +56,7 @@ tools ────▶ core
 src/
   main.tsx          monta o app; nenhuma regra aqui
   app.tsx           escolhe a tela pela fase e pelo papel
-  net/              socket, reconexão, clock sync; fala o protocolo do core
+  net/              a ponta com o navegador: abre o WebSocket e chama a API; a conexão, a reconexão e o clock sync vêm de core/src/client/
   state/            store do cliente em @preact/signals: signals + ações que aplicam funções de model/ (AD-015)
   model/            funções puras de view-model (ordenar, formatar, somar); testadas com Vitest
   screens/          uma tela por arquivo (Lobby, Board, Results...); compõe componentes
@@ -69,7 +70,7 @@ e2e/                testes Playwright
 
 - `components/` não importa de `net/` nem de `state/`. Recebe dados e callbacks por props.
 - `screens/` lê o store e repassa dados e ações para os componentes. Uma tela não abre socket.
-- `net/` não conhece telas. Ele entrega mensagens ao `state/` e expõe `send`.
+- `net/` não conhece telas. A conexão do `core` entrega as mensagens ao `state/` e expõe `send`.
 - `model/` não importa Preact nem `@preact/signals`.
 - **Estado com Signals (AD-015):** o estado vive em signals dentro de `state/`. Uma ação calcula o próximo valor com uma função pura de `model/` e atribui ao signal (`room.value = applyServerMessage(room.value, msg)`). Valores derivados usam `computed`, nunca um `useEffect` que copia estado. Componentes leem signals só em `screens/`; os de `components/` recebem valores por props.
 
@@ -118,7 +119,7 @@ O `tsconfig.base.json` já liga `strict`, `noUncheckedIndexedAccess`, `verbatimM
 | **O** - aberto/fechado | Comportamento novo entra como uma entrada nova numa tabela, não como outro `if` num handler grande. O `machine.ts` mapeia cada tipo de mensagem para um `Handler`; uma mensagem nova é um handler novo. O mesmo vale para telas: `app.tsx` mapeia fase → tela. |
 | **L** - substituição | Toda implementação de um contrato o cumpre por inteiro: um `LanguagePack` de outro idioma, um `RoomDeps` falso nos testes, um transporte de socket falso no cliente. Os testes usam os mesmos contratos que a produção. |
 | **I** - segregação de interfaces | Interfaces pequenas, do tamanho do uso. Um componente recebe só as props que desenha (`PlayerRow` recebe `player` e `crowned`, não o estado inteiro da sala). Um handler recebe `HandlerContext`, não o Durable Object. |
-| **D** - inversão de dependência | Relógio, aleatoriedade, storage e socket entram como dependência (`RoomDeps`, `now`), nunca chamados direto dentro de uma regra. No cliente, `net/` recebe a fábrica de WebSocket e o `state/` recebe o relógio; os testes passam versões falsas. |
+| **D** - inversão de dependência | Relógio, aleatoriedade, storage e socket entram como dependência (`RoomDeps`, `now`), nunca chamados direto dentro de uma regra. No cliente, a conexão do `core` recebe a fábrica de WebSocket e o relógio; os testes passam versões falsas. |
 
 ---
 
@@ -140,6 +141,7 @@ O `tsconfig.base.json` já liga `strict`, `noUncheckedIndexedAccess`, `verbatimM
 - **Cores, espaços, raios e fontes** só pelas variáveis de `packages/theme/tokens.css` (`@bwords/theme`, AD-017), importado por todo cliente e ferramenta. Nenhuma cor literal fora dele, exceto a cor do jogador, que vem do dado. Telas usam os nomes de significado (`--color-valid`, `--color-invalid`, `--color-already-found`, `--color-action`, `--color-crown`); os papéis da paleta (`--color-primary-container`, `--color-surface-container`...) servem para superfícies e texto. Um pacote pode ter um `tokens.css` próprio só para o que é dele (alvo de toque, tipografia fluida), sempre a partir das variáveis do tema.
 - **Layout:** só flexbox e margens, sem CSS Grid e sem `gap`. A TV-alvo roda navegadores antigos (DESIGN §4.5).
 - **Responsividade primeiro (AD-016):** layouts fluidos, nunca presos à largura de uma capture. Containers só com `%`, `flex`, `vw`/`vh`, `clamp()` e `min()`; px só em detalhes de até 64 px (ícones, bordas, avatares, o alvo de 48 px). Tipografia com `clamp()`. O celular funciona de 320 a 480 px de largura e de 568 a 932 px de altura; a TV, de 1280×720 a 1920×1080. As captures servem para conferir composição, não pixels.
+- **TV em `rem`:** o `font-size` da raiz é `min(100vw / 120, 100vh / 67.5)`, que dá 16 px em 1920×1080. Todo tamanho da TV é escrito em `rem`, e a tela inteira encolhe junto, na mesma composição.
 - **Animações:** só com `transform` e `opacity`. Sem `blur`, `backdrop-filter` nem `box-shadow` animado.
 - **Classes:** em inglês, no formato `bloco__elemento--modificador` (`player-row__name--muted`). Sem estilo inline, exceto valores dinâmicos (cor do jogador, posição do caminho).
 - **Só tema escuro** (AD-010), mas sempre por tokens, para que um tema novo troque só o `packages/theme/tokens.css`.
