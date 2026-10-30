@@ -40,6 +40,13 @@ export const STRINGS = {
   profanityAllowed: 'Palavrões liberados',
   packNames: { 'pt-BR': 'Português (BR)' },
 
+  // Countdown and round (TVPLAY-01)
+  roundOf: (round: number, rounds: number) => `RODADA ${round} DE ${rounds}`,
+  wordsLabel: (count: number) => (count === 1 ? 'palavra' : 'palavras'),
+  roomCodeLabel: 'CÓDIGO DA SALA',
+  board: 'Tabuleiro da rodada',
+  timeUp: 'Tempo!',
+
   // End of the room (TVEXIT-01)
   roomExpired: 'Sala expirada',
   roomClosed: 'A sala foi encerrada',
