@@ -22,8 +22,10 @@ export interface ScoreRow {
   nickname: string;
   color: string;
   score: number;
-  /** 1 for the top score, shared on a tie; null for a spectator, shown as "Esp.". */
-  place: number | null;
+  /** 1 for the top score, shared on a tie; a spectator's place follows the last player's. */
+  place: number;
+  /** Shown as "Esp." in place of the score. */
+  spectator: boolean;
 }
 
 /** A line of the "CLASSIFICAÇÃO DA MESA" (POD-01 AC 7). */
@@ -66,13 +68,24 @@ export function lobbyRows(players: readonly PlayerInfo[], hostId: string | null,
 
 /**
  * The quick scoreboard of the round result: highest score first, ties in joining
- * order sharing their place, spectators last without a place (RES-01 AC 6).
+ * order sharing their place, spectators last, each in the next place after the
+ * players, as Duda's "4º" in the capture (RES-01 AC 6, phone-round-result.jpg).
  */
 export function quickScoreboard(players: readonly PlayerInfo[]): ScoreRow[] {
   const playing = players.filter((p) => !p.spectator).sort((a, b) => b.score - a.score);
   const places = placesOf(playing.map((p) => p.score));
-  const rows: ScoreRow[] = playing.map((player, index) => ({ ...scoreFields(player), score: player.score, place: places[index]! }));
-  const spectators = players.filter((p) => p.spectator).map((player) => ({ ...scoreFields(player), score: player.score, place: null }));
+  const rows: ScoreRow[] = playing.map((player, index) => ({
+    ...scoreFields(player),
+    score: player.score,
+    place: places[index]!,
+    spectator: false,
+  }));
+  const spectators: ScoreRow[] = players.filter((p) => p.spectator).map((player, index) => ({
+    ...scoreFields(player),
+    score: player.score,
+    place: playing.length + 1 + index,
+    spectator: true,
+  }));
   return [...rows, ...spectators];
 }
 

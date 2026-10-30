@@ -1279,7 +1279,7 @@ Proof: browser captures/phone-spectator.running.png
 **C69** - O espectador vê o timer com a barra e "JOGADORES NA SALA" sem contagem de palavras (SPEC-01, AC 2)
 Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/spectator.spec.ts -g "shows the timer and the players without word counts"`
 
-**C70** - O "PLACAR RÁPIDO DA MESA" vai do maior para o menor placar, com espectadores por último e "Esp." (RES-01, AC 6)
+**C70** - O "PLACAR RÁPIDO DA MESA" vai do maior para o menor placar, com espectadores por último, cada um na posição seguinte à do último jogador ("4º" da Duda), e "Esp." (RES-01, AC 6)
 Proof: `npx vitest run packages/phone/src/model/players.test.ts -t "orders the quick scoreboard and puts spectators last"`
 
 **C70a** - O anfitrião vê o resultado de `phone-round-result.jpg` (RES-01, AC 1)

@@ -61,15 +61,18 @@ describe('quickScoreboard', () => {
       player('p4', 'Duda', { spectator: true }),
       player('p2', 'Beto', { score: 20 }),
       player('p3', 'Caio', { score: 5 }),
+      player('p5', 'Edu', { spectator: true }),
     ];
 
     const rows = quickScoreboard(players);
 
-    expect(rows.map((row) => [row.nickname, row.score, row.place])).toEqual([
-      ['Beto', 20, 1],
-      ['Ana', 12, 2],
-      ['Caio', 5, 3],
-      ['Duda', 0, null],
+    // Each spectator takes the next place after the players: Duda 4º, as in phone-round-result.jpg.
+    expect(rows.map((row) => [row.nickname, row.score, row.place, row.spectator])).toEqual([
+      ['Beto', 20, 1, false],
+      ['Ana', 12, 2, false],
+      ['Caio', 5, 3, false],
+      ['Duda', 0, 4, true],
+      ['Edu', 0, 5, true],
     ]);
   });
 

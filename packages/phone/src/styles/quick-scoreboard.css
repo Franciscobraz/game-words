@@ -51,6 +51,10 @@
   font-weight: var(--font-weight-black);
 }
 
+.quick-scoreboard__item--spectator .quick-scoreboard__place {
+  color: var(--color-text-muted);
+}
+
 .quick-scoreboard__item .player-avatar {
   width: 36px;
   height: 36px;

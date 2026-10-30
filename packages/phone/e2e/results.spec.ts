@@ -18,7 +18,7 @@ const sentTypes = (room: FakeRoom) => room.sent().map((msg) => msg.type);
 
 test('shows the round card, the words and the quick scoreboard', async ({ page }) => {
   // RES-01 AC 2-6: Ana's round 1 of 3: +18 pts, 32 in all, 1º; CORACOES only hers, CASA, QUERO and LUA in common;
-  // the quick scoreboard from Ana's 32 down, with Duda last as "Esp.".
+  // the quick scoreboard from Ana's 32 down, with Duda last in 4º as "Esp.".
   await openResults(page, ANA, ANA_FOUND);
 
   await expect(page.getByText(`${STRINGS.resultRound(1, 3)}${STRINGS.resultTag}`)).toBeVisible();
@@ -37,7 +37,7 @@ test('shows the round card, the words and the quick scoreboard', async ({ page }
   ]);
 
   const scoreboard = page.getByRole('region', { name: STRINGS.quickScoreboard }).getByRole('listitem');
-  await expect(scoreboard).toHaveText(['1ºAAna32', '2ºBBeto25', '3ºCCaio16', `DDuda${STRINGS.spectatorShort}`]);
+  await expect(scoreboard).toHaveText(['1ºAAna32', '2ºBBeto25', '3ºCCaio16', `4ºDDuda${STRINGS.spectatorShort}`]);
 });
 
 test('next round button names the round and the last one shows the podium', async ({ page }) => {
