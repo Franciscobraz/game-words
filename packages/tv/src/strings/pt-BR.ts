@@ -4,6 +4,8 @@
  */
 export const STRINGS = {
   brand: 'BWords',
+  brandMark: 'B',
+  roomQr: 'QR code da sala',
 
   // Opening the room (TVROOM-01)
   roomOpenFailed: 'Não foi possível abrir a sala',
