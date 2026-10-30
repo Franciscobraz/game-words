@@ -8,6 +8,7 @@ import '@bwords/theme/tokens.css';
 import './styles/tokens.css';
 import './styles/app.css';
 import { App } from './app.tsx';
+import { TV_RECONNECT_POLICY } from './model/reconnect.ts';
 import { browserSchedule, browserSocket, requestNewRoom } from './net/browser.ts';
 import { createTvStore, StoreContext } from './state/store.ts';
 import { createTokenStore } from './state/token-store.ts';
@@ -15,7 +16,14 @@ import { createTokenStore } from './state/token-store.ts';
 /** Mounts the TV app over the real socket, clock and storage, and opens the room (TVROOM-01, TVUI-01). */
 const store = createTvStore({
   openConnection: (handlers) =>
-    createRoomConnection({ openSocket: browserSocket, now: () => Date.now(), schedule: browserSchedule, hello: tvHello, ...handlers }),
+    createRoomConnection({
+      openSocket: browserSocket,
+      now: () => Date.now(),
+      schedule: browserSchedule,
+      hello: tvHello,
+      reconnect: TV_RECONNECT_POLICY,
+      ...handlers,
+    }),
   createRoom: requestNewRoom,
   tokens: createTokenStore(() => localStorage),
   schedule: browserSchedule,

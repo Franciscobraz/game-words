@@ -1,0 +1,31 @@
+/* The thin connection strip over the current screen (TVEXIT-01 AC 5-6, 9). Everything in rem: the root scales it (AD-016). */
+.connection-banner {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 2rem;
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-extrabold);
+  line-height: 1.2;
+  text-align: center;
+}
+
+.connection-banner--waiting {
+  background: var(--color-surface-container-highest);
+  color: var(--color-on-surface);
+}
+
+.connection-banner--lost {
+  background: var(--color-invalid);
+  color: var(--color-on-invalid);
+}
+
+.connection-banner__hint {
+  margin-left: 1.5rem;
+  font-weight: var(--font-weight-semibold);
+}

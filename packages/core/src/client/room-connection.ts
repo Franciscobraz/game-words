@@ -16,6 +16,17 @@ export const RECONNECT_DELAYS_MS = [500, 1_000, 2_000, 4_000] as const;
 /** Time without a successful reconnect before the client gives up and shows "Sem conexão" (RECON-01 AC 4). */
 export const OFFLINE_AFTER_MS = 30_000;
 
+/** How a connection keeps trying after a drop; a client that wants other waits or another limit passes its own. */
+export interface ReconnectPolicy {
+  /** The wait before attempt `attempt` (0-based). */
+  delayMs(attempt: number): number;
+  /** Time without a welcome before the connection stops trying and reports `offline`. */
+  giveUpAfterMs: number;
+}
+
+/** The phone's policy: the waits of `RECONNECT_DELAYS_MS`, and it stops at the "Sem conexão" of RECON-01 AC 4. */
+export const DEFAULT_RECONNECT_POLICY: ReconnectPolicy = { delayMs: reconnectDelay, giveUpAfterMs: OFFLINE_AFTER_MS };
+
 /** What a socket reports back to the connection. */
 export interface SocketEvents {
   onOpen(): void;
@@ -57,6 +68,8 @@ export interface ConnectionOptions {
   schedule: Schedule;
   /** What each socket says first; a phone's `hello` unless told otherwise. */
   hello?: SayHello;
+  /** How to come back after a drop; the phone's policy unless told otherwise. */
+  reconnect?: ReconnectPolicy;
   onMessage(msg: ServerMessage): void;
   /** Only phones get the round's hashes; the TV leaves it out (design: core client). */
   onHashes?(frame: HashFrame): void;
@@ -79,7 +92,7 @@ export interface RoomConnection {
 
 /** Creates a connection; nothing opens until `connect`. */
 export function createRoomConnection(options: ConnectionOptions): RoomConnection {
-  const { openSocket, now, schedule, hello = playerHello } = options;
+  const { openSocket, now, schedule, hello = playerHello, reconnect = DEFAULT_RECONNECT_POLICY } = options;
 
   let code: string | null = null;
   let token: string | null = null;
@@ -174,11 +187,11 @@ export function createRoomConnection(options: ConnectionOptions): RoomConnection
 
   function startReconnecting(): void {
     setStatus('reconnecting');
-    cancelOffline = schedule(goOffline, OFFLINE_AFTER_MS);
+    cancelOffline = schedule(goOffline, reconnect.giveUpAfterMs);
   }
 
   function scheduleNextAttempt(): void {
-    const delay = reconnectDelay(attempt);
+    const delay = reconnect.delayMs(attempt);
     attempt += 1;
     cancelReconnect = schedule(() => {
       cancelReconnect = null;

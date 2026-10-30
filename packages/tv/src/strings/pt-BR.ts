@@ -81,6 +81,11 @@ export const STRINGS = {
   roomClosed: 'A sala foi encerrada',
   openedInAnotherTab: 'A TV foi aberta em outra aba',
 
+  // Connection (TVEXIT-01 AC 5-6, 9)
+  reconnecting: 'Reconectando…',
+  noConnection: 'Sem conexão',
+  pressOkToRetry: 'Aperte OK no controle para tentar de novo',
+
   // Codes the TV does not expect (style guide §8)
   unexpectedError: 'Algo deu errado',
 } as const;

@@ -1,5 +1,6 @@
 import type { CloseReason, ConnectionStatus, RoomConnection, Schedule, ServerMessage } from '@bwords/core';
 import { type Signal, signal } from '@preact/signals';
+import { type ConnectionLoss, NO_CONNECTION_AFTER_MS } from '../model/reconnect.ts';
 import { applyServerMessage, INITIAL_VIEW, type RoomView } from '../model/room-view.ts';
 import type { SavedRoom, TokenStore } from './token-store.ts';
 
@@ -49,11 +50,13 @@ export interface RoomDeps {
 export interface RoomStore {
   room: Signal<RoomView>;
   status: Signal<RoomStatus>;
+  /** How long the room has been out of reach, for the banner (TVEXIT-01 AC 5-6, 9). */
+  connectionLoss: Signal<ConnectionLoss>;
   /** The server clock now (TVPLAY-01 AC 3). */
   serverNow(): number;
   /** Goes back to the saved room, or creates one when there is none (TVROOM-01 AC 1-2). */
   open(): void;
-  /** A key or a click: on "Sala expirada" it opens a new room; anywhere else it does nothing here (TVEXIT-01 AC 3). */
+  /** A key or a click: on "Sala expirada" it opens a new room, and after the reconnect limit it tries again (TVEXIT-01 AC 3, 10). */
   pressOk(): void;
 }
 
@@ -62,16 +65,55 @@ export function createRoomStore(deps: RoomDeps): RoomStore {
   const { tokens } = deps;
   const room = signal<RoomView>(INITIAL_VIEW);
   const status = signal<RoomStatus>('closed');
+  const connectionLoss = signal<ConnectionLoss>('none');
+  let cancelNoConnection: (() => void) | null = null;
 
   const link = deps.openConnection({
     onMessage: receive,
-    onStatus: (next) => {
-      status.value = next;
-    },
+    onStatus: followConnection,
   });
+
+  function followConnection(next: ConnectionStatus): void {
+    status.value = next;
+    switch (next) {
+      case 'reconnecting':
+        if (connectionLoss.value === 'none' || connectionLoss.value === 'gave-up') startLoss();
+        return;
+      case 'offline':
+        setLoss('gave-up');
+        return;
+      case 'connecting':
+      case 'closed':
+        setLoss('none');
+        return;
+      case 'open':
+        // A socket that opens has not brought the room back; `welcome` does, and a drop before it keeps the same loss.
+        return;
+      default: {
+        const never: never = next;
+        throw new Error(`Unknown connection status: ${String(never)}`);
+      }
+    }
+  }
+
+  /** The socket dropped: "Reconectando…", and "Sem conexão" if the room does not come back in time (TVEXIT-01 AC 5-6). */
+  function startLoss(): void {
+    setLoss('reconnecting');
+    cancelNoConnection = deps.schedule(() => {
+      cancelNoConnection = null;
+      connectionLoss.value = 'no-connection';
+    }, NO_CONNECTION_AFTER_MS);
+  }
+
+  function setLoss(next: ConnectionLoss): void {
+    cancelNoConnection?.();
+    cancelNoConnection = null;
+    connectionLoss.value = next;
+  }
 
   function receive(msg: ServerMessage): void {
     room.value = applyServerMessage(room.value, msg);
+    if (msg.type === 'welcome') setLoss('none');
     if (isRoomRefused(msg)) replaceRoom();
     if (msg.type === 'closed') endRoom(closeAction(msg.reason));
   }
@@ -128,6 +170,7 @@ export function createRoomStore(deps: RoomDeps): RoomStore {
   return {
     room,
     status,
+    connectionLoss,
     serverNow: () => link.serverNow(),
     open() {
       const saved = tokens.load();
@@ -137,6 +180,7 @@ export function createRoomStore(deps: RoomDeps): RoomStore {
     pressOk() {
       const { closeReason } = room.value;
       if (closeReason !== null && closeAction(closeReason) === 'wait-for-press') replaceRoom();
+      if (connectionLoss.value === 'gave-up') link.retry();
     },
   };
 }

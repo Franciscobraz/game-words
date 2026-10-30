@@ -1,6 +1,15 @@
 import { describe, expect, test } from 'vitest';
 import { encodeHashFrame, type ServerMessage } from '../room/protocol.ts';
-import { type ConnectionStatus, createRoomConnection, type HashFrame, playerHello, RECONNECT_DELAYS_MS, tvHello } from './room-connection.ts';
+import {
+  type ConnectionStatus,
+  createRoomConnection,
+  DEFAULT_RECONNECT_POLICY,
+  type HashFrame,
+  playerHello,
+  RECONNECT_DELAYS_MS,
+  type ReconnectPolicy,
+  tvHello,
+} from './room-connection.ts';
 import { fakeClock, fakeSockets } from './test-helpers.ts';
 
 /** A connection wired to a fake clock and fake sockets, recording what it reports. */
@@ -342,6 +351,77 @@ describe('reconnecting', () => {
     connection.send({ type: 'start' });
 
     expect(sockets.last().sent).toHaveLength(sentBefore);
+  });
+});
+
+describe('with a reconnect policy', () => {
+  const POLICY: ReconnectPolicy = { delayMs: (attempt) => (attempt + 1) * 1_000, giveUpAfterMs: 5_000 };
+
+  /** A connection under `POLICY`, with its socket just dropped. */
+  function dropped() {
+    const clock = fakeClock(1_000_000);
+    const sockets = fakeSockets();
+    const statuses: ConnectionStatus[] = [];
+    const connection = createRoomConnection({
+      openSocket: sockets.openSocket,
+      now: clock.now,
+      schedule: clock.schedule,
+      reconnect: POLICY,
+      onMessage: () => {},
+      onStatus: (status) => statuses.push(status),
+    });
+    connection.connect('KBXT', 'secret-beto');
+    sockets.last().open();
+    sockets.last().drop();
+    return { clock, sockets, connection, status: () => statuses.at(-1) };
+  }
+
+  test('waits what the policy says', () => {
+    const { clock, sockets } = dropped();
+
+    clock.advance(999);
+    expect(sockets.opened).toHaveLength(1);
+    clock.advance(1);
+    expect(sockets.opened).toHaveLength(2);
+
+    sockets.last().drop();
+    clock.advance(1_999);
+    expect(sockets.opened).toHaveLength(2);
+    clock.advance(1);
+    expect(sockets.opened).toHaveLength(3);
+  });
+
+  test('gives up when the policy says', () => {
+    const { clock, status } = dropped();
+
+    clock.advance(4_999);
+    expect(status()).toBe('reconnecting');
+    clock.advance(1);
+    expect(status()).toBe('offline');
+  });
+
+  test('a retry starts the waits and the limit over', () => {
+    const { clock, sockets, connection, status } = dropped();
+    clock.advance(5_000);
+
+    connection.retry();
+    expect(status()).toBe('reconnecting');
+    sockets.last().drop();
+
+    clock.advance(999);
+    const attempts = sockets.opened.length;
+    clock.advance(1);
+    expect(sockets.opened).toHaveLength(attempts + 1);
+    clock.advance(3_999);
+    expect(status()).toBe('reconnecting');
+    clock.advance(1);
+    expect(status()).toBe('offline');
+  });
+
+  test('the default policy is the phone waits and its 30 seconds', () => {
+    expect(RECONNECT_DELAYS_MS.map((_, attempt) => DEFAULT_RECONNECT_POLICY.delayMs(attempt))).toEqual([500, 1_000, 2_000, 4_000]);
+    expect(DEFAULT_RECONNECT_POLICY.delayMs(100)).toBe(4_000);
+    expect(DEFAULT_RECONNECT_POLICY.giveUpAfterMs).toBe(30_000);
   });
 });
 

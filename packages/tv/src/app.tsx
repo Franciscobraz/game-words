@@ -1,5 +1,6 @@
 import { useComputed } from '@preact/signals';
 import type { ComponentType } from 'preact';
+import { ConnectionBanner } from './components/ConnectionBanner.tsx';
 import { type Screen, tvScreen } from './model/screen.ts';
 import { CountdownScreen } from './screens/CountdownScreen.tsx';
 import { ExpiredScreen } from './screens/ExpiredScreen.tsx';
@@ -33,5 +34,10 @@ export function App() {
   const screen = useComputed(() => tvScreen(room.room.value, room.status.value, reveal.stageAt(serverNow.value), serverNow.value));
   useAnyPress(room.pressOk);
   const Current = SCREENS[screen.value];
-  return <Current />;
+  return (
+    <>
+      <Current />
+      <ConnectionBanner loss={room.connectionLoss.value} />
+    </>
+  );
 }

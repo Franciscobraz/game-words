@@ -1,6 +1,7 @@
 import { type CloseReason, createRoomConnection, type ErrorCode, type Phase, RECONNECT_DELAYS_MS, type Settings, tvHello, type WelcomeMessage } from '@bwords/core';
 import { describe, expect, test } from 'vitest';
 import { STRINGS } from '../strings/pt-BR.ts';
+import { GIVE_UP_AFTER_MS, NO_CONNECTION_AFTER_MS, TV_RECONNECT_POLICY } from '../model/reconnect.ts';
 import { fakeClock, fakeLocalStorage, fakeSockets, type FakeSocket } from '../testing/fakes.ts';
 import { type CloseAction, closeAction, createRoomStore, ROOM_RETRY_MS } from './room.ts';
 import { createTokenStore, type SavedRoom } from './token-store.ts';
@@ -49,7 +50,7 @@ function setup(saved: SavedRoom | null, rooms: readonly (SavedRoom | null)[] = [
 
   const store = createRoomStore({
     openConnection: (handlers) =>
-      createRoomConnection({ openSocket: sockets.openSocket, now: clock.now, schedule: clock.schedule, hello: tvHello, ...handlers }),
+      createRoomConnection({ openSocket: sockets.openSocket, now: clock.now, schedule: clock.schedule, hello: tvHello, reconnect: TV_RECONNECT_POLICY, ...handlers }),
     createRoom,
     tokens,
     schedule: clock.schedule,
@@ -284,5 +285,116 @@ describe('when the room ends', () => {
     expect(store.status.value).toBe('closed');
     expect(requests()).toBe(0);
     expect(tokens.load()).toEqual(SAVED_ROOM);
+  });
+});
+
+describe('when the connection drops', () => {
+  /** A store in a running room whose socket just dropped. */
+  async function droppedRoom() {
+    const context = setup(SAVED_ROOM);
+    context.store.open();
+    await settle();
+    context.sockets.last().open();
+    context.sockets.last().receive(welcome(SAVED_ROOM.code, 'round'));
+    context.sockets.last().drop();
+
+    /** Advances time while every new attempt fails at once, as on a dead network. */
+    function advanceFailing(ms: number): void {
+      let remaining = ms;
+      let failed = context.sockets.opened.length;
+      while (remaining > 0) {
+        const step = Math.min(100, remaining);
+        context.clock.advance(step);
+        remaining -= step;
+        for (; failed < context.sockets.opened.length; failed++) context.sockets.opened[failed]?.drop();
+      }
+    }
+
+    return { ...context, advanceFailing };
+  }
+
+  test('shows reconnecting at once and keeps the room', async () => {
+    const { store } = await droppedRoom();
+
+    expect(store.connectionLoss.value).toBe('reconnecting');
+    expect(store.room.value.phase).toBe('round');
+    expect(store.room.value.code).toBe(SAVED_ROOM.code);
+  });
+
+  test('says there is no connection at exactly thirty seconds and keeps trying', async () => {
+    const { sockets, store, advanceFailing } = await droppedRoom();
+    expect(NO_CONNECTION_AFTER_MS).toBe(30_000);
+
+    advanceFailing(NO_CONNECTION_AFTER_MS - 1);
+    expect(store.connectionLoss.value).toBe('reconnecting');
+
+    advanceFailing(1);
+    expect(store.connectionLoss.value).toBe('no-connection');
+    expect(store.status.value).toBe('reconnecting');
+
+    const attempts = sockets.opened.length;
+    advanceFailing(60_000);
+    expect(sockets.opened.length).toBeGreaterThan(attempts);
+    expect(store.connectionLoss.value).toBe('no-connection');
+  });
+
+  test('a socket that opens and drops before the welcome does not end the loss', async () => {
+    const { clock, sockets, store } = await droppedRoom();
+
+    clock.advance(TV_RECONNECT_POLICY.delayMs(0));
+    sockets.last().open();
+    expect(store.connectionLoss.value).toBe('reconnecting');
+    sockets.last().drop();
+    clock.advance(NO_CONNECTION_AFTER_MS - TV_RECONNECT_POLICY.delayMs(0));
+
+    expect(store.connectionLoss.value).toBe('no-connection');
+  });
+
+  test('the welcome ends the loss, whatever stage it reached', async () => {
+    const { clock, sockets, store, advanceFailing } = await droppedRoom();
+    advanceFailing(NO_CONNECTION_AFTER_MS);
+
+    clock.advance(60_000);
+    sockets.last().open();
+    sockets.last().receive(welcome(SAVED_ROOM.code, 'results'));
+
+    expect(store.connectionLoss.value).toBe('none');
+    expect(store.room.value.phase).toBe('results');
+    clock.advance(GIVE_UP_AFTER_MS);
+    expect(store.connectionLoss.value).toBe('none');
+    expect(store.status.value).toBe('open');
+  });
+
+  test('gives up at the limit and a press starts over from the beginning', async () => {
+    const { clock, sockets, store, advanceFailing } = await droppedRoom();
+    advanceFailing(GIVE_UP_AFTER_MS - 1);
+    expect(store.connectionLoss.value).toBe('no-connection');
+
+    advanceFailing(1);
+    expect(store.connectionLoss.value).toBe('gave-up');
+    const attempts = sockets.opened.length;
+    clock.advance(GIVE_UP_AFTER_MS);
+    expect(sockets.opened).toHaveLength(attempts);
+
+    store.pressOk();
+    expect(sockets.opened).toHaveLength(attempts + 1);
+    expect(store.connectionLoss.value).toBe('reconnecting');
+    sockets.last().drop();
+    clock.advance(TV_RECONNECT_POLICY.delayMs(0));
+    expect(sockets.opened).toHaveLength(attempts + 2);
+
+    sockets.last().open();
+    sockets.last().receive(welcome(SAVED_ROOM.code, 'lobby'));
+    expect(store.connectionLoss.value).toBe('none');
+  });
+
+  test('a press does nothing while it is still trying', async () => {
+    const { sockets, store } = await droppedRoom();
+    const attempts = sockets.opened.length;
+
+    store.pressOk();
+
+    expect(sockets.opened).toHaveLength(attempts);
+    expect(store.connectionLoss.value).toBe('reconnecting');
   });
 });
