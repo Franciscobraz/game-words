@@ -97,3 +97,13 @@
   padding: 0;
   list-style: none;
 }
+
+/* The spectator's list has no wins, so the tags go to the right end of the row (phone-spectator.png). */
+.spectator__players .player-row__name {
+  margin-right: auto;
+}
+
+/* Tags that wrap on a narrow screen stay at the right end too. */
+.spectator__players .player-row__who {
+  justify-content: flex-end;
+}
