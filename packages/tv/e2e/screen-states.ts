@@ -6,7 +6,7 @@ import { STRINGS } from '../src/strings/pt-BR.ts';
 import { type CuttableRoom, cuttableRoom } from './cuttable-room.ts';
 import { type FakeRoom, fakeRoom } from './fake-room.ts';
 import { recordSounds } from './record-sounds.ts';
-import { ANA, BETO, CAIO, DUDA, lobbyWelcome, resultPlayers, roundWelcome, SAMPLE_END, SAMPLE_SETTINGS, SAMPLE_START, sampleResults, samplePlayer } from './samples.ts';
+import { ANA, BETO, CAIO, DUDA, lobbyWelcome, resultPlayers, roundWelcome, SAMPLE_BOARD, SAMPLE_END, SAMPLE_SETTINGS, SAMPLE_START, sampleResults, samplePlayer } from './samples.ts';
 
 /**
  * Every screen and state of the TV, opened on a scripted room at a stopped clock, for the checks that cross the screens
@@ -25,8 +25,8 @@ const TICK_MS = 150;
 /** All the tiles of the longest word lit, with room to spare (TVRES-01 AC 5). */
 const LIGHT_ALL_TILES_MS = 3_000;
 
-/** A round far longer than any wait of the connection banner, so the round is still on when the TV gives up. */
-const LONG_ROUND_MS = 2 * GIVE_UP_AFTER_MS;
+/** Ten minutes without the room outlast any round, so a test of the last banner needs a round this long. */
+const LONG_ROUND_END = SAMPLE_START + 2 * GIVE_UP_AFTER_MS;
 
 /** The widest word count a player reaches in a round, as far as the tests go. */
 const MANY_WORDS = 99;
@@ -131,23 +131,23 @@ function openCountdown(players: PlayerInfo[]) {
   };
 }
 
-/** The welcome of a round of the board size `size`, with `LONG_ROUND_MS` to go. */
-function longRound(players: PlayerInfo[], size: Settings['size']): WelcomeMessage {
-  const welcome = roundWelcome(players, players[0]?.id ?? null, boardOfSize(size));
+/** The welcome of a round of the board size `size`, ending at `endsAt`. */
+function roundOfSize(players: PlayerInfo[], size: Settings['size'], endsAt: number): WelcomeMessage {
+  const welcome = roundWelcome(players, players[0]?.id ?? null, size === SAMPLE_SETTINGS.size ? SAMPLE_BOARD : widestBoard(size));
   const round = welcome.round;
   if (round === null) throw new Error('The welcome has no round');
-  return { ...welcome, settings: { ...SAMPLE_SETTINGS, size }, round: { ...round, endsAt: SAMPLE_START + LONG_ROUND_MS } };
+  return { ...welcome, settings: { ...SAMPLE_SETTINGS, size }, round: { ...round, endsAt } };
 }
 
-/** A board of `size` tiles a side, with the widest tile. */
-function boardOfSize(size: Settings['size']): string[][] {
+/** A board of `size` tiles a side, all of them the widest tile. */
+function widestBoard(size: Settings['size']): string[][] {
   return Array.from({ length: size }, () => Array.from({ length: size }, () => 'qu'));
 }
 
-function openRound(players: PlayerInfo[], size: Settings['size'] = 4) {
+function openRound(players: PlayerInfo[], size: Settings['size'] = SAMPLE_SETTINGS.size, endsAt = SAMPLE_END) {
   return async (page: Page, openRoom: OpenRoom = scriptedRoom): Promise<void> => {
     await stopClockAt(page, SAMPLE_START + 16_000);
-    const room = await openRoom(page, longRound(players, size));
+    const room = await openRoom(page, roundOfSize(players, size, endsAt));
     await page.goto('/');
     await showScreen(page, 'round-screen');
     room.push({ type: 'counts', counts: players.map(({ id }) => ({ playerId: id, count: MANY_WORDS })) });
@@ -270,13 +270,13 @@ export function wordStates(players: PlayerInfo[]): ScreenState[] {
 function bannerStates(): ScreenState[] {
   const players = [ANA, BETO, { ...CAIO, connected: true }];
   const results = sampleResults();
-  const screens: { name: string; open: OpenScreen }[] = [
-    { name: 'lobby', open: openLobby(players, ANA.id) },
-    { name: 'round', open: openRound(players) },
-    { name: 'result', open: openResult(players, { ...results, players: [], shared: [] }) },
-  ];
   const states: ScreenState[] = [];
   for (const state of ['reconnecting', 'no-connection', 'gave-up'] as const) {
+    const screens: { name: string; open: OpenScreen }[] = [
+      { name: 'lobby', open: openLobby(players, ANA.id) },
+      { name: 'round', open: openRound(players, SAMPLE_SETTINGS.size, state === 'gave-up' ? LONG_ROUND_END : SAMPLE_END) },
+      { name: 'result', open: openResult(players, { ...results, players: [], shared: [] }) },
+    ];
     for (const screen of screens) states.push({ name: `${state} over the ${screen.name}`, open: withBanner(screen.open, state) });
   }
   states.push({ name: 'reconnecting over the countdown', open: withBanner(openCountdown(players), 'reconnecting') });
@@ -314,6 +314,7 @@ export const SCREEN_STATES: readonly ScreenState[] = [
   { name: 'words with no word found', open: openWords([ANA, BETO], noWords(sampleResults())) },
   { name: 'words of the capture', open: openWords([ANA, BETO, { ...CAIO, connected: true }], sampleResults()) },
   { name: 'result of the capture', open: openResult(resultPlayers(), sampleResults()) },
+  { name: 'last result of the capture', open: openResult(resultPlayers(), { ...sampleResults(), index: SAMPLE_SETTINGS.rounds - 1, last: true }) },
   { name: 'result of a tie', open: openResult(tiedStandings(), resultsOf(tiedStandings(), { last: true })) },
   { name: 'result of a board with no longest word', open: openResult([ANA, BETO], { ...resultsOf([ANA, BETO]), longest: null }) },
   { name: 'expired room', open: openClosed('idle', 'expired-screen') },

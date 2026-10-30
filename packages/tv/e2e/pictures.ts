@@ -12,3 +12,8 @@ export function pictureWindow(scale: 1 | 2): { viewport: { width: number; height
 export function picturePath(capture: string): string {
   return join(captures, `${capture}.running.png`);
 }
+
+/** Where the picture of a screen with no capture goes, for the user to judge. */
+export function uncapturedPath(name: string): string {
+  return join(captures, 'uncaptured', `${name}.png`);
+}
