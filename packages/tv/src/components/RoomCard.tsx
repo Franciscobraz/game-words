@@ -10,7 +10,7 @@ export interface RoomCardProps {
   /** The small QR of the game's screens; the lobby has its own large one (tv-round.png). */
   matrix: QrMatrix | null;
   /** The lobby's card is large and the code sits beside the label; in the game it sits under it (tv-lobby.png, tv-round.png). */
-  size: 'large' | 'medium' | 'small';
+  size: 'large' | 'medium' | 'small' | 'result';
 }
 
 /** The card with the room's code at the top of the screen. */

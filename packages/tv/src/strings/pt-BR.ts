@@ -64,6 +64,15 @@ export const STRINGS = {
   winnerTitle: (nickname: string) => `${nickname} venceu!`,
   tieTitle: 'Empate!',
   waitingToAdvance: (nickname: string) => `Aguardando ${nickname} avançar…`,
+  matchStandings: 'Classificação da Partida',
+  afterRound: (round: number) => `Após Rodada ${round}`,
+  place: (place: number) => `${place}º`,
+  disconnectedNote: '(desconectado)',
+  pointsUnit: (points: number) => (points === 1 ? 'pt' : 'pts'),
+  longestWordLabel: 'A maior palavra do tabuleiro',
+  foundLongest: (nicknames: readonly string[]) =>
+    nicknames.length === 1 ? `${nicknames[0]} encontrou!` : `${nicknames.slice(0, -1).join(', ')} e ${nicknames[nicknames.length - 1]} encontraram!`,
+  nobodyFoundLongest: 'Ninguém encontrou',
   waitingAfterMatch: (nickname: string) => `Aguardando ${nickname}: jogar de novo ou voltar ao lobby`,
 
   // End of the room (TVEXIT-01)

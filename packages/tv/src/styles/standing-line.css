@@ -1,0 +1,62 @@
+/* A player from the fourth place on (TVRES-01 AC 3-4, tv-round-result.png). */
+.standing-line {
+  display: flex;
+  align-items: center;
+  width: 28.625rem;
+  height: 4.125rem;
+  margin-bottom: 0.875rem;
+  padding: 0 1.25rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container);
+}
+
+.standing-line:nth-child(odd) {
+  margin-right: 1.5rem;
+}
+
+.standing-line__place {
+  flex: none;
+  width: 2.625rem;
+  color: var(--color-text-muted);
+  font-size: 1.375rem;
+  font-weight: var(--font-weight-black);
+}
+
+.standing-line__identity {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: baseline;
+  min-width: 0;
+  margin: 0 0.5rem 0 0.875rem;
+}
+
+.standing-line__name {
+  margin-right: 0.5rem;
+  color: var(--color-text-strong);
+  font-size: 1.625rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.1;
+}
+
+.standing-line__note {
+  color: var(--color-text-muted);
+  font-size: 1.125rem;
+  font-style: italic;
+  line-height: 1.1;
+}
+
+.standing-line__points {
+  flex: none;
+  color: var(--color-text-strong);
+  font-size: 1.75rem;
+  font-weight: var(--font-weight-black);
+}
+
+.standing-line__unit {
+  flex: none;
+  margin-left: 0.5rem;
+  color: var(--color-text-muted);
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+}

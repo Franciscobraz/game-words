@@ -108,3 +108,19 @@ export function sampleResults(): RoundResultsMessage {
     last: false,
   };
 }
+
+/** The ten players of tv-round-result.png, with its scores; it draws Beto in a lighter blue and Caio disconnected. */
+export function resultPlayers(): PlayerInfo[] {
+  return [
+    { ...ANA, score: 34 },
+    { ...BETO, color: '#7DD3FC', score: 25 },
+    { ...CAIO, score: 16 },
+    { ...DUDA, spectator: false, score: 14 },
+    samplePlayer('p5', 'Lucas', '#F97316', { score: 11 }),
+    samplePlayer('p6', 'Mariana', '#A855F7', { score: 9 }),
+    samplePlayer('p7', 'Pedro', '#F43F5E', { score: 7 }),
+    samplePlayer('p8', 'Camila', '#06B6D4', { score: 5 }),
+    samplePlayer('p9', 'Rafael', '#84CC16', { score: 3 }),
+    samplePlayer('p10', 'Bia', '#3B82F6', { score: 1 }),
+  ];
+}

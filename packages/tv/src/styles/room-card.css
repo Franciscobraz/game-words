@@ -60,22 +60,26 @@
   margin-left: 1.5rem;
 }
 
-.room-card--small {
+.room-card--small,
+.room-card--result {
   padding: 0.75rem 1.25rem;
   border-radius: var(--radius-lg);
 }
 
-.room-card--small .room-card__text {
+.room-card--small .room-card__text,
+.room-card--result .room-card__text {
   flex-direction: column;
   align-items: flex-end;
 }
 
-.room-card--small .room-card__label {
+.room-card--small .room-card__label,
+.room-card--result .room-card__label {
   font-size: 0.875rem;
   letter-spacing: 0.06em;
 }
 
-.room-card--small .room-card__code {
+.room-card--small .room-card__code,
+.room-card--result .room-card__code {
   color: var(--color-action);
   font-size: 2rem;
   letter-spacing: 0.04em;
@@ -89,4 +93,10 @@
   padding: 0.25rem;
   border-radius: var(--radius-default);
   background: var(--color-text-strong);
+}
+
+/* Larger than the round's: a phone reads this one (C77), and the user accepted the size. */
+.room-card--result .room-card__qr {
+  width: 5rem;
+  height: 5rem;
 }

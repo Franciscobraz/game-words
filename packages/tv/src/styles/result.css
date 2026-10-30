@@ -1,0 +1,134 @@
+/* The result (TVRES-01, tv-round-result.png). Everything in rem: the root scales the whole screen (AD-016). */
+.result {
+  padding: 4.875rem 6rem 0;
+}
+
+.result__header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  height: 4.875rem;
+  margin-bottom: 1.75rem;
+}
+
+.result__header-end {
+  display: flex;
+  align-items: center;
+}
+
+.result__title {
+  margin: 0 2rem 0 0;
+  color: var(--color-text-strong);
+  font-size: 1.875rem;
+  font-weight: var(--font-weight-extrabold);
+  line-height: 1;
+}
+
+.result__title-prefix {
+  color: var(--color-text-muted);
+}
+
+.result__title-separator {
+  margin: 0 0.75rem;
+}
+
+.result__body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.result__left {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  width: 43.625rem;
+  margin-right: 2.875rem;
+}
+
+.result__board-panel {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  border-radius: 2rem;
+  background: var(--color-surface-container-low);
+}
+
+.result__board {
+  --board-side: 25.5rem;
+  width: 26.875rem;
+  height: 26.875rem;
+  padding: 0.6875rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container-lowest);
+}
+
+.result__right {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.result__standings-title {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  height: 2.625rem;
+  margin-bottom: 0.9375rem;
+}
+
+.result__standings-heading {
+  margin: 0;
+  color: var(--color-text-strong);
+  font-size: 1.875rem;
+  font-weight: var(--font-weight-black);
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.result__standings-round {
+  color: var(--color-text-muted);
+  font-size: 1.375rem;
+  font-weight: var(--font-weight-semibold);
+}
+
+.result__cards {
+  display: flex;
+  flex: none;
+}
+
+.result__rest {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  min-height: 0;
+  margin-top: 0.75rem;
+  padding: 1.375rem;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container-low);
+}
+
+.result__footer {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  height: 5.875rem;
+  color: var(--color-on-surface);
+  font-size: 1.625rem;
+  font-weight: var(--font-weight-bold);
+}
+
+.result__footer-dot {
+  width: 0.875rem;
+  height: 0.875rem;
+  margin-right: 1rem;
+  border-radius: var(--radius-full);
+  background: var(--color-action);
+}

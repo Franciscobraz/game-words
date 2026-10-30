@@ -1,0 +1,62 @@
+/* The winner's confetti (TVRES-01 AC 9): only transform and opacity move (TVUI-01 AC 3). It fills the card, which clips it. */
+.confetti {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  pointer-events: none;
+}
+
+.confetti__piece {
+  position: absolute;
+  top: -0.875rem;
+  width: 0.5rem;
+  height: 0.75rem;
+  border-radius: 0.125rem;
+  opacity: 0;
+  animation: confetti-fall 3.6s linear infinite;
+}
+
+.confetti__piece--tone1 {
+  background: var(--color-action);
+}
+
+.confetti__piece--tone2 {
+  background: var(--color-secondary-container);
+}
+
+.confetti__piece--tone3 {
+  background: var(--color-tertiary);
+}
+
+.confetti__piece--tone4 {
+  background: var(--color-crown);
+}
+
+.confetti__piece--tone5 {
+  background: var(--color-brand-guava);
+}
+
+@keyframes confetti-fall {
+  0% {
+    opacity: 0;
+    transform: translateY(0) rotate(0deg);
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    /* In piece heights: past the foot of the card. */
+    transform: translateY(1600%) rotate(540deg);
+  }
+}

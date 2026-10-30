@@ -56,7 +56,7 @@ function wordRow(group: 'shared' | 'unique', { word, finderIds }: FoundWord, ind
 }
 
 /** Upper case without accents (TVWORDS-01 AC 5). */
-function displayWord(word: string): string {
+export function displayWord(word: string): string {
   const withoutAccents = word.normalize('NFD').replace(/\p{Mark}/gu, '');
   return withoutAccents.toUpperCase();
 }
