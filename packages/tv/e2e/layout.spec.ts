@@ -14,17 +14,14 @@ test('loads nothing from another origin', async ({ page }) => {
   page.on('request', (request) => requests.push(request.url()));
 
   await page.goto('/');
-  await page.evaluate(() => document.fonts.ready);
+  await expect(page.getByTestId('lobby-screen')).toBeVisible();
 
+  // Asking for the face directly: a browser only fetches a font once some text on the screen uses it.
+  const facesLoaded = await page.evaluate(async () => (await document.fonts.load('700 16px "Nunito Sans"', 'BWords')).length);
+  const fontFamily = await page.evaluate(() => getComputedStyle(document.body).fontFamily);
   const origin = new URL(page.url()).origin;
-  const loadedFamilies = await page.evaluate(() => {
-    const families: string[] = [];
-    document.fonts.forEach((font) => {
-      if (font.status === 'loaded') families.push(font.family);
-    });
-    return families;
-  });
-  expect(loadedFamilies.join()).toContain('Nunito Sans');
+  expect(facesLoaded).toBeGreaterThan(0);
+  expect(fontFamily).toContain('Nunito Sans');
   expect(requests.filter((url) => /\.woff2?(\?|$)/.test(url)).length).toBeGreaterThan(0);
   expect(requests.filter((url) => !url.startsWith('data:') && new URL(url).origin !== origin)).toEqual([]);
 });

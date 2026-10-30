@@ -375,9 +375,9 @@ T33 → T34 → T35 → T36 → T37
 
 **Done when**:
 
-- [ ] Um caso por tela
-- [ ] Gate check passes
-- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+- [x] Um caso por tela
+- [x] Gate check passes
+- [x] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: unit
 **Gate**: quick
