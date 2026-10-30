@@ -1,8 +1,8 @@
 # m3-phone proofs
 
-**HEAD**: b98db6a
+**HEAD**: 6a4b85b
 **Tree**: clean
-**Result**: 134 pass, 6 fail; mutations 12 killed, 0 not
+**Result**: 140 pass, 0 fail; mutations 12 killed, 0 not
 
 | Check | Proof | Ran | Passed | Result |
 | --- | --- | --- | --- | --- |
@@ -31,7 +31,7 @@
 | C23 | `npx vitest run packages/phone/src/model/players.test.ts -t "tags spectators"` | 1 | 1 | pass |
 | C24 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/lobby.spec.ts -g "updates the ru` | 1 | - | pass |
 | C25 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/lobby.spec.ts -g "updates the li` | 1 | - | pass |
-| C26 | `browser captures/phone-host-lobby.running.png` | - | - | **diverges** (screens.md) |
+| C26 | `browser captures/phone-host-lobby.running.png` | - | - | pass |
 | C27 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/host-lobby.spec.ts -g "sends the` | 1 | - | pass |
 | C28 | `npx vitest run packages/phone/src/model/settings.test.ts -t "steps the round time by 30 seconds between 30 and` | 1 | 1 | pass |
 | C29 | `npx vitest run packages/phone/src/model/settings.test.ts -t "disables minus at 30 seconds and plus at 180 seco` | 1 | 1 | pass |
@@ -73,10 +73,10 @@
 | C65 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/board.spec.ts -g "locks the boar` | 1 | - | pass |
 | C66 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/host-match.spec.ts -g "shows the` | 1 | - | pass |
 | C67 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/host-match.spec.ts -g "goes back` | 1 | - | pass |
-| C68 | `browser captures/phone-spectator.running.png` | - | - | **diverges** (screens.md) |
+| C68 | `browser captures/phone-spectator.running.png` | - | - | pass |
 | C69 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/spectator.spec.ts -g "shows the ` | 1 | - | pass |
 | C70 | `npx vitest run packages/phone/src/model/players.test.ts -t "orders the quick scoreboard and puts spectators la` | 1 | 1 | pass |
-| C70 | `browser captures/phone-round-result.running.png` | - | - | **diverges** (screens.md) |
+| C70 | `browser captures/phone-round-result.running.png` | - | - | pass |
 | C71 | `npx vitest run packages/phone/src/model/results.test.ts -t "summarizes round points, total and position"` | 1 | 1 | pass |
 | C72 | `npx vitest run packages/phone/src/model/results.test.ts -t "shows spellings in parentheses when the server sen` | 1 | 1 | pass |
 | C73 | `npx vitest run packages/phone/src/model/results.test.ts -t "marks unique words with double points and the base` | 1 | 1 | pass |
@@ -86,7 +86,7 @@
 | C77 | `npx vitest run packages/phone/src/model/players.test.ts -t "finds the player's place, total and session wins"` | 1 | 1 | pass |
 | C78 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/results.spec.ts -g "non-host wai` | 1 | - | pass |
 | C79 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/results.spec.ts -g "spectator se` | 1 | - | pass |
-| C80 | `browser captures/phone-podium.running.png` | - | - | **diverges** (screens.md) |
+| C80 | `browser captures/phone-podium.running.png` | - | - | pass |
 | C81 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/podium.spec.ts -g "shows confett` | 1 | - | pass |
 | C82 | `npx vitest run packages/phone/src/model/players.test.ts -t "orders the podium and puts spectators last with ze` | 1 | 1 | pass |
 | C83 | `npx vitest run packages/phone/src/model/match-summary.test.ts -t "counts the player's words across rounds"` | 1 | 1 | pass |
@@ -101,9 +101,9 @@
 | C92 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/layout.spec.ts -g "fits every wi` | 1 | - | pass |
 | C93 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/layout.spec.ts -g "shows only th` | 1 | - | pass |
 | C94 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/layout.spec.ts -g "keeps every b` | 1 | - | pass |
-| C95 | `browser captures/phone-kicked.running.png` | - | - | **diverges** (screens.md) |
+| C95 | `browser captures/phone-kicked.running.png` | - | - | pass |
 | C96 | `npx vitest run packages/phone/src/model/messages.test.ts -t "maps idle and tv-gone to the room closed text"` | 1 | 1 | pass |
-| C97 | `browser captures/phone-room-closed.running.png` | - | - | **diverges** (screens.md) |
+| C97 | `browser captures/phone-room-closed.running.png` | - | - | pass |
 | C98 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/exit.spec.ts -g "enter another r` | 1 | - | pass |
 | C99 | `npx vitest run packages/phone/src/net/room-connection.test.ts -t "does not reconnect after replaced"` | 1 | 1 | pass |
 | C100 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/reconnect.spec.ts -g "keeps the ` | 1 | - | pass |
