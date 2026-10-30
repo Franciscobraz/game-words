@@ -2,11 +2,14 @@
 .longest-word {
   display: flex;
   flex: none;
+  flex-wrap: wrap;
+  align-content: center;
   align-items: center;
   justify-content: space-between;
-  height: 9.375rem;
+  /* Grows over the board's free space when many long nicknames found the word (Edge Cases). */
+  min-height: 9.375rem;
   margin-top: 1.625rem;
-  padding: 0 1.5rem;
+  padding: 0.5rem 1.5rem;
   border-left: 0.5rem solid var(--color-action);
   border-radius: var(--radius-xl);
   background: var(--color-surface-container-low);
@@ -47,8 +50,8 @@
 
 .longest-word__finders {
   flex: none;
-  max-width: 50%;
-  margin-left: 1rem;
+  max-width: calc(100% - 1rem);
+  margin: 0.25rem 0 0.25rem 1rem;
   padding: 1rem 1.5rem;
   border: 0.0625rem solid var(--color-on-primary-fixed-variant);
   border-radius: var(--radius-md);

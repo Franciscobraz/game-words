@@ -6,7 +6,7 @@
   flex-direction: column;
   justify-content: space-between;
   width: 19.625rem;
-  height: 9.8125rem;
+  min-height: 9.8125rem;
   margin-right: 1.25rem;
   padding: 1.25rem 1.25rem 1.25rem;
   border-top: 0.5rem solid;
@@ -32,11 +32,14 @@
 }
 
 .podium-card__name {
+  min-width: 0;
   margin-right: 0.625rem;
   color: var(--color-text-strong);
   font-size: 2rem;
   font-weight: var(--font-weight-extrabold);
   line-height: 1.2;
+  /* A wide nickname of 12 letters breaks instead of leaving the card, which grows with its row (Edge Cases). */
+  overflow-wrap: anywhere;
 }
 
 .podium-card__crown {
