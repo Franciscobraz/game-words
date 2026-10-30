@@ -1273,7 +1273,7 @@ Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phon
 **C67** - "Voltar ao lobby" mostra "Cancelar a rodada? O placar será zerado." e só manda `back-to-lobby` depois de confirmar (HOSTPLAY-01, AC 2)
 Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/host-match.spec.ts -g "goes back to the lobby only after the confirmation"`
 
-**C68** - O espectador vê a tela de `phone-spectator.png`, com o tabuleiro sem reagir ao toque (SPEC-01, AC 1)
+**C68** - O espectador vê a tela de `phone-spectator.png` (SPEC-01, AC 1)
 Proof: browser captures/phone-spectator.running.png
 
 **C69** - O espectador vê o timer com a barra e "JOGADORES NA SALA" sem contagem de palavras (SPEC-01, AC 2)
@@ -1357,13 +1357,13 @@ Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phon
 **C94** - Todo botão tem pelo menos 48 px de altura (UI-01, AC 7)
 Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/layout.spec.ts -g "keeps every button at least 48 px tall"`
 
-**C95** - `kicked` apaga o token e mostra a tela de `phone-kicked.png` (EXIT-01, AC 1)
+**C95** - `kicked` mostra a tela de `phone-kicked.png` (EXIT-01, AC 1)
 Proof: browser captures/phone-kicked.running.png
 
 **C96** - `idle` e `tv-gone` levam ao texto "A sala foi encerrada" (EXIT-01, AC 3)
 Proof: `npx vitest run packages/phone/src/model/messages.test.ts -t "maps idle and tv-gone to the room closed text"`
 
-**C97** - `closed-by-host` apaga o token e mostra a tela de `phone-room-closed.png`, com o nome do anfitrião (EXIT-01, AC 2)
+**C97** - `closed-by-host` mostra a tela de `phone-room-closed.png`, com o nome do anfitrião (EXIT-01, AC 2)
 Proof: browser captures/phone-room-closed.running.png
 
 **C98** - "ENTRAR EM OUTRA SALA" abre a tela de digitar o código (EXIT-01, AC 5)
@@ -1455,6 +1455,15 @@ Proof: `npx vitest run packages/phone/src/state/round.test.ts -t "shows already 
 
 **C127** - Cada veredito tem a cor de `phone-feedbacks.png` pelo seu token (VÁLIDA `--color-valid`, JÁ ENCONTRADA `--color-already-found`, INVÁLIDA `--color-invalid`, MUITO CURTA `--color-too-short`) e só a palavra inválida treme (PLAY-01, AC 6-10)
 Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/board.spec.ts -g "colors each verdict and shakes an invalid word"`
+
+**C128** - `kicked` apaga o token da sala no storage (EXIT-01, AC 1)
+Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/exit.spec.ts -g "shows the kicked screen and forgets the token"`
+
+**C129** - `closed-by-host` apaga o token da sala no storage (EXIT-01, AC 2)
+Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/exit.spec.ts -g "shows who closed the room and forgets the token"`
+
+**C130** - O tabuleiro do espectador não reage ao toque (SPEC-01, AC 1)
+Proof: `npx vitest run packages/phone/src/model/board-lock.test.ts -t "locks the board for a spectator and for a phone that has not joined"`
 
 ---
 
