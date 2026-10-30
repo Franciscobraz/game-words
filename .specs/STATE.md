@@ -164,11 +164,28 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 ## Handoff
 
 - **Data:** 2026-10-30
-- **Marcos concluídos:** M0, M1, M2 e M3 (`m3-phone`, Done, verificados).
-- **Fechamento do M3:** T47 `128bb09` (lista do espectador cabe em 390x884, SPEC-01 AC 4, C135) e T48 `9736ad1` (a grafia real não quebra no meio a 320 px, UI-01 AC 12, C136). O "Placar rápido" sob os botões `sticky` de `phone-round-result` fica como está, por decisão do user: os botões continuam à vista e o placar aparece ao rolar. `check_proofs.py --mutations` em 9736ad1: 142 pass, 0 fail, 12 mutações mortas. `validate_verification.py` deu exit 0 em 9736ad1, com o `proofs.md` ainda fora do commit. Lições L-011 a L-015 registradas.
-- **Gate e `proofs.md`:** o gate compara o HEAD de `proofs.md` com o HEAD atual. A ordem é rodar `check_proofs.py`, rodar o gate e só então commitar `proofs.md`. Depois desse commit de docs o gate acusa outro HEAD; isso é esperado e não é regressão.
-- **Próximo passo:** M4 (`.specs/features/m4-tv/`) em Execute: 37 tarefas, um subagente por batch, com parada entre eles. O estado vivo está em `tasks.md` `## Handoff`.
-- **Branch:** `main`. `origin/main` está em `c4746d1`. Push só com pedido.
-- **Modo de execução preferido pelo usuário:** subagentes, uma fase por vez, parando para mostrar o resultado e perguntar antes da próxima fase.
-- **Teste manual:** o user testou o M3 só no navegador do computador (`npm run debug` como TV em 5174, `npm run dev -w @bwords/phone` em 5175, o segundo celular em janela anônima porque o token fica no `localStorage`). Teste no celular de verdade e produção ficam para depois do M4; não preparar HTTPS na rede local antes disso.
+- **Marcos concluídos:** M0, M1, M2 e M3 (Done, verificados).
+- **Marco em andamento:** M4 (`m4-tv`), no fechamento de Execute (implement.md, passo 10). Spec, design e tarefas aprovados. As 37 tarefas estão commitadas, até `4ff0278`; o walk está em `7ddb1bb`, e as provas em `c07a9da`. O histórico detalhado está em `.specs/features/m4-tv/tasks.md` `## Handoff`, e as aprovações feitas em nome do user, em `auto-approved.md`.
+- **Parado em:** o sub-agente de telas foi interrompido a pedido do user, antes de escrever `screens.md`. Ele não deixou nada na árvore, que está limpa. O `**Dispatched:**` de `tasks.md` cita o envio: ele não voltou, então deve ser enviado de novo.
+- **Próximo passo, nesta ordem:**
+  1. Sub-agente de telas, round 1, com `verify-screens.md` (captures `tv-lobby`, `tv-round`, `tv-words`, `tv-round-result`), sem o resto do Handoff.
+  2. Depois dele, o Verifier, com `validate.md`, um de cada vez, porque as mutações mudam a árvore em que o app roda.
+  3. Corrigir os achados numa passada, `check_proofs.py --mutations`, round 2 só nas linhas `differs`.
+  4. Mostrar ao user as 12 fotos e as decisões abaixo. Rodar `check_proofs.py` por último e o gate antes de commitar `proofs.md`.
+  5. Lições. O push e o deploy só com pedido do user.
+- **Pendente do user:**
+  1. Aprovar as 12 fotos de `.specs/features/m4-tv/captures/uncaptured/` (C105). O `check_proofs.py` mostra C105 como pass por causa do `**Walked:**`, mas isso não é aprovação.
+  2. Bug existente em `packages/core/src/client/room-connection.ts`: um socket que abre e cai antes do `welcome` deixa um prazo órfão, que derruba uma conexão saudável (30 s no celular, 10 min na TV). Correção proposta: `cancelOffline ??= schedule(...)`. Muda o celular nesse caso.
+  3. A pasta `C:\c\`, fora do repositório, criada por um spec temporário, com 3 PNGs: a remoção foi bloqueada, e ela continua lá.
+  4. A faixa de conexão cobre a borda de cima do cartão do código na rodada: aceitar ou ajustar?
+  5. `workers: 4` também no config do celular, que tem o mesmo risco?
+  6. "O primeiro a entrar vira anfitrião(ã)" tem "O primeiro" no masculino (TVLOBBY-01 AC 10 contra AD-013).
+  7. `docs/DESIGN.md` ainda cita `wrangler.toml`, e o arquivo é `wrangler.jsonc`.
+  8. Ouvir os sons e ver a rolagem rodando: ninguém ouviu nem viu ainda.
+  9. Observação do walk: recarregar a TV na rolagem passa por outras telas por cerca de 100 ms; pode ser um flash de um quadro.
+- **Instabilidade em aberto:** a suíte de E2E da TV falhou uma vez em 4 execuções (`toBeVisible`, teste não identificado). Com 8 workers o Vite recusava módulos no Windows, por isso o `workers: 4`. Conferir as portas 8787, 9229, 5175 e 5176 livres antes de rodar E2E.
+- **Depois do M4:** o deploy só com pedido, sem nada além da Cloudflare (`npm run assets:build` e `npx wrangler deploy -c packages/server/wrangler.jsonc`, nunca executado de ponta a ponta). A conta não tem Workers; o `wrangler deploy` cria o `bwords`. O user vai escolher um subdomínio `workers.dev` sem dados pessoais. Depois vêm o teste em TV e celular reais, inclusive o QR de longe, e o M5, com a lista de palavrões vazia.
+- **Branch:** `main`. `origin/main` está em `c4746d1`; todo o M4 ainda não foi enviado. Push só com pedido.
+- **Modo de execução preferido pelo usuário:** subagentes, um batch por vez, parando para mostrar o resultado e perguntar antes do próximo.
+- **Teste manual:** `npm run assets:build`, depois `npm run dev -w @bwords/server`; TV em `http://localhost:8787/tv`, celular em `http://localhost:8787/<CÓDIGO>`.
 - **Ambiente Windows:** os scripts da skill precisam de `PYTHONUTF8=1`; `check_proofs.py` também precisa de `PYTHONPATH` apontando para uma pasta com um `sitecustomize.py` que mapeia `signal.SIGHUP` para `SIGTERM` e resolve launchers `.cmd` (como o `npx`) via `shutil.which`. Recriar no scratchpad da sessão se sumir.
