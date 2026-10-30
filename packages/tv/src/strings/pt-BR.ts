@@ -8,6 +8,21 @@ export const STRINGS = {
   // Opening the room (TVROOM-01)
   roomOpenFailed: 'Não foi possível abrir a sala',
 
+  // Lobby (TVLOBBY-01)
+  playerCount: (count: number, max: number) => `${count} / ${max}`,
+  firstJoinerHosts: 'O primeiro a entrar vira anfitrião(ã)',
+  waitingForHost: (nickname: string) => `Aguardando ${nickname} iniciar a partida…`,
+
+  // Settings chips (TVLOBBY-01 AC 8)
+  gridChip: (size: number) => `Grade ${size}x${size}`,
+  timeChip: (time: string) => `Tempo ${time}`,
+  minutes: (minutes: number) => `${minutes} min`,
+  roundsChip: (rounds: number) => (rounds === 1 ? '1 rodada' : `${rounds} rodadas`),
+  minLengthChip: (letters: number) => `Mín. ${letters} letras`,
+  profanityFiltered: 'Palavrões filtrados',
+  profanityAllowed: 'Palavrões liberados',
+  packNames: { 'pt-BR': 'Português (BR)' },
+
   // End of the room (TVEXIT-01)
   roomExpired: 'Sala expirada',
   roomClosed: 'A sala foi encerrada',

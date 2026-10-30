@@ -2,6 +2,8 @@
 
 **Approved**: 2026-10-30 - user: "Aprovo o spec"
 
+**Amended**: 2026-10-30 - TVEXIT-01 AC 6, 8 e 9: espera progressiva e limite de tentativas; user: "no t30 bote um limite para tentaivas para que a tv nao fique tentando muito tempo, pode ter um tempo progressivo de espera a cada tentativa"
+
 **Amended**: 2026-10-30 - TVAUDIO-01 AC 6: som de apito em "Tempo!"; user: "nessa etapa podemos ter um som de apito na tv ou de despertador sintetico"
 
 ## Problem Statement
@@ -57,6 +59,7 @@ O celular já joga uma partida inteira, mas a TV ainda é a página de debug: n�
 | Som da revelação | Um efeito ao começar a rolagem, não um por palavra | Com muitas palavras, um por palavra cansa | y - user: "Aprovo o spec" |
 | Som de "Tempo!" | Apito, no lugar do despertador | O user aceitou os dois; o apito é curto e combina com o fim de jogo | y - user: "nessa etapa podemos ter um som de apito na tv ou de despertador sintetico" |
 | Efeito nos últimos 10 s | Um efeito ao chegar a 10 s | DESIGN §4.4 | y - user: "Aprovo o spec" |
+| Limite de reconexão | Espera dobrando até 60 s e parada em 10 min, depois "OK" para tentar de novo | 10 min é o padrão de `TV_DISCONNECT_TIMEOUT_MIN`: depois disso a sala já expirou | y - user: "no t30 bote um limite para tentaivas para que a tv nao fique tentando muito tempo, pode ter um tempo progressivo de espera a cada tentativa" |
 | Sem conexão | Depois de 30 s sem reconectar, a faixa vira "Sem conexão", e a TV continua tentando | Mesmo prazo do celular; a TV não tem botão | y - user: "Aprovo o spec" |
 | Sala não criada | Sem conseguir criar sala, a TV mostra "Não foi possível abrir a sala" e tenta de novo a cada 5 s | A TV não tem botão | y - user: "Aprovo o spec" |
 | Poucos jogadores na rodada | As linhas ficam na coluna da esquerda até 5 jogadores; do 6º em diante vão para a direita | Mantém a tela da capture | y - user: "Aprovo o spec" |
@@ -200,8 +203,11 @@ O celular já joga uma partida inteira, mas a TV ainda é a página de debug: n�
 3. WHEN alguém aperta qualquer tecla ou clica na tela "Sala expirada" THEN a TV SHALL abrir uma sala nova
 4. WHEN a mesma sala é aberta em outra aba THEN a TV SHALL mostrar "A TV foi aberta em outra aba" e não reconectar
 5. WHILE a conexão está caída, the TV SHALL manter a tela atual, com a faixa "Reconectando…", e tentar reconectar
-6. IF a reconexão não acontece em 30 s THEN a TV SHALL trocar a faixa por "Sem conexão" e continuar tentando
+6. IF a reconexão não acontece em 30 s THEN a TV SHALL trocar a faixa por "Sem conexão" e continuar tentando, até o limite do AC 9
 7. WHEN a conexão volta THEN a TV SHALL tirar a faixa e mostrar o estado atual da sala
+8. WHILE tenta reconectar, the TV SHALL esperar 0,5 s, 1 s, 2 s, 4 s, 8 s, 16 s, 32 s e depois 60 s entre as tentativas
+9. IF a reconexão não acontece em 10 min THEN a TV SHALL parar de tentar e mostrar "Sem conexão" e "Aperte OK no controle para tentar de novo"
+10. WHEN alguém aperta uma tecla ou clica depois do limite THEN a TV SHALL recomeçar as tentativas do início
 
 **Independent Test**: Cortar o socket da TV durante a rodada e conferir a faixa e a volta ao estado atual.
 
@@ -339,7 +345,7 @@ O celular já joga uma partida inteira, mas a TV ainda é a página de debug: n�
 | TVPLAY-01 | P1: Contagem e rodada (AC 1-11) | Design | Pending |
 | TVWORDS-01 | P1: Palavras da rodada (AC 1-11) | Design | Pending |
 | TVRES-01 | P1: Resultado (AC 1-12) | Design | Pending |
-| TVEXIT-01 | P1: Fim da sala e conexão (AC 1-7) | Design | Pending |
+| TVEXIT-01 | P1: Fim da sala e conexão (AC 1-10) | Design | Pending |
 | PROTO-02 | P1: Resultado no protocolo e no servidor (AC 1-7) | Design | Implementing |
 | PHONE-01 | P1: Celular com o fluxo novo (AC 1-4) | Design | Implementing |
 | FAST-01 | P1: Sem fast mode (AC 1-4) | Design | Pending |

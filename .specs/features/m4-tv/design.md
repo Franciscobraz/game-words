@@ -217,6 +217,7 @@ Constantes de regra, em `model/reveal.ts`: `TIME_UP_MS = 2_000`, `WORDS_PER_SECO
 | Token recusado (`bad-token`) ou `room-not-found` | Apaga o token e cria sala | Lobby de uma sala nova |
 | Socket cai | `RECONNECT_DELAYS_MS`, como no celular | Faixa "Reconectando…"; o timer segue |
 | 30 s sem reconectar | Continua tentando | Faixa "Sem conexão" |
+| 10 min sem reconectar | Para de tentar; `reconnect.ts`: 0,5 s, 1 s, 2 s, 4 s, 8 s, 16 s, 32 s, depois 60 s; sem mudar o celular | "Sem conexão" e "Aperte OK no controle para tentar de novo"; tecla ou clique recomeçam |
 | `closed` com `closed-by-host` | Apaga o token e cria sala | Lobby de uma sala nova |
 | `closed` com `idle` ou `tv-gone` | Apaga o token e espera tecla ou clique | "Sala expirada" |
 | `closed` com `replaced` | Para de reconectar | "A TV foi aberta em outra aba" |

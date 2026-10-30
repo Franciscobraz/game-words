@@ -11,6 +11,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 **Design**: `.specs/features/m4-tv/design.md`
 **Status**: In Progress
 **Approved**: 2026-10-30 - user: "Aprovo as tasks"
+**Amended**: 2026-10-30 - T30 e C106-C108: espera progressiva e limite de tentativas; user: "no t30 bote um limite para tentaivas para que a tv nao fique tentando muito tempo, pode ter um tempo progressivo de espera a cada tentativa"
 **Mutations**: 3
 **Build**: `npx tsc -b; npm run lint -w @bwords/phone; npm run lint -w @bwords/tv; npx vitest run; npx playwright test; npx playwright test -c packages/phone/playwright.config.ts; npx playwright test -c packages/tv/playwright.config.ts`
 
@@ -395,9 +396,9 @@ T33 → T34 → T35 → T36 → T37
 
 **Done when**:
 
-- [ ] C27-C31
-- [ ] Gate check passes
-- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+- [x] C27-C31
+- [x] Gate check passes
+- [x] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: unit
 **Gate**: quick
@@ -727,7 +728,7 @@ T33 → T34 → T35 → T36 → T37
 
 ### T30: Connection banner
 
-**What**: `ConnectionBanner`: "Reconectando…", "Sem conexão" e a volta.
+**What**: `ConnectionBanner`: "Reconectando…", "Sem conexão" e a volta, com espera progressiva e limite de 10 min (`model/reconnect.ts`).
 **Where**: `packages/tv/src/components/ConnectionBanner.tsx` (create)
 **Depends on**: T29
 **Reuses**: `ConnectionStatus`
@@ -735,7 +736,7 @@ T33 → T34 → T35 → T36 → T37
 
 **Done when**:
 
-- [ ] C84-C86
+- [ ] C84-C86, C106-C108
 - [ ] Gate check passes
 - [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
@@ -1202,8 +1203,17 @@ Proof: `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/
 Proof: `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/full-match.spec.ts -g "plays a whole match through the worker"`
 
 **C105** - As fotos de lobby vazio, contagem, Tempo!, reconectando, sem conexão, sala expirada e outra aba foram aprovadas pelo user (TVUI-01, AC 7)
-Proof: walk - cada foto de `captures/uncaptured/` mostrada ao user, com a resposta dele em `**Settled mid-build:**`; defaults da fase 1 aceitos (pódio do celular abre com `results.last`, `foundBy` em ordem de entrada, limpeza do que só o fast mode usava, debug sem as palavras da última rodada) e histórico mantido com os commits intermediários vermelhos; user: "Aceito, seguir" (resposta à pergunta "Aceita os defaults da fase 1 e sigo para as fases 2 e 3?")
+Proof: walk - cada foto de `captures/uncaptured/` mostrada ao user, com a resposta dele em `**Settled mid-build:**`; defaults da fase 1 aceitos (pódio do celular abre com `results.last`, `foundBy` em ordem de entrada, limpeza do que só o fast mode usava, debug sem as palavras da última rodada) e histórico mantido com os commits intermediários vermelhos; user: "Aceito, seguir" (resposta à pergunta "Aceita os defaults da fase 1 e sigo para as fases 2 e 3?"); defaults das fases 2 e 3 aceitos (`/kbxt` em minúsculas, tela `open-failed`, token em `bwords.tv.room`, `assets:build` só gera o pacote se faltar, `/assets/` só com nomes simples, `open-room.spec.ts` a mais); user: "Aceito, seguir" (resposta à pergunta "Aceita os defaults e sigo para as fases 4 e 5 (lobby e rodada)?")
 
+
+**C106** - A espera entre tentativas é 0,5 s, 1 s, 2 s, 4 s, 8 s, 16 s, 32 s e depois sempre 60 s (TVEXIT-01, AC 8)
+Proof: `npx vitest run packages/tv/src/model/reconnect.test.ts -t "waits longer after each attempt up to one minute"`
+
+**C107** - Com 10 min sem reconectar a TV para de tentar, e com 9 min 59 s ainda tenta (TVEXIT-01, AC 9)
+Proof: `npx vitest run packages/tv/src/model/reconnect.test.ts -t "stops trying after ten minutes"`
+
+**C108** - Depois do limite, a tela pede "OK", e uma tecla recomeça as tentativas (TVEXIT-01, AC 9, 10)
+Proof: `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/connection.spec.ts -g "tries again after giving up"`
 
 ---
 
@@ -1212,7 +1222,7 @@ Proof: walk - cada foto de `captures/uncaptured/` mostrada ao user, com a respos
 The feature's live state, written as it happens - a compaction gives no warning.
 
 **Settled mid-build:** execução com subagentes, um batch por vez, com parada entre eles (preferência do user no M3, repetida na apresentação das tarefas); user: "Aprovo as tasks"
-**Dispatched:** batch worker fase 1 (T1-T6) a partir de 5440218 - returned (T1 0fda5dc, T2 7c15cd2, T3 6d72757, T4 dc71406, T5 07f7142, T6 59539e6; vitest 749, phone e2e 79, tsc e lint verdes, conferidos pelo orquestrador em 59539e6). Nos commits intermediários, o gate quick deixou tsc vermelho em 6d72757 e o full-match do celular vermelho de 7c15cd2 até 07f7142; a partir da fase 2, todo commit passa pelo gate do CLAUDE.md. Defaults a confirmar: com `results.last` o celular já escolhe `podium`, com o pódio vazio por um instante; `foundBy` em ordem de entrada na sala; saíram `BoltIcon`, a prop `hint` do `Toggle` e `.toggle__hint`; `HashFrame` subiu para o core; `tools/debug` não mostra as palavras da última rodada. Para a T11: `createRoomConnection` precisa de uma opção para `hello` com `role: tv`, e `bad-token` chega como `error` antes do fechamento do socket; batch worker fases 2 e 3 (T7-T12) a partir de 59539e6 + este registro
+**Dispatched:** batch worker fase 1 (T1-T6) a partir de 5440218 - returned (T1 0fda5dc, T2 7c15cd2, T3 6d72757, T4 dc71406, T5 07f7142, T6 59539e6; vitest 749, phone e2e 79, tsc e lint verdes, conferidos pelo orquestrador em 59539e6). Nos commits intermediários, o gate quick deixou tsc vermelho em 6d72757 e o full-match do celular vermelho de 7c15cd2 até 07f7142; a partir da fase 2, todo commit passa pelo gate do CLAUDE.md. Defaults a confirmar: com `results.last` o celular já escolhe `podium`, com o pódio vazio por um instante; `foundBy` em ordem de entrada na sala; saíram `BoltIcon`, a prop `hint` do `Toggle` e `.toggle__hint`; `HashFrame` subiu para o core; `tools/debug` não mostra as palavras da última rodada. Para a T11: `createRoomConnection` precisa de uma opção para `hello` com `role: tv`, e `bad-token` chega como `error` antes do fechamento do socket; batch worker fases 2 e 3 (T7-T12) a partir de 59539e6 + este registro - returned (T7 44b5499, T8 6d8c749, T9 b51c62d, T10 13a54cb, T11 ce44dd1, T12 3880fd0; vitest 846, tv e2e 5, phone e2e 79, play e2e 10, tsc e lint verdes, conferidos pelo orquestrador em 3880fd0 pelo exit code). O binding responde 307 em `/tv/index.html`, então `clientAsset` devolve as pastas `/tv/` e `/phone/`. Defaults a confirmar: `/kbxt` em minúsculas abre o celular; `/assets/` aceita só nomes simples; `assets:build` gera o pacote só se faltar; token em `bwords.tv.room`; tela `open-failed` nova; `e2e/open-room.spec.ts` a mais. Para a T30: `goOffline` para de tentar, e TVEXIT-01 AC 6 pede continuar. E2E: conferir as portas 8787 e 9229 livres antes de rodar; batch worker fases 4 e 5 (T13-T20) a partir de 3880fd0 + este registro
 **Walked:** none
 
 ---
