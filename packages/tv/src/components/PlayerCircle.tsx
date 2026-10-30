@@ -6,8 +6,8 @@ export interface PlayerCircleProps {
   nickname: string;
   /** The player's color, from the data (style guide §5.1). */
   color: string;
-  /** The lobby draws a rounded square, the game a circle (tv-lobby.png, tv-round.png). */
-  shape: 'square' | 'circle';
+  /** The lobby draws a rounded square, the round a circle, and the lists a small circle (tv-lobby.png, tv-round.png, tv-words.png). */
+  shape: 'square' | 'circle' | 'small-circle';
 }
 
 /** The player's mark in their color with the initial of the nickname, in place of a photo (AD-004). */

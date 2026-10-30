@@ -596,9 +596,9 @@ T33 → T34 → T35 → T36 → T37
 
 **Done when**:
 
-- [ ] C59-C64
-- [ ] Gate check passes
-- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+- [x] C59-C64
+- [x] Gate check passes
+- [x] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: e2e
 **Gate**: full

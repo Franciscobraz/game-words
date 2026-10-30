@@ -1,0 +1,33 @@
+/* The list that moves, clipped by its panel: nothing else on the page scrolls (TVWORDS-01 AC 2, 6, TVUI-01 AC 1). */
+.word-scroll {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* The padding keeps the first and the last line clear of the fades when the list stops. */
+.word-scroll__list {
+  padding: 5rem 0 5.5rem;
+  transition-property: transform;
+  transition-timing-function: linear;
+}
+
+.word-scroll__fade {
+  position: absolute;
+  right: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.word-scroll__fade--top {
+  top: 0;
+  height: 5rem;
+  background: linear-gradient(var(--color-background) 15%, transparent);
+}
+
+.word-scroll__fade--bottom {
+  bottom: 0;
+  height: 5.5rem;
+  background: linear-gradient(transparent, var(--color-background) 65%);
+}

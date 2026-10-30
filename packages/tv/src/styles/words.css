@@ -1,0 +1,91 @@
+/* The words of the round (TVWORDS-01, tv-words.png). Everything in rem: the root scales the whole screen (AD-016). */
+.words {
+  padding: 3.9375rem 6rem 2.5rem;
+}
+
+.words__header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  height: 5.375rem;
+  margin-bottom: 2.0625rem;
+}
+
+.words__header-end {
+  display: flex;
+  align-items: center;
+}
+
+.words__page {
+  margin: 0 2.5rem 0 0;
+  color: var(--color-text-strong);
+  font-size: 1.875rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+}
+
+.words__page-label,
+.words__page-separator {
+  color: var(--color-on-surface-variant);
+}
+
+.words__page-separator {
+  margin: 0 0.5rem;
+}
+
+.words__column {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-self: center;
+  width: 65rem;
+  min-height: 0;
+}
+
+.words__totals {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  height: 4rem;
+  padding: 0 2rem;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-low);
+}
+
+.words__total {
+  display: flex;
+  align-items: center;
+  color: var(--color-on-surface-variant);
+  font-size: 1.375rem;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+}
+
+.words__count {
+  margin-right: 0.75rem;
+  font-size: 3rem;
+  font-weight: var(--font-weight-black);
+  line-height: 1;
+}
+
+.words__count--possible {
+  color: var(--color-action);
+}
+
+.words__count--found {
+  color: var(--color-brand-sky);
+}
+
+.words__empty {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  color: var(--color-on-surface-variant);
+  font-size: 3rem;
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+}

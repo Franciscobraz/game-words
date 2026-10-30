@@ -1,4 +1,4 @@
-import type { PlayerInfo, Settings, WelcomeMessage } from '@bwords/core';
+import type { PlayerInfo, ResultWord, RoundResultsMessage, Settings, SharedWord, WelcomeMessage } from '@bwords/core';
 
 /** The sample data of the captures: room KBXT, host Ana, and the board C A S A / Qu E R O / T I N S / L U A M. */
 
@@ -65,5 +65,46 @@ export function roundWelcome(players: PlayerInfo[], hostId: string | null, board
     ...lobbyWelcome(players, hostId),
     phase: 'round',
     round: { id: 1, index: 0, board, startsAt: SAMPLE_START, endsAt: SAMPLE_END },
+  };
+}
+
+/** A shared word of the capture, found by two players. */
+function shared(word: string, points: number, finders: readonly PlayerInfo[]): SharedWord {
+  return { word, points, foundBy: finders.map(({ id }) => id) };
+}
+
+/** The unique words the capture gives each player, with the doubled points. */
+const SAMPLE_UNIQUE: Record<string, ResultWord[]> = {
+  [ANA.id]: [
+    { word: 'seria', points: 6, spellings: ['seria', 'séria'] },
+    { word: 'ternos', points: 8 },
+    { word: 'trinos', points: 8 },
+  ],
+  [BETO.id]: [
+    { word: 'nua', points: 2 },
+    { word: 'rins', points: 4 },
+  ],
+  [CAIO.id]: [{ word: 'tia', points: 2 }],
+};
+
+/** The results the capture's word list shows: 13 words, 142 possible, and the longest word TERNOS. */
+export function sampleResults(): RoundResultsMessage {
+  return {
+    type: 'round-results',
+    index: 0,
+    shared: [
+      shared('asa', 1, [ANA, BETO]),
+      shared('era', 1, [ANA, BETO]),
+      shared('rio', 1, [BETO, CAIO]),
+      shared('ser', 1, [ANA, BETO]),
+      shared('casa', 2, [ANA, BETO]),
+      shared('cera', 2, [ANA, CAIO]),
+      shared('quero', 3, [ANA, BETO]),
+    ],
+    players: Object.entries(SAMPLE_UNIQUE).map(([playerId, unique]) => ({ playerId, unique, roundPoints: 0, score: 0 })),
+    // T(8) E(5) R(6) N(10) O(7) S(11), row-major on the sample board.
+    longest: { word: 'ternos', points: 4, path: [8, 5, 6, 10, 7, 11], foundBy: [ANA.id] },
+    possibleWords: 142,
+    last: false,
   };
 }

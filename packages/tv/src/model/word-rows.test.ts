@@ -79,8 +79,8 @@ describe('wordRows', () => {
 
     const [, shared, , unique] = wordRows(results, PLAYERS);
 
-    expect(shared).toEqual({ kind: 'word', word: 'SERIA', spellings: ['seria', 'séria'], finders: [ANA, CAIO], points: 3, striped: true });
-    expect(unique).toEqual({ kind: 'word', word: 'RINS', spellings: [], finders: [BETO], points: 4, striped: true });
+    expect(shared).toEqual({ kind: 'word', group: 'shared', word: 'SERIA', spellings: ['seria', 'séria'], finders: [ANA, CAIO], points: 3, striped: true });
+    expect(unique).toEqual({ kind: 'word', group: 'unique', word: 'RINS', spellings: [], finders: [BETO], points: 4, striped: true });
   });
 
   test('writes a word in upper case without accents', () => {

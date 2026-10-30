@@ -22,3 +22,10 @@
   border-radius: var(--radius-full);
   font-size: 2rem;
 }
+
+.player-circle--small-circle {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-full);
+  font-size: 1.25rem;
+}

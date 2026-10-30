@@ -47,6 +47,18 @@ export const STRINGS = {
   board: 'Tabuleiro da rodada',
   timeUp: 'Tempo!',
 
+  // Words of the round (TVWORDS-01)
+  wordsPageLabel: 'Palavras',
+  roundLabel: (round: number, rounds: number) => `Rodada ${round} de ${rounds}`,
+  possibleWords: (count: number) => (count === 1 ? 'palavra possível' : 'palavras possíveis'),
+  foundWords: (count: number) => (count === 1 ? 'palavra encontrada' : 'palavras encontradas'),
+  sharedWordsTitle: 'Palavras em comum',
+  uniqueWordsTitle: 'Palavras Únicas',
+  doublePoints: 'PONTOS EM DOBRO',
+  noWordsFound: 'Nenhuma palavra encontrada',
+  spellings: (spellings: readonly string[]) => `(${spellings.join(', ')})`,
+  wordPoints: (points: number) => `+${points}`,
+
   // End of the room (TVEXIT-01)
   roomExpired: 'Sala expirada',
   roomClosed: 'A sala foi encerrada',

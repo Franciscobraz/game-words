@@ -5,6 +5,7 @@ export type WordRow =
   | { kind: 'title'; group: 'shared' | 'unique' }
   | {
       kind: 'word';
+      group: 'shared' | 'unique';
       /** In upper case, without accents. */
       word: string;
       /** The real spellings, as the dictionary has them; empty when the word has none to show. */
@@ -35,16 +36,17 @@ export function wordRows(results: RoundResultsMessage, players: readonly PlayerI
 function groupRows(group: 'shared' | 'unique', words: readonly FoundWord[], players: readonly PlayerInfo[]): WordRow[] {
   if (words.length === 0) return [];
   const ordered = [...words].sort((a, b) => compareWords(a.word.word, b.word.word));
-  return [{ kind: 'title', group }, ...ordered.map((found, index) => wordRow(found, index, players))];
+  return [{ kind: 'title', group }, ...ordered.map((found, index) => wordRow(group, found, index, players))];
 }
 
 function compareWords(a: string, b: string): number {
   return a.length - b.length || a.localeCompare(b);
 }
 
-function wordRow({ word, finderIds }: FoundWord, index: number, players: readonly PlayerInfo[]): WordRow {
+function wordRow(group: 'shared' | 'unique', { word, finderIds }: FoundWord, index: number, players: readonly PlayerInfo[]): WordRow {
   return {
     kind: 'word',
+    group,
     word: displayWord(word.word),
     spellings: word.spellings ?? [],
     finders: finderIds.flatMap((id) => players.find((player) => player.id === id) ?? []),
