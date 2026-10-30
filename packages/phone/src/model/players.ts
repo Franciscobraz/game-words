@@ -1,4 +1,4 @@
-import { crownedPlayers, type PlayerInfo, type PodiumEntry } from '@bwords/core';
+import { crownedPlayers, placesOf, type PlayerInfo, type PodiumEntry } from '@bwords/core';
 
 /** A label next to a nickname (LOBBY-01 AC 3-5, AD-013). */
 export type PlayerTag = 'host' | 'you' | 'disconnected' | 'spectator';
@@ -171,11 +171,6 @@ function crownedIds(players: readonly PlayerInfo[]): Set<string> {
 /** Players first, spectators after, each group in its original order. */
 function spectatorsLast(players: readonly PlayerInfo[]): PlayerInfo[] {
   return [...players.filter((p) => !p.spectator), ...players.filter((p) => p.spectator)];
-}
-
-/** Places of scores sorted from the highest: 1 + how many scored more, so a tie shares the place. */
-function placesOf(sortedScores: readonly number[]): number[] {
-  return sortedScores.map((score) => 1 + sortedScores.filter((other) => other > score).length);
 }
 
 function scoreFields(player: PlayerInfo): Pick<ScoreRow, 'id' | 'nickname' | 'color'> {

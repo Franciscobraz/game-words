@@ -1,3 +1,4 @@
+import { createRoomConnection } from '@bwords/core';
 import { render } from 'preact';
 import '@fontsource/nunito-sans/400.css';
 import '@fontsource/nunito-sans/700.css';
@@ -12,7 +13,6 @@ import { canVibrate, vibrate } from './device/vibration.ts';
 import { browserWakeLock, onPageVisible } from './device/wake-lock.ts';
 import { parseRoomPath } from './model/room-code.ts';
 import { browserSchedule, browserSocket } from './net/browser.ts';
-import { createRoomConnection } from './net/room-connection.ts';
 import { createPhoneStore, StoreContext } from './state/store.ts';
 
 /** Mounts the phone app over the real socket, clock, storage and device (UI-01, PREF-01). */

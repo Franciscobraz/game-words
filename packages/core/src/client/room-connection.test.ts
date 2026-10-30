@@ -1,8 +1,7 @@
-import { encodeHashFrame, type ServerMessage } from '@bwords/core';
 import { describe, expect, test } from 'vitest';
-import type { HashFrame } from '../model/room-view.ts';
-import { fakeClock, fakeSockets } from '../testing/fakes.ts';
-import { type ConnectionStatus, createRoomConnection } from './room-connection.ts';
+import { encodeHashFrame, type ServerMessage } from '../room/protocol.ts';
+import { type ConnectionStatus, createRoomConnection, type HashFrame } from './room-connection.ts';
+import { fakeClock, fakeSockets } from './test-helpers.ts';
 
 /** A connection wired to a fake clock and fake sockets, recording what it reports. */
 function setup() {
@@ -35,6 +34,29 @@ function setup() {
 
   return { clock, sockets, messages, frames, connection, status, advanceFailing };
 }
+
+describe('without a hash listener', () => {
+  test('drops the hash frame and keeps delivering messages', () => {
+    // The TV never gets hashes, so it opens the connection without `onHashes`.
+    const clock = fakeClock(1_000_000);
+    const sockets = fakeSockets();
+    const messages: ServerMessage[] = [];
+    const connection = createRoomConnection({
+      openSocket: sockets.openSocket,
+      now: clock.now,
+      schedule: clock.schedule,
+      onMessage: (msg) => messages.push(msg),
+      onStatus: () => {},
+    });
+    connection.connect('KBXT', null);
+    sockets.last().open();
+
+    sockets.last().receiveBinary(encodeHashFrame(7, new Uint8Array(6)));
+    sockets.last().receive({ type: 'players', players: [], hostId: null });
+
+    expect(messages).toEqual([{ type: 'players', players: [], hostId: null }]);
+  });
+});
 
 describe('opening', () => {
   test('says hello with the saved token and asks the time three times', () => {

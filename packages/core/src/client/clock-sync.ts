@@ -1,13 +1,13 @@
-/** Answers to `time` the phone asks for when a connection opens (COUNT-01 AC 3). */
+/** Answers to `time` the client asks for when a connection opens (COUNT-01 AC 3). */
 export const CLOCK_SYNC_SAMPLES = 3;
 
-/** One `time` answer: the phone's send time, echoed back, and the server's time. */
+/** One `time` answer: the client's send time, echoed back, and the server's time. */
 export interface TimeAnswer {
   clientTime: number;
   serverTime: number;
 }
 
-/** The best estimate so far of how far the server clock is ahead of the phone's. */
+/** The best estimate so far of how far the server clock is ahead of the client's. */
 export interface ClockSample {
   /** Server time minus local time, in ms. */
   offsetMs: number;

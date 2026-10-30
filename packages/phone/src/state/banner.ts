@@ -1,6 +1,6 @@
+import type { Schedule } from '@bwords/core';
 import { effect, type ReadonlySignal, signal } from '@preact/signals';
 import { type Banner, type BannerEvent, nextBanner } from '../model/connection-banner.ts';
-import type { Schedule } from '../net/room-connection.ts';
 import type { RoomStore } from './room.ts';
 
 /** How long the green "Conectado" stays after the room is back (RECON-01 AC 3). */

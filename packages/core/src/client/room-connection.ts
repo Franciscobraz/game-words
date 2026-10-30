@@ -1,6 +1,11 @@
-import { type ClientMessage, decodeHashFrame, type ServerMessage } from '@bwords/core';
-import type { HashFrame } from '../model/room-view.ts';
+import { type ClientMessage, decodeHashFrame, type ServerMessage } from '../room/protocol.ts';
 import { addTimeSample, CLOCK_SYNC_SAMPLES, type ClockSample, serverNow } from './clock-sync.ts';
+
+/** The binary frame of a round's hash prefixes, as `decodeHashFrame` returns it. */
+export interface HashFrame {
+  roundId: number;
+  prefixes: Uint8Array;
+}
 
 /** Where the connection stands, for the reconnect banner and the screens (RECON-01). */
 export type ConnectionStatus = 'connecting' | 'open' | 'reconnecting' | 'offline' | 'closed';
@@ -8,7 +13,7 @@ export type ConnectionStatus = 'connecting' | 'open' | 'reconnecting' | 'offline
 /** Waits before each reconnect attempt: 0.5 s, 1 s, 2 s, then 4 s (RECON-01 AC 1). */
 export const RECONNECT_DELAYS_MS = [500, 1_000, 2_000, 4_000] as const;
 
-/** Time without a successful reconnect before the phone gives up and shows "Sem conexão" (RECON-01 AC 4). */
+/** Time without a successful reconnect before the client gives up and shows "Sem conexão" (RECON-01 AC 4). */
 export const OFFLINE_AFTER_MS = 30_000;
 
 /** What a socket reports back to the connection. */
@@ -39,13 +44,14 @@ export interface ConnectionOptions {
   now: () => number;
   schedule: Schedule;
   onMessage(msg: ServerMessage): void;
-  onHashes(frame: HashFrame): void;
+  /** Only phones get the round's hashes; the TV leaves it out (design: core client). */
+  onHashes?(frame: HashFrame): void;
   onStatus(status: ConnectionStatus): void;
 }
 
 /** One room connection: `hello`, reconnection, clock sync and message delivery (RECON-01, EXIT-01, COUNT-01). */
 export interface RoomConnection {
-  /** Opens the room `code`, saying `hello` with `token` when the phone has one (ENTRY-01 AC 6). */
+  /** Opens the room `code`, saying `hello` with `token` when the client has one (ENTRY-01 AC 6). */
   connect(code: string, token: string | null): void;
   /** Sends a message when the socket is open; drops it otherwise, since the screens lock while reconnecting. */
   send(msg: ClientMessage): void;
@@ -124,7 +130,7 @@ export function createRoomConnection(options: ConnectionOptions): RoomConnection
     if (typeof data !== 'string') {
       // A frame that does not decode is not the round's hashes; the next welcome resends them.
       const frame = decodeHashFrame(data);
-      if (frame !== null) options.onHashes(frame);
+      if (frame !== null) options.onHashes?.(frame);
       return;
     }
     const msg = JSON.parse(data) as ServerMessage;

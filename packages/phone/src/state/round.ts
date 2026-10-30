@@ -1,4 +1,4 @@
-import { MIN_WORD_LENGTH, type ServerMessage, type SubmitResult } from '@bwords/core';
+import { MIN_WORD_LENGTH, type Schedule, type ServerMessage, type SubmitResult } from '@bwords/core';
 import { effect, type Signal, signal } from '@preact/signals';
 import { isBoardOpen } from '../model/board-lock.ts';
 import { addFound, reconcileFound } from '../model/found.ts';
@@ -6,7 +6,6 @@ import { type Feedback, type JudgeContext, judgeWord } from '../model/judge.ts';
 import { extendPath, type Path, wordOfPath } from '../model/path.ts';
 import type { RoomView } from '../model/room-view.ts';
 import { type QueuedWord, recentSends, stillUnsent, submitDelay, takeBatch, windowFreesIn } from '../model/submit-queue.ts';
-import type { Schedule } from '../net/room-connection.ts';
 import type { RoomStore } from './room.ts';
 
 /** How long the feedback of a word stays on screen (PLAY-01 AC 11). */

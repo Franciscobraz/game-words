@@ -1,5 +1,4 @@
-import type { ClientMessage, ServerMessage } from '@bwords/core';
-import type { OpenSocket, RoomConnection, Schedule, SocketEvents } from '../net/room-connection.ts';
+import type { ClientMessage, RoomConnection, Schedule, ServerMessage } from '@bwords/core';
 import type { ConnectionHandlers, KeyValueStorage, OpenConnection } from '../state/room.ts';
 
 /**
@@ -45,50 +44,6 @@ export function fakeClock(start = 0): FakeClock {
         due[1].run();
       }
       time = until;
-    },
-  };
-}
-
-/** One socket the connection opened, driven by the test. */
-export interface FakeSocket {
-  path: string;
-  sent: ClientMessage[];
-  closedByClient: boolean;
-  open(): void;
-  receive(msg: ServerMessage): void;
-  receiveBinary(data: ArrayBuffer): void;
-  /** The network drops the socket. */
-  drop(): void;
-}
-
-/** A socket factory that records every socket it opens. */
-export function fakeSockets(): { openSocket: OpenSocket; opened: FakeSocket[]; last(): FakeSocket } {
-  const opened: FakeSocket[] = [];
-  const openSocket: OpenSocket = (path: string, events: SocketEvents) => {
-    const socket: FakeSocket = {
-      path,
-      sent: [],
-      closedByClient: false,
-      open: () => events.onOpen(),
-      receive: (msg) => events.onMessage(JSON.stringify(msg)),
-      receiveBinary: (data) => events.onMessage(data),
-      drop: () => events.onClose(),
-    };
-    opened.push(socket);
-    return {
-      send: (text) => socket.sent.push(JSON.parse(text) as ClientMessage),
-      close: () => {
-        socket.closedByClient = true;
-      },
-    };
-  };
-  return {
-    openSocket,
-    opened,
-    last() {
-      const socket = opened.at(-1);
-      if (!socket) throw new Error('No socket was opened');
-      return socket;
     },
   };
 }

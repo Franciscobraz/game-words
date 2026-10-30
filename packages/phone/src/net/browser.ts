@@ -1,4 +1,4 @@
-import type { OpenSocket, Schedule } from './room-connection.ts';
+import type { OpenSocket, Schedule } from '@bwords/core';
 
 /**
  * The browser side of `RoomConnection`: a real WebSocket on the page's own origin,

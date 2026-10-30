@@ -1,7 +1,15 @@
-import { type ClientMessage, cleanNickname, type CloseReason, type ServerMessage, type Settings } from '@bwords/core';
+import {
+  type ClientMessage,
+  cleanNickname,
+  type CloseReason,
+  type ConnectionStatus,
+  type HashFrame,
+  type RoomConnection,
+  type ServerMessage,
+  type Settings,
+} from '@bwords/core';
 import { type Signal, signal } from '@preact/signals';
-import { applyHashFrame, applyServerMessage, type HashFrame, INITIAL_VIEW, type RoomView } from '../model/room-view.ts';
-import type { ConnectionStatus, RoomConnection } from '../net/room-connection.ts';
+import { applyHashFrame, applyServerMessage, INITIAL_VIEW, type RoomView } from '../model/room-view.ts';
 
 /** The part of `localStorage` the store uses; the browser one may throw, the device adapter hides that. */
 export interface KeyValueStorage {

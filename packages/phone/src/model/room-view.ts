@@ -2,6 +2,7 @@ import {
   type CloseReason,
   type ErrorCode,
   HASH_PREFIX_BYTES,
+  type HashFrame,
   type Phase,
   type PlayerInfo,
   type PodiumEntry,
@@ -41,12 +42,6 @@ export interface RoomView {
   podium: PodiumEntry[] | null;
   joinError: ErrorCode | null;
   closeReason: CloseReason | null;
-}
-
-/** The binary frame of a round's hash prefixes, as `decodeHashFrame` returns it. */
-export interface HashFrame {
-  roundId: number;
-  prefixes: Uint8Array;
 }
 
 /** The view before the first `welcome`. */

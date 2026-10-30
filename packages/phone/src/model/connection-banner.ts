@@ -1,4 +1,4 @@
-import type { ConnectionStatus } from '../net/room-connection.ts';
+import type { ConnectionStatus } from '@bwords/core';
 
 /** The thin strip under the top bar about the connection (RECON-01); null when there is none. */
 export type Banner = 'reconnecting' | 'connected' | 'offline' | null;

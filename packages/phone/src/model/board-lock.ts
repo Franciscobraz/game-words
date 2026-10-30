@@ -1,4 +1,4 @@
-import type { ConnectionStatus } from '../net/room-connection.ts';
+import type { ConnectionStatus } from '@bwords/core';
 import type { RoomView } from './room-view.ts';
 
 /**
