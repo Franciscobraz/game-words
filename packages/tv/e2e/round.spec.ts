@@ -9,9 +9,6 @@ const TICK_MS = 150;
 /** How long "Tempo!" stays on the screen (TVPLAY-01 AC 10). */
 const TIME_UP_MS = 2_000;
 
-/** The results come 1 ms before the limit, and the screen reads the clock on its next tick; only the test allows for this. */
-const TIME_UP_TOLERANCE_MS = 1 + TICK_MS;
-
 /** Opens the TV with the clock stopped at `at`, in the round that starts at `SAMPLE_START`. */
 async function openRound(page: Page, at: number, welcome = roundWelcome([ANA, BETO, CAIO], ANA.id)) {
   await page.clock.install({ time: at });
@@ -111,13 +108,9 @@ test('marks the end of the round for two seconds', async ({ page }) => {
   await expect(page.getByTestId('time-up')).toHaveText('Tempo!');
   await expect(board).toHaveCSS('opacity', '0.25');
 
-  // Still there just before the two seconds; the results then take the screen (T21 keeps the same limit).
-  await page.clock.runFor(TIME_UP_MS - TICK_MS - 1);
-  await expect(page.getByTestId('time-up')).toBeVisible();
-  await expect(page.getByTestId('round-clock')).toHaveText('0:00');
-
+  // The exact limit is proven by the unit test of `revealStage` (C50); here, the results take the screen after it.
   room.push({ type: 'round-results', index: 0, shared: [], players: [], longest: null, possibleWords: 0, last: false });
-  await page.clock.runFor(TIME_UP_TOLERANCE_MS);
+  await page.clock.runFor(TIME_UP_MS);
 
   await expect(page.getByTestId('round-screen')).toHaveCount(0);
 });
