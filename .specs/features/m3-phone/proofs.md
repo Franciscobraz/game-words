@@ -1,6 +1,6 @@
 # m3-phone proofs
 
-**HEAD**: 6a4b85b
+**HEAD**: 553ed14
 **Tree**: clean
 **Result**: 140 pass, 0 fail; mutations 12 killed, 0 not
 
