@@ -4,6 +4,13 @@
   padding-bottom: 0;
 }
 
+/* A divider under the top bar runs edge to edge, as in the capture. */
+.host-lobby > .top-bar {
+  margin: 0 calc(-1 * var(--space-margin));
+  padding: 0 var(--space-margin) var(--space-sm);
+  border-bottom: 1px solid var(--color-card-stroke);
+}
+
 .host-lobby__badge {
   display: flex;
   align-items: center;
