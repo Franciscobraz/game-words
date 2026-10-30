@@ -11,5 +11,7 @@ import { PICTURE_WIDTH } from './e2e/fake-room.ts';
 export default defineConfig({
   ...base,
   testMatch: '**/*.picture.ts',
+  // Playwright empties its output folder on each run; a folder of its own keeps the pictures of other widths.
+  outputDir: 'test-results/picture-runs',
   use: { ...base.use, viewport: { width: PICTURE_WIDTH, height: 884 }, deviceScaleFactor: 2 },
 });
