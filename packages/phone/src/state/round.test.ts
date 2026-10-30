@@ -157,6 +157,22 @@ describe('feedback', () => {
     expect(foundWords()).toEqual(['casa']);
   });
 
+  test('shows already found for a second swipe of a word released before the first one was judged', async () => {
+    // PLAY-01 AC 8: both releases hash at the same time; the later verdict sees the word already listed.
+    const { clock, round, submits, foundWords } = await setup();
+
+    for (const tile of CASA) round.extendPathTo(tile);
+    const firstRelease = round.releasePath();
+    for (const tile of CASA) round.extendPathTo(tile);
+    const secondRelease = round.releasePath();
+    await Promise.all([firstRelease, secondRelease]);
+
+    expect(round.feedback.value).toEqual({ kind: 'already-found', word: 'casa' });
+    expect(foundWords()).toEqual(['casa']);
+    clock.advance(500);
+    expect(submits()).toEqual([{ type: 'submit', paths: [CASA] }]);
+  });
+
   test('shows too short and queues nothing below the minimum', async () => {
     // PLAY-01 AC 10.
     const { clock, round, swipe, submits } = await setup();

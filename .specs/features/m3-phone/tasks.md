@@ -1450,6 +1450,9 @@ Proof: `npx vitest run packages/phone/src/strings/pt-BR.test.ts -t "says rounds 
 **C118** - As telas sem capture foram fotografadas a 390 px e mostradas ao user (UI-01)
 Proof: walk - cada foto em `captures/uncaptured/` com a resposta do user em `## Handoff`
 
+**C126** - Dois deslizes de CASA soltos antes de o primeiro ser julgado dão "JÁ ENCONTRADA" no segundo, CASA uma vez na lista e um só `submit` (PLAY-01, AC 8)
+Proof: `npx vitest run packages/phone/src/state/round.test.ts -t "shows already found for a second swipe of a word released before the first one was judged"`
+
 ---
 
 ## Handoff
