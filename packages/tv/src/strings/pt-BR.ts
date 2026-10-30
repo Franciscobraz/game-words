@@ -86,6 +86,11 @@ export const STRINGS = {
   noConnection: 'Sem conexão',
   pressOkToRetry: 'Aperte OK no controle para tentar de novo',
 
+  // Sound (TVAUDIO-01 AC 3)
+  soundNoticeBefore: 'Aperte',
+  soundNoticeKey: 'OK',
+  soundNoticeAfter: 'no controle para liberar o som',
+
   // Codes the TV does not expect (style guide §8)
   unexpectedError: 'Algo deu errado',
 } as const;

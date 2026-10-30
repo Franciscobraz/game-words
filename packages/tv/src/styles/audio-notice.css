@@ -1,0 +1,32 @@
+/* The notice in the lobby's header while the browser blocks the sound (TVAUDIO-01 AC 3, tv-lobby.png). */
+.audio-notice {
+  display: flex;
+  flex: none;
+  align-items: center;
+  height: 4.25rem;
+  margin: 0;
+  padding: 0 2rem 0 1.25rem;
+  border: 0.0625rem solid var(--color-card-stroke);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container-low);
+  color: var(--color-on-surface);
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-semibold);
+}
+
+.audio-notice__icon {
+  display: flex;
+  margin-right: 1.25rem;
+  color: var(--color-action);
+  font-size: 1.75rem;
+}
+
+.audio-notice__key {
+  margin: 0 0.5rem;
+  padding: 0.125rem 0.75rem;
+  border: 0.0625rem solid var(--color-card-stroke);
+  border-radius: var(--radius-default);
+  background: var(--color-surface-container-highest);
+  color: var(--color-text-strong);
+  font-weight: var(--font-weight-black);
+}

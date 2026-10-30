@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 import { STRINGS } from '../src/strings/pt-BR.ts';
 import { fakeRoom } from './fake-room.ts';
 import { readQr } from './read-qr.ts';
+import { recordSounds } from './record-sounds.ts';
 import { ANA, BETO, CAIO, DUDA, lobbyWelcome, SAMPLE_CODE, SAMPLE_SETTINGS } from './samples.ts';
 
 /** The two ends of the TV's screens (AD-016). */
@@ -130,4 +131,39 @@ test('fits the lobby with ten players from 720p to 1080p', async ({ page }) => {
     expect(overflow, `${screen.width}x${screen.height}`).toEqual({ vertical: 0, horizontal: 0, panel: [0, 0] });
     expect(await page.evaluate(() => document.querySelector('.lobby__footer')!.getBoundingClientRect().bottom <= innerHeight)).toBe(true);
   }
+});
+
+test('asks to unlock the sound', async ({ page }) => {
+  // TVAUDIO-01 AC 3-4: the notice shows only while the browser blocks the sound, and the first key takes it away.
+  await recordSounds(page, 'suspended');
+  await fakeRoom(page, lobbyWelcome([ANA, BETO], ANA.id));
+
+  await page.goto('/');
+
+  const notice = page.getByTestId('audio-notice');
+  await expect(notice).toHaveText('Aperte OK no controle para liberar o som');
+  for (const screen of SCREENS) {
+    await page.setViewportSize(screen);
+    const header = (await page.locator('.lobby__header').boundingBox())!;
+    const box = (await notice.boundingBox())!;
+    expect(box.x).toBeGreaterThan(header.x);
+    expect(box.x + box.width).toBeLessThan(header.x + header.width);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBe(0);
+  }
+
+  await page.keyboard.press('Enter');
+
+  await expect(notice).toHaveCount(0);
+  await expect(page.getByTestId('lobby-screen')).toBeVisible();
+});
+
+test('has no sound notice when the browser lets the sound play', async ({ page }) => {
+  // Differences from the source: the capture draws the notice, and it shows only when the sound is blocked.
+  await recordSounds(page, 'running');
+  await fakeRoom(page, lobbyWelcome([ANA], ANA.id));
+
+  await page.goto('/');
+
+  await expect(page.getByTestId('lobby-screen')).toBeVisible();
+  await expect(page.getByTestId('audio-notice')).toHaveCount(0);
 });

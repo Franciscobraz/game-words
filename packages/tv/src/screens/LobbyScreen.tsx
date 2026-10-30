@@ -1,5 +1,6 @@
 import type { PlayerInfo, Settings } from '@bwords/core';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { AudioNotice } from '../components/AudioNotice.tsx';
 import { BrandHeader } from '../components/BrandHeader.tsx';
 import { JoinCard } from '../components/JoinCard.tsx';
 import { LobbySlotRow } from '../components/LobbySlotRow.tsx';
@@ -14,7 +15,7 @@ import '../styles/lobby.css';
 
 /** The lobby: how to enter, who is in the room and how the match is set up (TVLOBBY-01). */
 export function LobbyScreen() {
-  const { room } = useStore();
+  const { room, sound } = useStore();
   const { code, players, hostId, settings } = room.room.value;
   const roomCode = code ?? '';
   const matrix = useMemo(() => qrMatrix(roomUrl(location.origin, roomCode)), [roomCode]);
@@ -23,6 +24,7 @@ export function LobbyScreen() {
     <main class="screen lobby" data-testid="lobby-screen">
       <header class="lobby__header">
         <BrandHeader size="large" />
+        {sound.blocked.value && <AudioNotice />}
         <RoomCard label={STRINGS.roomLabel} code={roomCode} matrix={null} size="large" />
       </header>
       <div class="lobby__body">
