@@ -1,0 +1,24 @@
+/* The player's mark with the initial (AD-004). */
+.player-circle {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-background);
+  font-weight: var(--font-weight-black);
+  line-height: 1;
+}
+
+.player-circle--square {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-md);
+  font-size: 1.625rem;
+}
+
+.player-circle--circle {
+  width: 4rem;
+  height: 4rem;
+  border-radius: var(--radius-full);
+  font-size: 2rem;
+}

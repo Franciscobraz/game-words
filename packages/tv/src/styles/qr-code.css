@@ -14,21 +14,21 @@
   fill: var(--color-surface-container-lowest);
 }
 
-/* The "B" covers 22% of the side, about 5% of the area: well inside what correction H rebuilds. */
+/* The "B" covers 25% of the side, about 6% of the area: well inside what correction H rebuilds. */
 .qr-code__mark {
   position: absolute;
-  top: 39%;
-  left: 39%;
+  top: 37.5%;
+  left: 37.5%;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22%;
-  height: 22%;
+  width: 25%;
+  height: 25%;
   border: 0.25rem solid var(--color-text-strong);
   border-radius: var(--radius-lg);
   background: var(--color-action);
   color: var(--color-on-action);
-  font-size: 3.5rem;
+  font-size: 3.75rem;
   font-weight: var(--font-weight-black);
   line-height: 1;
 }

@@ -14,6 +14,8 @@ export interface LobbyPlayerSlot {
   isHost: boolean;
   crowned: boolean;
   status: PlayerStatus | null;
+  /** "2 vitórias"; null for a player with no wins whose line already has a status (tv-lobby.png). */
+  winsText: string | null;
 }
 
 /** A free place in the room, "Vaga Livre #N" (TVLOBBY-01 AC 7). */
@@ -52,7 +54,9 @@ export function lobbyFooter(players: readonly PlayerInfo[], hostId: string | nul
 
 function playerSlot(player: PlayerInfo, isHost: boolean, crowned: boolean): LobbyPlayerSlot {
   const { id, nickname, color, wins } = player;
-  return { kind: 'player', id, nickname, color, wins, isHost, crowned, status: statusOf(player) };
+  const status = statusOf(player);
+  const winsText = wins === 0 && status !== null ? null : STRINGS.winsCount(wins);
+  return { kind: 'player', id, nickname, color, wins, isHost, crowned, status, winsText };
 }
 
 /** A disconnected spectator reads as disconnected: that is what the room needs to know first. */

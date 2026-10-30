@@ -1,0 +1,60 @@
+/* The room's settings as chips (TVLOBBY-01 AC 8, tv-lobby.png). */
+.settings-chips {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.settings-chip {
+  display: flex;
+  align-items: center;
+  height: 3.375rem;
+  margin: 0.625rem 0.625rem 0 0;
+  padding: 0 1.0625rem;
+  border: 0.0625rem solid var(--color-card-stroke);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-container);
+  color: var(--color-text-strong);
+  font-size: 1.46rem;
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.settings-chip--pulse {
+  animation: settings-chip-pulse 0.6s ease-out 1;
+}
+
+@keyframes settings-chip-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+.settings-chip__icon {
+  display: flex;
+  flex: none;
+  margin-right: 0.625rem;
+  font-size: 1.5rem;
+}
+
+.settings-chip__icon--size {
+  color: var(--color-brand-sky);
+}
+
+.settings-chip__icon--seconds {
+  color: var(--color-action);
+}
+
+.settings-chip__icon--rounds,
+.settings-chip__icon--filterProfanity {
+  color: var(--color-brand-emerald);
+}
+
+.settings-chip__icon--minLength,
+.settings-chip__icon--pack {
+  color: var(--color-on-surface-variant);
+}

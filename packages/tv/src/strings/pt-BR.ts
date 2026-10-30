@@ -10,7 +10,22 @@ export const STRINGS = {
   // Opening the room (TVROOM-01)
   roomOpenFailed: 'Não foi possível abrir a sala',
 
+  // Players, in every screen (AD-013)
+  hostTag: 'ANFITRIÃO(Ã)',
+  disconnectedTag: 'DESCONECTADO',
+  spectatorTag: 'ESPECTADOR(A)',
+  crown: 'Mais vitórias',
+
   // Lobby (TVLOBBY-01)
+  roomLabel: 'SALA',
+  joinByPhone: 'Entre pelo celular',
+  orVisit: 'ou acesse',
+  andTypeCode: 'e digite o código',
+  players: 'Jogadores',
+  nobodyYet: 'Ninguém entrou ainda',
+  freeSlot: (place: number) => `Vaga Livre #${place}`,
+  settings: 'CONFIGURAÇÕES',
+  winsCount: (wins: number) => (wins === 1 ? '1 vitória' : `${wins} vitórias`),
   playerCount: (count: number, max: number) => `${count} / ${max}`,
   firstJoinerHosts: 'O primeiro a entrar vira anfitrião(ã)',
   waitingForHost: (nickname: string) => `Aguardando ${nickname} iniciar a partida…`,

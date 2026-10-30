@@ -1,0 +1,52 @@
+/* How to enter the room (TVLOBBY-01 AC 2-3, tv-lobby.png). */
+.join-card {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 43.25rem;
+  padding: 2rem;
+  border-radius: 1.75rem;
+  background: var(--color-surface-container-low);
+}
+
+.join-card__title {
+  margin: 0;
+  color: var(--color-text-strong);
+  font-size: 2.5rem;
+  font-weight: var(--font-weight-extrabold);
+  line-height: 1.2;
+}
+
+.join-card__qr {
+  width: 25.625rem;
+  height: 25.625rem;
+  margin-top: 2.5rem;
+  padding: 1.5rem;
+  border-radius: 1.75rem;
+  background: var(--color-text-strong);
+}
+
+/* The trailing letter spacing is paid back on the left, so the code stays centered. */
+.join-card__code {
+  margin: 2.25rem 0 0;
+  padding-left: 2.5rem;
+  color: var(--color-text-strong);
+  font-size: 4.5rem;
+  font-weight: var(--font-weight-black);
+  letter-spacing: 2.5rem;
+  line-height: 1;
+}
+
+.join-card__address {
+  margin: 1rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 1.5625rem;
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.join-card__host {
+  color: var(--color-brand-sky);
+}

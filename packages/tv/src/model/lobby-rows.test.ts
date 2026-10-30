@@ -51,6 +51,16 @@ describe('lobbySlots', () => {
     expect(playerSlots([duda], 'p1')[0]?.status).toBe('disconnected');
   });
 
+  test('writes the wins, leaving them out only of a line with a status and no wins', () => {
+    const noWins = player('p5', 'Eva');
+    const caio = player('p3', 'Caio', { connected: false });
+    const caioWithWin = player('p6', 'Caio', { connected: false, wins: 1 });
+
+    const texts = playerSlots([ana, beto, noWins, caio, caioWithWin], 'p1').map((slot) => slot.winsText);
+
+    expect(texts).toEqual(['2 vitórias', '1 vitória', '0 vitórias', null, '1 vitória']);
+  });
+
   test('tags the host and crowns the leaders', () => {
     const caio = player('p3', 'Caio', { wins: 2 });
 

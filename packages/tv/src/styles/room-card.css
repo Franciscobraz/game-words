@@ -1,0 +1,73 @@
+/* The room's code at the top of the screen (tv-lobby.png, tv-round.png). */
+.room-card {
+  display: flex;
+  align-items: center;
+  border: 0.0625rem solid var(--color-card-stroke);
+  background: var(--color-surface-container-low);
+}
+
+.room-card__text {
+  display: flex;
+}
+
+.room-card__label {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-bold);
+}
+
+.room-card__code {
+  font-weight: var(--font-weight-black);
+  line-height: 1;
+}
+
+.room-card--large {
+  padding: 0.875rem 2.25rem;
+  border-radius: var(--radius-xl);
+}
+
+.room-card--large .room-card__text {
+  align-items: center;
+}
+
+.room-card--large .room-card__label {
+  margin-right: 1.5rem;
+  font-size: 1.8rem;
+  letter-spacing: 0.1em;
+}
+
+.room-card--large .room-card__code {
+  color: var(--color-brand-sky);
+  font-size: 3.05rem;
+  letter-spacing: 0.04em;
+}
+
+.room-card--small {
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-lg);
+}
+
+.room-card--small .room-card__text {
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.room-card--small .room-card__label {
+  font-size: 0.875rem;
+  letter-spacing: 0.06em;
+}
+
+.room-card--small .room-card__code {
+  color: var(--color-action);
+  font-size: 1.875rem;
+  letter-spacing: 0.04em;
+}
+
+.room-card__qr {
+  display: block;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-left: 1rem;
+  padding: 0.25rem;
+  border-radius: var(--radius-default);
+  background: var(--color-text-strong);
+}

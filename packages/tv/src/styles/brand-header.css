@@ -1,0 +1,47 @@
+/* The "B" mark and the name of the game (TVUI-01 AC 7, tv-lobby.png, tv-round.png). */
+.brand-header {
+  display: inline-flex;
+  align-items: center;
+}
+
+.brand-header__mark {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-action);
+  color: var(--color-on-action);
+  font-weight: var(--font-weight-black);
+  line-height: 1;
+}
+
+.brand-header__name {
+  color: var(--color-text-strong);
+  font-weight: var(--font-weight-black);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.brand-header--large .brand-header__mark {
+  width: 5.25rem;
+  height: 5.25rem;
+  margin-right: 1.5rem;
+  border-radius: 1.125rem;
+  font-size: 3.5rem;
+}
+
+.brand-header--large .brand-header__name {
+  font-size: 3.75rem;
+}
+
+.brand-header--small .brand-header__mark {
+  width: 3rem;
+  height: 3rem;
+  margin-right: 1rem;
+  border-radius: var(--radius-md);
+  font-size: 1.75rem;
+}
+
+.brand-header--small .brand-header__name {
+  font-size: 1.875rem;
+}

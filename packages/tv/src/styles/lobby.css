@@ -1,5 +1,110 @@
-/* The lobby (TVLOBBY-01, tv-lobby.png). */
-.lobby__qr {
-  width: 22.5rem;
-  height: 22.5rem;
+/* The lobby (TVLOBBY-01, tv-lobby.png). Everything in rem: the root scales the whole screen (AD-016). */
+.lobby {
+  padding: 3.5rem 6rem 3.375rem;
+}
+
+.lobby__header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.625rem;
+}
+
+.lobby__body {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  min-height: 0;
+}
+
+.lobby__panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  margin-left: 2.875rem;
+  padding: 1.85rem 2.0625rem 2rem;
+  border-radius: 1.75rem;
+  background: var(--color-surface-container-low);
+}
+
+.lobby__panel-title {
+  display: flex;
+  flex: none;
+  align-items: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 0.0625rem solid var(--color-card-stroke);
+}
+
+.lobby__players-title {
+  margin: 0;
+  color: var(--color-text-strong);
+  font-size: 2.125rem;
+  font-weight: var(--font-weight-black);
+  line-height: 1.2;
+}
+
+.lobby__count {
+  margin-left: 1rem;
+  padding: 0.125rem 1rem;
+  border-radius: var(--radius-default);
+  background: var(--color-on-primary);
+  color: var(--color-action);
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-extrabold);
+  line-height: 1.3;
+}
+
+.lobby__nobody {
+  margin-left: auto;
+  color: var(--color-on-surface-variant);
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-semibold);
+}
+
+.lobby__slots {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 2.95rem;
+}
+
+.lobby__slot {
+  width: calc(50% - 0.625rem);
+  margin-bottom: 0.75rem;
+}
+
+.lobby__settings-title {
+  margin: auto 0 0;
+  color: var(--color-on-surface);
+  font-size: 1.3125rem;
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+}
+
+.lobby__footer {
+  display: flex;
+  flex: none;
+  align-items: center;
+  height: 4.5rem;
+  margin-top: 1.5625rem;
+  padding: 0 2rem;
+  border: 0.0625rem solid var(--color-card-stroke);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container-low);
+  color: var(--color-text-strong);
+  font-size: 1.61rem;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.lobby__footer-dot {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  margin-right: 1.25rem;
+  border-radius: var(--radius-full);
+  background: var(--color-action);
 }
