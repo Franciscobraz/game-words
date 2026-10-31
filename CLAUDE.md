@@ -58,6 +58,7 @@ Jogo de encontrar palavras: uma TV mostra o jogo e cada jogador usa o celular co
 - `npm run build` - `tsc -b` em todos os pacotes
 - `npm run dict:build` - gera o pacote pt-BR em `tools/dict-build/dist`
 - `npm run assets:build` - gera os dois clientes e monta `packages/server/public/`, que o Worker serve (`/tv` e `/<CÓDIGO>`)
+- `npm run deploy` - gera os clientes e publica o Worker; só com pedido do user (`docs/deploy.md`)
 - `npm run debug` - `wrangler dev` (8787) e a página de debug (5174)
 - `npx playwright test` - E2E do `play`
 - `npx playwright test -c packages/phone/playwright.config.ts` - E2E do celular
