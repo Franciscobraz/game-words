@@ -161,6 +161,13 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 - **Motivo:** pergunta sobre seguir com o spec: "Escrevo o spec do M4 com as recomendações para as telas restantes?" Opção escolhida: escrever o spec.
 - user: "Sim, escrever spec"
 
+### AD-023 - Sem espectador no lobby (active)
+
+- **Data:** 2026-10-31
+- **Decisão:** a TV não mostra "ESPECTADOR(A)" no lobby: ali todo jogador é jogador. A marca de espectador só existe em quem entrou durante a rodada ou o resultado, e a volta ao lobby a zera. A linha da Duda em `tv-lobby.png` não é seguida.
+- **Motivo:** pergunta do round 1 de telas: "O que fazer com a linha da Duda (espectador no lobby)? [...] Recomendo registrar que não existe espectador no lobby, sem mudar a regra." Opção escolhida: a recomendada.
+- user: "Não existe espectador no lobby"
+
 ## Handoff
 
 - **Data:** 2026-10-30
@@ -184,7 +191,7 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
   8. Ouvir os sons e ver a rolagem rodando: ninguém ouviu nem viu ainda.
   9. Observação do walk: recarregar a TV na rolagem passa por outras telas por cerca de 100 ms; pode ser um flash de um quadro.
 - **Instabilidade em aberto:** a suíte de E2E da TV falhou uma vez em 4 execuções (`toBeVisible`, teste não identificado). Com 8 workers o Vite recusava módulos no Windows, por isso o `workers: 4`. Conferir as portas 8787, 9229, 5175 e 5176 livres antes de rodar E2E.
-- **Atualização de 2026-10-31:** o round 1 de telas voltou (`screens.md`, em `1df8755`): `tv-lobby` diverge em 2 linhas, o ícone do aviso de som sem o quadrado e a linha do espectador, que o servidor não produz no lobby; o user ainda vai decidir esta última. O próximo passo continua sendo o Verifier. O user publicou o M4 com `npm run deploy` (`docs/deploy.md`) a partir de `29f0c43` e testou em TV e celular reais: tudo funcionou, com as correções pedidas em `.specs/features/m4-1-playtest/context.md`, que têm perguntas abertas. O subdomínio da conta na Cloudflare ainda tem dados pessoais, até o user trocá-lo no painel; ele nunca entra no repositório.
+- **Atualização de 2026-10-31:** o round 1 de telas voltou (`screens.md`, em `1df8755`): `tv-lobby` diverge em 2 linhas, o ícone do aviso de som sem o quadrado e a linha do espectador, que o servidor não produz no lobby (AD-023). O próximo passo continua sendo o Verifier. O user publicou o M4 com `npm run deploy` (`docs/deploy.md`) a partir de `29f0c43` e testou em TV e celular reais: tudo funcionou, com as correções pedidas em `.specs/features/m4-1-playtest/context.md`, já respondidas; o spec começa depois do fechamento do M4.
 - **Depois do M4:** a feature `m4-1-playtest` e depois o M5, com a lista de palavrões vazia.
 - **Branch:** `main`. `origin/main` está em `c4746d1`; todo o M4 ainda não foi enviado. Push só com pedido.
 - **Modo de execução preferido pelo usuário:** subagentes, um batch por vez, parando para mostrar o resultado e perguntar antes do próximo.

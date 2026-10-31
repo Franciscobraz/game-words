@@ -1,8 +1,8 @@
 # m4-1-playtest Context
 
 **Gathered:** 2026-10-31
-**Spec:** ainda não existe; as perguntas abaixo vêm antes dele.
-**Status:** à espera das respostas do user
+**Spec:** ainda não existe.
+**Status:** respostas recebidas; o spec começa depois do fechamento do M4
 
 ---
 
@@ -26,7 +26,44 @@ As correções pedidas depois do primeiro teste em TV e celular reais, com o M4 
 
 ## Implementation Decisions
 
-Nenhuma ainda. Os itens 3 e 6 contrariam decisões e critérios aprovados (AD-021; C16, que serve o celular em `/`) e viram `AD-NNN` quando o user responder.
+Os itens 3 e 6 e o pódio sincronizado contrariam decisões e critérios aprovados (AD-021; C11, o pódio direto no celular; C16, o celular em `/`) e viram `AD-NNN` no spec.
+
+### Tela da TV sempre ativa
+
+- O teste foi numa LG Nanocell, com o navegador que vem na TV, mas a solução não depende de modelo nem de navegador: várias técnicas em camadas, sem nada que os jogadores percebam.
+- O design avalia a música de fundo como uma das camadas e, além dela, a Screen Wake Lock, o vídeo mudo em loop e alguma ação periódica imperceptível. A prova final é na TV real.
+- user: "a tv em especifico é uma LG Nanocell e o navegador é um padrão que ja vem instalado, mas não devemos nos prender a nenhum modelo de tv ou navegador, temos que achar uma solução para inatividade, talvez tocar uma musica de fundo resolva a inatividade em alguns navegadores/televisão, talvez programar um toque ou algum ação na tv que seja imperceptivel aos usuários e não atrapalhe o jogo"
+
+### Lista de palavras
+
+- A lista rola sozinha, a 1 palavra por segundo, sem o limite de 60 s.
+- Os botões ▲ e ▼ no celular do anfitrião assumem o controle ao primeiro toque.
+- "Ver resultado" fica disponível no celular do anfitrião o tempo todo; a TV não vai mais sozinha para o resultado.
+- user: "concordo com o recomendado" (perguntas 2 e 3)
+
+### Música
+
+- Música original no estilo de jogos antigos, calma, gerada no navegador, sem arquivo nem licença. O user pode trocá-la depois.
+- Toca da primeira contagem até o resultado da última rodada, sem recomeçar a cada rodada, em silêncio no lobby, e mais baixa que os outros sons.
+- O lobby do anfitrião tem a opção "Música", para ligar e desligar.
+- user: "concordo com o recomendado, depois eu decido se coloco outra musica" (pergunta 4); "concordo" (pergunta 5); "sim" (pergunta 6)
+
+### Rotas
+
+- `/` abre a TV, e `/tv` continua funcionando.
+- A TV mostra o endereço completo da sala, como `X/KBXT`.
+- A tela de digitar o código vai para `/join`, e o celular volta para lá ao sair de uma sala.
+- user: "a tela de entrar com codigo pode virar \"/join\""
+
+### Pódio sincronizado
+
+- O pódio abre na mesma hora na TV e nos celulares; os celulares não o abrem mais direto ao fim da última rodada.
+- Enquanto a TV mostra as palavras, o celular mostra uma tela intermediária que manda olhar para a TV.
+- user: "Sincronize a exibição do pódio no mesmo momento entre a tv e os celulares para manter a atenção dos jogadores na tela da tv na hora que as palavras estiverem sendo exibidas, no celular pode ter uma tela intermediaria que manda apenas olhar para tv para conferir a exibição das palavras encontradas"
+
+### Zoom no celular
+
+- O zoom por toque duplo e por pinça sai de todas as telas do celular. A prova final é num iPhone real.
 
 ---
 

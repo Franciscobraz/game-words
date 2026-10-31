@@ -363,6 +363,7 @@ O celular já joga uma partida inteira, mas a TV ainda é a página de debug: n�
 | --- | --- | --- |
 | `tv-lobby.png`: aviso "Aperte OK no controle para liberar o som" sempre visível | O aviso só aparece quando o navegador bloqueia o som | y - AD-022 |
 | `tv-lobby.png`: "CONECTE-SE AGORA" | Nada | y - AD-022 |
+| `tv-lobby.png`: linha da Duda com "ESPECTADOR(A)" | O lobby não tem espectador; a linha mostra troféu e vitórias, como as outras | y - AD-023 |
 | `tv-lobby.png`: "Mínimo 2 para iniciar" | Nada; o servidor aceita iniciar com 1 jogador | y - AD-022 |
 | `tv-lobby.png`: chip "Fast mode desligado" | Nada | y - AD-020 |
 | `tv-lobby.png`: "BWORDS" em maiúsculas | "BWords", como nas outras telas | y - AD-022 |
