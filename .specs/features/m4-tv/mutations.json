@@ -1,0 +1,23 @@
+[
+  {
+    "file": "packages/core/src/room/machine.ts",
+    "old": "if (state.phase === 'results') return results;",
+    "new": "if (state.phase === 'results' || state.phase === 'round') return results;",
+    "proof": "npx vitest run packages/core/src/room",
+    "label": "a device connecting during a round also gets the stored round-results"
+  },
+  {
+    "file": "packages/server/wrangler.jsonc",
+    "old": "\"run_worker_first\": true",
+    "new": "\"run_worker_first\": false",
+    "proof": "npx vitest run packages/server/e2e/assets.test.ts -t \"never serves the language pack\"",
+    "label": "assets answered before the Worker, so the closed list of routes no longer guards the pack"
+  },
+  {
+    "file": "packages/core/src/room/results.ts",
+    "old": "players: last ? awardWins(players) : players,",
+    "new": "players: awardWins(players),",
+    "proof": "npx vitest run packages/core/src/room",
+    "label": "wins counted at the end of every round, not only the last"
+  }
+]

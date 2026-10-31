@@ -1,8 +1,8 @@
 # m4-tv proofs
 
-**HEAD**: 7ddb1bb
+**HEAD**: 642f998
 **Tree**: clean
-**Result**: 111 pass, 4 fail; mutations 0 killed, 0 not
+**Result**: 114 pass, 1 fail; mutations 2 killed, 1 not
 
 | Check | Proof | Ran | Passed | Result |
 | --- | --- | --- | --- | --- |
@@ -38,7 +38,7 @@
 | C30 | `npx vitest run packages/tv/src/model/lobby-rows.test.ts -t "fills the free slots up to ten"` | 1 | 1 | pass |
 | C31 | `npx vitest run packages/tv/src/model/settings-chips.test.ts -t "finds the chip of the changed setting"` | 1 | 1 | pass |
 | C32 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/lobby.spec.ts -g "the qr code reads th` | 1 | - | pass |
-| C33 | `browser captures/tv-lobby.running.png` | - | - | **not judged** (screens.md) |
+| C33 | `browser captures/tv-lobby.running.png` | - | - | **diverges** (screens.md) |
 | C34 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/lobby.spec.ts -g "shows the code and t` | 1 | - | pass |
 | C35 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/lobby.spec.ts -g "mirrors a settings c` | 1 | - | pass |
 | C36 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/lobby.spec.ts -g "waits for the host i` | 1 | - | pass |
@@ -51,7 +51,7 @@
 | C43 | `npx vitest run packages/tv/src/model/round-columns.test.ts -t "moves the sixth player to the right column"` | 1 | 1 | pass |
 | C44 | `npx vitest run packages/tv/src/model/round-columns.test.ts -t "marks a disconnected player"` | 1 | 1 | pass |
 | C45 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/round.spec.ts -g "hides the board duri` | 1 | - | pass |
-| C46 | `browser captures/tv-round.running.png` | - | - | **not judged** (screens.md) |
+| C46 | `browser captures/tv-round.running.png` | - | - | pass |
 | C47 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/round.spec.ts -g "updates the word cou` | 1 | - | pass |
 | C48 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/round.spec.ts -g "fits larger boards i` | 1 | - | pass |
 | C49 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/round.spec.ts -g "marks the end of the` | 1 | - | pass |
@@ -64,7 +64,7 @@
 | C56 | `npx vitest run packages/tv/src/model/word-rows.test.ts -t "orders each group by length and then by letter"` | 1 | 1 | pass |
 | C57 | `npx vitest run packages/tv/src/model/word-rows.test.ts -t "fills each row with spellings finders and points"` | 1 | 1 | pass |
 | C58 | `npx vitest run packages/tv/src/model/word-rows.test.ts -t "keeps the words of a kicked player"` | 1 | 1 | pass |
-| C59 | `browser captures/tv-words.running.png` | - | - | **not judged** (screens.md) |
+| C59 | `browser captures/tv-words.running.png` | - | - | pass |
 | C60 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/words.spec.ts -g "keeps the totals in ` | 1 | - | pass |
 | C61 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/words.spec.ts -g "scrolls until the la` | 1 | - | pass |
 | C62 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/words.spec.ts -g "says when no word wa` | 1 | - | pass |
@@ -77,7 +77,7 @@
 | C69 | `npx vitest run packages/tv/src/model/result-header.test.ts -t "shows the winner after the last round"` | 1 | 1 | pass |
 | C70 | `npx vitest run packages/tv/src/model/result-header.test.ts -t "shows a tie after the last round"` | 1 | 1 | pass |
 | C71 | `npx vitest run packages/tv/src/model/lit-tiles.test.ts -t "lights one tile every 400 ms in path order"` | 1 | 1 | pass |
-| C72 | `browser captures/tv-round-result.running.png` | - | - | **not judged** (screens.md) |
+| C72 | `browser captures/tv-round-result.running.png` | - | - | pass |
 | C73 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/result.spec.ts -g "marks a disconnecte` | 1 | - | pass |
 | C74 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/result.spec.ts -g "shows who found the` | 1 | - | pass |
 | C75 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/result.spec.ts -g "says when nobody fo` | 1 | - | pass |
@@ -121,3 +121,11 @@
 | Build | `npx playwright test` | - | - | pass |
 | Build | `npx playwright test -c packages/phone/playwright.config.ts` | - | - | pass |
 | Build | `npx playwright test -c packages/tv/playwright.config.ts` | - | - | pass |
+
+## Mutations
+
+| Mutation | Location | Killed |
+| --- | --- | --- |
+| a device connecting during a round also gets the stored round-results | `packages\core\src\room\machine.ts:198` | no |
+| assets answered before the Worker, so the closed list of routes no longer guards the pack | `packages\server\wrangler.jsonc:9` | yes |
+| wins counted at the end of every round, not only the last | `packages\core\src\room\results.ts:74` | yes |
