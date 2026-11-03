@@ -1020,10 +1020,10 @@ T39 → T40 → T41 → T42 → T43 → T44
 
 **Done when**:
 
-- [ ] C101-C104
-- [ ] "does not scroll or zoom while swiping" continua verde
-- [ ] Gate check passes
-- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+- [x] C101-C104
+- [x] "does not scroll or zoom while swiping" continua verde
+- [x] Gate check passes
+- [x] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: e2e
 **Gate**: full

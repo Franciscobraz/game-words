@@ -67,7 +67,8 @@
   background: var(--color-surface-container-lowest);
   color: var(--color-on-surface);
   font: inherit;
-  font-size: var(--font-size-body);
+  /* 16 px or more: Safari zooms into a smaller field when it gets the focus (NOZOOM-01 AC 1). */
+  font-size: var(--font-size-body-md);
   font-weight: var(--font-weight-bold);
   text-overflow: ellipsis;
   appearance: none;

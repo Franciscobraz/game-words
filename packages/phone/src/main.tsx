@@ -9,6 +9,7 @@ import './styles/app.css';
 import { App } from './app.tsx';
 import { createHitSound } from './device/hit-sound.ts';
 import { browserStorage } from './device/storage.ts';
+import { preventZoom } from './device/no-zoom.ts';
 import { canVibrate, vibrate } from './device/vibration.ts';
 import { browserWakeLock, onPageVisible } from './device/wake-lock.ts';
 import { parseRoomPath } from './model/room-code.ts';
@@ -25,6 +26,9 @@ const store = createPhoneStore({
   wakeLock: browserWakeLock(),
   onVisible: onPageVisible,
 });
+
+// The page keeps its scale on a pinch, in Safari on iOS too (NOZOOM-01 AC 2).
+preventZoom(document);
 
 // `/KBXT` opens room KBXT; `/` stays on the code screen (ENTRY-01 AC 1-2).
 const code = parseRoomPath(location.pathname);

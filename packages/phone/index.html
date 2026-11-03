@@ -2,7 +2,8 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- No zoom (NOZOOM-01): Chromium and Android honour user-scalable; Safari on iOS needs src/device/no-zoom.ts. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
     <!-- The browser paints its bar before any stylesheet loads, so the value is written here: it is
          --color-background of packages/theme/tokens.css, and src/styles/styles.test.ts keeps them equal. -->
     <meta name="theme-color" content="#12131a" />

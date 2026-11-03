@@ -190,6 +190,103 @@ function largePixelSizes(css: string): string[] {
   return problems;
 }
 
+/** The narrowest phone the layout serves, in px: a `vw` size is smallest there (AD-016). */
+const NARROWEST_PHONE_PX = 320;
+
+/** The root font size a `rem` is read against. */
+const ROOT_FONT_PX = 16;
+
+/** The smallest font a text field may use: Safari zooms into a field with a smaller one when it gets the focus (NOZOOM-01 AC 1). */
+const MIN_FIELD_FONT_PX = 16;
+
+/** The `<input>` types a person types into; color pickers, sliders and boxes get no zoom on focus. */
+const TEXT_INPUT_TYPES = new Set(['text', 'search', 'email', 'tel', 'url', 'password', 'number']);
+
+/** The selectors of the text fields of a source: the class of each text `<input>`, or `input` without one, and `select`, `textarea`. */
+function textFieldSelectors(source: string): string[] {
+  const selectors: string[] = [];
+  for (const match of source.matchAll(/<input\b([\s\S]*?)\/>/g)) {
+    const attributes = match[1]!;
+    const type = /\btype="([a-z]+)"/.exec(attributes)?.[1] ?? 'text';
+    if (!TEXT_INPUT_TYPES.has(type)) continue;
+    const className = /\bclass="([\w-]+)/.exec(attributes)?.[1];
+    selectors.push(className === undefined ? 'input' : `.${className}`);
+  }
+  for (const match of source.matchAll(/<(select|textarea)\b/g)) selectors.push(match[1]!);
+  return selectors;
+}
+
+/** Every custom property of the stylesheets, by name. */
+function cssVariables(...sheets: string[]): Record<string, string> {
+  const variables: Record<string, string> = {};
+  for (const d of sheets.flatMap(declarations)) if (d.property.startsWith('--')) variables[d.property] = d.value;
+  return variables;
+}
+
+/** The arguments of a CSS function, split at the commas outside any inner parentheses. */
+function splitArguments(text: string): string[] {
+  const parts: string[] = [];
+  let depth = 0;
+  let start = 0;
+  for (let index = 0; index < text.length; index += 1) {
+    if (text[index] === '(') depth += 1;
+    if (text[index] === ')') depth -= 1;
+    if (text[index] === ',' && depth === 0) {
+      parts.push(text.slice(start, index));
+      start = index + 1;
+    }
+  }
+  parts.push(text.slice(start));
+  return parts.map((part) => part.trim());
+}
+
+/** The smallest px a font size can reach on a phone from 320 px; NaN when the audit cannot read it. */
+function smallestPx(value: string, variables: Record<string, string>): number {
+  const variable = /^var\((--[\w-]+)\)$/.exec(value);
+  if (variable !== null) {
+    const resolved = variables[variable[1]!];
+    return resolved === undefined ? Number.NaN : smallestPx(resolved, variables);
+  }
+  const call = /^(clamp|max|min)\((.*)\)$/.exec(value);
+  if (call !== null) {
+    const bounds = splitArguments(call[2]!).map((argument) => smallestPx(argument, variables));
+    // A clamp never goes under its first argument; a max never under its largest; a min reaches its smallest.
+    if (call[1] === 'clamp') return bounds[0]!;
+    return call[1] === 'max' ? Math.max(...bounds) : Math.min(...bounds);
+  }
+  const length = /^(\d*\.?\d+)(px|rem|vw)$/.exec(value);
+  if (length === null) return Number.NaN;
+  const amount = Number(length[1]);
+  if (length[2] === 'rem') return amount * ROOT_FONT_PX;
+  if (length[2] === 'vw') return (amount * NARROWEST_PHONE_PX) / 100;
+  return amount;
+}
+
+/** Whether one selector of a rule styles the field itself: its last compound names it, with no pseudo-element. */
+function stylesField(selector: string, field: string): boolean {
+  const last = selector.trim().split(/[\s>+~]+/).pop() ?? '';
+  if (last.includes('::')) return false;
+  const name = field.startsWith('.') ? `\\${field}` : `^${field}`;
+  return new RegExp(`${name}(?![\\w-])`).test(last);
+}
+
+/** The text fields whose font can go under 16 px, or that set no font size at all, with the size that does it. */
+function smallTextFields(css: string, fields: readonly string[], variables: Record<string, string>): string[] {
+  const rules = [...stripComments(css).matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
+    selectors: match[1]!.split(','),
+    body: match[2]!,
+  }));
+  const problems: string[] = [];
+  for (const field of fields) {
+    const sizes = rules
+      .filter((rule) => rule.selectors.some((selector) => stylesField(selector, field)))
+      .flatMap((rule) => declarations(`{${rule.body}}`).filter((d) => d.property === 'font-size'));
+    if (sizes.length === 0) problems.push(`${field}: no font-size`);
+    for (const size of sizes) if (!(smallestPx(size.value, variables) >= MIN_FIELD_FONT_PX)) problems.push(`${field}: ${size.value}`);
+  }
+  return problems;
+}
+
 /** The violations of `rule` in every stylesheet of the package, by file. */
 function packageViolations(rule: (css: string) => string[]): Record<string, string[]> {
   const report: Record<string, string[]> = {};
@@ -307,5 +404,33 @@ describe('UI-01 AC 8 (AD-016)', () => {
     expect(largePixelSizes('.a { min-height: calc(100% - 120px); }')).toHaveLength(1);
     expect(largePixelSizes('.a { flex-basis: 200px; }')).toHaveLength(1);
     expect(largePixelSizes('.a { width: 64px; height: 48px; min-width: min(90%, 40rem); }')).toEqual([]);
+  });
+});
+
+describe('NOZOOM-01 AC 1', () => {
+  test('keeps every text field at 16 px or more', () => {
+    const fields = [...new Set(Object.values(SOURCE_TSX).flatMap(textFieldSelectors))];
+    expect(fields).toEqual(expect.arrayContaining(['.code-entry__box', '.join__input', 'select']));
+    const variables = cssVariables(THEME_TOKENS, PACKAGE_CSS['tokens.css'] ?? '');
+
+    expect(smallTextFields(Object.values(PACKAGE_CSS).join('\n'), fields, variables)).toEqual([]);
+  });
+
+  test('catches a text field that can go under 16 px in a sample', () => {
+    const variables = { '--font-size-body': 'clamp(0.875rem, 3.8vw, 1rem)', '--font-size-field': '1rem' };
+    const fields = textFieldSelectors('<input class="name" type="text" onInput={(e) => set(e)} /><input class="hue" type="color" /><select />');
+    expect(fields).toEqual(['.name', 'select']);
+
+    expect(smallTextFields('.name { font-size: 15px; } .name:focus { font-size: 2rem; }', fields, variables)).toEqual([
+      '.name: 15px',
+      'select: no font-size',
+    ]);
+    expect(smallTextFields('.panel select { font-size: var(--font-size-body); }', ['select'], variables)).toEqual([
+      'select: var(--font-size-body)',
+    ]);
+    expect(smallTextFields('.name { font-size: 4vw; }', ['.name'], variables)).toEqual(['.name: 4vw']);
+    expect(smallTextFields('.name::placeholder { font-size: 10px; } .name { font-size: max(16px, 3vw); }', ['.name'], variables)).toEqual([]);
+    expect(smallTextFields('.a select, .name { font-size: var(--font-size-field); }', ['.name', 'select'], variables)).toEqual([]);
+    expect(smallTextFields('.name { font-size: calc(1rem + 1px); }', ['.name'], variables)).toEqual(['.name: calc(1rem + 1px)']);
   });
 });
