@@ -36,6 +36,30 @@ describe('persistence', () => {
     expect(rebuilt?.settings).not.toHaveProperty('fastMode');
   });
 
+  it('counts 0 words for players stored without them', async () => {
+    // RESULT-02, Edge Cases: Ana was stored before the words count existed; Bia, stored after it, keeps her 5 words.
+    const { code } = await roomWithTv();
+    const a = await joinPhone(code, 'Ana', 0);
+    const b = await joinPhone(code, 'Bia', 1);
+    await runInDurableObject(stubOf(code), async (_, state) => {
+      const room = (await state.storage.get<RoomState>('room'))!;
+      const players = room.players.map((p) => {
+        if (p.id === b.playerId) return { ...p, words: 5 };
+        const { words: _words, ...old } = p;
+        return old;
+      });
+      await state.storage.put('room', { ...room, players });
+    });
+
+    await evictDurableObject(stubOf(code));
+    const rebuilt = await liveState(code);
+
+    expect(rebuilt?.players.map((p) => [p.id, p.words])).toEqual([
+      [a.playerId, 0],
+      [b.playerId, 5],
+    ]);
+  });
+
   it('stores the state before the client sees it', async () => {
     const { code, tv } = await roomWithTv();
     const a = await joinPhone(code, 'Ana', 0);

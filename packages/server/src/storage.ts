@@ -10,9 +10,12 @@ import { type PersistKey, type Player, type PreparedBoard, type RoomState, type 
  * A key whose data is gone (no round, no player, no words) is deleted.
  */
 
-/** What `room` holds: players without their round words. */
+/**
+ * What `room` holds: players without their round words. A player stored before the
+ * words count (RESULT-02) has no `words`, and comes back with 0 (Edge Cases).
+ */
 type RoomRecord = Omit<RoomState, 'solutions' | 'nextRound' | 'nextSolutions' | 'rateWindow' | 'players'> & {
-  players: Omit<Player, 'found'>[];
+  players: (Omit<Player, 'found' | 'words'> & { words?: number })[];
 };
 
 interface NextRecord {
@@ -61,7 +64,7 @@ export async function loadRoom(storage: DurableObjectStorage): Promise<RoomState
   return {
     ...record,
     settings: sanitizeLoadedSettings(record.settings),
-    players: record.players.map((p) => ({ ...p, found: found.get(`${FOUND}${p.id}`) ?? [] })),
+    players: record.players.map((p) => ({ ...p, words: p.words ?? 0, found: found.get(`${FOUND}${p.id}`) ?? [] })),
     solutions: solutions ?? null,
     nextRound: next?.board ?? null,
     nextSolutions: next?.solutions ?? null,
