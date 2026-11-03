@@ -1,6 +1,6 @@
 /* The result (TVRES-01, tv-round-result.png). Everything in rem: the root scales the whole screen (AD-016). */
 .result {
-  padding: 4.875rem 6rem 0;
+  padding: 3.25rem 6rem 1.5rem;
 }
 
 .result__header {

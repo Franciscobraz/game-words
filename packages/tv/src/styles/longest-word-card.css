@@ -8,7 +8,8 @@
   justify-content: space-between;
   /* Grows over the board's free space when many long nicknames found the word (Edge Cases). */
   min-height: 9.375rem;
-  margin-top: 1.625rem;
+  /* Above the board (RESULT-02 AC 8). */
+  margin-bottom: 1.625rem;
   padding: 0.5rem 1.5rem;
   border-left: 0.5rem solid var(--color-action);
   border-radius: var(--radius-xl);

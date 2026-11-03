@@ -713,10 +713,10 @@ T39 → T40 → T41 → T42 → T43 → T44
 
 **Done when**:
 
-- [ ] C68-C72
-- [ ] `result.spec.ts` da TV verde, inclusive "fits the result with ten players and long nicknames at both ends of the screens"
-- [ ] Gate check passes
-- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+- [x] C68-C72
+- [x] `result.spec.ts` da TV verde, inclusive "fits the result with ten players and long nicknames at both ends of the screens"
+- [x] Gate check passes
+- [x] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: e2e
 **Gate**: full

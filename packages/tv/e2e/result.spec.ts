@@ -9,6 +9,7 @@ import {
   DUDA,
   lobbyWelcome,
   resultPlayers,
+  resultRoundResults,
   roundWelcome,
   SAMPLE_BOARD,
   SAMPLE_CODE,
@@ -161,12 +162,90 @@ test('lights the tiles of the longest word one by one, in its order', async ({ p
   expect((await litLetters()).sort()).toEqual(['E', 'N', 'O', 'R', 'S', 'T']);
 });
 
-test('shows the round between rounds', async ({ page }) => {
-  await openResult(page, [{ ...ANA, score: 3 }]);
+/** The cards on top, from the first place, by their players' ids. */
+async function cardOrder(page: Page): Promise<string[]> {
+  return page.locator('.podium-card').evaluateAll((cards) => cards.map((card) => card.getAttribute('data-testid') ?? ''));
+}
 
-  await expect(page.getByTestId('result-title')).toHaveText('Resultado·Rodada 1 de 3');
+test('ranks by the round between rounds', async ({ page }) => {
+  // Ana leads the match, but Beto and then Caio scored the most in round 2.
+  const ana = { ...ANA, score: 50, words: 20 };
+  const beto = { ...BETO, score: 12, words: 6 };
+  const caio = { ...CAIO, connected: true, score: 20, words: 9 };
+  const round = [roundOf(ana, 1, 2), roundOf(beto, 4, 9), roundOf(caio, 3, 7)];
+
+  await openResult(page, [ana, beto, caio], noWords([], { index: 1, players: round }));
+
+  await expect(page.getByTestId('standings-title')).toHaveText('Classificação da Rodada 2');
+  await expect(page.getByTestId('result-screen')).not.toContainText('Após Rodada');
+  expect(await cardOrder(page)).toEqual([`podium-card-${BETO.id}`, `podium-card-${CAIO.id}`, `podium-card-${ANA.id}`]);
+  await expect(page.getByTestId(`podium-card-${BETO.id}`)).toHaveText(/^Beto.*1º4 plvrs·9pts$/);
+  await expect(page.getByTestId(`podium-card-${ANA.id}`)).toHaveText(/^Ana3º1 plvr·2pts$/);
+  await expect(page.getByTestId('result-title')).toHaveText('Resultado·Rodada 2 de 3');
   await expect(page.getByTestId('result-footer')).toHaveText('Aguardando Ana avançar…');
   await expect(page.getByTestId('confetti')).toHaveCount(0);
+});
+
+test('ranks by the match after the last round', async ({ page }) => {
+  // Beto won the last round, but the match goes Ana, Caio, Beto.
+  const ana = { ...ANA, score: 50, words: 20 };
+  const beto = { ...BETO, score: 30, words: 12 };
+  const caio = { ...CAIO, connected: true, score: 31, words: 9 };
+  const round = [roundOf(ana, 1, 1), roundOf(beto, 8, 20), roundOf(caio, 2, 3)];
+
+  await openResult(page, [ana, beto, caio], noWords([], { index: 2, last: true, players: round }));
+
+  await expect(page.getByTestId('standings-title')).toHaveText('Classificação da Partida');
+  expect(await cardOrder(page)).toEqual([`podium-card-${ANA.id}`, `podium-card-${CAIO.id}`, `podium-card-${BETO.id}`]);
+  await expect(page.getByTestId(`podium-card-${ANA.id}`)).toHaveText(/^Ana.*1º20 plvrs·50pts$/);
+  await expect(page.getByTestId(`podium-card-${CAIO.id}`)).toHaveText(/^Caio2º9 plvrs·31pts$/);
+  await expect(page.getByTestId(`podium-card-${BETO.id}`)).toHaveText(/^Beto3º12 plvrs·30pts$/);
+});
+
+test('shows the longest word card above the board', async ({ page }) => {
+  await openResult(page, resultPlayers(), resultRoundResults());
+
+  for (const screen of SCREENS) {
+    await page.setViewportSize(screen);
+    const card = (await page.getByTestId('longest-word').boundingBox())!;
+    const board = (await page.getByTestId('board').boundingBox())!;
+
+    expect(card.y + card.height, `${screen.width}x${screen.height}`).toBeLessThanOrEqual(board.y);
+    expect(card.x, `${screen.width}x${screen.height}`).toBeLessThanOrEqual(board.x);
+  }
+});
+
+test('shows only the code and the qr on the code card', async ({ page }) => {
+  await openResult(page, resultPlayers(), resultRoundResults());
+  const card = page.getByTestId('result-screen').locator('.room-card');
+
+  await expect(card).toHaveText(SAMPLE_CODE);
+  await expect(card.getByTestId('room-qr')).toBeVisible();
+  await expect(page.getByTestId('result-screen')).not.toContainText('CÓDIGO DA SALA');
+});
+
+test('keeps the words and points after a reload', async ({ page }) => {
+  const players = resultPlayers();
+  const results = resultRoundResults();
+  await openResult(page, players, results);
+  const cardsBefore = await page.locator('.podium-card').allTextContents();
+  const linesBefore = await page.locator('.standing-line').allTextContents();
+
+  // A reload: the same TV opens again, and the server sends the result's welcome and then the results (WORDCTL-01 AC 11).
+  const reloaded = await page.context().newPage();
+  await reloaded.clock.install({ time: SAMPLE_END + 60_000 });
+  await reloaded.clock.pauseAt(SAMPLE_END + 60_000);
+  const room = await fakeRoom(reloaded, { ...roundWelcome(players, players[0]!.id), phase: 'results' });
+  await reloaded.goto('/');
+  // The welcome opens the result's screen, still empty until the results arrive.
+  await expect(reloaded.getByTestId('result-screen')).toBeVisible();
+  room.push(results);
+  await reloaded.clock.runFor(TICK_MS);
+
+  await expect(reloaded.locator('.podium-card')).toHaveText(cardsBefore);
+  await expect(reloaded.locator('.standing-line')).toHaveText(linesBefore);
+  expect(cardsBefore[0]).toMatch(/14 plvrs·34pts$/);
+  expect(linesBefore.at(-1)).toMatch(/1 plvr·1pt$/);
 });
 
 test('shows the winner and the confetti after the last round', async ({ page }) => {

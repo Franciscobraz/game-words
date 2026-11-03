@@ -1,4 +1,4 @@
-import type { PlayerInfo, ResultWord, RoundResultsMessage, Settings, SharedWord, WelcomeMessage } from '@bwords/core';
+import type { PlayerInfo, PlayerResult, ResultWord, RoundResultsMessage, Settings, SharedWord, WelcomeMessage } from '@bwords/core';
 
 /** The sample data of the captures: room KBXT, host Ana, and the board C A S A / Qu E R O / T I N S / L U A M. */
 
@@ -124,4 +124,27 @@ export function resultPlayers(): PlayerInfo[] {
     samplePlayer('p9', 'Rafael', '#84CC16', { score: 3 }),
     samplePlayer('p10', 'Bia', '#3B82F6', { score: 1 }),
   ];
+}
+
+/** The words and points of round 1 that tv-round-result.png draws, in the order of `resultPlayers`. */
+const RESULT_ROUND: readonly (readonly [words: number, points: number])[] = [
+  [14, 34],
+  [11, 25],
+  [8, 16],
+  [7, 14],
+  [6, 11],
+  [5, 9],
+  [4, 7],
+  [3, 5],
+  [2, 3],
+  [1, 1],
+];
+
+/** The results of round 1 as tv-round-result.png draws them: every player's words and points of the round. */
+export function resultRoundResults(): RoundResultsMessage {
+  const players: PlayerResult[] = resultPlayers().map((player, index) => {
+    const [roundWords, roundPoints] = RESULT_ROUND[index]!;
+    return { playerId: player.id, unique: SAMPLE_UNIQUE[player.id] ?? [], roundPoints, roundWords, score: player.score, words: roundWords };
+  });
+  return { ...sampleResults(), players };
 }

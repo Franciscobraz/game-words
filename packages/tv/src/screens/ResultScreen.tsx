@@ -14,10 +14,12 @@ import { resultHeader, standingsTitle } from '../model/result-header.ts';
 import { standings } from '../model/standings.ts';
 import { useServerClock } from '../state/server-clock.ts';
 import { useStore } from '../state/store.ts';
-import { STRINGS } from '../strings/pt-BR.ts';
 import '../styles/result.css';
 
-/** The result: the board with the longest word, the accumulated score, and what the host decides next (TVRES-01). */
+/**
+ * The result: the longest word above the board, the words and points of the round or of the match, and what the host
+ * decides next (TVRES-01, RESULT-02).
+ */
 export function ResultScreen() {
   const { room, reveal } = useStore();
   const { code, players, hostId, round, settings } = room.room.value;
@@ -44,15 +46,15 @@ export function ResultScreen() {
             )}
             {header.title}
           </h1>
-          <RoomCard label={STRINGS.roomCodeLabel} code={roomCode} matrix={matrix} size="result" />
+          <RoomCard label={null} code={roomCode} matrix={matrix} size="result" />
         </div>
       </header>
       <div class="result__body">
         <div class="result__left">
+          {results.longest !== null && <LongestWordCard card={longestCard(results.longest, players)} />}
           <div class="result__board-panel">
             {round !== null && <LitBoard round={round} settings={settings} path={results.longest?.path ?? []} />}
           </div>
-          {results.longest !== null && <LongestWordCard card={longestCard(results.longest, players)} />}
         </div>
         <div class="result__right">
           <div class="result__standings-title">
