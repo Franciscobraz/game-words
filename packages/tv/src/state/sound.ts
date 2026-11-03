@@ -1,6 +1,6 @@
 import { type ReadonlySignal, signal } from '@preact/signals';
 import type { AudioDevice } from '../device/audio.ts';
-import { type CueMoment, cuesBetween } from '../model/audio-cues.ts';
+import { type AudioCue, type CueMoment, cuesBetween } from '../model/audio-cues.ts';
 import type { RevealPlan } from '../model/reveal.ts';
 import type { RoomView } from '../model/room-view.ts';
 
@@ -24,6 +24,8 @@ export interface SoundStore {
    * first clock sample are the TV's own clock, which can be minutes ahead, so the count starts at the first synced one.
    */
   tick(serverNow: number): void;
+  /** Plays `cue` now, in the room's volume and mute; the list of words asks for its "check" this way (WORDCTL-01 AC 15). */
+  play(cue: AudioCue): void;
 }
 
 /** Links the room and the clock to the audio device; `cuesBetween` decides, and this only plays. */
@@ -53,9 +55,14 @@ export function createSoundStore({ audio, room, plan, clockSynced }: SoundDeps):
       };
       const cues = cuesBetween(lastMoment, moment);
       lastMoment = moment;
-      const { settings } = view;
-      if (settings === null) return;
-      for (const cue of cues) audio.play(cue, settings.volume, settings.muted);
+      for (const cue of cues) play(cue);
     },
+    play,
   };
+
+  function play(cue: AudioCue): void {
+    const { settings } = room.peek();
+    if (settings === null) return;
+    audio.play(cue, settings.volume, settings.muted);
+  }
 }

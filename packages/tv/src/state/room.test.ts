@@ -101,6 +101,24 @@ describe('opening the room', () => {
     expect(store.room.value.phase).toBe('round');
   });
 
+  test('hands the host steps to the listeners after the view took the message in', async () => {
+    // WORDCTL-01 AC 5-6: the server's scroll reaches the list of words through the room store.
+    const { sockets, store } = setup(SAVED_ROOM);
+    const heard: { type: string; phase: string | null }[] = [];
+    store.onMessage((msg) => heard.push({ type: msg.type, phase: store.room.value.phase }));
+    store.open();
+    await settle();
+    sockets.last().open();
+
+    sockets.last().receive(welcome(SAVED_ROOM.code, 'words'));
+    sockets.last().receive({ type: 'scroll', direction: 'down' });
+
+    expect(heard).toEqual([
+      { type: 'welcome', phase: 'words' },
+      { type: 'scroll', phase: 'words' },
+    ]);
+  });
+
   test.each<ErrorCode>(['bad-token', 'room-not-found'])('creates a new room when the token is refused: %s', async (code) => {
     const { clock, sockets, tokens, store, requests } = setup(SAVED_ROOM);
     store.open();

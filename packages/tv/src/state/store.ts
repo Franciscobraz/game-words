@@ -4,12 +4,14 @@ import type { AudioDevice } from '../device/audio.ts';
 import { createRevealClock, type RevealClock } from './reveal.ts';
 import { createRoomStore, type RoomDeps, type RoomStore } from './room.ts';
 import { createSoundStore, type SoundStore } from './sound.ts';
+import { createWordScrollStore, type WordScrollStore } from './word-scroll.ts';
 
 /** The TV's state: signals and actions, one store per app (AD-015). */
 export interface TvStore {
   room: RoomStore;
   reveal: RevealClock;
   sound: SoundStore;
+  words: WordScrollStore;
   /** A key or a click, the only input a TV has: it unlocks the sound and does what the room is waiting for (TVEXIT-01 AC 3, 10, TVAUDIO-01 AC 4). */
   press(): void;
 }
@@ -22,10 +24,21 @@ export function createTvStore(deps: RoomDeps, audio: AudioDevice): TvStore {
   const room = createRoomStore(deps);
   const reveal = createRevealClock({ room: room.room, serverNow: room.serverNow, clockSynced: room.clockSynced });
   const sound = createSoundStore({ audio, room: room.room, plan: reveal.plan, clockSynced: room.clockSynced });
+  const words = createWordScrollStore({
+    room: room.room,
+    plan: reveal.plan,
+    results: reveal.results,
+    serverNow: room.serverNow,
+    playCheck: () => sound.play('check'),
+  });
+  room.onMessage((msg) => {
+    if (msg.type === 'scroll') words.step(msg.direction);
+  });
   return {
     room,
     reveal,
     sound,
+    words,
     press() {
       sound.unlock();
       room.pressOk();

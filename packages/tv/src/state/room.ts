@@ -60,6 +60,8 @@ export interface RoomStore {
   open(): void;
   /** A key or a click: on "Sala expirada" it opens a new room, and after the reconnect limit it tries again (TVEXIT-01 AC 3, 10). */
   pressOk(): void;
+  /** Hands every server message to `listener` after the view took it in; the host's steps through the words go this way. */
+  onMessage(listener: (msg: ServerMessage) => void): void;
 }
 
 /** Creates the room signals and actions over one connection. */
@@ -70,6 +72,7 @@ export function createRoomStore(deps: RoomDeps): RoomStore {
   const connectionLoss = signal<ConnectionLoss>('none');
   const clockSynced = signal(false);
   let cancelNoConnection: (() => void) | null = null;
+  const listeners: ((msg: ServerMessage) => void)[] = [];
 
   const link = deps.openConnection({
     onMessage: receive,
@@ -121,6 +124,7 @@ export function createRoomStore(deps: RoomDeps): RoomStore {
     if (msg.type === 'welcome') setLoss('none');
     if (isRoomRefused(msg)) replaceRoom();
     if (msg.type === 'closed') endRoom(closeAction(msg.reason));
+    for (const listener of listeners) listener(msg);
   }
 
   /** The connection already stopped by itself when `closed` arrived; what is left is the room (TVEXIT-01 AC 1-2, 4). */
@@ -187,6 +191,9 @@ export function createRoomStore(deps: RoomDeps): RoomStore {
       const { closeReason } = room.value;
       if (closeReason !== null && closeAction(closeReason) === 'wait-for-press') replaceRoom();
       if (connectionLoss.value === 'gave-up') link.retry();
+    },
+    onMessage(listener) {
+      listeners.push(listener);
     },
   };
 }

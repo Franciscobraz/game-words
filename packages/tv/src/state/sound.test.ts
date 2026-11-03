@@ -96,6 +96,19 @@ describe('createSoundStore', () => {
     expect(context.oscillators).toHaveLength(1);
   });
 
+  test('plays a cue asked for now, in the volume and mute of the room', () => {
+    // WORDCTL-01 AC 15: the list asks for its "check" whenever a word becomes highlighted.
+    const { context, room, sound } = setup();
+
+    sound.play('check');
+    const played = context.oscillators.length;
+    room.value = { ...IN_ROUND, settings: { ...SETTINGS, muted: true } };
+    sound.play('check');
+
+    expect(played).toBeGreaterThan(0);
+    expect(context.oscillators).toHaveLength(played);
+  });
+
   test('takes the notice away after unlocking', async () => {
     const { sound } = setup(IN_ROUND, 'suspended');
     expect(sound.blocked.value).toBe(true);
