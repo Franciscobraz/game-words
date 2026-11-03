@@ -50,6 +50,8 @@ Os itens 3 e 6 e o pódio sincronizado contrariam decisões e critérios aprovad
 - O lobby do anfitrião tem a opção "Música", para ligar e desligar.
 - user: "concordo com o recomendado, depois eu decido se coloco outra musica" (pergunta 4); "concordo" (pergunta 5); "sim" (pergunta 6)
 
+- Emenda de 2026-11-03: quatro músicas em todas as telas da TV (lobby; partida, 1,5x mais rápida só no ritmo nos últimos 15 s de cada rodada; vinheta de 30 s entre as rodadas; partida finalizada no pódio), silêncio só na aba substituída, "Reconectando…" mantém a música, 50% do volume dos efeitos, nenhuma música no celular. user: "Certifique-se que em todas as telas tenham algum musica tocando, nós temos musica do lobby, musica de partida em progresso que deve ser acelerada em 1.5x nos últimos 15s da partida e a musica de partida finalizada no pódio. o volume da musica pode ser 50% do volume dos efeitos."; user: "quando falei \"todas as telas agora\" quis dizer \"todas as telas da TV\""; user: "Mantenha o recomendado para as três"
+
 ### Rotas
 
 - `/` abre a TV, e `/tv` continua funcionando.

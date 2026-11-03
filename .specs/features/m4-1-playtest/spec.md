@@ -2,6 +2,8 @@
 
 **Approved**: 2026-11-03 - user: "Sim, aprovo" (pergunta: "Sigo as duas recomendações e aprova o spec?")
 
+**Amended**: 2026-11-03 - MUSIC-01 AC 1-16: quatro músicas em todas as telas da TV, aceleração nos últimos 15 s, 50% do volume dos efeitos; user: "Certifique-se que em todas as telas tenham algum musica tocando, nós temos musica do lobby, musica de partida em progresso que deve ser acelerada em 1.5x nos últimos 15s da partida e a musica de partida finalizada no pódio. o volume da musica pode ser 50% do volume dos efeitos."; user: "quando falei \"todas as telas agora\" quis dizer \"todas as telas da TV\""; user: "Mantenha o recomendado para as três"
+
 ## Problem Statement
 
 O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcionou, mas mostrou o que atrapalha uma partida na sala de casa: a TV entra em descanso, a lista de palavras corre rápido demais e some sozinha, a sala fica em silêncio, o celular dá zoom com toques rápidos, o resultado não diz quantas palavras cada um achou e os celulares mostram o pódio antes da TV. Esta feature corrige isso e fecha as pendências deixadas pelo M4.
@@ -49,9 +51,8 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 | Texto da tela intermediária | "Olhe para a TV" e, abaixo, "As palavras da rodada estão passando lá" | Diz o que fazer e por quê | n - default |
 | Pódio sincronizado | Na última rodada, os celulares ficam em "Olhe para a TV" até o anfitrião tocar "Ver resultado"; TV e celulares mudam juntos | Pedido do user | y - user: "Sincronize a exibição do pódio no mesmo momento entre a tv e os celulares" |
 | Rodadas do meio | O resultado da rodada no celular também espera "Ver resultado", como o pódio | A mesma regra em toda rodada | n - default |
-| Música de fundo | Original, calma, no estilo de jogos antigos, gerada no navegador; da primeira contagem até a lista da última rodada; continua de onde parou, sem recomeçar; em silêncio no lobby; mais baixa que os outros sons | Pedido do user | y - user: "concordo com o recomendado, depois eu decido se coloco outra musica" |
-| Vinheta do resultado | Uma só, animada, de cerca de 30 s, em loop enquanto o resultado estiver na tela, em toda rodada; a música de fundo fica em silêncio no resultado | Pedido do user | y - user: "Mantenha a mesma vinheta em todas as salas, ela deve ser mais longa, pode ter 30s e ficar rodando em looping." |
-| Opção "Música" | No lobby do anfitrião; ligada por padrão; desliga a música de fundo e a vinheta, e os outros sons continuam | Abaixar o volume da TV abaixaria tudo | y - user: "sim" |
+| Músicas da TV | Quatro, originais, geradas no navegador: lobby (lobby, abrindo a sala, sala expirada); partida (contagem, rodada, "Tempo!", lista), 1,5x mais rápida só no ritmo nos últimos 15 s de cada rodada e de volta ao normal na rodada seguinte, continuando de onde parou; vinheta de 30 s em loop no resultado entre as rodadas; partida finalizada, mais festiva, no resultado da última rodada; silêncio só na aba substituída; "Reconectando…" mantém a música da tela; a 50% do volume dos efeitos; só na TV | Pedido do user | y - user: "Certifique-se que em todas as telas tenham algum musica tocando, nós temos musica do lobby, musica de partida em progresso que deve ser acelerada em 1.5x nos últimos 15s da partida e a musica de partida finalizada no pódio. o volume da musica pode ser 50% do volume dos efeitos."; user: "quando falei \"todas as telas agora\" quis dizer \"todas as telas da TV\""; user: "Mantenha o recomendado para as três" |
+| Opção "Música" | No lobby do anfitrião; ligada por padrão; desliga todas as músicas, e os outros sons continuam | Abaixar o volume da TV abaixaria tudo | y - user: "sim"; user: "Mantenha o recomendado para as três" |
 | Música e áudio bloqueado | A música e a vinheta só tocam depois que o navegador libera o som, como os outros sons (TVAUDIO-01 do M4) | Regra do navegador | y - fato de plataforma |
 | Resultado: valores | Entre as rodadas, pontos e palavras da rodada; no resultado da última, a soma da partida dos dois | Coerência entre pontos e palavras | y - user: "deve ser mostrados pontos e palavras por rodada, na rodada final mostrar o somatorio dos 2 valores." |
 | Resultado: ordem | Entre as rodadas, pelos pontos da rodada, com "Classificação da Rodada N"; na última, pela soma da partida, com "Classificação da Partida" | Os números e as posições contam a mesma história | y - user: "Sim, pela rodada" |
@@ -169,22 +170,28 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 
 ### P2: Música e vinheta
 
-**User Story**: Como jogador, quero uma música calma durante a partida e uma vinheta animada no resultado, para a sala não ficar em silêncio.
+**User Story**: Como jogador, quero música em todas as telas da TV, que acelera no fim da rodada e comemora no pódio, para a sala não ficar em silêncio.
 
 **Why P2**: AD-028; o jogo funciona sem ela.
 
 **Acceptance Criteria**:
 
-1. WHILE a partida está entre a primeira contagem e o fim da lista de palavras da última rodada, the TV SHALL tocar a música de fundo
-2. WHEN a música de fundo volta depois de um resultado THEN the TV SHALL continuá-la de onde parou
-3. WHILE a TV mostra o lobby, the TV SHALL ficar sem música
-4. WHILE a TV mostra o resultado de qualquer rodada, the TV SHALL tocar a vinheta em loop e deixar a música de fundo em silêncio
-5. The TV SHALL tocar a música de fundo e a vinheta mais baixas que os outros sons
-6. The TV SHALL gerar a música de fundo e a vinheta no navegador, sem arquivo de áudio
-7. The vinheta SHALL ter cerca de 30 s antes de recomeçar
-8. WHERE o anfitrião desliga a opção "Música" no lobby, the TV SHALL ficar sem música de fundo e sem vinheta, e tocar os outros sons
-9. The opção "Música" SHALL começar ligada numa sala nova
-10. IF o navegador ainda não liberou o som THEN the TV SHALL tocar a música e a vinheta só depois da liberação, a partir do ponto em que estariam
+1. WHILE a TV mostra o lobby, "abrindo a sala" ou "sala expirada", the TV SHALL tocar a música do lobby
+2. WHILE a TV mostra a contagem, a rodada, "Tempo!" ou a lista de palavras, the TV SHALL tocar a música da partida
+3. WHEN faltam 15 s para o fim de uma rodada THEN the TV SHALL tocar a música da partida 1,5x mais rápida, sem mudar o tom, até o fim da rodada
+4. WHEN a contagem da rodada seguinte começa THEN the TV SHALL tocar a música da partida na velocidade normal
+5. WHEN a música da partida volta depois de um resultado THEN the TV SHALL continuá-la de onde parou
+6. WHILE a TV mostra o resultado de uma rodada que não é a última, the TV SHALL tocar a vinheta em loop
+7. WHILE a TV mostra o resultado da última rodada, the TV SHALL tocar em loop a música de partida finalizada
+8. WHILE a TV mostra "A TV foi aberta em outra aba", the TV SHALL ficar sem música
+9. WHILE a TV mostra "Reconectando…", the TV SHALL manter a música da tela em que estava
+10. The TV SHALL tocar toda música a 50% do volume dos efeitos
+11. The TV SHALL gerar as quatro músicas no navegador, sem arquivo de áudio
+12. The vinheta SHALL ter cerca de 30 s antes de recomeçar
+13. WHERE o anfitrião desliga a opção "Música" no lobby, the TV SHALL ficar sem nenhuma música e tocar os outros sons
+14. The opção "Música" SHALL começar ligada numa sala nova
+15. IF o navegador ainda não liberou o som THEN the TV SHALL tocar a música só depois da liberação, a partir do ponto em que estaria
+16. The celular SHALL tocar só os efeitos, sem música
 
 **Independent Test**: Jogar duas rodadas ouvindo a música na contagem, na rodada e na lista, a vinheta no resultado, e desligar a opção "Música" no lobby.
 
@@ -281,13 +288,13 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 | WORDCTL-01 | P1: Lista de palavras conduzida pelo anfitrião (AC 1-17) | Design | Pending |
 | SYNC-01 | P1: Celulares sincronizados com a TV (AC 1-6) | Design | Pending |
 | RESULT-02 | P1: Resultado com pontos e palavras (AC 1-10) | Design | Pending |
-| MUSIC-01 | P2: Música e vinheta (AC 1-10) | Design | Pending |
+| MUSIC-01 | P2: Música e vinheta (AC 1-16) | Design | Pending |
 | FEEDBACK-02 | P2: Retorno da palavra no celular (AC 1-6) | Design | Pending |
 | ROUTE-01 | P1: Rotas (AC 1-7) | Design | Pending |
 | NOZOOM-01 | P1: Celular sem zoom (AC 1-3) | Design | Pending |
 | M4FIX-01 | P1: Pendências do M4 (AC 1-5) | Design | Pending |
 
-**Coverage:** 69 total, 0 mapped to tasks, 69 unmapped ⚠️
+**Coverage:** 75 total
 
 ---
 

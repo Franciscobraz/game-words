@@ -197,6 +197,7 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 - **Data:** 2026-11-03
 - **Decisão:** a TV toca uma música original, calma, gerada no navegador, da primeira contagem até a lista da última rodada, e uma vinheta animada de cerca de 30 s em loop em todo resultado; o lobby do anfitrião tem a opção "Música". Diverge de DESIGN §4.4 (sem música no MVP).
 - **Motivo:** teste em família. user: "o silencio na sala pode ser um problema"; "Mantenha a mesma vinheta em todas as salas, ela deve ser mais longa, pode ter 30s e ficar rodando em looping."
+- Complemento (2026-11-03): música em todas as telas da TV, com quatro músicas (lobby; partida, 1,5x mais rápida nos últimos 15 s de cada rodada; vinheta entre as rodadas; partida finalizada no pódio), a 50% do volume dos efeitos, e nenhuma no celular. user: "Certifique-se que em todas as telas tenham algum musica tocando, nós temos musica do lobby, musica de partida em progresso que deve ser acelerada em 1.5x nos últimos 15s da partida e a musica de partida finalizada no pódio. o volume da musica pode ser 50% do volume dos efeitos."; user: "quando falei \"todas as telas agora\" quis dizer \"todas as telas da TV\""; user: "Mantenha o recomendado para as três"
 
 ### AD-029 - Sem "Após Rodada N" no resultado (active)
 

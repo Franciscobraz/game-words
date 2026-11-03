@@ -1365,7 +1365,7 @@ Proof: walk - caminhada do user na TV e num celular reais; resultado em `**Walke
 The feature's live state, written as it happens - a compaction gives no warning.
 
 **Settled mid-build:** padrões da apresentação das tarefas aceitos com a aprovação: celulares recebem pontos e contagem de palavras, sem palavras, antes de "Ver resultado"; a música de fundo continua entre partidas e só recomeça ao recarregar a TV; sem chip "Música" no lobby da TV; peças de palavra curta demais voltam ao normal; user: "aprovo as tarefas"; none
-**Dispatched:** batch worker fase 1 (T1-T8) a partir do commit seguinte a 3b2216b (push feito em 3b2216b a pedido do user)
+**Dispatched:** batch worker fase 1 (T1-T8) a partir do commit seguinte a 3b2216b (push feito em 3b2216b a pedido do user) - returned (T1 7901080, T2 145010e, T3 6830435, T4 ed36908, T5 997f084, T6 d8e4646, T7 c2580cf, T8 d29292a; vitest 1042 e tsc verdes, conferidos pelo orquestrador em d29292a; phone e2e 78+1 e tv e2e 77+1 vermelhos só em `full-match.spec.ts`, dentro da janela; `match.test.ts` do servidor vermelho de T3 a T6, fora da janela prevista, verde desde T6; sala guardada antes da mudança não tem o campo `words` dos jogadores, sem default). MUSIC-01 emendado depois do batch 1: as tarefas da fase 6 precisam ser reescritas antes do batch 5
 **Walked:** none
 
 ---
