@@ -198,6 +198,12 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 - **Decisão:** a TV toca uma música original, calma, gerada no navegador, da primeira contagem até a lista da última rodada, e uma vinheta animada de cerca de 30 s em loop em todo resultado; o lobby do anfitrião tem a opção "Música". Diverge de DESIGN §4.4 (sem música no MVP).
 - **Motivo:** teste em família. user: "o silencio na sala pode ser um problema"; "Mantenha a mesma vinheta em todas as salas, ela deve ser mais longa, pode ter 30s e ficar rodando em looping."
 
+### AD-029 - Sem "Após Rodada N" no resultado (active)
+
+- **Data:** 2026-11-03
+- **Decisão:** o resultado da TV não mostra "Após Rodada N" ao lado do título; "Classificação da Rodada N" já diz a rodada (AD-027). Diverge de `m4-1-playtest/captures/tv-round-result.png`.
+- **Motivo:** pergunta: "\"Após Rodada N\" sai do resultado? [...] Recomendo tirar, porque o título \"Classificação da Rodada N\" já diz a rodada." user: "Sim, aprovo"
+
 ## Handoff
 
 - **Data:** 2026-11-03
