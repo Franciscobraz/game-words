@@ -7,7 +7,7 @@ import '@bwords/theme/tokens.css';
 import './styles/tokens.css';
 import './styles/app.css';
 import { App } from './app.tsx';
-import { playHitSound } from './device/hit-sound.ts';
+import { createHitSound } from './device/hit-sound.ts';
 import { browserStorage } from './device/storage.ts';
 import { canVibrate, vibrate } from './device/vibration.ts';
 import { browserWakeLock, onPageVisible } from './device/wake-lock.ts';
@@ -21,7 +21,7 @@ const store = createPhoneStore({
     createRoomConnection({ openSocket: browserSocket, now: () => Date.now(), schedule: browserSchedule, ...handlers }),
   storage: browserStorage,
   schedule: browserSchedule,
-  device: { vibrate, playHitSound, canVibrate },
+  device: { vibrate, playHitSound: createHitSound(() => new AudioContext()), canVibrate },
   wakeLock: browserWakeLock(),
   onVisible: onPageVisible,
 });
