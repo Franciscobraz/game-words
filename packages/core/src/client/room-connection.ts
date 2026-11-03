@@ -187,7 +187,9 @@ export function createRoomConnection(options: ConnectionOptions): RoomConnection
 
   function startReconnecting(): void {
     setStatus('reconnecting');
-    cancelOffline = schedule(goOffline, reconnect.giveUpAfterMs);
+    // One deadline per drop: a socket that opened and dropped before the welcome keeps the first one,
+    // which the welcome cancels (M4FIX-01 AC 1).
+    cancelOffline ??= schedule(goOffline, reconnect.giveUpAfterMs);
   }
 
   function scheduleNextAttempt(): void {

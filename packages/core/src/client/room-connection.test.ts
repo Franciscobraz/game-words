@@ -308,6 +308,40 @@ describe('reconnecting', () => {
     expect(status()).toBe('open');
   });
 
+  test('keeps one offline deadline when a socket drops before the welcome', () => {
+    // M4FIX-01 AC 1: a socket that opens and drops again before any welcome leaves no second deadline behind,
+    // so the connection that then gets its welcome stays up past the 30 s of the first drop.
+    const { sockets, connection, status, clock } = setup();
+    connection.connect('KBXT', 'secret-beto');
+    sockets.last().open();
+    sockets.last().drop();
+    clock.advance(RECONNECT_DELAYS_MS[0]);
+    sockets.last().open();
+    sockets.last().drop();
+    clock.advance(RECONNECT_DELAYS_MS[1]);
+    sockets.last().open();
+
+    sockets.last().receive({
+      type: 'welcome',
+      role: 'player',
+      code: 'KBXT',
+      phase: 'lobby',
+      settings: { size: 4, seconds: 60, rounds: 1, minLength: 3, filterProfanity: true, pack: 'pt-BR', volume: 100, muted: false, music: true },
+      players: [],
+      hostId: null,
+      round: null,
+      playerId: null,
+      found: [],
+      salt: null,
+    });
+    const socketsAfterWelcome = sockets.opened.length;
+    clock.advance(DEFAULT_RECONNECT_POLICY.giveUpAfterMs * 2);
+
+    expect(status()).toBe('open');
+    expect(sockets.opened).toHaveLength(socketsAfterWelcome);
+    expect(sockets.last().closedByClient).toBe(false);
+  });
+
   test('retry starts reconnecting again with a fresh 30 second window', () => {
     const { sockets, connection, status, advanceFailing } = setup();
     connection.connect('KBXT', 'secret-beto');
