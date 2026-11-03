@@ -1,8 +1,8 @@
 import type { Phase, RoundInfo } from '@bwords/core';
 import { ALERT_REMAINING_MS } from './clock.ts';
 
-/** Every sound of the TV (design: `device/audio.ts`). */
-export type AudioCue = 'round-start' | 'last-seconds' | 'time-up' | 'words-start';
+/** Every sound of the TV (design: `device/audio.ts`); `check` marks each highlighted word (WORDCTL-01 AC 15). */
+export type AudioCue = 'round-start' | 'last-seconds' | 'time-up' | 'words-start' | 'check';
 
 /** What the cues depend on, at one reading of the clock. */
 export interface CueMoment {

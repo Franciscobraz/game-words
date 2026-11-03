@@ -1,9 +1,10 @@
+import { CHECK_SOUND } from '@bwords/core';
 import { describe, expect, test } from 'vitest';
 import type { AudioCue } from '../model/audio-cues.ts';
 import { fakeAudioContext, type FakeGain } from '../testing/fake-audio.ts';
 import { createAudio } from './audio.ts';
 
-const CUES: readonly AudioCue[] = ['round-start', 'last-seconds', 'time-up', 'words-start'];
+const CUES: readonly AudioCue[] = ['round-start', 'last-seconds', 'time-up', 'words-start', 'check'];
 
 describe('createAudio', () => {
   test.each(CUES)('follows the room volume and mute: %s', (cue) => {
@@ -57,6 +58,29 @@ describe('createAudio', () => {
     expect(depth.gain.value).toBeGreaterThan(0);
     expect(depth.target).toBe(whistle!.frequency);
     expect(vibrato!.stoppedAt).toBe(whistle!.stoppedAt);
+  });
+
+  test('plays the check of the shared recipe at the room volume', () => {
+    // WORDCTL-01 AC 15: the notes of CHECK_SOUND, the phone's "check", from the context's now; the room's mute silences it.
+    const context = fakeAudioContext('running');
+    const audio = createAudio(() => context);
+
+    audio.play('check', 100, false);
+    const fullVolume = context.outputs.map((output) => output.gain.peak);
+    audio.play('check', 50, false);
+    const halfVolume = context.outputs.slice(CHECK_SOUND.length).map((output) => output.gain.peak);
+    audio.play('check', 100, true);
+
+    const played = context.oscillators.map((note) => ({ wave: note.type, frequencyHz: note.frequency.value, startS: note.startedAt, stopS: note.stoppedAt }));
+    const check = (startS: number) =>
+      CHECK_SOUND.map((note) => ({ wave: note.wave, frequencyHz: note.frequencyHz, startS: startS + note.startS, stopS: startS + note.startS + note.durationS }));
+    expect(played).toEqual([...check(context.currentTime), ...check(context.currentTime)]);
+    const toneContext = fakeAudioContext('running');
+    createAudio(() => toneContext).play('round-start', 100, false);
+    const effectPeak = toneContext.loudestOutput();
+    expect(fullVolume).toHaveLength(CHECK_SOUND.length);
+    fullVolume.forEach((peak, index) => expect(peak).toBeCloseTo(effectPeak * CHECK_SOUND[index]!.gain));
+    halfVolume.forEach((peak, index) => expect(peak).toBeCloseTo(fullVolume[index]! / 2));
   });
 
   test('unlocks a suspended context', async () => {

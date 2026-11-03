@@ -1,4 +1,4 @@
-import type { AudioContextLike, GainNodeLike } from '@bwords/core';
+import { type AudioContextLike, CHECK_SOUND, type GainNodeLike, playNotes } from '@bwords/core';
 import type { AudioCue } from '../model/audio-cues.ts';
 
 /** The sounds of the TV, in the room's volume and mute (TVAUDIO-01). */
@@ -20,7 +20,7 @@ interface Tone {
 }
 
 /** The short tones: high to start, low to warn, and in between when the words begin (TVAUDIO-01 AC 1). */
-const TONES: Record<Exclude<AudioCue, 'time-up'>, Tone> = {
+const TONES: Record<Exclude<AudioCue, 'time-up' | 'check'>, Tone> = {
   'round-start': { frequencyHz: 880, durationS: 0.3 },
   'last-seconds': { frequencyHz: 440, durationS: 0.2 },
   'words-start': { frequencyHz: 660, durationS: 0.25 },
@@ -57,8 +57,7 @@ export function createAudio(createContext: () => AudioContextLike | null): Audio
       // A blocked context keeps its time still: a sound scheduled now would all come out at the unlock.
       if (context === null || muted || volume <= 0 || context.state === SUSPENDED) return;
       const peakGain = (volume / MAX_VOLUME) * FULL_VOLUME_GAIN;
-      if (cue === 'time-up') playWhistle(context, peakGain);
-      else playTone(context, TONES[cue], peakGain);
+      SOUNDS[cue](context, peakGain);
     },
     isBlocked: () => context !== null && context.state === SUSPENDED,
     async unlock() {
@@ -125,6 +124,16 @@ function playWhistle(context: AudioContextLike, peakGain: number): void {
     oscillator.stop(end);
   }
 }
+
+/** How each cue sounds (style guide §4, O): a new sound is a new entry. */
+const SOUNDS: Record<AudioCue, (context: AudioContextLike, peakGain: number) => void> = {
+  'round-start': (context, peakGain) => playTone(context, TONES['round-start'], peakGain),
+  'last-seconds': (context, peakGain) => playTone(context, TONES['last-seconds'], peakGain),
+  'words-start': (context, peakGain) => playTone(context, TONES['words-start'], peakGain),
+  'time-up': playWhistle,
+  // The same recipe as the phone's valid word (WORDCTL-01 AC 15, FEEDBACK-02 AC 2).
+  check: (context, peakGain) => playNotes(context, CHECK_SOUND, context.currentTime, peakGain),
+};
 
 /** The browser's context, or null when it has no Web Audio (TVAUDIO-01 AC 5). */
 export function browserAudioContext(): AudioContextLike | null {
