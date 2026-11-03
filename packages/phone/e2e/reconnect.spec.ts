@@ -4,7 +4,23 @@ import { wordOfPath } from '../src/model/path.ts';
 import { STRINGS } from '../src/strings/pt-BR.ts';
 import { type FakeRoom, fakeRoom } from './fake-room.ts';
 import { boardOf, swipe } from './round-room.ts';
-import { ANA, BETO, CAIO, DUDA, roundWelcome, SAMPLE_BOARD, SAMPLE_CODE, SAMPLE_WORDS, sampleHashFrame, sampleRound } from './samples.ts';
+import {
+  ANA,
+  BETO,
+  CAIO,
+  DUDA,
+  PODIUM_PLAYERS,
+  resultsWelcome,
+  roundWelcome,
+  SAMPLE_BOARD,
+  SAMPLE_CODE,
+  SAMPLE_PODIUM,
+  SAMPLE_WORDS,
+  sampleHashFrame,
+  sampleResults,
+  sampleRound,
+  SCORED_PLAYERS,
+} from './samples.ts';
 
 /** A scripted round whose server the test can take down and bring back. */
 interface FlakyRoom {
@@ -92,4 +108,33 @@ test('restores found words and flashes Conectado', async ({ page }) => {
     .sent()
     .flatMap((msg) => (msg.type === 'submit' ? msg.paths.map((path) => wordOfPath(SAMPLE_BOARD, path)) : []));
   expect(sentWords.filter((word) => word === 'lua')).toHaveLength(1);
+});
+
+test('shows the result or the podium after reconnecting once it was shown', async ({ page }) => {
+  // SYNC-01 AC 6: Ana already showed the result of round 1, and Beto's socket drops: the welcome of the reconnect, with
+  // the results, brings back the round result. Later the last result was shown, and after another drop the welcome
+  // brings the podium.
+  let stage: 'results' | 'podium' = 'results';
+  const room = await fakeRoom(page, (msg) => {
+    if (msg.type !== 'hello') return { replies: [] };
+    if (stage === 'results') return { replies: [resultsWelcome(SCORED_PLAYERS, BETO.id, []), sampleResults()] };
+    return { replies: [{ ...resultsWelcome(PODIUM_PLAYERS, BETO.id, [], 2), phase: 'podium' }, sampleResults(2, true), SAMPLE_PODIUM] };
+  });
+  await page.goto(`/${SAMPLE_CODE}`);
+  const roundResult = page.getByText(`${STRINGS.resultRound(1, 3)}${STRINGS.resultTag}`);
+  await expect(roundResult).toBeVisible();
+
+  room.drop();
+  await expect.poll(() => room.sent().filter((msg) => msg.type === 'hello').length, { timeout: 10_000 }).toBe(2);
+  await expect(page.getByText(STRINGS.connected)).toBeVisible({ timeout: 10_000 });
+  await expect(roundResult).toBeVisible();
+  await expect(page.getByText(STRINGS.wordsOnTv)).toHaveCount(0);
+
+  stage = 'podium';
+  room.drop();
+  await expect.poll(() => room.sent().filter((msg) => msg.type === 'hello').length, { timeout: 10_000 }).toBe(3);
+
+  await expect(page.getByRole('heading', { name: STRINGS.yourFinalPlace(2) })).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByRole('region', { name: STRINGS.tableRanking })).toBeVisible();
+  await expect(page.getByText(STRINGS.wordsOnTv)).toHaveCount(0);
 });

@@ -367,10 +367,10 @@ T39 → T40 → T41 → T42 → T43 → T44
 
 **Done when**:
 
-- [ ] C29-C33
-- [ ] `full-match.spec.ts` e `host-match.spec.ts` do celular verdes de novo
-- [ ] Gate check passes
-- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+- [x] C29-C33
+- [x] `full-match.spec.ts` e `host-match.spec.ts` do celular verdes de novo
+- [x] Gate check passes
+- [x] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: e2e
 **Gate**: full

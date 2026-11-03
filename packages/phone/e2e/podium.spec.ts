@@ -49,9 +49,8 @@ const confetti = (page: Page) => page.locator('.confetti');
 /** The players while the last round runs, before its points. */
 const SCORED_PLAYERS_IN_ROUND = PODIUM_PLAYERS.map((player) => ({ ...player, score: 0 }));
 
-test('opens the podium when the last round ends', async ({ page }) => {
-  // PHONE-01 AC 1: Ana is playing round 3 of 3 with 4 words. The server ends it with the results, the podium and the
-  // new players: the phone goes straight to the podium, never draws the round result, and her summary counts that round.
+/** Ana in round 3 of 3 with 4 words, which the server then ends on the words, with the new players after it. */
+async function endLastRoundOnWords(page: Page): Promise<FakeRoom> {
   const now = Date.now();
   const room = await fakeRoom(page, (msg) => ({
     replies: msg.type === 'hello' ? [roundWelcome(SCORED_PLAYERS_IN_ROUND, ANA.id, sampleRound(now - 60_000, now + 60_000, 2), ANA_FOUND)] : [],
@@ -65,10 +64,23 @@ test('opens the podium when the last round ends', async ({ page }) => {
       seen.sawRoundResult ||= document.querySelector('.round-result') !== null;
     }).observe(document.body, { childList: true, subtree: true });
   });
+  room.push({ type: 'phase', phase: 'words' });
+  room.push({ type: 'players', players: PODIUM_PLAYERS, hostId: ANA.id });
+  await expect(page.getByRole('heading', { name: STRINGS.lookAtTvTitle })).toBeVisible();
+  return room;
+}
 
+const sawRoundResult = (page: Page) => page.evaluate(() => (window as unknown as { sawRoundResult: boolean }).sawRoundResult);
+
+test('opens the podium when the host shows the last result', async ({ page }) => {
+  // SYNC-01 AC 3: Ana taps "VER RESULTADO" after the last round; the server sends the results and the podium, and the
+  // phone goes straight to the podium, never draws the round result, and her summary counts that round's 4 words.
+  const room = await endLastRoundOnWords(page);
+
+  await page.getByRole('button', { name: STRINGS.showResult }).click();
+  await expect.poll(() => sentTypes(room)).toEqual(['hello', 'show-result']);
   room.push(sampleResults(2, true));
   room.push(SAMPLE_PODIUM);
-  room.push({ type: 'players', players: PODIUM_PLAYERS, hostId: ANA.id });
 
   await expect(page.getByRole('heading', { name: STRINGS.yourFinalPlace(1) })).toBeVisible();
   await expect(page.getByRole('region', { name: STRINGS.tableRanking })).toBeVisible();
@@ -76,9 +88,24 @@ test('opens the podium when the last round ends', async ({ page }) => {
   await expect(performance.locator('.match-performance__count')).toHaveText('4');
   await expect(page.getByRole('region', { name: STRINGS.longestWord }).getByText('(corações)')).toBeVisible();
   await expect(page.getByRole('button', { name: STRINGS.playAgain })).toBeVisible();
-  await expect(page.getByText(STRINGS.lookAtTv)).toHaveCount(0);
-  expect(await page.evaluate(() => (window as unknown as { sawRoundResult: boolean }).sawRoundResult)).toBe(false);
-  expect(room.sent().map((msg) => msg.type)).toEqual(['hello']);
+  await expect(page.getByRole('heading', { name: STRINGS.lookAtTvTitle })).toHaveCount(0);
+  expect(await sawRoundResult(page)).toBe(false);
+});
+
+test('keeps the podium for after the host shows the last result', async ({ page }) => {
+  // SYNC-01 AC 4: the last round ended on the words and the final scores already came in the players; until Ana taps
+  // "VER RESULTADO", her phone stays on "Olhe para a TV", with no podium, ranking or round result.
+  const room = await endLastRoundOnWords(page);
+
+  await page.waitForTimeout(1_000);
+
+  await expect(page.getByRole('heading', { name: STRINGS.lookAtTvTitle })).toBeVisible();
+  await expect(page.getByText(STRINGS.wordsOnTv)).toBeVisible();
+  await expect(page.getByRole('region', { name: STRINGS.tableRanking })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: STRINGS.yourFinalPlace(1) })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: STRINGS.playAgain })).toHaveCount(0);
+  expect(await sawRoundResult(page)).toBe(false);
+  expect(sentTypes(room)).toEqual(['hello']);
 });
 
 test('shows the personal card, the performance and the ranking', async ({ page }) => {

@@ -40,6 +40,31 @@ test('shows the round card, the words and the quick scoreboard', async ({ page }
   await expect(scoreboard).toHaveText(['1ºAAna32', '2ºBBeto25', '3ºCCaio16', `4ºDDuda${STRINGS.spectatorShort}`]);
 });
 
+test('opens the round result when the host shows it', async ({ page }) => {
+  // SYNC-01 AC 2: round 1 of 3 ended on the words, so Beto looks at the TV; the results reach the phone with Ana's
+  // "VER RESULTADO", and the round result opens only with the phase that comes after them.
+  const room = await fakeRoom(page, (msg) => ({
+    replies: msg.type === 'hello' ? [{ ...resultsWelcome(SCORED_PLAYERS, BETO.id, []), phase: 'words' }] : [],
+  }));
+  await page.goto(`/${SAMPLE_CODE}`);
+  await expect(page.getByRole('heading', { name: STRINGS.lookAtTvTitle })).toBeVisible();
+
+  room.push(sampleResults());
+  await expect(page.getByRole('heading', { name: STRINGS.lookAtTvTitle })).toBeVisible();
+  await expect(page.getByRole('region', { name: STRINGS.quickScoreboard })).toHaveCount(0);
+
+  room.push({ type: 'phase', phase: 'results' });
+
+  await expect(page.getByText(`${STRINGS.resultRound(1, 3)}${STRINGS.resultTag}`)).toBeVisible();
+  await expect(page.getByRole('region', { name: STRINGS.quickScoreboard }).getByRole('listitem')).toHaveText([
+    '1ºAAna32',
+    '2ºBBeto25',
+    '3ºCCaio16',
+    `4ºDDuda${STRINGS.spectatorShort}`,
+  ]);
+  await expect(page.getByText(STRINGS.wordsOnTv)).toHaveCount(0);
+});
+
 test('keeps the real spelling of a word whole at 320 px', async ({ page }) => {
   // UI-01 AC 12: beside CORACOES and "+12 pts" there is no room for "(corações)", so it moves down whole, on one line.
   await page.setViewportSize({ width: 320, height: 844 });
