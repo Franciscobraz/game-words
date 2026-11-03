@@ -6,14 +6,25 @@ export interface StartedSound {
   peakGain: number;
 }
 
+/** One note of the music the page started, at `startS` on the context's clock. */
+export interface StartedNote {
+  frequencyHz: number;
+  startS: number;
+}
+
 /**
  * Replaces the browser's `AudioContext` with one that notes each sound, in the state `state`. The tests can read
- * what the TV plays; a real speaker is out of reach (TVAUDIO-01, Independent Test).
+ * what the TV plays; a real speaker is out of reach (TVAUDIO-01, Independent Test). The notes of the music go through
+ * the gain of their track, so a note whose gain connects to another gain is music, in `window.music`; the effects go
+ * straight to the speakers or, as the whistle's vibrato, to a param, and stay in `window.sounds` (MUSIC-01).
  */
 export async function recordSounds(page: Page, state: 'running' | 'suspended') {
   await page.addInitScript((initialState) => {
     const sounds: { frequencyHz: number; peakGain: number }[] = [];
-    (window as unknown as { sounds: typeof sounds }).sounds = sounds;
+    const music: { frequencyHz: number; startS: number }[] = [];
+    const recorded = window as unknown as { sounds: typeof sounds; music: typeof music };
+    recorded.sounds = sounds;
+    recorded.music = music;
     const param = () => ({
       value: 0,
       peak: 0,
@@ -33,17 +44,26 @@ export async function recordSounds(page: Page, state: 'running' | 'suspended') {
         return Promise.resolve();
       }
       createGain() {
-        return { gain: param(), connect() {} };
+        const node = {
+          gain: param(),
+          target: null as { gain?: unknown } | null,
+          connect(target: { gain?: unknown }) {
+            node.target = target;
+          },
+        };
+        return node;
       }
       createOscillator() {
         const oscillator = {
           frequency: param(),
-          output: null as { gain?: { peak: number } } | null,
+          output: null as { gain?: { peak: number }; target?: { gain?: unknown } | null } | null,
           connect(target: { gain?: { peak: number } }) {
             oscillator.output = target;
           },
-          start() {
-            sounds.push({ frequencyHz: oscillator.frequency.value, peakGain: oscillator.output?.gain?.peak ?? 0 });
+          start(time: number) {
+            const frequencyHz = oscillator.frequency.value;
+            if (oscillator.output?.target?.gain !== undefined) music.push({ frequencyHz, startS: time });
+            else sounds.push({ frequencyHz, peakGain: oscillator.output?.gain?.peak ?? 0 });
           },
           stop() {},
         };

@@ -1,7 +1,7 @@
-import { useComputed, useSignalEffect } from '@preact/signals';
+import { useSignalEffect } from '@preact/signals';
 import type { ComponentType } from 'preact';
 import { ConnectionBanner } from './components/ConnectionBanner.tsx';
-import { type Screen, tvScreen } from './model/screen.ts';
+import type { Screen } from './model/screen.ts';
 import { CountdownScreen } from './screens/CountdownScreen.tsx';
 import { ExpiredScreen } from './screens/ExpiredScreen.tsx';
 import { LobbyScreen } from './screens/LobbyScreen.tsx';
@@ -29,12 +29,10 @@ const SCREENS: Record<Screen, ComponentType> = {
 
 /** Shows the screen for the room as the server describes it, at the server's time (TVUI-01). */
 export function App() {
-  const { room, reveal, sound, words, press } = useStore();
+  const { room, screen, tick, press } = useStore();
   const serverNow = useServerClock(room.serverNow);
-  const screen = useComputed(() => tvScreen(room.room.value, room.status.value, reveal.stageAt(serverNow.value), serverNow.value));
   useAnyPress(press);
-  useSignalEffect(() => sound.tick(serverNow.value));
-  useSignalEffect(() => words.tick(serverNow.value));
+  useSignalEffect(() => tick(serverNow.value));
   const Current = SCREENS[screen.value];
   return (
     <>

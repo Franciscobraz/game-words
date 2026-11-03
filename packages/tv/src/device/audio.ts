@@ -79,7 +79,7 @@ export function effectsPeakGain(volume: number): number {
 }
 
 /** The context, or null when the browser does not give one. */
-function openContext(createContext: () => AudioContextLike | null): AudioContextLike | null {
+export function openContext(createContext: () => AudioContextLike | null): AudioContextLike | null {
   try {
     return createContext();
   } catch (error) {

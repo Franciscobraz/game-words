@@ -879,10 +879,10 @@ T39 → T40 → T41 → T42 → T43 → T44
 
 **Done when**:
 
-- [ ] C84
-- [ ] `packages/tv/e2e/audio.spec.ts` e `lobby.spec.ts` verdes, sem mudar nenhum teste
-- [ ] Gate check passes
-- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+- [x] C84
+- [x] `packages/tv/e2e/audio.spec.ts` e `lobby.spec.ts` verdes, sem mudar nenhum teste
+- [x] Gate check passes
+- [x] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: unit
 **Gate**: full

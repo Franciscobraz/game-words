@@ -8,11 +8,15 @@ import '@bwords/theme/tokens.css';
 import './styles/tokens.css';
 import './styles/app.css';
 import { App } from './app.tsx';
-import { browserAudioContext, createAudio } from './device/audio.ts';
+import { browserAudioContext, createAudio, openContext } from './device/audio.ts';
+import { createMusicPlayer } from './device/music.ts';
 import { TV_RECONNECT_POLICY } from './model/reconnect.ts';
 import { browserSchedule, browserSocket, requestNewRoom } from './net/browser.ts';
 import { createTvStore, StoreContext } from './state/store.ts';
 import { createTokenStore } from './state/token-store.ts';
+
+// One context for the effects and the music: the first key or click unlocks both (design: TV: música).
+const audioContext = openContext(browserAudioContext);
 
 /** Mounts the TV app over the real socket, clock and storage, and opens the room (TVROOM-01, TVUI-01). */
 const store = createTvStore(
@@ -30,7 +34,11 @@ const store = createTvStore(
     tokens: createTokenStore(() => localStorage),
     schedule: browserSchedule,
   },
-  createAudio(browserAudioContext),
+  {
+    audio: createAudio(() => audioContext),
+    music: createMusicPlayer(audioContext),
+    now: () => performance.now(),
+  },
 );
 
 store.room.open();
