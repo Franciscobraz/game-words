@@ -795,11 +795,11 @@ T39 → T40 → T41 → T42 → T43 → T44
 
 **Done when**:
 
-- [ ] C75, C76, C77, C78, C79, C126, C127, C129
-- [ ] Um caso por linha da tabela de telas, inclusive `open-failed` com a música do lobby (L-007)
-- [ ] Limites em 15 000 e 15 001 ms antes do fim (L-001)
-- [ ] Gate check passes
-- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+- [x] C75, C76, C77, C78, C79, C126, C127, C129
+- [x] Um caso por linha da tabela de telas, inclusive `open-failed` com a música do lobby (L-007)
+- [x] Limites em 15 000 e 15 001 ms antes do fim (L-001)
+- [x] Gate check passes
+- [x] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: unit
 **Gate**: quick
