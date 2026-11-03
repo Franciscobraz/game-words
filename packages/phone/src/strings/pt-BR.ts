@@ -117,6 +117,14 @@ export const STRINGS = {
   playersInRoomTitle: 'JOGADORES NA SALA',
   playerCount: (count: number) => (count === 1 ? '1 jogador' : `${count} jogadores`),
 
+  // Words on the TV (SYNC-01, WORDCTL-01)
+  lookAtTvTitle: 'Olhe para a TV',
+  wordsOnTv: 'As palavras da rodada estão passando lá',
+  wordsControls: 'Controles da lista de palavras',
+  scrollUp: 'Subir a lista',
+  scrollDown: 'Descer a lista',
+  showResult: 'VER RESULTADO',
+
   // Round result (RES-01)
   // "Rodada N de M • RESULTADO", with "RESULTADO" highlighted after the round (phone-round-result.jpg).
   resultRound: (round: number, total: number) => `Rodada ${round} de ${total} •`,

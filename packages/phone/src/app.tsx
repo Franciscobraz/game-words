@@ -10,6 +10,7 @@ import { KickedScreen, ReplacedScreen, RoomClosedScreen } from './screens/ExitSc
 import { HostLobbyScreen } from './screens/HostLobbyScreen.tsx';
 import { JoinScreen } from './screens/JoinScreen.tsx';
 import { LobbyScreen } from './screens/LobbyScreen.tsx';
+import { LookAtTvScreen } from './screens/LookAtTvScreen.tsx';
 import { PodiumScreen } from './screens/PodiumScreen.tsx';
 import { RoundResultScreen } from './screens/RoundResultScreen.tsx';
 import { SpectatorScreen } from './screens/SpectatorScreen.tsx';
@@ -28,8 +29,7 @@ const SCREENS: Record<Screen, ComponentType> = {
   countdown: CountdownScreen,
   board: BoardScreen,
   spectator: SpectatorScreen,
-  // The room tag alone until the look-at-the-TV screen arrives with T11 (SYNC-01 AC 1).
-  'look-at-tv': ConnectingScreen,
+  'look-at-tv': LookAtTvScreen,
   'round-result': RoundResultScreen,
   podium: PodiumScreen,
   kicked: KickedScreen,

@@ -1,0 +1,41 @@
+/* "Olhe para a TV" while the TV shows the words (SYNC-01 AC 1). */
+.look-at-tv__notice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: auto;
+  padding: var(--space-xl) var(--space-md);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container-low);
+  text-align: center;
+}
+
+.look-at-tv__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full);
+  background: var(--color-on-secondary-container);
+  color: var(--color-secondary);
+  font-size: 2.25rem;
+}
+
+.look-at-tv__title {
+  margin: var(--space-md) 0 0;
+  color: var(--color-on-surface);
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-black);
+}
+
+.look-at-tv__hint {
+  margin: var(--space-sm) 0 0;
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-size-body);
+}
+
+/* Without the host's controls the notice sits in the middle of the screen. */
+.look-at-tv__notice:last-child {
+  margin-bottom: auto;
+}
