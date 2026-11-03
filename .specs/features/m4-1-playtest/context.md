@@ -76,7 +76,7 @@ Os itens 3 e 6 e o pódio sincronizado contrariam decisões e critérios aprovad
   - Pontos e palavras andam juntos: entre as rodadas, os da rodada; no resultado da última rodada, a soma da partida dos dois. Muda TVRES-01 AC 2, que mostrava pontos acumulados em todo resultado. user: "Mantenha coerencia entre pontos e palavras, deve ser mostrados pontos e palavras por rodada, na rodada final mostrar o somatorio dos 2 valores."
   - "plvrs" abreviado, como no Stitch. user: "mantenha \"plvrs\" abreviado"
   - Uma vinheta só, a mesma em todas as rodadas, de cerca de 30 s, em loop enquanto o resultado estiver na tela. user: "Mantenha a mesma vinheta em todas as salas, ela deve ser mais longa, pode ter 30s e ficar rodando em looping."
-  - Em aberto: a ordem e as posições entre as rodadas (pelos pontos da rodada ou pela soma da partida).
+  - Entre as rodadas, a ordem e as posições seguem os pontos da rodada, com o título "Classificação da Rodada N"; no resultado da última rodada, seguem a soma da partida. user: "Sim, pela rodada" (pergunta: "Entre as rodadas, o placar ordena pelos pontos da rodada?")
 - Perguntas feitas antes, com a recomendação: (1) o cartão do código sem "CÓDIGO DA SALA", como no Stitch; (2) palavras da partida inteira, somadas pelo servidor, para combinar com os pontos acumulados; (3) "plvrs", como no Stitch; (4) vinheta curta a cada resultado e comemoração mais longa no da última rodada, com a música de fundo em silêncio no resultado, a opção "Música" desligando as duas e sem repetir numa TV recarregada.
 
 ## Deferred Ideas
