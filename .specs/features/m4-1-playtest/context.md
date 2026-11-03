@@ -71,7 +71,13 @@ Os itens 3 e 6 e o pódio sincronizado contrariam decisões e critérios aprovad
 
 - user: "Novos requisitos: 1. Na pagina de resultado da rodada, 1. Deve ser mostrado quantas palavras aquela pessoa encontrou, hoje só é mostrado quantos pontos ela fez. (o layout no stitch da pagina está corrigido) 2. A area que mostra a maior palavra do tabuleiro deve vir acima do tabuleiro que mostra. (o layout no stitch da pagina está corrigido) 3. nessa pagina deve tocar uma musica animada de fim da rodada, festejar o podio(pode manter criando como estamos criando os outros sons)."
 - A referência é a tela "TV - Resultado da Rodada" do Stitch (projeto 13555119467933870727, screen `8e179fbf565d4dd0bb10dfa9c5c3117d`). O screenshot do Stitch está desatualizado; o HTML da tela tem o layout corrigido: o cartão da maior palavra acima do tabuleiro e "N plvrs · P pts" em cada cartão e linha ("1 plvr · 1 pt" no singular). A capture sai do HTML renderizado a 1920x1080. user: "veja novamente no stitch, ele não perdeu os pontos na pagina de resultado da rodada"
-- Perguntas abertas, com a recomendação: (1) o cartão do código sem "CÓDIGO DA SALA", como no Stitch; (2) palavras da partida inteira, somadas pelo servidor, para combinar com os pontos acumulados; (3) "plvrs", como no Stitch; (4) vinheta curta a cada resultado e comemoração mais longa no da última rodada, com a música de fundo em silêncio no resultado, a opção "Música" desligando as duas e sem repetir numa TV recarregada.
+- Respostas de 2026-11-03:
+  - O cartão do código fica sem "CÓDIGO DA SALA". user: "Pode remover o rótulo, não precisamos dele. já é bastante claro que o codigo e o qrcode é referente a sala"
+  - Pontos e palavras andam juntos: entre as rodadas, os da rodada; no resultado da última rodada, a soma da partida dos dois. Muda TVRES-01 AC 2, que mostrava pontos acumulados em todo resultado. user: "Mantenha coerencia entre pontos e palavras, deve ser mostrados pontos e palavras por rodada, na rodada final mostrar o somatorio dos 2 valores."
+  - "plvrs" abreviado, como no Stitch. user: "mantenha \"plvrs\" abreviado"
+  - Uma vinheta só, a mesma em todas as rodadas, de cerca de 30 s, em loop enquanto o resultado estiver na tela. user: "Mantenha a mesma vinheta em todas as salas, ela deve ser mais longa, pode ter 30s e ficar rodando em looping."
+  - Em aberto: a ordem e as posições entre as rodadas (pelos pontos da rodada ou pela soma da partida).
+- Perguntas feitas antes, com a recomendação: (1) o cartão do código sem "CÓDIGO DA SALA", como no Stitch; (2) palavras da partida inteira, somadas pelo servidor, para combinar com os pontos acumulados; (3) "plvrs", como no Stitch; (4) vinheta curta a cada resultado e comemoração mais longa no da última rodada, com a música de fundo em silêncio no resultado, a opção "Música" desligando as duas e sem repetir numa TV recarregada.
 
 ## Deferred Ideas
 
