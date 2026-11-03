@@ -6,6 +6,7 @@ describe('parseRoomPath', () => {
     ['/kbxt', 'KBXT'],
     ['/KBXT', 'KBXT'],
     ['/', null],
+    ['/join', null],
     ['/KBX', null],
     ['/KBXTA', null],
     ['/KBIO', null],

@@ -18,9 +18,9 @@ test('opens the join screen for a room path', async ({ page }) => {
   }
 });
 
-test('shows the code screen at the root', async ({ page }) => {
-  // ENTRY-01 AC 2: `/` shows "Entrar numa sala" with four boxes and "CONTINUAR".
-  await page.goto('/');
+test('shows the code screen at /join', async ({ page }) => {
+  // ENTRY-01 AC 2, ROUTE-01 AC 3: `/join` shows "Entrar numa sala" with four boxes and "CONTINUAR".
+  await page.goto('/join');
 
   await expect(page.getByRole('heading', { name: STRINGS.enterRoom })).toBeVisible();
   for (const position of [1, 2, 3, 4]) await expect(page.getByLabel(STRINGS.codeLetter(position))).toBeVisible();

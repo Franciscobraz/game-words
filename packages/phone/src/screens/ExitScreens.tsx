@@ -1,15 +1,16 @@
 import { ArrowForwardIcon, CelebrationIcon, DoorIcon, DoorOutlineIcon, TvIcon, WavingHandIcon } from '../components/icons.tsx';
 import { PrimaryButton } from '../components/PrimaryButton.tsx';
 import { closingHostName } from '../model/messages.ts';
+import { JOIN_PATH } from '../model/room-code.ts';
 import { useStore } from '../state/store.ts';
 import { STRINGS } from '../strings/pt-BR.ts';
 import '../styles/exit.css';
 
-/** "ENTRAR EM OUTRA SALA": back to `/` and the code screen (EXIT-01 AC 5). */
+/** "ENTRAR EM OUTRA SALA": on to `/join` and the code screen (EXIT-01 AC 5, ROUTE-01 AC 6). */
 function useEnterAnotherRoom(): () => void {
   const { room } = useStore();
   return () => {
-    history.pushState(null, '', '/');
+    history.pushState(null, '', JOIN_PATH);
     room.leaveRoom();
   };
 }

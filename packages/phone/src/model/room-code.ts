@@ -1,5 +1,8 @@
 import { isRoomCode, ROOM_CODE_ALPHABET, ROOM_CODE_LENGTH } from '@bwords/core';
 
+/** Where the code screen lives; "JOIN" is never a code, since the alphabet has no I or O (ROUTE-01 AC 3, 6). */
+export const JOIN_PATH = '/join';
+
 /** The four boxes of the "Entrar numa sala" screen, one letter or '' each (ENTRY-01 AC 2-3). */
 export type CodeBoxes = readonly string[];
 
@@ -8,7 +11,7 @@ export const EMPTY_CODE_BOXES: CodeBoxes = Array.from({ length: ROOM_CODE_LENGTH
 
 /**
  * The room code in a page path: `/kbxt` and `/KBXT` both open KBXT (ENTRY-01 AC 1).
- * Returns null for `/` and for anything that is not a well-formed code, which
+ * Returns null for `/`, for `/join` and for anything that is not a well-formed code, which
  * sends the player to the code screen (ENTRY-01 AC 2).
  */
 export function parseRoomPath(pathname: string): string | null {

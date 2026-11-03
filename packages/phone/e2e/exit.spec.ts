@@ -97,8 +97,8 @@ test('says the game opened elsewhere without reconnecting', async ({ page }) => 
   }
 });
 
-test('enter another room opens the code screen', async ({ page }) => {
-  // EXIT-01 AC 5: from the kicked screen, "ENTRAR EM OUTRA SALA" leads to "Entrar numa sala" at `/`.
+test('enter another room opens the code screen at /join', async ({ page }) => {
+  // EXIT-01 AC 5, ROUTE-01 AC 6: from the kicked screen, "ENTRAR EM OUTRA SALA" leads to "Entrar numa sala" at `/join`.
   const room = await betoInAnasRoom(page);
   try {
     room.ana.send({ type: 'kick', playerId: room.betoId });
@@ -108,7 +108,7 @@ test('enter another room opens the code screen', async ({ page }) => {
 
     await expect(page.getByRole('heading', { name: STRINGS.enterRoom })).toBeVisible();
     await expect(page.getByLabel(STRINGS.codeLetter(1))).toHaveValue('');
-    await expect(page).toHaveURL('/');
+    await expect(page).toHaveURL('/join');
   } finally {
     room.close();
   }
