@@ -50,7 +50,7 @@ O celular já joga uma partida inteira, mas a TV ainda é a página de debug: n�
 | Fim da sala | Encerrada pelo anfitrião abre sala nova sozinha; expirada espera "OK" ou recarga; outra aba só avisa | Evita criar salas sem ninguém olhando | y - user: "Aceito mas não gere o prompt ainda" |
 | Servir o jogo | O Worker serve TV e celular já no M4; o deploy só com pedido | Destrava o teste em aparelhos | y - user: "Aceito mas não gere o prompt ainda" |
 | Palavras possíveis | Todas as válidas da rodada, com o mínimo de letras e o filtro da sala, sem separar as comuns | É o que o jogo aceita; a média é de 369 num 4x4 | y - user: "Sim, escrever spec" |
-| Velocidade da rolagem | 2 palavras por segundo, acelerando para durar no máximo 60 s | Listas longas não prendem a sala | y - user: "Aceito mas não gere o prompt ainda" |
+| Velocidade da rolagem | Meio segundo por palavra, no máximo 60 s; a lista move só o que não cabe, então a velocidade na tela é menor que 2 palavras por segundo. Emenda de 2026-11-03 ao "2 palavras por segundo" original, depois do achado 6 do Verifier; a velocidade real fica para `m4-1-playtest` | Listas longas não prendem a sala | y - user: "Aceito mas não gere o prompt ainda"; emenda: user: "Aceito as 3 sugestões recomendadas" |
 | Tempo! | 2 s antes da página de palavras | Marca o fim da rodada | y - user: "Aceito mas não gere o prompt ainda" |
 | Botão do anfitrião durante a rolagem | Continua ativo; apertar interrompe a rolagem | O servidor não conhece o tempo da rolagem | y - user: "Aceito mas não gere o prompt ainda" |
 | TV recarregada na rolagem | A rolagem recomeça do início | Sem estado guardado | y - user: "Aceito mas não gere o prompt ainda" |
@@ -66,6 +66,7 @@ O celular já joga uma partida inteira, mas a TV ainda é a página de debug: n�
 | Mudança de configuração no lobby | O chip alterado pulsa uma vez | `docs/screens.md` §1 | y - user: "Aprovo o spec" |
 | Empate no resultado | Posições repartidas, como no celular; quem entrou atrasado vai por último, com os pontos | Mesma regra do M3 | y - user: "Aprovo o spec" |
 | Título no empate | Na última rodada empatada, "Empate!" no lugar de "<vencedor> venceu!" | O título não pode nomear um só vencedor; no empate, todos vencem (DESIGN §2) | y - user: "Aprovo o spec" |
+| Ninguém pontuou | Com a maior pontuação da partida em 0, "Ninguém pontuou", sem confete, com um ou mais jogadores; substitui o default da fase 7, em que todos com 0 davam "Empate!" | O servidor não conta vitória quando a maior pontuação é 0 (WINS-01 AC 2); achado 1 do Verifier | y - user: "Aceito as 3 sugestões recomendadas" |
 | Mudanças nos testes do M3 | Os testes de "VER PÓDIO", do resultado na última rodada e do fast mode mudam junto com os critérios novos deste spec | Os critérios mudaram; nenhum teste é apagado sem o critério que o substitui | y - user: "Aprovo o spec" |
 | Endereço no QR | `<origem>/<CÓDIGO>`, a origem onde a TV está aberta | O celular já abre `/<CÓDIGO>` (M3) | y - user: "Aceito mas não gere o prompt ainda" |
 | Token da TV | Guardado no `localStorage`; nunca na URL | CLAUDE.md | y - user: "Aceito mas não gere o prompt ainda" |
@@ -154,7 +155,7 @@ O celular já joga uma partida inteira, mas a TV ainda é a página de debug: n�
 3. The TV SHALL listar primeiro as palavras em comum, sob "Palavras em comum", e depois as únicas, sob "Palavras Únicas" com "pontos em dobro"
 4. The TV SHALL ordenar cada grupo da menor palavra para a maior e, no mesmo tamanho, em ordem alfabética
 5. The TV SHALL mostrar em cada linha a palavra em maiúsculas sem acento, as grafias reais quando existirem, um círculo na cor de cada jogador que a achou, com a inicial, e os pontos
-6. The TV SHALL rolar a lista a 2 palavras por segundo
+6. The TV SHALL fazer a rolagem durar meio segundo por palavra da lista, movendo só o trecho que não cabe no painel
 7. IF a lista levaria mais de 60 s nessa velocidade THEN a TV SHALL acelerar a rolagem para terminar em 60 s
 8. WHEN a última palavra aparece inteira THEN a TV SHALL esperar 5 s e mostrar o resultado
 9. IF ninguém achou nenhuma palavra THEN a TV SHALL mostrar "Nenhuma palavra encontrada" por 5 s e depois o resultado
@@ -185,6 +186,7 @@ O celular já joga uma partida inteira, mas a TV ainda é a página de debug: n�
 10. IF a última rodada termina empatada THEN the TV SHALL mostrar "Empate!" no lugar de "<vencedor> venceu!"
 11. The TV SHALL mostrar o código da sala e um QR pequeno com o endereço `<origem>/<CÓDIGO>`
 12. WHEN o anfitrião avança, joga de novo ou volta ao lobby THEN a TV SHALL mostrar a contagem ou o lobby
+13. IF a última rodada termina com a maior pontuação da partida em 0 THEN the TV SHALL mostrar "Ninguém pontuou", sem confete, no lugar do título dos AC 9 e 10
 
 **Independent Test**: Jogar duas rodadas e conferir o placar acumulado, o vencedor no fim e "Jogar de novo".
 
@@ -344,7 +346,7 @@ O celular já joga uma partida inteira, mas a TV ainda é a página de debug: n�
 | TVLOBBY-01 | P1: Lobby (AC 1-10) | Design | Pending |
 | TVPLAY-01 | P1: Contagem e rodada (AC 1-11) | Design | Pending |
 | TVWORDS-01 | P1: Palavras da rodada (AC 1-11) | Design | Pending |
-| TVRES-01 | P1: Resultado (AC 1-12) | Design | Pending |
+| TVRES-01 | P1: Resultado (AC 1-13) | Design | Pending |
 | TVEXIT-01 | P1: Fim da sala e conexão (AC 1-10) | Design | Pending |
 | PROTO-02 | P1: Resultado no protocolo e no servidor (AC 1-7) | Design | Implementing |
 | PHONE-01 | P1: Celular com o fluxo novo (AC 1-4) | Design | Implementing |
