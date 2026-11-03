@@ -101,12 +101,14 @@ function apply(view: View, msg: ServerMessage, pendingJoin: boolean): View {
     }
     case 'counts':
       return { ...view, counts: Object.fromEntries(msg.counts.map((c) => [c.playerId, c.count])) };
+    // The TV gets the results on the words, the phones when the host shows them; the phase comes on its own (SYNC-01).
     case 'round-results':
-      return { ...view, phase: 'results', results: msg };
+      return { ...view, results: msg };
+    case 'phase':
+      return { ...view, phase: msg.phase };
     case 'podium':
       return { ...view, phase: 'podium', podium: msg.ranking };
-    // The debug page shows the words stage and the host's list steps from T43.
-    case 'phase':
+    // The host's steps through the words only move the TV's list; the log shows them.
     case 'scroll':
     case 'time':
       return view;

@@ -1080,8 +1080,8 @@ T39 → T40 → T41 → T42 → T43 → T44
 
 **Done when**:
 
-- [ ] `npm run debug` joga uma rodada até o resultado
-- [ ] Gate check passes
+- [x] `npm run debug` joga uma rodada até o resultado
+- [x] Gate check passes
 
 **Tests**: none
 **Gate**: build

@@ -93,7 +93,9 @@ function TvColumn({ room }: { room: Room }) {
       <PlayersView view={view} counts={view.phase === 'round' ? view.counts : undefined} />
       <Clock round={view.phase === 'round' ? view.round : null} now={now} />
       {view.round && view.phase !== 'lobby' && <StaticBoard board={view.round.board} />}
-      {view.phase === 'results' && view.results && <ResultsView results={view.results} players={view.players} />}
+      {(view.phase === 'words' || view.phase === 'results') && view.results && (
+        <ResultsView results={view.results} players={view.players} />
+      )}
       {view.phase === 'podium' && view.podium && <PodiumView ranking={view.podium} players={view.players} />}
       <LogView log={sock.log} onClear={sock.clearLog} />
     </section>
@@ -327,6 +329,17 @@ function HostControls({ view, settings, send }: { view: View; settings: Settings
         </button>
         <button type="button" onClick={() => send({ type: 'back-to-lobby' })}>
           Voltar ao lobby
+        </button>
+      </div>
+      <div class="row">
+        <button type="button" disabled={view.phase !== 'words'} onClick={() => send({ type: 'scroll', direction: 'up' })}>
+          ▲
+        </button>
+        <button type="button" disabled={view.phase !== 'words'} onClick={() => send({ type: 'scroll', direction: 'down' })}>
+          ▼
+        </button>
+        <button type="button" disabled={view.phase !== 'words'} onClick={() => send({ type: 'show-result' })}>
+          Ver resultado
         </button>
       </div>
       <div class="row">
