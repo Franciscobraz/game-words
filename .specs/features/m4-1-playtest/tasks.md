@@ -86,7 +86,7 @@ T8 → T9 → T10 → T11 → T12 → T13 → T45
 Preferências ligadas, o "check" e o caminho pintado.
 
 ```
-T45 → T14 → T15 → T16
+T45 → T14 → T15 → T16 → T48
 ```
 
 ### Phase 4: Lista conduzida na TV
@@ -94,7 +94,7 @@ T45 → T14 → T15 → T16
 A etapa pela fase, a rolagem com destaque e os comandos do anfitrião.
 
 ```
-T16 → T17 → T18 → T19 → T20 → T21 → T46
+T16 → T48 → T17 → T18 → T19 → T20 → T21 → T46
 ```
 
 ### Phase 5: Resultado na TV
@@ -479,11 +479,31 @@ T39 → T40 → T41 → T42 → T43 → T44
 
 ---
 
+### T48: Valid word in green
+
+**What**: a palavra acima do tabuleiro e as peças do caminho ficam verdes (`--color-valid`) no feedback "VÁLIDA", no lugar da cor do jogador, que fica só no deslizar; achado do orquestrador no batch 2, contra FEEDBACK-02 AC 5-6.
+**Where**: `packages/phone/src/styles/word-rack.css` (modify)
+**Depends on**: T16
+**Reuses**: `pathTone`, `RackTone`
+**Requirement**: FEEDBACK-02
+
+**Done when**:
+
+- [ ] C124
+- [ ] Gate check passes
+- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `fix(phone): paint a valid word green`
+
+---
+
 ### T17: TV follows the words stage
 
 **What**: O redutor da TV lê `phase`; `RevealStage` perde `hold` e a ida ao resultado por tempo; `resultShownAt` marca a abertura do resultado para as peças acesas.
 **Where**: `packages/tv/src/state/reveal.ts` (modify)
-**Depends on**: T16
+**Depends on**: T48
 **Reuses**: `createRevealClock`, `revealPlan`
 **Requirement**: WORDCTL-01
 
@@ -1448,6 +1468,9 @@ Proof: `npx vitest run packages/tv/src/model/words-players.test.ts -t "writes wo
 **C123** - A lista de palavras abre como em `captures/tv-words.png` (WORDCTL-01, AC 30)
 Proof: browser captures/tv-words.running.png
 
+**C124** - No feedback "VÁLIDA", a palavra acima do tabuleiro e as peças do caminho ficam na cor de `--color-valid`, e no deslizar continuam na cor do jogador (FEEDBACK-02, AC 5-6)
+Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/board.spec.ts -g "paints a valid word and its path green"`
+
 **C108** - Na TV LG da sala, com a página aberta e sem tocar no controle, a TV não entra em descanso numa partida de 3 rodadas de 3 min (TVAWAKE-01, AC 1-5; Goals)
 Proof: walk - caminhada do user na TV real, depois do deploy que ele pedir; resultado em `**Walked:**`
 
@@ -1464,7 +1487,7 @@ Proof: walk - caminhada do user na TV e num celular reais; resultado em `**Walke
 The feature's live state, written as it happens - a compaction gives no warning.
 
 **Settled mid-build:** padrões da apresentação das tarefas aceitos com a aprovação: celulares recebem pontos e contagem de palavras, sem palavras, antes de "Ver resultado"; a música de fundo continua entre partidas e só recomeça ao recarregar a TV; sem chip "Música" no lobby da TV; peças de palavra curta demais voltam ao normal; user: "aprovo as tarefas"; none
-**Dispatched:** batch worker fase 1 (T1-T8) a partir do commit seguinte a 3b2216b (push feito em 3b2216b a pedido do user) - returned (T1 7901080, T2 145010e, T3 6830435, T4 ed36908, T5 997f084, T6 d8e4646, T7 c2580cf, T8 d29292a; vitest 1042 e tsc verdes, conferidos pelo orquestrador em d29292a; phone e2e 78+1 e tv e2e 77+1 vermelhos só em `full-match.spec.ts`, dentro da janela; `match.test.ts` do servidor vermelho de T3 a T6, fora da janela prevista, verde desde T6; sala guardada antes da mudança não tem o campo `words` dos jogadores, sem default). MUSIC-01 emendado depois do batch 1: as tarefas da fase 6 precisam ser reescritas antes do batch 5. T45 (salas antigas, default do orquestrador) e T46 (jogadores ao lado da lista, AD-030) entraram depois da aprovação das tarefas; T46 ganhou a ordem por pontos e T47 (foto da lista) entrou na fase 5, com C117-C123; user: "1. Concordo. 2. Concordo, ajustado no stitch tabém 3. Concordo, ajustado no stitch também 4. Ajustado no Stitch 5. O card todo deve fazer a animação de troca de posições quando necessario. A lista deve maner um tamanho fixo para evitar comportamentos e ou glitchs indejados e os itens da lista se ordenam de acordo com os pontos"; user: "Aplique a recomendação mas adicione uma animação simples aos jogadores que receberam algum ponto no mesmo momento do check da palavra, a quantidade de palavras nessa pagina ja deve vir com valor da rodada completo, apenas os pontos vão somando."; batch worker fases 2 e 3 (T9-T13, T45, T14-T16) a partir do commit seguinte
+**Dispatched:** batch worker fase 1 (T1-T8) a partir do commit seguinte a 3b2216b (push feito em 3b2216b a pedido do user) - returned (T1 7901080, T2 145010e, T3 6830435, T4 ed36908, T5 997f084, T6 d8e4646, T7 c2580cf, T8 d29292a; vitest 1042 e tsc verdes, conferidos pelo orquestrador em d29292a; phone e2e 78+1 e tv e2e 77+1 vermelhos só em `full-match.spec.ts`, dentro da janela; `match.test.ts` do servidor vermelho de T3 a T6, fora da janela prevista, verde desde T6; sala guardada antes da mudança não tem o campo `words` dos jogadores, sem default). MUSIC-01 emendado depois do batch 1: as tarefas da fase 6 precisam ser reescritas antes do batch 5. T45 (salas antigas, default do orquestrador) e T46 (jogadores ao lado da lista, AD-030) entraram depois da aprovação das tarefas; T46 ganhou a ordem por pontos e T47 (foto da lista) entrou na fase 5, com C117-C123; user: "1. Concordo. 2. Concordo, ajustado no stitch tabém 3. Concordo, ajustado no stitch também 4. Ajustado no Stitch 5. O card todo deve fazer a animação de troca de posições quando necessario. A lista deve maner um tamanho fixo para evitar comportamentos e ou glitchs indejados e os itens da lista se ordenam de acordo com os pontos"; user: "Aplique a recomendação mas adicione uma animação simples aos jogadores que receberam algum ponto no mesmo momento do check da palavra, a quantidade de palavras nessa pagina ja deve vir com valor da rodada completo, apenas os pontos vão somando."; batch worker fases 2 e 3 (T9-T13, T45, T14-T16) a partir do commit seguinte - returned (T9 35a9480, T10 c5ae3c8, T11 e365857, T12 31d924f, T13 f22c4b4, T45 fcd977e, T14 480b7a8, T15 dbaed09, T16 4869f53; vitest 1056 e tsc verdes, conferidos pelo orquestrador em 4869f53; phone e2e 88 verdes; tv e2e 77+1 vermelho só em `full-match.spec.ts`, dentro da janela). Achado do orquestrador: a palavra válida acima do tabuleiro e o caminho saem na cor do jogador, e FEEDBACK-02 AC 5-6 pede verde; T48 entra no começo do batch 3
 **Walked:** none
 
 ---
@@ -1474,7 +1497,7 @@ The feature's live state, written as it happens - a compaction gives no warning.
 ```
 Phase 1:  T1 --→ T2 --→ T3 --→ T4 --→ T5 --→ T6 --→ T7 --→ T8
 Phase 2:  T9 --→ T10 --→ T11 --→ T12 --→ T13 --→ T45
-Phase 3:  T14 --→ T15 --→ T16
+Phase 3:  T14 --→ T15 --→ T16 --→ T48
 Phase 4:  T17 --→ T18 --→ T19 --→ T20 --→ T21 --→ T46
 Phase 5:  T22 --→ T23 --→ T24 --→ T25 --→ T26 --→ T27 --→ T47 --→ T28
 Phase 6:  T29 --→ T30 --→ T31 --→ T32 --→ T33 --→ T34 --→ T35
