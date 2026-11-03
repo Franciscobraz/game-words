@@ -199,11 +199,15 @@ const HANDLERS: { [T in ClientMessageType]?: Handler<T> } = {
 };
 
 /**
- * What follows the welcome in the results and the podium: the message of the phase.
- * A podium that came from a match sends its last results first (PROTO-02 AC 5).
+ * What follows the welcome after a round: the message of the phase. On the words
+ * only the TV gets the round's results, to list them again from the top
+ * (WORDCTL-01 AC 11); a phone or a guest gets nothing until the host shows the
+ * result (SYNC-01 AC 4-5, L-008). A podium that came from a match sends its last
+ * results first (PROTO-02 AC 5, SYNC-01 AC 6).
  */
 function afterWelcome(state: RoomState, to: ConnRef): Effect[] {
   const results: Effect[] = state.results ? [{ kind: 'send', to, msg: state.results }] : [];
+  if (state.phase === 'words') return to.role === 'tv' ? results : [];
   if (state.phase === 'results') return results;
   if (state.phase === 'podium') return [...results, { kind: 'send', to, msg: podiumMessage(state) }];
   return [];

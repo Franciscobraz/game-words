@@ -15,6 +15,7 @@ import {
   allMessages,
   fakeDeps,
   guest,
+  makePack,
   makePlayer,
   message,
   newRoom,
@@ -440,6 +441,144 @@ describe('dispatch', () => {
         expect(Object.keys(m).sort()).toEqual(['reason', 'type']);
         expect(CLOSE_REASONS).toContain(m.reason);
       }
+    }
+  });
+});
+
+describe('connecting on the words', () => {
+  const BOARD_OF_WORDS = [
+    ['c', 'a', 's', 'a'],
+    ['o', 'r', 't', 'e'],
+    ['p', 'e', 'l', 'o'],
+    ['m', 'u', 'n', 'd'],
+  ];
+  const ROUND_WORDS = ['arte', 'ate', 'casa', 'cor', 'sal', 'tela'];
+  const wordsDeps = fakeDeps(makePack({ words: ROUND_WORDS, common: ROUND_WORDS }));
+  const ROUND_END = 130_300;
+
+  /** Round `roundIndex` of two just ended: Ana (host) and Beto connected, Caio away, the TV on. */
+  function endedRound(roundIndex: number) {
+    const ana = makePlayer('p1', { nickname: 'Ana', found: ['casa', 'cor'] });
+    const beto = makePlayer('p2', { nickname: 'Beto', color: '#E53935', found: ['cor', 'sal'] });
+    const caio = makePlayer('p3', { nickname: 'Caio', color: '#1E88E5', found: ['tela'], connected: false, connId: null });
+    const round = roomWith([ana, beto, caio], {
+      phase: 'round',
+      settings: { ...newRoom().settings, rounds: 2 },
+      roundIndex,
+      tvConn: 'c-tv',
+      tvOfflineSince: null,
+      round: { id: roundIndex + 1, board: BOARD_OF_WORDS, startsAt: 10_000, endsAt: 130_000, salt: 'c2FsdHNhbHRzYWx0c2FsdA' },
+      solutions: { words: ROUND_WORDS, prefixes: new Uint8Array(ROUND_WORDS.length * 6) },
+    });
+    const ended = step(round, { kind: 'alarm' }, ROUND_END, wordsDeps);
+    expect(ended.state.phase).toBe('words');
+    return { ...ended, ana, beto, caio };
+  }
+
+  test('sends the tv that connects on the words the results of the round', () => {
+    // WORDCTL-01 AC 11: a reloaded TV lists the words again.
+    const { state } = endedRound(0);
+
+    const r = step(state, message(pending('c-tv-2'), { type: 'hello', role: 'tv', token: TV_TOKEN }), ROUND_END + 5_000, wordsDeps);
+
+    const sent = sentTo(r.effects, 'c-tv-2');
+    expect(sent.map((m) => m.type)).toEqual(['welcome', 'round-results']);
+    expect(sent[0]).toMatchObject({ type: 'welcome', role: 'tv', phase: 'words' });
+    expect(sent[1]).toEqual(state.results);
+  });
+
+  test('sends a phone that connects on the words only the welcome', () => {
+    // SYNC-01 AC 5: the returning phone and a guest on the join screen.
+    const { state, caio } = endedRound(0);
+
+    const back = step(state, message(pending('c-caio'), { type: 'hello', role: 'player', token: caio.token }), ROUND_END + 5_000, wordsDeps);
+    const newcomer = step(state, message(pending('c-new'), { type: 'hello', role: 'player' }), ROUND_END + 5_000, wordsDeps);
+
+    const CONNECTIONS = [
+      [back.effects, 'c-caio'],
+      [newcomer.effects, 'c-new'],
+    ] as const;
+    for (const [effects, id] of CONNECTIONS) {
+      const sent = sentTo(effects, id);
+      expect(sent, id).toHaveLength(1);
+      expect(sent[0], id).toMatchObject({ type: 'welcome', role: 'player', phase: 'words', salt: null });
+    }
+    expect(back.effects.some((e) => e.kind === 'send-hashes')).toBe(false);
+  });
+
+  test.each([
+    ['in the middle of the match', 0, ['welcome', 'round-results']],
+    ['after the last round', 1, ['welcome', 'round-results', 'podium']],
+  ] as const)('sends a phone that connects after show-result the results and the podium: %s', (_name, roundIndex, types) => {
+    // SYNC-01 AC 6.
+    const { state, ana, caio } = endedRound(roundIndex);
+    const shown = step(state, message(playerConn(ana), { type: 'show-result' }), ROUND_END + 20_000, wordsDeps).state;
+
+    const back = step(shown, message(pending('c-caio'), { type: 'hello', role: 'player', token: caio.token }), ROUND_END + 30_000, wordsDeps);
+    const newcomer = step(shown, message(pending('c-new'), { type: 'hello', role: 'player' }), ROUND_END + 30_000, wordsDeps);
+
+    const CONNECTIONS = [
+      [back.effects, 'c-caio'],
+      [newcomer.effects, 'c-new'],
+    ] as const;
+    for (const [effects, id] of CONNECTIONS) {
+      const sent = sentTo(effects, id);
+      expect(sent.map((m) => m.type), id).toEqual(types);
+      expect(sent[1], id).toEqual(state.results);
+    }
+  });
+
+  test('sends no word of the round to a phone or a guest on the words', () => {
+    // SYNC-01 AC 4, L-008: every message a phone or a guest can get between the end of the round and show-result,
+    // the welcome of whoever connects or reconnects included. A phone's own words in its own welcome are its own.
+    const ended = endedRound(0);
+    const { ana, beto, caio } = ended;
+    const betoAgain = { id: 'c-beto', role: 'player', playerId: 'p2' } as const;
+    const walk = run(
+      ended.state,
+      [
+        message(pending('c-caio'), { type: 'hello', role: 'player', token: caio.token }),
+        message(pending('c-caio-2'), { type: 'hello', role: 'player', token: caio.token }),
+        message(pending('c-g'), { type: 'hello', role: 'player' }),
+        message(guest('c-g'), { type: 'join', nickname: 'Duda', color: '#43A047' }),
+        message(pending('c-g2'), { type: 'hello', role: 'player' }),
+        message(playerConn(ana), { type: 'scroll', direction: 'down' }),
+        message(playerConn(ana), { type: 'scroll', direction: 'up' }),
+        message(playerConn(beto), { type: 'time', clientTime: 5 }),
+        message(playerConn(beto), { type: 'show-result' }),
+        { kind: 'disconnect', conn: playerConn(beto) },
+        message(pending('c-beto'), { type: 'hello', role: 'player', token: beto.token }),
+        message(playerConn(ana), { type: 'transfer-host', playerId: 'p2' }),
+        message(betoAgain, { type: 'scroll', direction: 'down' }),
+        message(pending('c-tv-2'), { type: 'hello', role: 'tv', token: TV_TOKEN }),
+        { kind: 'alarm' },
+      ],
+      ROUND_END + 1_000,
+      wordsDeps,
+    );
+    expect(walk.state.phase).toBe('words');
+
+    const OWN_WORDS: Record<string, readonly string[]> = { p1: ana.found, p2: beto.found, p3: caio.found };
+    const toPhones = [...ended.effects, ...walk.effects].flatMap((e) => {
+      if (e.kind === 'send' && e.to.role !== 'tv') return [e.msg];
+      if (e.kind === 'broadcast' && (!e.roles || e.roles.includes('player') || e.roles.includes('guest'))) return [e.msg];
+      return [];
+    });
+    // The walk reached every kind of message a phone gets on the words.
+    const types = new Set(toPhones.map((m) => m.type));
+    for (const type of ['welcome', 'joined', 'players', 'phase', 'time', 'error', 'closed'] as const) expect(types, type).toContain(type);
+
+    for (const m of toPhones) {
+      expect(['round-results', 'podium', 'counts', 'scroll']).not.toContain(m.type);
+      let checked: object = m;
+      if (m.type === 'welcome' && m.role === 'player') {
+        const own = m.playerId === null ? [] : (OWN_WORDS[m.playerId] ?? []);
+        for (const word of m.found) expect(own).toContain(word);
+        checked = { ...m, found: [] };
+      }
+      const json = JSON.stringify(checked);
+      for (const word of ROUND_WORDS) expect(json, m.type + ' carries ' + word).not.toContain('"' + word + '"');
+      expect(json).not.toMatch(/foundBy|possibleWords|unique/);
     }
   });
 });
