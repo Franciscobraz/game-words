@@ -632,10 +632,10 @@ T39 → T40 → T41 → T42 → T43 → T44
 
 **Done when**:
 
-- [ ] C60-C64
-- [ ] Limites exatos: 3 e 4 jogadores (cartões e lista)
-- [ ] Gate check passes
-- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+- [x] C60-C64
+- [x] Limites exatos: 3 e 4 jogadores (cartões e lista)
+- [x] Gate check passes
+- [x] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: unit
 **Gate**: quick

@@ -3,7 +3,7 @@ import { resultHeader } from './result-header.ts';
 import type { StandingRow } from './standings.ts';
 
 function row(nickname: string, place: number, score = 10): StandingRow {
-  return { id: nickname, nickname, color: '#FF7A00', score, place, disconnected: false, crowned: place === 1 };
+  return { id: nickname, nickname, color: '#FF7A00', score, words: 0, place, disconnected: false, crowned: place === 1 };
 }
 
 const ROUNDS = 3;

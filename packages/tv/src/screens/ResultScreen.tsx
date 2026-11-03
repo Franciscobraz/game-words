@@ -27,7 +27,7 @@ export function ResultScreen() {
   // A TV that just connected to this phase has no results for an instant.
   if (results === null || settings === null) return <main class="screen" data-testid="result-screen" />;
 
-  const { top, rest } = standings(players);
+  const { top, rest } = standings(players, results);
   const hostName = players.find((player) => player.id === hostId)?.nickname ?? null;
   const header = resultHeader(results, { top }, hostName, settings.rounds);
   return (
