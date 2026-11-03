@@ -327,6 +327,7 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 | `tv-round-result.png`: confete entre as rodadas | Confete só na última rodada | y - AD-024, que mantém AD-021 |
 | `tv-round-result.png`: "Resultado · Rodada 1 de 3" e "Aguardando Ana avançar…" em toda rodada | Na última rodada, "<vencedor> venceu!" e "Aguardando Ana: jogar de novo ou voltar ao lobby" | y - AD-024, que mantém AD-021 |
 
+| `tv-words.png`: "APENAS 1 JOGADOR" ao lado de "Palavras Únicas" | Nada, como no M4 | y - AD-022 |
 | `tv-words.png`: nenhuma palavra destacada | Uma palavra por vez destacada na linha de leitura (WORDCTL-01 AC 13-17) | y - AD-024 |
 | `tv-words.png`: círculos das palavras nas cores do tema | Círculos na cor de cada jogador, como no M4 | y - AD-030 |
 | `tv-words.png`: margem de 64 px em volta do quadro | A tela ocupa a janela inteira, como as outras telas da TV | y - AD-030 |
