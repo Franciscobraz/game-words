@@ -23,19 +23,21 @@ async function untilConnected(client: Client, playerId: string, connected: boole
 }
 
 /**
- * Caio drops mid-round and comes back on a new socket with his token, so the
- * other phones get `players` twice and Caio a `welcome` while the round runs.
+ * Caio drops and comes back on a new socket with his token, so the other phones
+ * get `players` twice and Caio a `welcome`: mid-round, with the hash frame, and
+ * on the words, with nothing after the welcome (SYNC-01 AC 5).
  */
-async function reconnect(code: string, phones: Phone[], sessions: Sessions, found: string[]): Promise<void> {
+async function reconnect(code: string, phones: Phone[], sessions: Sessions, found: string[], phase: 'round' | 'words'): Promise<void> {
   const [ana, bia, caio] = phones as [Phone, Phone, Phone];
   caio.client.close();
   for (const p of [ana, bia]) await untilConnected(p.client, caio.playerId, false);
   const back = await connect(code);
   back.send({ type: 'hello', role: 'player', token: caio.token });
   const welcome = await back.next('welcome');
-  expect(welcome).toMatchObject({ phase: 'round', playerId: caio.playerId, found });
+  expect(welcome).toMatchObject({ phase, playerId: caio.playerId, found });
   expect(welcome.players.find((p) => p.id === caio.playerId)?.connected).toBe(true);
-  await back.hashes();
+  if (phase === 'round') await back.hashes();
+  else expect(await back.next('players')).toMatchObject({ type: 'players' });
   for (const p of [ana, bia]) await untilConnected(p.client, caio.playerId, true);
   caio.client = back;
   sessions.get(caio.playerId)!.push(back);
@@ -44,7 +46,9 @@ async function reconnect(code: string, phones: Phone[], sessions: Sessions, foun
 /**
  * One round played by three phones: Ana finds w1 and w2, Bia w2 and w3, Caio w4,
  * so w2 is shared and the others are unique. After the submits Caio reconnects;
- * the round ends on the alarm.
+ * the round ends on the alarm, on the words. There Caio reconnects again, Ana (the
+ * host) steps the TV's list down and shows the result, and only then do the phones
+ * get the results (WORDCTL-01 AC 8, SYNC-01 AC 2-4).
  */
 async function playRound(
   code: string,
@@ -68,17 +72,28 @@ async function playRound(
       results: words.map((w) => ({ ok: true, word: w.word })),
     });
   }
-  await reconnect(code, phones, sessions, [w4!.word]);
+  await reconnect(code, phones, sessions, [w4!.word], 'round');
   await setClock(code, start.endsAt + 300);
   expect(await runDurableObjectAlarm(stubOf(code))).toBe(true);
-  // The TV gets the final counts right before the results.
+  // The TV gets the final counts right before the results, and the phones only the words stage.
   const results = await tv.skipTo('round-results');
   const tvMessages = messagesOf(tv);
   expect(tvMessages[tvMessages.indexOf(results) - 1]).toEqual({
     type: 'counts',
     counts: plan.map(([p, words]) => ({ playerId: p.playerId, count: words.length })),
   });
+  expect(await tv.skipTo('phase')).toEqual({ type: 'phase', phase: 'words' });
+  for (const p of phones) expect(await p.client.skipTo('phase')).toEqual({ type: 'phase', phase: 'words' });
+
+  await reconnect(code, phones, sessions, [w4!.word], 'words');
+  ana.client.send({ type: 'scroll', direction: 'down' });
+  expect(await tv.skipTo('scroll')).toEqual({ type: 'scroll', direction: 'down' });
+  ana.client.send({ type: 'show-result' });
   for (const p of phones) expect(await p.client.skipTo('round-results')).toEqual(results);
+  if (!results.last) {
+    expect(await tv.skipTo('phase')).toEqual({ type: 'phase', phase: 'results' });
+    for (const p of phones) expect(await p.client.next('phase')).toEqual({ type: 'phase', phase: 'results' });
+  }
   return { start, results, found: new Map(plan.map(([p, words]) => [p.playerId, words.map((w) => w.word)])) };
 }
 
@@ -142,6 +157,10 @@ describe('full match', () => {
       for (const p of results.players) {
         expect(p.roundPoints).toBe(score.totals.get(p.playerId));
         expect(p.score).toBe(total.get(p.playerId));
+        // RESULT-02 AC 2-3, 5: every word the player found, in the round and in the match so far.
+        const roundWords = found.get(p.playerId)!.length;
+        expect(p.roundWords).toBe(roundWords);
+        expect(p.words).toBe(roundWords * (index + 1));
         expect(p.unique.map((w) => w.word).sort()).toEqual([...score.unique.get(p.playerId)!].sort());
       }
       expect(results.longest).not.toBeNull();
@@ -179,6 +198,10 @@ describe('full match', () => {
       resultsAt.forEach((end, k) => {
         const during = messages.slice(startsAt[k], end).filter((m) => m.type === 'players' || m.type === 'welcome');
         expect(during.length).toBeGreaterThan(0);
+        // The words stage came before the results; Caio reconnected on it (SYNC-01 AC 4-5, L-008).
+        const onWords = messages.slice(startsAt[k], end);
+        expect(onWords).toContainEqual({ type: 'phase', phase: 'words' });
+        if (phone === phones[2]) expect(onWords).toContainEqual(expect.objectContaining({ type: 'welcome', phase: 'words' }));
       });
       boards.forEach((board, k) => {
         // A round's board exists only after the previous results, and its words are public at its own results.
