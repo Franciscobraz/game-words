@@ -21,6 +21,7 @@ export * from './room/nickname.ts';
 export * from './room/prepare.ts';
 export * from './room/protocol.ts';
 export * from './room/results.ts';
+export * from './room/reveal.ts';
 export * from './room/round.ts';
 export * from './room/settings.ts';
 export * from './room/state.ts';

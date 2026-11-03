@@ -71,8 +71,8 @@ function returnToLobby(state: RoomState): StepResult {
 export const handlePlayAgain: Handler<'play-again'> = ({ state, now }) => requestRound(state, now);
 
 /**
- * `back-to-lobby` from the host in the countdown, the round, the results or the
- * podium (RES-01 AC 10): the running round ends without results and its words are
+ * `back-to-lobby` from the host in the countdown, the round, the words, the results
+ * or the podium (RES-01 AC 10, and the words of m4-1-playtest): the running round ends without results and its words are
  * dropped. Leaving the `round` phase also drops the round-end deadline, so a
  * pending alarm sends nothing and a late `submit` gets `wrong-phase`.
  */

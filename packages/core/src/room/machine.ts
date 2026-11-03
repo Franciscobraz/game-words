@@ -17,6 +17,7 @@ import { handleKick, handleTransferHost, HOST_COMMANDS, isHost } from './host.ts
 import { handleJoin } from './join.ts';
 import { type ClientMessage, type ClientMessageType, encodeHashFrame, type Phase, parseClientMessage } from './protocol.ts';
 import type { PreparedRound } from './prepare.ts';
+import { handleScroll, handleShowResult } from './reveal.ts';
 import { handleStart, onPrepared } from './round.ts';
 import { handleSettings } from './settings.ts';
 import { handleSubmit } from './submit.ts';
@@ -53,7 +54,7 @@ export const COMMAND_PHASES: Record<ClientMessageType, readonly Phase[]> = {
   'transfer-host': ALL_PHASES,
   kick: ALL_PHASES,
   'play-again': ['podium'],
-  'back-to-lobby': ['round', 'results', 'podium'],
+  'back-to-lobby': ['round', 'words', 'results', 'podium'],
   'close-room': ALL_PHASES,
   scroll: ['words'],
   'show-result': ['words'],
@@ -89,6 +90,8 @@ const ACTIONS: ReadonlySet<ClientMessageType> = new Set([
   'play-again',
   'back-to-lobby',
   'close-room',
+  'scroll',
+  'show-result',
 ]);
 
 // ---------------------------------------------------------------------------
@@ -191,6 +194,8 @@ const HANDLERS: { [T in ClientMessageType]?: Handler<T> } = {
   'play-again': handlePlayAgain,
   'back-to-lobby': handleBackToLobby,
   'close-room': handleCloseRoom,
+  scroll: handleScroll,
+  'show-result': handleShowResult,
 };
 
 /**

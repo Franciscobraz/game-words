@@ -89,14 +89,14 @@ export const handleStart: Handler<'start'> = ({ state, now }) => requestRound(st
 
 /**
  * A round the adapter prepared. Kept as the next round while the room is in the
- * lobby or in results with rounds left, and started at once when the host already
+ * lobby, or in the words or the results with rounds left, and started at once when the host already
  * asked for it (on the podium, through `play-again`). A board prepared for other settings is dropped (and asked for again
  * when the host is waiting); anywhere else the input is stale and ignored.
  */
 export function onPrepared(state: RoomState, prepared: PreparedRound, now: number): StepResult {
   const waiting =
     state.phase === 'lobby' ||
-    (state.phase === 'results' && !isLastRound(state)) ||
+    ((state.phase === 'words' || state.phase === 'results') && !isLastRound(state)) ||
     (state.phase === 'podium' && state.pendingStart);
   if (!waiting) return unchanged(state);
   if (!preparedFor(prepared, state.settings)) {

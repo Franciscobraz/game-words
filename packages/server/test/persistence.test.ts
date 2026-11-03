@@ -149,6 +149,9 @@ describe('persistence', () => {
     await a.client.skipTo('submit-result');
     await setClock(code, start.endsAt + 300);
     await runDurableObjectAlarm(stubOf(code));
+    // The round ends on the words; the podium opens on the host's show-result (m4-1-playtest C11).
+    await a.client.skipTo('phase');
+    a.client.send({ type: 'show-result' });
     await a.client.skipTo('round-results');
     await a.client.skipTo('podium');
 

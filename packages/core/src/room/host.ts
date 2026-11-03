@@ -12,6 +12,8 @@ export const HOST_COMMANDS: readonly ClientMessageType[] = [
   'play-again',
   'back-to-lobby',
   'close-room',
+  'scroll',
+  'show-result',
 ];
 
 /** Whether `conn` is the host's phone. */

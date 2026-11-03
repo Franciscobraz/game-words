@@ -8,8 +8,8 @@ export const MAX_PLAYERS = 10;
 
 /**
  * `join` from a phone on the join screen: checks the room size, the nickname and
- * the color, then registers the player. During the countdown, the round or the
- * results the newcomer is a spectator with 0 points until the next countdown.
+ * the color, then registers the player. During the countdown, the round, the words
+ * or the results the newcomer is a spectator with 0 points until the next countdown.
  */
 export const handleJoin: Handler<'join'> = ({ state, conn, now, deps }, msg) => {
   if (state.players.length >= MAX_PLAYERS) return reject(state, conn, 'room-full');
@@ -31,7 +31,7 @@ export const handleJoin: Handler<'join'> = ({ state, conn, now, deps }, msg) => 
     joinedAt: now,
     connected: true,
     connId: conn.id,
-    spectator: state.phase === 'round' || state.phase === 'results',
+    spectator: state.phase === 'round' || state.phase === 'words' || state.phase === 'results',
     score: 0,
     words: 0,
     wins: 0,

@@ -30,16 +30,18 @@ describe('alarms', () => {
     await setClock(code, start.endsAt + 300);
     expect(await runDurableObjectAlarm(stubOf(code))).toBe(true);
     const room = await storedRoom(code);
-    expect(room?.phase).toBe('podium');
+    // The round ends on the words (m4-1-playtest C3).
+    expect(room?.phase).toBe('words');
     const points = scoreRound(new Map([[a.playerId, new Set([word.word])], [b.playerId, new Set<string>()]])).totals.get(a.playerId);
     expect(points).toBeGreaterThan(0);
     expect(room?.players.find((p) => p.id === a.playerId)?.score).toBe(points);
 
-    // A phone that comes back finds the results.
+    // The host that comes back finds the words, and the results once she shows them (m4-1-playtest C11).
     const back = await connect(code);
     back.send({ type: 'hello', role: 'player', token: a.token });
-    expect(await back.next('welcome')).toMatchObject({ phase: 'podium', playerId: a.playerId });
-    const results = await back.next('round-results');
+    expect(await back.next('welcome')).toMatchObject({ phase: 'words', playerId: a.playerId });
+    back.send({ type: 'show-result' });
+    const results = await back.skipTo('round-results');
     expect(results.players.find((p) => p.playerId === a.playerId)?.roundPoints).toBe(points);
     const podium = await back.next('podium');
     expect(podium.ranking).toContainEqual({ playerId: a.playerId, score: points });
