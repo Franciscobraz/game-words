@@ -73,6 +73,7 @@ export const STRINGS = {
   place: (place: number) => `${place}º`,
   disconnectedNote: '(desconectado)',
   pointsUnit: (points: number) => (points === 1 ? 'pt' : 'pts'),
+  shortWordCount: (count: number) => `${count} ${count === 1 ? 'plvr' : 'plvrs'}`,
   longestWordLabel: 'A maior palavra do tabuleiro',
   foundLongest: (nicknames: readonly string[]) =>
     nicknames.length === 1 ? `${nicknames[0]} encontrou!` : `${nicknames.slice(0, -1).join(', ')} e ${nicknames[nicknames.length - 1]} encontraram!`,
