@@ -87,7 +87,7 @@ describe('createSoundStore', () => {
     const wordsStartAt = ENDS_AT + 2_000;
     sound.tick(ENDS_AT + 100);
     room.value = { ...IN_ROUND, phase: 'results' };
-    plan.value = { wordsStartAt, scrollMs: 10_000 };
+    plan.value = { wordsStartAt, resultShownAt: null };
 
     sound.tick(wordsStartAt - 1);
     expect(context.oscillators).toHaveLength(0);

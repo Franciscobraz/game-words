@@ -14,7 +14,7 @@ import {
 } from '@bwords/core';
 import { expect, type Page, test } from '@playwright/test';
 import { displayWord } from '../src/model/word-rows.ts';
-import { HOLD_AFTER_LAST_MS, scrollDurationMs, TIME_UP_MS } from '../src/model/reveal.ts';
+import { TIME_UP_MS } from '../src/model/reveal.ts';
 import { joinOnPhone, type Phone, PHONE_TEXT, swipeOnPhone } from './phones.ts';
 import { readQr } from './read-qr.ts';
 
@@ -23,6 +23,16 @@ import { readQr } from './read-qr.ts';
  * the built TV at `/tv` and the built phone at `/<CÓDIGO>` (`npm run assets:build`, in the Playwright config). Two rounds
  * of real time, 30 s each, the least the server allows. The first round has a list long enough to scroll.
  */
+
+// The M4 timing of the automatic result, which this match still expects until T28 plays it through "Ver resultado"
+// (WORDCTL-01 AC 9); the TV no longer exports it.
+const HOLD_AFTER_LAST_MS = 5_000;
+const M4_WORDS_PER_SECOND = 2;
+const M4_MAX_SCROLL_MS = 60_000;
+
+function scrollDurationMs(wordCount: number): number {
+  return Math.min((wordCount / M4_WORDS_PER_SECOND) * 1_000, M4_MAX_SCROLL_MS);
+}
 
 /** Where the Worker listens; the test goes to it directly, not through a Vite. */
 const WORKER_URL = 'http://localhost:8787';

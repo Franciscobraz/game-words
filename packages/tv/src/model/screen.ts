@@ -24,18 +24,18 @@ const CLOSE_SCREENS: Record<CloseReason, Screen> = {
   kicked: 'opening',
 };
 
-/** The screen of each stage after a round: "Tempo!" sits over the board of the round (TVPLAY-01 AC 10, TVWORDS-01 AC 1, 8). */
+/** The screen of each stage after a round: "Tempo!" sits over the board of the round (TVPLAY-01 AC 10, WORDCTL-01 AC 9). */
 const REVEAL_SCREENS: Record<RevealStage, Screen> = {
   'time-up': 'round',
   words: 'words',
-  hold: 'words',
   result: 'result',
 };
 
 /**
  * The screen for the room as the server last described it, at `serverNow` on the server clock: by close reason, then
- * by phase, then by `stage` after a round. `stage` is null when no reveal is running, as on a podium with no match
- * behind it, and that goes straight to the result. A dropped connection keeps the screen (TVEXIT-01 AC 5).
+ * by phase, then by `stage` on the words. Only the phases `results` and `podium`, which the host's "Ver resultado"
+ * opens, show the result (WORDCTL-01 AC 9). `stage` is null while the reveal waits for its results or the first clock
+ * sample; the words wait on their own screen. A dropped connection keeps the screen (TVEXIT-01 AC 5).
  */
 export function tvScreen(view: RoomView, status: RoomStatus, stage: RevealStage | null, serverNow: number): Screen {
   if (view.closeReason !== null) return CLOSE_SCREENS[view.closeReason];
@@ -46,11 +46,11 @@ export function tvScreen(view: RoomView, status: RoomStatus, stage: RevealStage 
       return 'lobby';
     case 'round':
       return roundScreen(view, serverNow);
-    // Until the TV knows the words stage (T17, WORDCTL-01), it runs the reveal as in the results.
     case 'words':
+      return stage === null ? 'words' : REVEAL_SCREENS[stage];
     case 'results':
     case 'podium':
-      return stage === null ? 'result' : REVEAL_SCREENS[stage];
+      return 'result';
     default: {
       const never: never = view.phase;
       return never;

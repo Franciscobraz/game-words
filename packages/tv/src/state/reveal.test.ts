@@ -20,7 +20,7 @@ const RESULTS: RoundResultsMessage = {
 };
 
 const IN_ROUND: RoomView = { ...INITIAL_VIEW, code: 'KBXT', phase: 'round', round: ROUND };
-const IN_RESULTS: RoomView = { ...IN_ROUND, phase: 'results', results: RESULTS };
+const IN_WORDS: RoomView = { ...IN_ROUND, phase: 'words', results: RESULTS };
 
 /** A reveal clock over a room signal and a clock the test moves; the clock reads the server unless told otherwise. */
 function setup(initial: RoomView = IN_ROUND, synced = true) {
@@ -48,7 +48,7 @@ describe('createRevealClock', () => {
   test('keeps "Tempo!" for two seconds when the results arrive at the end of the round', () => {
     const { room, reveal } = setup();
 
-    room.value = IN_RESULTS;
+    room.value = IN_WORDS;
 
     expect(reveal.stageAt(ENDS_AT)).toBe('time-up');
     expect(reveal.stageAt(WORDS_AT - 1)).toBe('time-up');
@@ -59,7 +59,7 @@ describe('createRevealClock', () => {
     const { room, reveal, setNow } = setup();
     setNow(WORDS_AT + 700);
 
-    room.value = IN_RESULTS;
+    room.value = IN_WORDS;
 
     expect(reveal.plan.value?.wordsStartAt).toBe(WORDS_AT + 700);
   });
@@ -67,23 +67,45 @@ describe('createRevealClock', () => {
   test('takes a podium through the same stages when the last round ends', () => {
     const { room, reveal } = setup();
 
-    room.value = { ...IN_RESULTS, results: { ...RESULTS, last: true } };
-    room.value = { ...room.value, phase: 'podium', podium: [] };
-
+    room.value = { ...IN_WORDS, results: { ...RESULTS, last: true } };
     expect(reveal.stageAt(ENDS_AT)).toBe('time-up');
     expect(reveal.stageAt(WORDS_AT)).toBe('words');
-    expect(reveal.stageAt(WORDS_AT + 500)).toBe('hold');
-    expect(reveal.stageAt(WORDS_AT + 5_500)).toBe('result');
+    room.value = { ...room.value, phase: 'podium', podium: [] };
+
+    expect(reveal.stageAt(WORDS_AT + 500)).toBe('result');
+  });
+
+  test('never opens the result while the room is on the words', () => {
+    const { room, reveal } = setup();
+    room.value = IN_WORDS;
+
+    expect(reveal.stageAt(WORDS_AT + 60_000)).toBe('words');
+    expect(reveal.stageAt(WORDS_AT + 3_600_000)).toBe('words');
+
+    room.value = { ...IN_WORDS, phase: 'results' };
+
+    expect(reveal.stageAt(WORDS_AT + 3_600_000)).toBe('result');
+  });
+
+  test('notes the instant the result opens, for the lit tiles', () => {
+    const { room, reveal, setNow } = setup();
+    room.value = IN_WORDS;
+    expect(reveal.plan.value?.resultShownAt).toBeNull();
+
+    setNow(WORDS_AT + 40_000);
+    room.value = { ...IN_WORDS, phase: 'results' };
+
+    expect(reveal.plan.value).toEqual({ wordsStartAt: WORDS_AT, resultShownAt: WORDS_AT + 40_000 });
   });
 
   test('keeps the plan when a reconnect brings the same results again', () => {
     const { room, reveal, setNow } = setup();
-    room.value = IN_RESULTS;
+    room.value = IN_WORDS;
     const plan = reveal.plan.value;
 
     setNow(WORDS_AT + 30_000);
-    room.value = { ...IN_RESULTS, results: null };
-    room.value = { ...IN_RESULTS, results: { ...RESULTS } };
+    room.value = { ...IN_WORDS, results: null };
+    room.value = { ...IN_WORDS, results: { ...RESULTS } };
 
     expect(reveal.plan.value).toBe(plan);
     expect(reveal.results.value).toBe(RESULTS);
@@ -91,14 +113,14 @@ describe('createRevealClock', () => {
 
   test('plans again when a reconnect finds another match ended at the same index', () => {
     const { room, reveal, setNow } = setup();
-    room.value = IN_RESULTS;
+    room.value = IN_WORDS;
     const otherMatchEndsAt = ENDS_AT + 300_000;
     const otherRound: RoundInfo = { ...ROUND, id: 7, endsAt: otherMatchEndsAt };
     const otherResults: RoundResultsMessage = { ...RESULTS, shared: [{ word: 'bola', points: 2, foundBy: ['caio'] }] };
 
     setNow(otherMatchEndsAt);
-    room.value = { ...IN_RESULTS, round: otherRound, results: null };
-    room.value = { ...IN_RESULTS, round: otherRound, results: otherResults };
+    room.value = { ...IN_WORDS, round: otherRound, results: null };
+    room.value = { ...IN_WORDS, round: otherRound, results: otherResults };
 
     expect(reveal.results.value).toBe(otherResults);
     expect(reveal.plan.value?.wordsStartAt).toBe(otherMatchEndsAt + 2_000);
@@ -108,7 +130,7 @@ describe('createRevealClock', () => {
     const reloaded = setup();
     reloaded.setNow(WORDS_AT + 30_000);
 
-    reloaded.room.value = IN_RESULTS;
+    reloaded.room.value = IN_WORDS;
 
     expect(reloaded.reveal.stageAt(WORDS_AT + 30_000)).toBe('words');
   });
@@ -119,7 +141,7 @@ describe('createRevealClock', () => {
       const reloaded = setup(IN_ROUND, false);
       reloaded.setNow(serverArrival + skewMs);
 
-      reloaded.room.value = IN_RESULTS;
+      reloaded.room.value = IN_WORDS;
       expect(reloaded.reveal.plan.value, `${skewMs} ms`).toBeNull();
       expect(reloaded.reveal.results.value, `${skewMs} ms`).toBe(RESULTS);
       reloaded.setNow(serverArrival);
@@ -132,7 +154,7 @@ describe('createRevealClock', () => {
 
   test('forgets the plan when the next round starts', () => {
     const { room, reveal } = setup();
-    room.value = IN_RESULTS;
+    room.value = IN_WORDS;
 
     room.value = { ...IN_ROUND, round: { ...ROUND, id: 2, index: 1 } };
 
@@ -141,7 +163,7 @@ describe('createRevealClock', () => {
 
   test('forgets the plan when the room goes back to the lobby', () => {
     const { room, reveal } = setup();
-    room.value = IN_RESULTS;
+    room.value = IN_WORDS;
 
     room.value = { ...INITIAL_VIEW, code: 'KBXT', phase: 'lobby' };
 
@@ -150,20 +172,20 @@ describe('createRevealClock', () => {
 
   test('plans the same index again after a new match', () => {
     const { room, reveal, setNow } = setup();
-    room.value = IN_RESULTS;
+    room.value = IN_WORDS;
     room.value = IN_ROUND;
 
     setNow(ENDS_AT + 50_000);
-    room.value = IN_RESULTS;
+    room.value = IN_WORDS;
 
     expect(reveal.plan.value?.wordsStartAt).toBe(ENDS_AT + 50_000);
   });
 
   test('shows the words at once when the TV connected without the round', () => {
-    const { room, reveal, setNow } = setup({ ...INITIAL_VIEW, code: 'KBXT', phase: 'results' });
+    const { room, reveal, setNow } = setup({ ...INITIAL_VIEW, code: 'KBXT', phase: 'words' });
     setNow(5_000);
 
-    room.value = { ...INITIAL_VIEW, code: 'KBXT', phase: 'results', results: RESULTS };
+    room.value = { ...INITIAL_VIEW, code: 'KBXT', phase: 'words', results: RESULTS };
 
     expect(reveal.stageAt(5_000)).toBe('words');
   });

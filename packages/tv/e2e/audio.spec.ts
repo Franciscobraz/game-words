@@ -45,6 +45,7 @@ test('plays the cues of a round, each once', async ({ page }) => {
   expect(whistle.frequencyHz).toBeGreaterThanOrEqual(2_000);
 
   room.push(sampleResults());
+  room.push({ type: 'phase', phase: 'words' });
   await page.clock.runFor(TIME_UP_MS + TICK_MS);
   await expect(page.getByTestId('words-screen')).toBeVisible();
   await expect.poll(async () => (await heard(page)).length).toBe(4);

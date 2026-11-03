@@ -1,6 +1,6 @@
-import type { RoundResultsMessage } from '@bwords/core';
+import type { Phase, RoundResultsMessage } from '@bwords/core';
 import { effect, type ReadonlySignal, signal } from '@preact/signals';
-import { type RevealPlan, revealPlan, type RevealStage, revealStage } from '../model/reveal.ts';
+import { type RevealPhase, type RevealPlan, revealPlan, type RevealStage, revealStage } from '../model/reveal.ts';
 import type { RoomView } from '../model/room-view.ts';
 
 /** What the reveal clock needs from the outside; the tests pass fakes (style guide §4, D). */
@@ -12,7 +12,7 @@ export interface RevealDeps {
   clockSynced: ReadonlySignal<boolean>;
 }
 
-/** The stages after a round (TVWORDS-01). */
+/** The stages after a round (TVWORDS-01, WORDCTL-01). */
 export interface RevealClock {
   /** The plan of the round that ended; null when no reveal is running. */
   plan: ReadonlySignal<RevealPlan | null>;
@@ -23,10 +23,10 @@ export interface RevealClock {
 }
 
 /**
- * Notes when the results of a round arrive; the stages come from that instant and the clock, so nothing here counts time.
- * A reconnect gets the same results again and keeps its plan, while a reload starts from nothing and restarts the words
- * (TVWORDS-01 AC 11, TVEXIT-01 AC 7). After a reload the results come before the first clock sample, so the plan waits
- * for it: the TV's own clock can be minutes off. Meanwhile the results are kept, and the screen shows the result.
+ * Notes when the results of a round arrive and when the result opens; the stages come from those instants, the phase and
+ * the clock, so nothing here counts time. A reconnect gets the same results again and keeps its plan, while a reload
+ * starts from nothing and restarts the words from the top (WORDCTL-01 AC 11, TVEXIT-01 AC 7). After a reload the results
+ * come before the first clock sample, so the plan waits for it: the TV's own clock can be minutes off.
  */
 export function createRevealClock({ room, serverNow, clockSynced }: RevealDeps): RevealClock {
   const plan = signal<RevealPlan | null>(null);
@@ -37,7 +37,7 @@ export function createRevealClock({ room, serverNow, clockSynced }: RevealDeps):
   effect(() => {
     const { phase, results, round } = room.value;
     const synced = clockSynced.value;
-    if (phase !== 'words' && phase !== 'results' && phase !== 'podium') {
+    if (!isRevealPhase(phase)) {
       plan.value = null;
       planned.value = null;
       plannedRoundId = null;
@@ -50,8 +50,10 @@ export function createRevealClock({ room, serverNow, clockSynced }: RevealDeps):
       plannedRoundId = roundId;
       plan.value = null;
     }
-    if (plan.peek() !== null || !synced) return;
-    plan.value = revealPlan(results, round?.endsAt ?? null, serverNow());
+    if (!synced) return;
+    const current = plan.peek() ?? revealPlan(round?.endsAt ?? null, serverNow());
+    const resultOpened = phase !== 'words' && current.resultShownAt === null;
+    plan.value = resultOpened ? { ...current, resultShownAt: serverNow() } : current;
   });
 
   return {
@@ -59,7 +61,12 @@ export function createRevealClock({ room, serverNow, clockSynced }: RevealDeps):
     results: planned,
     stageAt(now) {
       const current = plan.value;
-      return current === null ? null : revealStage(now, current);
+      const phase = room.value.phase;
+      return current === null || !isRevealPhase(phase) ? null : revealStage(now, current, phase);
     },
   };
+}
+
+function isRevealPhase(phase: Phase | null): phase is RevealPhase {
+  return phase === 'words' || phase === 'results' || phase === 'podium';
 }

@@ -110,6 +110,7 @@ test('marks the end of the round for two seconds', async ({ page }) => {
 
   // The exact limit is proven by the unit test of `revealStage` (C50); here, the results take the screen after it.
   room.push({ type: 'round-results', index: 0, shared: [], players: [], longest: null, possibleWords: 0, last: false });
+  room.push({ type: 'phase', phase: 'words' });
   await page.clock.runFor(TIME_UP_MS);
 
   await expect(page.getByTestId('round-screen')).toHaveCount(0);

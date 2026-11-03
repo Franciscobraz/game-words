@@ -509,10 +509,10 @@ T39 → T40 → T41 → T42 → T43 → T44
 
 **Done when**:
 
-- [ ] C42
-- [ ] Um caso por mensagem em `applyServerMessage` e por etapa em `tvScreen` (L-007)
-- [ ] Gate check passes
-- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+- [x] C42
+- [x] Um caso por mensagem em `applyServerMessage` e por etapa em `tvScreen` (L-007)
+- [x] Gate check passes
+- [x] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: unit
 **Gate**: quick

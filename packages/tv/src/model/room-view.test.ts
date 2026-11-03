@@ -114,10 +114,18 @@ describe('applyServerMessage', () => {
     expect(view.counts).toEqual({ [ANA.id]: 4, [BETO.id]: 1 });
   });
 
-  test('round-results moves to the results and keeps the message', () => {
-    const view = applyServerMessage(MID_ROUND, RESULTS);
+  test('round-results keeps the message and leaves the phase to the server', () => {
+    const onWords: RoomView = { ...MID_ROUND, phase: 'words' };
 
-    expect(view).toEqual({ ...MID_ROUND, phase: 'results', results: RESULTS });
+    const view = applyServerMessage(onWords, RESULTS);
+
+    expect(view).toEqual({ ...onWords, results: RESULTS });
+  });
+
+  test.each(['words', 'results'] as const)('phase moves the room to the %s', (phase) => {
+    const view = applyServerMessage(MID_ROUND, { type: 'phase', phase });
+
+    expect(view).toEqual({ ...MID_ROUND, phase });
   });
 
   test('podium moves to the podium and keeps the results of the last round', () => {
@@ -143,6 +151,7 @@ describe('applyServerMessage', () => {
     ['submit-result', { type: 'submit-result', results: [{ ok: true, word: 'casa' }] }],
     ['time', { type: 'time', clientTime: 1, serverTime: 2 }],
     ['error', { type: 'error', code: 'wrong-phase' }],
+    ['scroll', { type: 'scroll', direction: 'down' }],
   ])('%s leaves the view as it is', (_, msg) => {
     expect(applyServerMessage(MID_ROUND, msg)).toBe(MID_ROUND);
   });

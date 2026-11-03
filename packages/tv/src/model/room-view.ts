@@ -44,7 +44,8 @@ export const INITIAL_VIEW: RoomView = {
 // Reason: nothing in the view depends on the time; `createRevealClock` keeps the moment `round-results` arrived.
 /**
  * Folds one server message into the view; the server is authoritative. Messages the TV never acts on
- * (`joined`, `submit-result`, `time`) and errors, which the store handles, leave the view as it is.
+ * (`joined`, `submit-result`, `time`), the host's steps through the words and errors, which the stores handle, leave the
+ * view as it is.
  */
 export function applyServerMessage(view: RoomView, msg: ServerMessage): RoomView {
   switch (msg.type) {
@@ -58,14 +59,16 @@ export function applyServerMessage(view: RoomView, msg: ServerMessage): RoomView
       return startRound(view, msg);
     case 'counts':
       return { ...view, counts: Object.fromEntries(msg.counts.map(({ playerId, count }) => [playerId, count])) };
+    // Only the data: the phase comes from `welcome`, `round-start`, `phase` and `podium`, so the order never picks the screen.
     case 'round-results':
-      return { ...view, phase: 'results', results: msg };
+      return { ...view, results: msg };
+    case 'phase':
+      return { ...view, phase: msg.phase };
     case 'podium':
       return { ...view, phase: 'podium', podium: msg.ranking };
     case 'closed':
       return { ...view, closeReason: msg.reason };
-    // The words stage and the host's list steps reach the TV screens with T17 (WORDCTL-01).
-    case 'phase':
+    // The host's steps through the words go to the store of the list, not to the view (WORDCTL-01 AC 5-6).
     case 'scroll':
     case 'joined':
     case 'submit-result':

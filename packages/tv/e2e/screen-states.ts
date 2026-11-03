@@ -1,7 +1,7 @@
 import { COUNTDOWN_MS, type PlayerInfo, type RoundResultsMessage, type Settings, type WelcomeMessage } from '@bwords/core';
 import { expect, type Page } from '@playwright/test';
 import { GIVE_UP_AFTER_MS, NO_CONNECTION_AFTER_MS } from '../src/model/reconnect.ts';
-import { foundWordCount, HOLD_AFTER_LAST_MS, scrollDurationMs, TIME_UP_MS } from '../src/model/reveal.ts';
+import { TIME_UP_MS } from '../src/model/reveal.ts';
 import { STRINGS } from '../src/strings/pt-BR.ts';
 import { type CuttableRoom, cuttableRoom } from './cuttable-room.ts';
 import { type FakeRoom, fakeRoom } from './fake-room.ts';
@@ -164,10 +164,16 @@ async function openRoundEnd(page: Page, players: PlayerInfo[], openRoom: OpenRoo
   return room;
 }
 
+/** The end of a round as the server sends it to the TV: the results, then the words stage (WORDCTL-01). */
+function endRound(room: FakeRoom, results: RoundResultsMessage): void {
+  room.push(results);
+  room.push({ type: 'phase', phase: 'words' });
+}
+
 function openTimeUp(players: PlayerInfo[]) {
   return async (page: Page, openRoom: OpenRoom = scriptedRoom): Promise<void> => {
     const room = await openRoundEnd(page, players, openRoom);
-    room.push(resultsOf(players));
+    endRound(room, resultsOf(players));
     await expect(page.getByTestId('time-up')).toBeVisible();
     await page.clock.runFor(TICK_MS);
   };
@@ -176,7 +182,7 @@ function openTimeUp(players: PlayerInfo[]) {
 function openWords(players: PlayerInfo[], results: RoundResultsMessage = resultsOf(players)) {
   return async (page: Page, openRoom: OpenRoom = scriptedRoom): Promise<void> => {
     const room = await openRoundEnd(page, players, openRoom);
-    room.push(results);
+    endRound(room, results);
     await page.clock.runFor(TIME_UP_MS + TICK_MS);
     await showScreen(page, 'words-screen');
   };
@@ -185,9 +191,12 @@ function openWords(players: PlayerInfo[], results: RoundResultsMessage = results
 function openResult(players: PlayerInfo[], results: RoundResultsMessage = resultsOf(players)) {
   return async (page: Page, openRoom: OpenRoom = scriptedRoom): Promise<void> => {
     const room = await openRoundEnd(page, players, openRoom);
-    room.push(results);
-    if (results.last) room.push({ type: 'podium', ranking: [] });
-    await page.clock.runFor(TIME_UP_MS + scrollDurationMs(foundWordCount(results)) + HOLD_AFTER_LAST_MS + LIGHT_ALL_TILES_MS);
+    endRound(room, results);
+    await page.clock.runFor(TIME_UP_MS + TICK_MS);
+    await showScreen(page, 'words-screen');
+    // The host's "Ver resultado" (WORDCTL-01 AC 8).
+    room.push(results.last ? { type: 'podium', ranking: [] } : { type: 'phase', phase: 'results' });
+    await page.clock.runFor(LIGHT_ALL_TILES_MS);
     await showScreen(page, 'result-screen');
   };
 }

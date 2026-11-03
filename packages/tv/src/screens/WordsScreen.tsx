@@ -10,6 +10,9 @@ import { useStore } from '../state/store.ts';
 import { STRINGS } from '../strings/pt-BR.ts';
 import '../styles/words.css';
 
+// The list moves one word a second until T21 drives it from the scroll store (AD-024).
+const INTERIM_MS_PER_WORD = 1_000;
+
 /** The words of the round: the totals stand still and the list scrolls by itself (TVWORDS-01). */
 export function WordsScreen() {
   const { room, reveal } = useStore();
@@ -51,7 +54,7 @@ export function WordsScreen() {
         {found === 0 ? (
           <p class="words__empty">{STRINGS.noWordsFound}</p>
         ) : (
-          <WordScroll durationMs={plan.scrollMs}>
+          <WordScroll durationMs={found * INTERIM_MS_PER_WORD}>
             {rows.map((row, index) => (
               <WordRow row={row} key={index} />
             ))}

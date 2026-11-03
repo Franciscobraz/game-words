@@ -19,7 +19,7 @@ const ROUND: RoundInfo = {
 
 const LOBBY: RoomView = { ...INITIAL_VIEW, code: 'KBXT', phase: 'lobby' };
 const IN_ROUND: RoomView = { ...LOBBY, phase: 'round', round: ROUND };
-const AFTER_ROUND: RoomView = { ...LOBBY, phase: 'results', round: ROUND };
+const ON_WORDS: RoomView = { ...LOBBY, phase: 'words', round: ROUND };
 
 describe('tvScreen', () => {
   test('shows the opening screen before the first welcome', () => {
@@ -47,14 +47,16 @@ describe('tvScreen', () => {
     expect(tvScreen(IN_ROUND, 'open', null, STARTS_AT)).toBe('round');
   });
 
-  test.each<[RevealStage, Screen]>([
+  test.each<[RevealStage | null, Screen]>([
     ['time-up', 'round'],
     ['words', 'words'],
-    ['hold', 'words'],
-    ['result', 'result'],
-  ])('after a round, the stage %s shows the %s screen', (stage, screen) => {
-    expect(tvScreen(AFTER_ROUND, 'open', stage, 200_000)).toBe(screen);
-    expect(tvScreen({ ...AFTER_ROUND, phase: 'podium' }, 'open', stage, 200_000)).toBe(screen);
+    [null, 'words'],
+  ])('on the words, the stage %s shows the %s screen', (stage, screen) => {
+    expect(tvScreen(ON_WORDS, 'open', stage, 200_000)).toBe(screen);
+  });
+
+  test.each(['results', 'podium'] as const)('shows the result in the %s phase', (phase) => {
+    expect(tvScreen({ ...ON_WORDS, phase }, 'open', 'result', 200_000)).toBe('result');
   });
 
   test('shows the result of a podium with no reveal running', () => {

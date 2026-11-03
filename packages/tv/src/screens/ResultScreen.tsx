@@ -11,7 +11,6 @@ import { litTiles } from '../model/lit-tiles.ts';
 import { longestCard } from '../model/longest-card.ts';
 import { qrMatrix, roomUrl } from '../model/qr.ts';
 import { resultHeader } from '../model/result-header.ts';
-import { resultStartAt } from '../model/reveal.ts';
 import { standings } from '../model/standings.ts';
 import { useServerClock } from '../state/server-clock.ts';
 import { useStore } from '../state/store.ts';
@@ -97,7 +96,8 @@ function LitBoard({ round, settings, path }: LitBoardProps) {
   const { room, reveal } = useStore();
   const serverNow = useServerClock(room.serverNow);
   const plan = reveal.plan.value;
-  const elapsedMs = plan === null ? 0 : serverNow.value - resultStartAt(plan);
+  const shownAt = plan?.resultShownAt ?? null;
+  const elapsedMs = shownAt === null ? 0 : serverNow.value - shownAt;
   return (
     <div class="result__board">
       <BoardGrid labels={boardLabels(round.board)} size={settings.size} lit={litTiles(path, elapsedMs)} />
