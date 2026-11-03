@@ -8,7 +8,11 @@
 
 Corroborated across multiple features. Safe to apply as guidance.
 
-_none_
+### L-008 - Prove a no-leak rule over every message the client can receive, including reconnect snapshots
+- signal: `surviving_mutant` · recurrence: 2 feature(s) · scope: `server` · harmful: 0
+- features: m2-room-server, m4-tv
+- evidence: packages/core/src/room/effects.ts:94 (C16, PROTO-01 AC 5) (server) (+1 more)
+- last seen: 2026-11-03T14:42:48Z
 
 ## Candidates (under observation - do NOT load as guidance yet)
 
@@ -56,12 +60,6 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - evidence: tools/dict-build/src/cleanup.ts (C14, CLEAN-01 AC 2) (dict-build)
 - last seen: 2026-10-26T23:49:25Z
 
-### L-008 - Prove a no-leak rule over every message the client can receive, including reconnect snapshots
-- signal: `surviving_mutant` · recurrence: 1 feature(s) · scope: `server` · harmful: 0
-- features: m2-room-server
-- evidence: packages/core/src/room/effects.ts:94 (C16, PROTO-01 AC 5) (server)
-- last seen: 2026-10-27T20:59:02Z
-
 ### L-009 - Test restart recovery with dead sockets, not only with hibernated ones
 - signal: `surviving_mutant` · recurrence: 1 feature(s) · scope: `server` · harmful: 0
 - features: m2-room-server
@@ -103,6 +101,36 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - features: m3-phone
 - evidence: packages/phone/vite.config.ts (dev-server)
 - last seen: 2026-10-30T13:06:52Z
+
+### L-016 - Cover the zero case of every rule that names a winner or a leader
+- signal: `ac_gap` · recurrence: 1 feature(s) · scope: `rules` · harmful: 0
+- features: m4-tv
+- evidence: packages/tv/src/model/result-header.ts:40 (finding 1) (rules)
+- last seen: 2026-11-03T14:42:49Z
+
+### L-017 - Identify cached server data by a unique id, not by an index that restarts each match
+- signal: `ac_gap` · recurrence: 1 feature(s) · scope: `client-state` · harmful: 0
+- features: m4-tv
+- evidence: packages/tv/src/state/reveal.ts:39 (finding 2) (client-state)
+- last seen: 2026-11-03T14:42:49Z
+
+### L-018 - Wait for the first clock sync sample before timing anything on the server clock
+- signal: `ac_gap` · recurrence: 1 feature(s) · scope: `client-state` · harmful: 0
+- features: m4-tv
+- evidence: packages/tv/src/state/reveal.ts:41, packages/tv/src/state/sound.ts:43 (findings 3, 4) (client-state)
+- last seen: 2026-11-03T14:42:49Z
+
+### L-019 - Assert the rate a criterion fixes, not only the total duration
+- signal: `spec_precision_gap` · recurrence: 1 feature(s) · scope: `e2e` · harmful: 0
+- features: m4-tv
+- evidence: C51, C61 (finding 6) (e2e)
+- last seen: 2026-11-03T14:42:49Z
+
+### L-020 - Remove the code and tests of a behavior in the same pass that a decision removes it
+- signal: `spec_deviation` · recurrence: 1 feature(s) · scope: `specs` · harmful: 0
+- features: m4-tv
+- evidence: packages/tv/src/model/lobby-rows.ts:63 (finding 7) (specs)
+- last seen: 2026-11-03T14:42:49Z
 
 ## Quarantined (failed when applied - ignore)
 

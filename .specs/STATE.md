@@ -170,29 +170,21 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 
 ## Handoff
 
-- **Data:** 2026-10-30
-- **Marcos concluídos:** M0, M1, M2 e M3 (Done, verificados).
-- **Marco em andamento:** M4 (`m4-tv`), no fechamento de Execute (implement.md, passo 10). Spec, design e tarefas aprovados. As 37 tarefas estão commitadas, até `4ff0278`; o walk está em `7ddb1bb`, e as provas em `c07a9da`. O histórico detalhado está em `.specs/features/m4-tv/tasks.md` `## Handoff`, e as aprovações feitas em nome do user, em `auto-approved.md`.
-- **Parado em:** o sub-agente de telas foi interrompido a pedido do user, antes de escrever `screens.md`. Ele não deixou nada na árvore, que está limpa. O `**Dispatched:**` de `tasks.md` cita o envio: ele não voltou, então deve ser enviado de novo.
-- **Próximo passo, nesta ordem:**
-  1. Sub-agente de telas, round 1, com `verify-screens.md` (captures `tv-lobby`, `tv-round`, `tv-words`, `tv-round-result`), sem o resto do Handoff.
-  2. Depois dele, o Verifier, com `validate.md`, um de cada vez, porque as mutações mudam a árvore em que o app roda.
-  3. Corrigir os achados numa passada, `check_proofs.py --mutations`, round 2 só nas linhas `differs`.
-  4. Mostrar ao user as decisões abaixo. Rodar `check_proofs.py` por último e o gate antes de commitar `proofs.md`.
-  5. Lições. O push e o deploy só com pedido do user.
-- **Pendente do user:**
-  1. Fotos de `.specs/features/m4-tv/captures/uncaptured/` (C105): aprovadas; user: "as telas que estão em /uncaptured estão otimas pode aprovar elas".
-  2. Bug existente em `packages/core/src/client/room-connection.ts`: um socket que abre e cai antes do `welcome` deixa um prazo órfão, que derruba uma conexão saudável (30 s no celular, 10 min na TV). Correção proposta: `cancelOffline ??= schedule(...)`. Muda o celular nesse caso.
-  3. A pasta `C:\c\`, fora do repositório, criada por um spec temporário, com 3 PNGs: a remoção foi bloqueada, e ela continua lá.
-  4. A faixa de conexão cobre a borda de cima do cartão do código na rodada: aceitar ou ajustar?
-  5. `workers: 4` também no config do celular, que tem o mesmo risco?
-  6. "O primeiro a entrar vira anfitrião(ã)" tem "O primeiro" no masculino (TVLOBBY-01 AC 10 contra AD-013).
-  7. `docs/DESIGN.md` ainda cita `wrangler.toml`, e o arquivo é `wrangler.jsonc`.
-  8. Ouvir os sons e ver a rolagem rodando: ninguém ouviu nem viu ainda.
-  9. Observação do walk: recarregar a TV na rolagem passa por outras telas por cerca de 100 ms; pode ser um flash de um quadro.
-- **Instabilidade em aberto:** a suíte de E2E da TV falhou uma vez em 4 execuções (`toBeVisible`, teste não identificado). Com 8 workers o Vite recusava módulos no Windows, por isso o `workers: 4`. Conferir as portas 8787, 9229, 5175 e 5176 livres antes de rodar E2E.
-- **Atualização de 2026-10-31:** o round 1 de telas voltou (`screens.md`, em `1df8755`): `tv-lobby` diverge em 2 linhas, o ícone do aviso de som sem o quadrado e a linha do espectador, que o servidor não produz no lobby (AD-023). O próximo passo continua sendo o Verifier. O user publicou o M4 com `npm run deploy` (`docs/deploy.md`) a partir de `29f0c43` e testou em TV e celular reais: tudo funcionou, com as correções pedidas em `.specs/features/m4-1-playtest/context.md`, já respondidas; o spec começa depois do fechamento do M4.
-- **Depois do M4:** a feature `m4-1-playtest` e depois o M5, com a lista de palavrões vazia.
+- **Data:** 2026-11-03
+- **Marcos concluídos:** M0, M1, M2, M3 e M4 (Done, verificados). O M4 fechou com `validate_verification.py` exit 0 em `619b4b1` (123 provas, 3 mutações killed, `screens.md` round 2 com as 4 telas `matches`); `proofs.md` foi commitado em `4eb4102`. Os 7 achados do Verifier estão fechados em `verification.md`, e as lições, em `.specs/LESSONS.md` (L-008 confirmada).
+- **Publicado:** a Cloudflare roda o M4 de `29f0c43`; as correções dos achados ainda não foram publicadas. Deploy só com pedido do user.
+- **Próximo passo:** o spec de `m4-1-playtest` (`.specs/features/m4-1-playtest/context.md`). As respostas do primeiro bloco estão lá; os pedidos novos da tela de resultado (contagem de palavras, maior palavra acima do tabuleiro, música de fim de rodada) têm 4 perguntas abertas com o user. A capture nova sai do HTML da tela "TV - Resultado da Rodada" do Stitch, renderizado a 1920x1080, não do screenshot, que está desatualizado.
+- **Pendente do user (do fechamento do M4):**
+  1. Bug existente em `packages/core/src/client/room-connection.ts`: um socket que abre e cai antes do `welcome` deixa um prazo órfão, que derruba uma conexão saudável (30 s no celular, 10 min na TV). Correção proposta: `cancelOffline ??= schedule(...)`.
+  2. A pasta `C:\c\`, fora do repositório, criada por um spec temporário, com 3 PNGs: a remoção foi bloqueada, e ela continua lá.
+  3. A faixa de conexão cobre a borda de cima do cartão do código na rodada: aceitar ou ajustar?
+  4. `workers: 4` também no config do celular, que tem o mesmo risco?
+  5. "O primeiro a entrar vira anfitrião(ã)" tem "O primeiro" no masculino (TVLOBBY-01 AC 10 contra AD-013).
+  6. `docs/DESIGN.md` ainda cita `wrangler.toml`, e o arquivo é `wrangler.jsonc`.
+  7. Recarregar a TV na rolagem passa por outras telas por cerca de 100 ms; pode ser um flash de um quadro.
+- **Deixado de lado pelo user:** uma vitória que pareceu indevida numa partida em família. O servidor só dá vitória no fim da última rodada, à maior pontuação; uma simulação de 1.200 partidas não reproduziu. O user volta ao caso se ele se repetir.
+- **Instabilidade em aberto:** com 8 workers o Vite recusava módulos no Windows, por isso o `workers: 4` na TV. Conferir as portas 8787, 9229, 5175 e 5176 livres antes de rodar E2E.
+- **Depois de `m4-1-playtest`:** o M5, com a lista de palavrões vazia.
 - **Branch:** `main`. `origin/main` está em `c4746d1`; todo o M4 ainda não foi enviado. Push só com pedido.
 - **Modo de execução preferido pelo usuário:** subagentes, um batch por vez, parando para mostrar o resultado e perguntar antes do próximo.
 - **Teste manual:** `npm run assets:build`, depois `npm run dev -w @bwords/server`; TV em `http://localhost:8787/tv`, celular em `http://localhost:8787/<CÓDIGO>`.

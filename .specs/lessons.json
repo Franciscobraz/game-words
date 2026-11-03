@@ -3,7 +3,7 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 16,
+  "next_id": 21,
   "lessons": [
     {
       "id": "L-001",
@@ -137,17 +137,19 @@
       "text": "Prove a no-leak rule over every message the client can receive, including reconnect snapshots",
       "signal": "surviving_mutant",
       "scope": "server",
-      "status": "candidate",
+      "status": "confirmed",
       "features": [
-        "m2-room-server"
+        "m2-room-server",
+        "m4-tv"
       ],
-      "recurrence": 1,
+      "recurrence": 2,
       "harmful": 0,
       "evidence": [
-        "packages/core/src/room/effects.ts:94 (C16, PROTO-01 AC 5) (server)"
+        "packages/core/src/room/effects.ts:94 (C16, PROTO-01 AC 5) (server)",
+        "packages/core/src/room/machine.ts:198 (C3, finding 5) (server)"
       ],
       "created": "2026-10-27T20:59:02Z",
-      "last_seen": "2026-10-27T20:59:02Z"
+      "last_seen": "2026-11-03T14:42:48Z"
     },
     {
       "id": "L-009",
@@ -274,6 +276,96 @@
       ],
       "created": "2026-10-30T13:06:52Z",
       "last_seen": "2026-10-30T13:06:52Z"
+    },
+    {
+      "id": "L-016",
+      "key": "ac_gap::cover the zero case of every rule that names a winner or a leader",
+      "text": "Cover the zero case of every rule that names a winner or a leader",
+      "signal": "ac_gap",
+      "scope": "rules",
+      "status": "candidate",
+      "features": [
+        "m4-tv"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "packages/tv/src/model/result-header.ts:40 (finding 1) (rules)"
+      ],
+      "created": "2026-11-03T14:42:49Z",
+      "last_seen": "2026-11-03T14:42:49Z"
+    },
+    {
+      "id": "L-017",
+      "key": "ac_gap::identify cached server data by a unique id not by an index that restarts each match",
+      "text": "Identify cached server data by a unique id, not by an index that restarts each match",
+      "signal": "ac_gap",
+      "scope": "client-state",
+      "status": "candidate",
+      "features": [
+        "m4-tv"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "packages/tv/src/state/reveal.ts:39 (finding 2) (client-state)"
+      ],
+      "created": "2026-11-03T14:42:49Z",
+      "last_seen": "2026-11-03T14:42:49Z"
+    },
+    {
+      "id": "L-018",
+      "key": "ac_gap::wait for the first clock sync sample before timing anything on the server clock",
+      "text": "Wait for the first clock sync sample before timing anything on the server clock",
+      "signal": "ac_gap",
+      "scope": "client-state",
+      "status": "candidate",
+      "features": [
+        "m4-tv"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "packages/tv/src/state/reveal.ts:41, packages/tv/src/state/sound.ts:43 (findings 3, 4) (client-state)"
+      ],
+      "created": "2026-11-03T14:42:49Z",
+      "last_seen": "2026-11-03T14:42:49Z"
+    },
+    {
+      "id": "L-019",
+      "key": "spec_precision_gap::assert the rate a criterion fixes not only the total duration",
+      "text": "Assert the rate a criterion fixes, not only the total duration",
+      "signal": "spec_precision_gap",
+      "scope": "e2e",
+      "status": "candidate",
+      "features": [
+        "m4-tv"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "C51, C61 (finding 6) (e2e)"
+      ],
+      "created": "2026-11-03T14:42:49Z",
+      "last_seen": "2026-11-03T14:42:49Z"
+    },
+    {
+      "id": "L-020",
+      "key": "spec_deviation::remove the code and tests of a behavior in the same pass that a decision removes it",
+      "text": "Remove the code and tests of a behavior in the same pass that a decision removes it",
+      "signal": "spec_deviation",
+      "scope": "specs",
+      "status": "candidate",
+      "features": [
+        "m4-tv"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "packages/tv/src/model/lobby-rows.ts:63 (finding 7) (specs)"
+      ],
+      "created": "2026-11-03T14:42:49Z",
+      "last_seen": "2026-11-03T14:42:49Z"
     }
   ]
 }
