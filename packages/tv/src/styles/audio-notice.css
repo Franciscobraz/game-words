@@ -5,7 +5,7 @@
   align-items: center;
   height: 4.25rem;
   margin: 0;
-  padding: 0 2rem 0 1.25rem;
+  padding: 0 2rem;
   border: 0.0625rem solid var(--color-card-stroke);
   border-radius: var(--radius-lg);
   background: var(--color-surface-container-low);
@@ -14,9 +14,17 @@
   font-weight: var(--font-weight-semibold);
 }
 
+/* The icon sits in a dark rounded square, as the capture draws it. */
 .audio-notice__icon {
   display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
   margin-right: 1.25rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-container-lowest);
   color: var(--color-action);
   font-size: 1.75rem;
 }
