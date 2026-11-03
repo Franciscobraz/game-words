@@ -26,6 +26,8 @@ export interface Player {
   spectator: boolean;
   /** Accumulated score of the match. */
   score: number;
+  /** Words of the match up to the last round that ended (RESULT-02 AC 3). */
+  words: number;
   /** Matches won since the room opened (WINS-01). */
   wins: number;
   /** Words this player found in the current round. */

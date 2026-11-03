@@ -24,7 +24,7 @@ const BOARD = [
 ];
 
 function player(id: string, nickname: string): PlayerInfo {
-  return { id, nickname, color: '#ff5e5e', connected: true, spectator: false, score: 0, wins: 0 };
+  return { id, nickname, color: '#ff5e5e', connected: true, spectator: false, score: 0, words: 0, wins: 0 };
 }
 
 /** Beto's phone back in round `index` of KBXT, with the words the server already accepted. */
@@ -51,8 +51,8 @@ function roundStart(index: number): RoundStartMessage {
 /** The end of round `index`: Beto found `unique` alone and shares `shared` with Ana. */
 function roundResults(index: number, unique: string[], shared: string[]): RoundResultsMessage {
   const words = (list: string[], factor: number) => list.map((word) => ({ word, points: (word.length - 2) * factor }));
-  const beto: PlayerResult = { playerId: 'beto', unique: words(unique, 2), roundPoints: 0, score: 0 };
-  const ana: PlayerResult = { playerId: 'ana', unique: [], roundPoints: 0, score: 0 };
+  const beto: PlayerResult = { playerId: 'beto', unique: words(unique, 2), roundPoints: 0, roundWords: 0, score: 0, words: 0 };
+  const ana: PlayerResult = { playerId: 'ana', unique: [], roundPoints: 0, roundWords: 0, score: 0, words: 0 };
   return { type: 'round-results', index, shared: words(shared, 1).map((word) => ({ ...word, foundBy: ['ana', 'beto'] })), players: [ana, beto], longest: null, possibleWords: 0, last: index === 2 };
 }
 

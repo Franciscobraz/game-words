@@ -20,8 +20,8 @@ function hasPrepared(state: RoomState): boolean {
  * Starts the countdown of a round with the prepared board: spectators become
  * players, everyone's round words reset, and every connection gets the new player
  * list and then `round-start`, so a former spectator's phone opens its board (SPEC-01 AC 3).
- * Outside the results this is the first round of a new match, so every score
- * starts at zero.
+ * Outside the results this is the first round of a new match, so every score and
+ * word count starts at zero.
  * Only phones get the salt, followed by the binary frame of the hash prefixes;
  * the TV and the guests on the join screen get neither.
  */
@@ -45,7 +45,13 @@ export function beginRound(state: RoomState, now: number): StepResult {
     nextRound: null,
     nextSolutions: null,
     pendingStart: false,
-    players: state.players.map((p) => ({ ...p, spectator: false, found: [], score: newMatch ? 0 : p.score })),
+    players: state.players.map((p) => ({
+      ...p,
+      spectator: false,
+      found: [],
+      score: newMatch ? 0 : p.score,
+      words: newMatch ? 0 : p.words,
+    })),
     tvCounts: { dirty: false, lastSentAt: 0 },
   };
   const info = roundInfo(next)!;

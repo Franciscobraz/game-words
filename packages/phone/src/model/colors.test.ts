@@ -4,7 +4,7 @@ import { closestColorOwner, colorSlots, selectedSlot } from './colors.ts';
 
 /** A connected player in the lobby with `color`. */
 function player(id: string, nickname: string, color: string): PlayerInfo {
-  return { id, nickname, color, connected: true, spectator: false, score: 0, wins: 0 };
+  return { id, nickname, color, connected: true, spectator: false, score: 0, words: 0, wins: 0 };
 }
 
 const ORANGE = PALETTE[1]!;

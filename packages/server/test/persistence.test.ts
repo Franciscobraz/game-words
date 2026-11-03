@@ -85,7 +85,8 @@ describe('persistence', () => {
     await setClock(code, start.endsAt + 300);
     expect(await runDurableObjectAlarm(stubOf(code))).toBe(true);
     const ended = await liveState(code);
-    expect(ended?.phase).toBe('results');
+    // The round ends on the words (m4-1-playtest C3).
+    expect(ended?.phase).toBe('words');
     expect(ended?.players.every((p) => p.score > 0)).toBe(true);
   });
 

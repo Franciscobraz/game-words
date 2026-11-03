@@ -14,8 +14,8 @@ const SETTINGS: Settings = {
   music: true,
 };
 
-const ANA: PlayerInfo = { id: 'p-ana', nickname: 'Ana', color: '#ff7a00', connected: true, spectator: false, score: 12, wins: 1 };
-const BETO: PlayerInfo = { id: 'p-beto', nickname: 'Beto', color: '#00c1fd', connected: false, spectator: false, score: 5, wins: 0 };
+const ANA: PlayerInfo = { id: 'p-ana', nickname: 'Ana', color: '#ff7a00', connected: true, spectator: false, score: 12, words: 0, wins: 1 };
+const BETO: PlayerInfo = { id: 'p-beto', nickname: 'Beto', color: '#00c1fd', connected: false, spectator: false, score: 5, words: 0, wins: 0 };
 
 const ROUND: RoundInfo = {
   id: 7,

@@ -16,7 +16,7 @@ const SETTINGS: Settings = {
   music: true,
 };
 
-const BETO: PlayerInfo = { id: 'beto', nickname: 'Beto', color: '#ff5e5e', connected: true, spectator: false, score: 0, wins: 0 };
+const BETO: PlayerInfo = { id: 'beto', nickname: 'Beto', color: '#ff5e5e', connected: true, spectator: false, score: 0, words: 0, wins: 0 };
 
 /** Beto, in room KBXT at `phase`. */
 function welcome(phase: Phase): WelcomeMessage {

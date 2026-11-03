@@ -11,7 +11,7 @@ function resultsWith(shared: readonly string[], ...unique: readonly (readonly st
     type: 'round-results',
     index: 0,
     shared: shared.map((word) => ({ ...toWord(word), foundBy: ['ana', 'beto'] })),
-    players: unique.map((words, index) => ({ playerId: `p${index}`, unique: words.map(toWord), roundPoints: 0, score: 0 })),
+    players: unique.map((words, index) => ({ playerId: `p${index}`, unique: words.map(toWord), roundPoints: 0, roundWords: 0, score: 0, words: 0 })),
     longest: null,
     possibleWords: 100,
     last: false,

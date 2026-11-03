@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest';
 import { standings } from './standings.ts';
 
 function player(nickname: string, score: number, overrides: Partial<PlayerInfo> = {}): PlayerInfo {
-  return { id: nickname.toLowerCase(), nickname, color: '#FF7A00', connected: true, spectator: false, score, wins: 0, ...overrides };
+  return { id: nickname.toLowerCase(), nickname, color: '#FF7A00', connected: true, spectator: false, score, words: 0, wins: 0, ...overrides };
 }
 
 describe('standings', () => {

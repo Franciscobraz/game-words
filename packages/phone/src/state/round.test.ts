@@ -48,7 +48,7 @@ const SETTINGS: Settings = {
 };
 
 function player(id: string, nickname: string): PlayerInfo {
-  return { id, nickname, color: '#ff5e5e', connected: true, spectator: false, score: 0, wins: 0 };
+  return { id, nickname, color: '#ff5e5e', connected: true, spectator: false, score: 0, words: 0, wins: 0 };
 }
 
 function base64Url(bytes: Uint8Array): string {

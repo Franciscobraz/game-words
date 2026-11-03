@@ -5,7 +5,7 @@ import { myRoundSummary, myWordRows, resultRounds, spellingsLabel, wordLabel } f
 
 /** A player's line of `round-results`. */
 function line(playerId: string, roundPoints: number, score: number, unique: PlayerResult['unique'] = []): PlayerResult {
-  return { playerId, unique, roundPoints, score };
+  return { playerId, unique, roundPoints, roundWords: 0, score, words: 0 };
 }
 
 /** The end of round 1 of 3: players from the lowest to the highest score, as the server sends them. */

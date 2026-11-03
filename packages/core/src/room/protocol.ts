@@ -121,6 +121,8 @@ export interface PlayerInfo {
   spectator: boolean;
   /** Accumulated score of the match. */
   score: number;
+  /** Words of the match up to the last round that ended (RESULT-02 AC 3, 5). */
+  words: number;
   /** Matches won since the room opened; `crownedPlayers` picks the leaders (WINS-01). */
   wins: number;
 }
@@ -151,8 +153,12 @@ export interface PlayerResult {
   /** Words only this player found. */
   unique: ResultWord[];
   roundPoints: number;
+  /** Unique words plus the shared ones this player found, in this round (RESULT-02 AC 2, 5). */
+  roundWords: number;
   /** Accumulated score after this round. */
   score: number;
+  /** Words of the match after this round (RESULT-02 AC 3). */
+  words: number;
 }
 
 export interface LongestResult extends ResultWord {
@@ -260,7 +266,7 @@ export interface RoundResultsMessage {
   longest: LongestResult | null;
   /** Valid words of the round, with the room's minimum and filter (PROTO-02 AC 2). */
   possibleWords: number;
-  /** Whether this round ended the match; if so, `podium` follows at once. */
+  /** Whether this round ended the match; if so, `podium` follows the host's `show-result`. */
   last: boolean;
 }
 

@@ -83,8 +83,8 @@ describe('joinErrorPlace', () => {
 });
 
 describe('closingHostName', () => {
-  const ana: PlayerInfo = { id: 'p-ana', nickname: 'Ana', color: '#ff7a00', connected: true, spectator: false, score: 0, wins: 0 };
-  const beto: PlayerInfo = { id: 'p-beto', nickname: 'Beto', color: '#00c2ff', connected: true, spectator: false, score: 0, wins: 0 };
+  const ana: PlayerInfo = { id: 'p-ana', nickname: 'Ana', color: '#ff7a00', connected: true, spectator: false, score: 0, words: 0, wins: 0 };
+  const beto: PlayerInfo = { id: 'p-beto', nickname: 'Beto', color: '#00c2ff', connected: true, spectator: false, score: 0, words: 0, wins: 0 };
 
   test('names the host who closed the room', () => {
     // EXIT-01 AC 2: "Ana encerrou a sala".

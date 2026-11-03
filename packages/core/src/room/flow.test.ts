@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest';
 import { nextDeadline } from './deadlines.ts';
 import { step } from './machine.ts';
 import type { Effect } from './effects.ts';
+import { podiumMessage } from './flow.ts';
 import { type PreparedRound, prepareRound } from './prepare.ts';
 import type { ClientMessageType, Phase } from './protocol.ts';
 import { DEFAULT_SETTINGS, type RoomState } from './state.ts';
@@ -74,11 +75,12 @@ describe('match flow', () => {
   });
 
   test('ends the match when the last round ends', () => {
-    // No `next`: the alarm of the last round goes straight to the podium (PROTO-02 AC 4).
+    // No `next`: the alarm of the last round ends on the words, and the podium waits for the host's
+    // show-result (PROTO-02 AC 4, as changed by m4-1-playtest C3 and C11).
     const r = step(lastRound(), { kind: 'alarm' }, ROUND_END, deps);
-    expect(r.state.phase).toBe('podium');
-    expect(sentTo(r.effects, '*').map((m) => m.type)).toEqual(['round-results', 'podium', 'players']);
-    expect(sentTo(r.effects, '*')[1]).toEqual({
+    expect(r.state.phase).toBe('words');
+    expect(sentTo(r.effects, '*').map((m) => m.type)).toEqual(['phase', 'players']);
+    expect(podiumMessage(r.state)).toEqual({
       type: 'podium',
       ranking: [
         { playerId: 'p2', score: 12 },
@@ -93,8 +95,8 @@ describe('match flow', () => {
 
   test('ends the match when the last round ends: an earlier round still waits for the host', () => {
     const r = step(lastRound({ roundIndex: 0 }), { kind: 'alarm' }, ROUND_END, deps);
-    expect(r.state.phase).toBe('results');
-    expect(sentTo(r.effects, '*').map((m) => m.type)).toEqual(['round-results', 'players']);
+    expect(r.state.phase).toBe('words');
+    expect(sentTo(r.effects, '*').map((m) => m.type)).toEqual(['phase', 'players']);
     expect(r.effects).toContainEqual({ kind: 'prepare-next' });
   });
 
@@ -287,14 +289,14 @@ describe('session wins', () => {
     expect(r.effects).toContainEqual({ kind: 'persist', keys: ['room'] });
     // A match where everyone ends with 0 points has no winner.
     const empty = step(lastRoundWith([0, 0, 0], [1, 2, 0]), { kind: 'alarm' }, ROUND_END, deps);
-    expect(empty.state.phase).toBe('podium');
+    expect(empty.state.phase).toBe('words');
     expect(winsOf(empty.state)).toEqual([1, 2, 0]);
   });
 
   test('awards a win to every top scorer at the podium', () => {
     // Bia and Cid (offline) tie at the top; Ana trails.
     const r = step(lastRoundWith([5, 12, 12], [1, 0, 2]), { kind: 'alarm' }, ROUND_END, deps);
-    expect(r.state.phase).toBe('podium');
+    expect(r.state.phase).toBe('words');
     expect(winsOf(r.state)).toEqual([1, 1, 3]);
     expect(r.effects).toContainEqual({ kind: 'persist', keys: ['room'] });
     // A single leader takes the only win.
@@ -304,7 +306,7 @@ describe('session wins', () => {
 
   test('awards no win when the top score is 0', () => {
     const r = step(lastRoundWith([0, 0, 0], [1, 2, 0]), { kind: 'alarm' }, ROUND_END, deps);
-    expect(r.state.phase).toBe('podium');
+    expect(r.state.phase).toBe('words');
     expect(winsOf(r.state)).toEqual([1, 2, 0]);
   });
 
@@ -312,9 +314,11 @@ describe('session wins', () => {
     // The end of round 1 of 2 counts nothing, and neither does `next` in its results.
     const first = { ...lastRoundWith([5, 12, 8], [0, 0, 0]), roundIndex: 0 };
     const ended = step(first, { kind: 'alarm' }, ROUND_END, deps);
-    expect(ended.state.phase).toBe('results');
+    expect(ended.state.phase).toBe('words');
     expect(winsOf(ended.state)).toEqual([0, 0, 0]);
-    const r = step(ended.state, message(host, { type: 'next' }), 70_000, deps);
+    // The results open on the host's show-result (m4-1-playtest C10).
+    const results = { ...ended.state, phase: 'results' as const };
+    const r = step(results, message(host, { type: 'next' }), 70_000, deps);
     expect(r.state.phase).toBe('results');
     expect(winsOf(r.state)).toEqual([0, 0, 0]);
   });

@@ -27,10 +27,10 @@ export const SAMPLE_SETTINGS: Settings = {
   music: true,
 };
 
-export const ANA: PlayerInfo = { id: 'p1', nickname: 'Ana', color: PALETTE[1]!, connected: true, spectator: false, score: 0, wins: 2 };
-export const BETO: PlayerInfo = { id: 'p2', nickname: 'Beto', color: PALETTE[4]!, connected: true, spectator: false, score: 0, wins: 1 };
-export const CAIO: PlayerInfo = { id: 'p3', nickname: 'Caio', color: PALETTE[3]!, connected: false, spectator: false, score: 0, wins: 0 };
-export const DUDA: PlayerInfo = { id: 'p4', nickname: 'Duda', color: PALETTE[7]!, connected: true, spectator: true, score: 0, wins: 0 };
+export const ANA: PlayerInfo = { id: 'p1', nickname: 'Ana', color: PALETTE[1]!, connected: true, spectator: false, score: 0, words: 0, wins: 2 };
+export const BETO: PlayerInfo = { id: 'p2', nickname: 'Beto', color: PALETTE[4]!, connected: true, spectator: false, score: 0, words: 0, wins: 1 };
+export const CAIO: PlayerInfo = { id: 'p3', nickname: 'Caio', color: PALETTE[3]!, connected: false, spectator: false, score: 0, words: 0, wins: 0 };
+export const DUDA: PlayerInfo = { id: 'p4', nickname: 'Duda', color: PALETTE[7]!, connected: true, spectator: true, score: 0, words: 0, wins: 0 };
 
 /** The lobby of KBXT as the server describes it to a phone; `playerId` null is the join screen. */
 export function lobbyWelcome(players: PlayerInfo[], playerId: string | null): WelcomeMessage {
@@ -137,9 +137,9 @@ export function sampleResults(index = 0, last = false): RoundResultsMessage {
       { word: 'quero', points: 3, foundBy: [BETO.id, CAIO.id] },
     ],
     players: [
-      { playerId: CAIO.id, unique: [], roundPoints: 6, score: 16 },
-      { playerId: BETO.id, unique: [], roundPoints: 9, score: 25 },
-      { playerId: ANA.id, unique: [{ word: 'coracoes', points: 12, spellings: ['corações'] }], roundPoints: 18, score: 32 },
+      { playerId: CAIO.id, unique: [], roundPoints: 6, roundWords: 0, score: 16, words: 0 },
+      { playerId: BETO.id, unique: [], roundPoints: 9, roundWords: 0, score: 25, words: 0 },
+      { playerId: ANA.id, unique: [{ word: 'coracoes', points: 12, spellings: ['corações'] }], roundPoints: 18, roundWords: 0, score: 32, words: 0 },
     ],
     longest: null,
     possibleWords: 142,

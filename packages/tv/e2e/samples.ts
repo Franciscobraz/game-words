@@ -24,7 +24,7 @@ const PINK = '#FF4D8D';
 
 /** A player in the shape the server sends. */
 export function samplePlayer(id: string, nickname: string, color: string, overrides: Partial<PlayerInfo> = {}): PlayerInfo {
-  return { id, nickname, color, connected: true, spectator: false, score: 0, wins: 0, ...overrides };
+  return { id, nickname, color, connected: true, spectator: false, score: 0, words: 0, wins: 0, ...overrides };
 }
 
 export const ANA = samplePlayer('p1', 'Ana', ORANGE, { wins: 2 });
@@ -102,7 +102,7 @@ export function sampleResults(): RoundResultsMessage {
       shared('cera', 2, [ANA, CAIO]),
       shared('quero', 3, [ANA, BETO]),
     ],
-    players: Object.entries(SAMPLE_UNIQUE).map(([playerId, unique]) => ({ playerId, unique, roundPoints: 0, score: 0 })),
+    players: Object.entries(SAMPLE_UNIQUE).map(([playerId, unique]) => ({ playerId, unique, roundPoints: 0, roundWords: 0, score: 0, words: 0 })),
     // T(8) E(5) R(6) N(10) O(7) S(11), row-major on the sample board.
     longest: { word: 'ternos', points: 4, path: [8, 5, 6, 10, 7, 11], foundBy: [ANA.id] },
     possibleWords: 142,

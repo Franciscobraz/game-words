@@ -89,7 +89,7 @@ export function resultsOf(players: readonly PlayerInfo[], { longestFinders, last
       { word: 'asa', points: 1, foundBy: everyone },
       { word: 'casa', points: 2, foundBy: everyone },
     ],
-    players: players.map(({ id }, index) => ({ playerId: id, unique: [{ word: `tia${index}`, points: 2 }], roundPoints: 0, score: 0 })),
+    players: players.map(({ id }, index) => ({ playerId: id, unique: [{ word: `tia${index}`, points: 2 }], roundPoints: 0, roundWords: 0, score: 0, words: 0 })),
     longest: { word: 'ternos', points: 4, path: [8, 5, 6, 10, 7, 11], foundBy: finders.map(({ id }) => id) },
     possibleWords: 1_482,
     last,

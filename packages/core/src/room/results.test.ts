@@ -53,10 +53,12 @@ describe('round results', () => {
     const state = finishedRound([alice, bob, carol], { settings: { ...DEFAULT_SETTINGS, rounds: 2 }, tvCounts: { dirty: true, lastSentAt: 129_900 } });
     const r = endRound(state, END, deps);
     const tvCounts = r.effects.findIndex((e) => e.kind === 'send' && e.to.id === 'c-tv' && e.msg.type === 'counts');
-    const resultsAt = r.effects.findIndex((e) => e.kind === 'broadcast' && e.msg.type === 'round-results');
+    // Only the TV gets the results at the end of the round (m4-1-playtest C3).
+    const resultsAt = r.effects.findIndex((e) => e.kind === 'send' && e.to.id === 'c-tv' && e.msg.type === 'round-results');
     expect(tvCounts).toBeGreaterThanOrEqual(0);
     expect(tvCounts).toBeLessThan(resultsAt);
-    expect(sentTo(r.effects, 'c-tv')).toEqual([
+    expect(sentTo(r.effects, 'c-tv').map((m) => m.type)).toEqual(['counts', 'round-results']);
+    expect(sentTo(r.effects, 'c-tv')[0]).toEqual(
       {
         type: 'counts',
         counts: [
@@ -65,8 +67,8 @@ describe('round results', () => {
           { playerId: 'p3', count: 3 },
         ],
       },
-    ]);
-    expect(r.state.phase).toBe('results');
+    );
+    expect(r.state.phase).toBe('words');
     expect(r.effects[0]).toEqual({ kind: 'persist', keys: ['room'] });
   });
 
@@ -80,9 +82,9 @@ describe('round results', () => {
     ]);
     // Bob ends with 4, carol with 4 + 7 = 11, alice with 10 + 8 = 18: lowest first.
     expect(msg.players).toEqual([
-      { playerId: 'p2', unique: [{ word: 'sal', points: 2 }], roundPoints: 4, score: 4 },
-      { playerId: 'p3', unique: [{ word: 'tela', points: 4 }], roundPoints: 7, score: 11 },
-      { playerId: 'p1', unique: [{ word: 'casa', points: 4 }], roundPoints: 8, score: 18 },
+      { playerId: 'p2', unique: [{ word: 'sal', points: 2 }], roundPoints: 4, roundWords: 3, score: 4, words: 3 },
+      { playerId: 'p3', unique: [{ word: 'tela', points: 4 }], roundPoints: 7, roundWords: 3, score: 11, words: 3 },
+      { playerId: 'p1', unique: [{ word: 'casa', points: 4 }], roundPoints: 8, roundWords: 4, score: 18, words: 4 },
     ]);
     expect(msg.index).toBe(0);
     expect(msg.last).toBe(true);
@@ -111,7 +113,7 @@ describe('round results', () => {
   test('sends the players list with the new scores after the results', () => {
     const r = endRound(finishedRound([alice, bob, carol], { settings: { ...DEFAULT_SETTINGS, rounds: 2 } }), END, deps);
     const broadcasts = r.effects.flatMap((e) => (e.kind === 'broadcast' ? [e.msg] : []));
-    expect(broadcasts.map((m) => m.type)).toEqual(['round-results', 'players']);
+    expect(broadcasts.map((m) => m.type)).toEqual(['phase', 'players']);
     const list = broadcasts[1];
     if (list?.type !== 'players') throw new Error('no players list');
     expect(list.players.map((p) => [p.id, p.score])).toEqual(r.state.players.map((p) => [p.id, p.score]));
@@ -222,7 +224,7 @@ describe('round results', () => {
     const msg = results(finishedRound([empty], { solutions: { words: [], prefixes: new Uint8Array() } }));
     expect(msg.longest).toBeNull();
     expect(msg.shared).toEqual([]);
-    expect(msg.players).toEqual([{ playerId: 'p1', unique: [], roundPoints: 0, score: 0 }]);
+    expect(msg.players).toEqual([{ playerId: 'p1', unique: [], roundPoints: 0, roundWords: 0, score: 0, words: 0 }]);
     expect(msg.possibleWords).toBe(0);
   });
 
@@ -233,8 +235,8 @@ describe('round results', () => {
     expect(msg.shared).toEqual([{ word: 'tela', points: 2, foundBy: ['p1', 'p2'] }]);
     // It counts for both, once each, and is nobody's unique word.
     expect(msg.players).toEqual([
-      { playerId: 'p1', unique: [], roundPoints: 2, score: 2 },
-      { playerId: 'p2', unique: [], roundPoints: 2, score: 2 },
+      { playerId: 'p1', unique: [], roundPoints: 2, roundWords: 1, score: 2, words: 1 },
+      { playerId: 'p2', unique: [], roundPoints: 2, roundWords: 1, score: 2, words: 1 },
     ]);
   });
 
@@ -247,7 +249,7 @@ describe('round results', () => {
     expect(msg.players.map((p) => p.playerId)).toEqual(['p1']);
     // Dan's words count for nobody: "cor" is alice's alone and doubled, and the longest word has no finder.
     expect(msg.shared).toEqual([]);
-    expect(msg.players[0]).toEqual({ playerId: 'p1', unique: [{ word: 'cor', points: 2 }], roundPoints: 2, score: 2 });
+    expect(msg.players[0]).toEqual({ playerId: 'p1', unique: [{ word: 'cor', points: 2 }], roundPoints: 2, roundWords: 1, score: 2, words: 1 });
     expect(msg.longest?.foundBy).toEqual([]);
   });
 
@@ -265,18 +267,106 @@ describe('round results', () => {
     expect(first.effects).toContainEqual({ kind: 'prepare-next' });
     expect(results(finishedRound([alice, bob], { settings: two, roundIndex: 0 })).last).toBe(false);
     // The request comes with the results, before any `next`.
-    expect(first.state.phase).toBe('results');
+    expect(first.state.phase).toBe('words');
     const last = endRound(finishedRound([alice, bob], { settings: two, roundIndex: 1 }), END, deps);
     expect(last.effects).not.toContainEqual({ kind: 'prepare-next' });
     expect(results(finishedRound([alice, bob], { settings: two, roundIndex: 1 })).last).toBe(true);
   });
 
   test('whoever connects in the results gets them after the welcome', () => {
-    const r = endRound(finishedRound([alice, bob, carol], { settings: { ...DEFAULT_SETTINGS, rounds: 2 } }), END, deps);
+    const ended = endRound(finishedRound([alice, bob, carol], { settings: { ...DEFAULT_SETTINGS, rounds: 2 } }), END, deps);
+    // The results open on the host's show-result (m4-1-playtest C10).
+    const r = { ...ended, state: { ...ended.state, phase: 'results' as const } };
     const back = step(r.state, message(pending('c-back'), { type: 'hello', role: 'player', token: bob.token }), END + 1, deps);
     expect(sentTo(back.effects, 'c-back').map((m) => m.type)).toEqual(['welcome', 'round-results']);
     expect(sentTo(back.effects, 'c-back')[1]).toEqual(r.state.results);
     const guest = step(r.state, message(pending('c-g'), { type: 'hello', role: 'player' }), END + 1, deps);
     expect(sentTo(guest.effects, 'c-g').map((m) => m.type)).toEqual(['welcome', 'round-results']);
+  });
+
+  test('counts the unique words and the shared ones each player found', () => {
+    // RESULT-02 AC 5: Ana found casa (unique) and cor, ate, arte (shared): 4 words.
+    const ana = makePlayer('p1', { found: ['casa', 'cor', 'ate', 'arte'] });
+    const beto = makePlayer('p2', { color: '#E53935', found: ['cor'] });
+    const caio = makePlayer('p3', { color: '#1E88E5', found: ['ate', 'arte'] });
+    const duda = makePlayer('p4', { color: '#43A047', found: [] });
+
+    const msg = results(finishedRound([ana, beto, caio, duda]));
+
+    const roundWords = Object.fromEntries(msg.players.map((p) => [p.playerId, p.roundWords]));
+    expect(roundWords).toEqual({ p1: 4, p2: 1, p3: 2, p4: 0 });
+    // Beto's and Caio's words are all shared: theirs, though none is unique.
+    expect(msg.players.find((p) => p.playerId === 'p2')?.unique).toEqual([]);
+    expect(msg.players.find((p) => p.playerId === 'p3')?.unique).toEqual([]);
+  });
+
+  test('adds up the words of the match after each round', () => {
+    // RESULT-02 AC 3: round 1 of 2, with a spectator who joined late.
+    const two = { ...DEFAULT_SETTINGS, rounds: 2 as const };
+    const ana = makePlayer('p1', { found: ['casa', 'cor'] });
+    const beto = makePlayer('p2', { color: '#E53935', found: ['cor', 'ate', 'sal'] });
+    const late = makePlayer('p3', { color: '#1E88E5', spectator: true });
+    const first = endRound(finishedRound([ana, beto, late], { settings: two, roundIndex: 0 }), END, deps);
+
+    expect(first.state.players.map((p) => [p.id, p.words])).toEqual([
+      ['p1', 2],
+      ['p2', 3],
+      ['p3', 0],
+    ]);
+
+    // Round 2: Ana finds 3 more, Beto 1, and the late joiner plays and finds 2.
+    const ROUND_2_FOUND: Record<string, string[]> = { p1: ['arte', 'tela', 'sal'], p2: ['ate'], p3: ['cor', 'casa'] };
+    const secondRound: RoomState = {
+      ...first.state,
+      phase: 'round',
+      roundIndex: 1,
+      players: first.state.players.map((p) => ({ ...p, spectator: false, found: ROUND_2_FOUND[p.id]! })),
+    };
+    const second = endRound(secondRound, END + 200_000, deps);
+
+    const msg = allMessages(second.effects).find((m) => m.type === 'round-results') as RoundResultsMessage;
+    const byId = Object.fromEntries(msg.players.map((p) => [p.playerId, [p.roundWords, p.words]]));
+    expect(byId).toEqual({ p1: [3, 5], p2: [1, 4], p3: [2, 2] });
+    const list = allMessages(second.effects).find((m) => m.type === 'players');
+    if (list?.type !== 'players') throw new Error('no players list');
+    expect(list.players.map((p) => [p.id, p.words])).toEqual([
+      ['p1', 5],
+      ['p2', 4],
+      ['p3', 2],
+    ]);
+
+    // A new match and the lobby start from 0.
+    const podium: RoomState = {
+      ...second.state,
+      phase: 'podium',
+      nextRound: { board: BOARD, salt: 'salt', options: roundOptions(two) },
+      nextSolutions: { words: SOLUTIONS, prefixes: new Uint8Array(SOLUTIONS.length * 6) },
+    };
+    const again = step(podium, message(playerConn(ana), { type: 'play-again' }), END + 300_000, deps);
+    expect(again.state.phase).toBe('round');
+    expect(again.state.players.map((p) => p.words)).toEqual([0, 0, 0]);
+    const lobby = step(podium, message(playerConn(ana), { type: 'back-to-lobby' }), END + 300_000, deps);
+    expect(lobby.state.phase).toBe('lobby');
+    expect(lobby.state.players.map((p) => p.words)).toEqual([0, 0, 0]);
+  });
+
+  test.each([
+    ['in the middle of the match', 0],
+    ['after the last round', 1],
+  ])('ends the round on the words with the results only to the tv: %s', (_name, roundIndex) => {
+    // SYNC-01 AC 1, WORDCTL-01 AC 9: phones and guests get the phase and the scores, never the results.
+    const two = { ...DEFAULT_SETTINGS, rounds: 2 as const };
+    const state = finishedRound([alice, bob, carol], { settings: two, roundIndex });
+
+    const r = endRound(state, END, deps);
+
+    expect(r.state.phase).toBe('words');
+    expect(sentTo(r.effects, 'c-tv').map((m) => m.type)).toEqual(['counts', 'round-results']);
+    expect(sentTo(r.effects, 'c-tv')[1]).toEqual(r.state.results);
+    expect(sentTo(r.effects, '*')).toEqual([{ type: 'phase', phase: 'words' }, expect.objectContaining({ type: 'players' })]);
+    // Nothing else leaves the room: no podium yet, and no message to a phone.
+    const toOthers = r.effects.filter((e) => e.kind === 'send' && e.to.id !== 'c-tv');
+    expect(toOthers).toEqual([]);
+    expect(allMessages(r.effects).map((m) => m.type)).not.toContain('podium');
   });
 });

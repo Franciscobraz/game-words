@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest';
 import { longestCard } from './longest-card.ts';
 
 function player(id: string, nickname: string): PlayerInfo {
-  return { id, nickname, color: '#FF7A00', connected: true, spectator: false, score: 0, wins: 0 };
+  return { id, nickname, color: '#FF7A00', connected: true, spectator: false, score: 0, words: 0, wins: 0 };
 }
 
 const PLAYERS = [player('p1', 'Ana'), player('p2', 'Beto'), player('p3', 'Caio')];

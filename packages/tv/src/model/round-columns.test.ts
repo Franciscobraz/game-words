@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest';
 import { roundColumns } from './round-columns.ts';
 
 function player(id: string, overrides: Partial<PlayerInfo> = {}): PlayerInfo {
-  return { id, nickname: `Jogador ${id}`, color: '#ff7a00', connected: true, spectator: false, score: 0, wins: 0, ...overrides };
+  return { id, nickname: `Jogador ${id}`, color: '#ff7a00', connected: true, spectator: false, score: 0, words: 0, wins: 0, ...overrides };
 }
 
 /** A room with `count` players, ids p1, p2... */

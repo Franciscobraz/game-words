@@ -4,7 +4,7 @@ import { STRINGS } from '../strings/pt-BR.ts';
 import { lobbyFooter, type LobbyPlayerSlot, lobbySlots } from './lobby-rows.ts';
 
 function player(id: string, nickname: string, overrides: Partial<PlayerInfo> = {}): PlayerInfo {
-  return { id, nickname, color: '#ff7a00', connected: true, spectator: false, score: 0, wins: 0, ...overrides };
+  return { id, nickname, color: '#ff7a00', connected: true, spectator: false, score: 0, words: 0, wins: 0, ...overrides };
 }
 
 const ana = player('p1', 'Ana', { wins: 2 });

@@ -7,7 +7,7 @@ const STARTS_AT = 10_000;
 const ENDS_AT = 70_000;
 
 function player(id: string, spectator = false): PlayerInfo {
-  return { id, nickname: id, color: '#ff5e5e', connected: true, spectator, score: 0, wins: 0 };
+  return { id, nickname: id, color: '#ff5e5e', connected: true, spectator, score: 0, words: 0, wins: 0 };
 }
 
 /** Beto plays an open round of KBXT. */

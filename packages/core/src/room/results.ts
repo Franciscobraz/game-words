@@ -4,7 +4,7 @@ import { findPath } from '../path.ts';
 import { scoreRound, wordPoints } from '../scoring.ts';
 import { countsMessage } from './counts.ts';
 import { type Effect, playersMessage, type RoomDeps, type StepResult } from './effects.ts';
-import { awardWins, podiumMessage } from './flow.ts';
+import { awardWins } from './flow.ts';
 import type { PlayerResult, ResultWord, RoundResultsMessage } from './protocol.ts';
 import { isLastRound } from './round.ts';
 import type { RoomState } from './state.ts';
@@ -19,25 +19,33 @@ function resultWord(pack: LanguagePack, word: string, points: number): ResultWor
 }
 
 /**
- * Ends the round: the TV first gets the final counts (ROUND-01 AC 10), then every
- * connection gets `round-results`, scored with `scoreRound` over the players of the
- * round (spectators and kicked players are out). Shared words go shortest first,
- * with who found each (PROTO-02 AC 1); players go from the lowest to the highest accumulated score, ties in joining
- * order; each player's unique words go shortest first with the doubled points they
- * earned. The longest word comes from `pickLongestWord`, with its path and finders.
- * `possibleWords` counts the round's solutions, which `prepareRound` already kept
- * with the room's minimum and filter (PROTO-02 AC 2).
+ * Ends the round on the words (AD-024): the room goes to `words`, where the TV lists
+ * the words until the host's `show-result`. Only the TV gets the final counts
+ * (ROUND-01 AC 10) and then `round-results`, because the TV's list is the reveal;
+ * every connection gets `phase` with `words` and then the players with the new
+ * scores and word counts. No word of the round reaches a phone here (L-008).
+ * The results are scored with `scoreRound` over the players of the round
+ * (spectators and kicked players are out). Shared words go shortest first, with who
+ * found each (PROTO-02 AC 1); players go from the lowest to the highest accumulated
+ * score, ties in joining order; each player's unique words go shortest first with
+ * the doubled points they earned. A player's words of the round are everything
+ * they found: their unique words plus the shared ones (RESULT-02 AC 5), added to the
+ * words of the match (RESULT-02 AC 3). The longest word comes from
+ * `pickLongestWord`, with its path and finders. `possibleWords` counts the round's
+ * solutions, which `prepareRound` already kept with the room's minimum and filter
+ * (PROTO-02 AC 2).
  * While rounds remain, the adapter is asked to prepare the next board at once
- * (`prepare-next`, RES-01 AC 4). The last round ends the match without a `next`:
- * the room goes to the podium, with the wins counted over the final scores
- * (PROTO-02 AC 4, AC 7).
+ * (`prepare-next`, RES-01 AC 4). The last round counts the wins over the final
+ * scores here (PROTO-02 AC 7); its podium follows the host's `show-result`.
  */
 export function endRound(state: RoomState, now: number, deps: RoomDeps): StepResult {
   const pack = deps.pack();
   const playing = state.players.filter((p) => !p.spectator);
   const found = new Map(playing.map((p) => [p.id, new Set(p.found)] as const));
   const score = scoreRound(found);
-  const players = state.players.map((p) => (p.spectator ? p : { ...p, score: p.score + score.totals.get(p.id)! }));
+  const players = state.players.map((p) =>
+    p.spectator ? p : { ...p, score: p.score + score.totals.get(p.id)!, words: p.words + found.get(p.id)!.size },
+  );
 
   const ranked: PlayerResult[] = players
     .filter((p) => !p.spectator)
@@ -46,7 +54,9 @@ export function endRound(state: RoomState, now: number, deps: RoomDeps): StepRes
       playerId: p.id,
       unique: [...score.unique.get(p.id)!].sort(shortestFirst).map((w) => resultWord(pack, w, wordPoints(w) * 2)),
       roundPoints: score.totals.get(p.id)!,
+      roundWords: found.get(p.id)!.size,
       score: p.score,
+      words: p.words,
     }));
 
   const longest = pickLongestWord(state.solutions?.words ?? [], pack, found, false);
@@ -70,17 +80,19 @@ export function endRound(state: RoomState, now: number, deps: RoomDeps): StepRes
 
   const next: RoomState = {
     ...state,
-    phase: last ? 'podium' : 'results',
+    phase: 'words',
     players: last ? awardWins(players) : players,
     results: msg,
     rateWindow: {},
     tvCounts: { dirty: false, lastSentAt: now },
   };
   const effects: Effect[] = [{ kind: 'persist', keys: ['room'] }];
-  if (state.tvConn !== null) effects.push({ kind: 'send', to: { id: state.tvConn, role: 'tv' }, msg: countsMessage(state) });
-  effects.push({ kind: 'broadcast', msg });
-  if (last) effects.push({ kind: 'broadcast', msg: podiumMessage(next) });
-  // The players list carries the new scores and wins (RES-01 AC 11).
+  if (state.tvConn !== null) {
+    const tv = { id: state.tvConn, role: 'tv' } as const;
+    effects.push({ kind: 'send', to: tv, msg: countsMessage(state) }, { kind: 'send', to: tv, msg });
+  }
+  effects.push({ kind: 'broadcast', msg: { type: 'phase', phase: 'words' } });
+  // The players list carries the new scores, word counts and wins (RES-01 AC 11).
   effects.push({ kind: 'broadcast', msg: playersMessage(next) });
   if (!last) effects.push({ kind: 'prepare-next' });
   return { state: next, effects };

@@ -27,14 +27,14 @@ export const handleNext: Handler<'next'> = ({ state, now }) => requestRound(stat
 
 /**
  * Back to the lobby with the same players, colors, settings and host: every score
- * at zero (wins stay), the round words and any prepared board dropped. Every connection gets a
+ * and word count at zero (wins stay), the round words and any prepared board dropped. Every connection gets a
  * fresh `welcome`, which tells it the room is in the lobby.
  */
 function returnToLobby(state: RoomState): StepResult {
   const next: RoomState = {
     ...state,
     phase: 'lobby',
-    players: state.players.map((p) => ({ ...p, score: 0, found: [], spectator: false })),
+    players: state.players.map((p) => ({ ...p, score: 0, words: 0, found: [], spectator: false })),
     roundIndex: 0,
     solutions: null,
     nextRound: null,

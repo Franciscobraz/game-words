@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest';
 import { wordRows, type WordRow } from './word-rows.ts';
 
 function player(id: string, nickname: string): PlayerInfo {
-  return { id, nickname, color: '#FF7A00', connected: true, spectator: false, score: 0, wins: 0 };
+  return { id, nickname, color: '#FF7A00', connected: true, spectator: false, score: 0, words: 0, wins: 0 };
 }
 
 const ANA = player('ana', 'Ana');
@@ -24,7 +24,7 @@ function resultsWith(shared: SharedWord[], unique: Record<string, ResultWord[]>)
     type: 'round-results',
     index: 0,
     shared,
-    players: Object.entries(unique).map(([playerId, words]) => ({ playerId, unique: words, roundPoints: 0, score: 0 })),
+    players: Object.entries(unique).map(([playerId, words]) => ({ playerId, unique: words, roundPoints: 0, roundWords: 0, score: 0, words: 0 })),
     longest: null,
     possibleWords: 100,
     last: false,

@@ -4,7 +4,7 @@ import { lobbyRows, myPlacement, podiumRows, podiumTags, quickScoreboard, rankin
 
 /** A connected player who is playing, with no points and no wins unless given. */
 function player(id: string, nickname: string, fields: Partial<PlayerInfo> = {}): PlayerInfo {
-  return { id, nickname, color: '#E53935', connected: true, spectator: false, score: 0, wins: 0, ...fields };
+  return { id, nickname, color: '#E53935', connected: true, spectator: false, score: 0, words: 0, wins: 0, ...fields };
 }
 
 describe('lobbyRows', () => {

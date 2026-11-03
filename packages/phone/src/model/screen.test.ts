@@ -15,9 +15,9 @@ const SETTINGS: Settings = {
   music: true,
 };
 
-const ANA: PlayerInfo = { id: 'p-ana', nickname: 'Ana', color: '#FF7A00', connected: true, spectator: false, score: 0, wins: 0 };
-const BETO: PlayerInfo = { id: 'p-beto', nickname: 'Beto', color: '#00B869', connected: true, spectator: false, score: 0, wins: 0 };
-const DUDA: PlayerInfo = { id: 'p-duda', nickname: 'Duda', color: '#3D8BFF', connected: true, spectator: true, score: 0, wins: 0 };
+const ANA: PlayerInfo = { id: 'p-ana', nickname: 'Ana', color: '#FF7A00', connected: true, spectator: false, score: 0, words: 0, wins: 0 };
+const BETO: PlayerInfo = { id: 'p-beto', nickname: 'Beto', color: '#00B869', connected: true, spectator: false, score: 0, words: 0, wins: 0 };
+const DUDA: PlayerInfo = { id: 'p-duda', nickname: 'Duda', color: '#3D8BFF', connected: true, spectator: true, score: 0, words: 0, wins: 0 };
 
 const STARTS_AT = 50_000;
 const ROUND = { id: 1, index: 0, board: [['c', 'a'], ['s', 'a']], startsAt: STARTS_AT, endsAt: STARTS_AT + 120_000 };
