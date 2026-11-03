@@ -39,7 +39,7 @@ export type RoomInput =
   | { kind: 'alarm' }
   | { kind: 'prepared'; round: PreparedRound };
 
-const ALL_PHASES: readonly Phase[] = ['lobby', 'round', 'results', 'podium'];
+const ALL_PHASES: readonly Phase[] = ['lobby', 'round', 'words', 'results', 'podium'];
 
 /** Phases in which each command is valid; anything else gets `wrong-phase`. */
 export const COMMAND_PHASES: Record<ClientMessageType, readonly Phase[]> = {
@@ -55,6 +55,8 @@ export const COMMAND_PHASES: Record<ClientMessageType, readonly Phase[]> = {
   'play-again': ['podium'],
   'back-to-lobby': ['round', 'results', 'podium'],
   'close-room': ALL_PHASES,
+  scroll: ['words'],
+  'show-result': ['words'],
 };
 
 /** Connection roles that may send each command; anything else gets `bad-message`. */
@@ -71,6 +73,8 @@ export const COMMAND_ROLES: Record<ClientMessageType, readonly ConnRef['role'][]
   'play-again': ['player'],
   'back-to-lobby': ['player'],
   'close-room': ['player'],
+  scroll: ['player'],
+  'show-result': ['player'],
 };
 
 /** Commands that count as a player or host action for the idle timeout. */

@@ -320,6 +320,7 @@ describe('dispatch', () => {
   const VALID: Record<Phase, ClientMessageType[]> = {
     lobby: ['hello', 'time', 'join', 'settings', 'start', 'transfer-host', 'kick', 'close-room'],
     round: ['hello', 'time', 'join', 'submit', 'back-to-lobby', 'transfer-host', 'kick', 'close-room'],
+    words: ['hello', 'time', 'join', 'scroll', 'show-result', 'transfer-host', 'kick', 'close-room'],
     results: ['hello', 'time', 'join', 'next', 'back-to-lobby', 'transfer-host', 'kick', 'close-room'],
     podium: ['hello', 'time', 'join', 'play-again', 'back-to-lobby', 'transfer-host', 'kick', 'close-room'],
   };
@@ -340,6 +341,8 @@ describe('dispatch', () => {
       'play-again': [host, { type: 'play-again' }],
       'back-to-lobby': [host, { type: 'back-to-lobby' }],
       'close-room': [host, { type: 'close-room' }],
+      scroll: [host, { type: 'scroll', direction: 'down' }],
+      'show-result': [host, { type: 'show-result' }],
     };
     const [conn, msg] = msgs[type];
     return message(conn, msg);

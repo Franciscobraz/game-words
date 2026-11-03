@@ -64,6 +64,9 @@ export function applyServerMessage(view: RoomView, msg: ServerMessage): RoomView
       return { ...view, phase: 'podium', podium: msg.ranking };
     case 'closed':
       return { ...view, closeReason: msg.reason };
+    // The words stage and the host's list steps reach the TV screens with T17 (WORDCTL-01).
+    case 'phase':
+    case 'scroll':
     case 'joined':
     case 'submit-result':
     case 'time':

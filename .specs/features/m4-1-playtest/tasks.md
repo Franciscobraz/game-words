@@ -141,10 +141,10 @@ T39 → T40 → T41 → T42 → T43 → T44
 
 **Done when**:
 
-- [ ] C7
-- [ ] `npx tsc -b` verde no repositório inteiro
-- [ ] Gate check passes
-- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+- [x] C7
+- [x] `npx tsc -b` verde no repositório inteiro
+- [x] Gate check passes
+- [x] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: unit
 **Gate**: quick

@@ -105,6 +105,9 @@ function apply(view: View, msg: ServerMessage, pendingJoin: boolean): View {
       return { ...view, phase: 'results', results: msg };
     case 'podium':
       return { ...view, phase: 'podium', podium: msg.ranking };
+    // The debug page shows the words stage and the host's list steps from T43.
+    case 'phase':
+    case 'scroll':
     case 'time':
       return view;
     case 'error':

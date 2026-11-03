@@ -24,6 +24,8 @@ export const CLIENT_MESSAGE_TYPES = [
   'back-to-lobby',
   'close-room',
   'time',
+  'scroll',
+  'show-result',
 ] as const;
 
 export const SERVER_MESSAGE_TYPES = [
@@ -39,6 +41,8 @@ export const SERVER_MESSAGE_TYPES = [
   'time',
   'error',
   'closed',
+  'phase',
+  'scroll',
 ] as const;
 
 export const ERROR_CODES = [
@@ -70,11 +74,15 @@ export const SUBMIT_REJECTS = [
 
 export const CLOSE_REASONS = ['kicked', 'closed-by-host', 'idle', 'tv-gone', 'replaced'] as const;
 
+/** Directions of the host's step through the words list (WORDCTL-01 AC 5-6). */
+export const SCROLL_DIRECTIONS = ['up', 'down'] as const;
+
 export type ClientMessageType = (typeof CLIENT_MESSAGE_TYPES)[number];
 export type ServerMessageType = (typeof SERVER_MESSAGE_TYPES)[number];
 export type ErrorCode = (typeof ERROR_CODES)[number];
 export type SubmitReject = RejectReason | 'round-closed' | 'spectator' | 'rate-limited';
 export type CloseReason = (typeof CLOSE_REASONS)[number];
+export type ScrollDirection = (typeof SCROLL_DIRECTIONS)[number];
 
 /** Largest client message, in UTF-8 bytes. Longer ones are refused before parsing. */
 export const MAX_MESSAGE_BYTES = 4096;
@@ -85,7 +93,8 @@ export const MAX_ID_LENGTH = 64;
 // ---------------------------------------------------------------------------
 // Shared shapes
 
-export type Phase = 'lobby' | 'round' | 'results' | 'podium';
+/** `words`: the round is over and the TV lists its words until the host shows the result (AD-024). */
+export type Phase = 'lobby' | 'round' | 'words' | 'results' | 'podium';
 
 /** Room settings as stored and broadcast. */
 export interface Settings {
@@ -190,7 +199,11 @@ export type ClientMessage =
   | { type: 'back-to-lobby' }
   | { type: 'close-room' }
   /** Clock sync: the client's own timestamp, echoed back. */
-  | { type: 'time'; clientTime: number };
+  | { type: 'time'; clientTime: number }
+  /** Host only, on the words: one step up or down the TV's list (WORDCTL-01 AC 5-6, 10). */
+  | { type: 'scroll'; direction: ScrollDirection }
+  /** Host only, on the words: the TV and the phones open the result; a second one gets wrong-phase (WORDCTL-01 AC 8-10). */
+  | { type: 'show-result' };
 
 // ---------------------------------------------------------------------------
 // Server messages
@@ -267,7 +280,11 @@ export type ServerMessage =
   | { type: 'time'; clientTime: number; serverTime: number }
   | { type: 'error'; code: ErrorCode }
   /** Sent right before the server closes the connection. */
-  | { type: 'closed'; reason: CloseReason };
+  | { type: 'closed'; reason: CloseReason }
+  /** The phase moved without another message carrying it: the words at the end of a round, the result in the middle of a match. */
+  | { type: 'phase'; phase: 'words' | 'results' }
+  /** Only to the TV: the host's step through the words. */
+  | { type: 'scroll'; direction: ScrollDirection };
 
 // ---------------------------------------------------------------------------
 // Parsing
@@ -300,6 +317,8 @@ const SHAPES: Record<ClientMessageType, (m: Fields) => boolean> = {
   'back-to-lobby': (m) => hasOnly(m, ['type']),
   'close-room': (m) => hasOnly(m, ['type']),
   time: (m) => hasOnly(m, ['type', 'clientTime']) && typeof m.clientTime === 'number' && Number.isFinite(m.clientTime),
+  scroll: (m) => hasOnly(m, ['type', 'direction']) && SCROLL_DIRECTIONS.some((d) => d === m.direction),
+  'show-result': (m) => hasOnly(m, ['type']),
 };
 
 /**

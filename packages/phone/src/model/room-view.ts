@@ -98,6 +98,9 @@ export function applyServerMessage(view: RoomView, msg: ServerMessage): RoomView
       return { ...view, phase: 'results', results: msg };
     case 'podium':
       return { ...view, phase: 'podium', podium: msg.ranking };
+    // The words stage and the host's list steps reach the phone screens with T9 (SYNC-01).
+    case 'phase':
+    case 'scroll':
     case 'time':
       return view;
     case 'error':

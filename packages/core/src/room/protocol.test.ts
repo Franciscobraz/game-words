@@ -12,7 +12,7 @@ import {
 } from './protocol.ts';
 
 // The names below are copied from spec.md (PROTO-01, ROUND-01, HOST-01, RES-01, EXP-01)
-// and design.md "Protocol (core)".
+// and design.md "Protocol (core)", plus the words stage of m4-1-playtest (design: "Core: protocolo").
 const SPEC_CLIENT_TYPES = [
   'hello',
   'join',
@@ -26,6 +26,8 @@ const SPEC_CLIENT_TYPES = [
   'back-to-lobby',
   'close-room',
   'time',
+  'scroll',
+  'show-result',
 ];
 const SPEC_SERVER_TYPES = [
   'welcome',
@@ -40,6 +42,8 @@ const SPEC_SERVER_TYPES = [
   'time',
   'error',
   'closed',
+  'phase',
+  'scroll',
 ];
 const SPEC_ERROR_CODES = [
   'bad-message',
@@ -85,6 +89,11 @@ const VALID: Record<(typeof CLIENT_MESSAGE_TYPES)[number], ClientMessage[]> = {
   'back-to-lobby': [{ type: 'back-to-lobby' }],
   'close-room': [{ type: 'close-room' }],
   time: [{ type: 'time', clientTime: 1_700_000_000_123 }],
+  scroll: [
+    { type: 'scroll', direction: 'up' },
+    { type: 'scroll', direction: 'down' },
+  ],
+  'show-result': [{ type: 'show-result' }],
 };
 
 /** Per client type, messages with a field out of format (missing, wrong type, or extra). */
@@ -138,6 +147,14 @@ const MALFORMED: Record<(typeof CLIENT_MESSAGE_TYPES)[number], unknown[]> = {
     { type: 'time', clientTime: null },
     { type: 'time', clientTime: 1, serverTime: 2 },
   ],
+  scroll: [
+    { type: 'scroll' },
+    { type: 'scroll', direction: 'left' },
+    { type: 'scroll', direction: 'UP' },
+    { type: 'scroll', direction: 1 },
+    { type: 'scroll', direction: 'down', lines: 3 },
+  ],
+  'show-result': [{ type: 'show-result', round: 1 }],
 };
 
 describe('protocol names', () => {
@@ -191,6 +208,24 @@ describe('parseClientMessage', () => {
       expect(MALFORMED[type].length).toBeGreaterThan(0);
       for (const msg of MALFORMED[type]) expect(parseClientMessage(JSON.stringify(msg))).toBeNull();
     });
+  });
+
+  test('parses the host list commands and refuses any other direction', () => {
+    // WORDCTL-01 AC 5, 6, 8: up and down steps and the result, nothing else.
+    expect(parseClientMessage('{"type":"scroll","direction":"up"}')).toEqual({ type: 'scroll', direction: 'up' });
+    expect(parseClientMessage('{"type":"scroll","direction":"down"}')).toEqual({ type: 'scroll', direction: 'down' });
+    expect(parseClientMessage('{"type":"show-result"}')).toEqual({ type: 'show-result' });
+
+    const refused = [
+      '{"type":"scroll"}',
+      '{"type":"scroll","direction":"left"}',
+      '{"type":"scroll","direction":"right"}',
+      '{"type":"scroll","direction":""}',
+      '{"type":"scroll","direction":null}',
+      '{"type":"scroll","direction":"up","extra":true}',
+      '{"type":"show-result","now":true}',
+    ];
+    for (const raw of refused) expect(parseClientMessage(raw), raw).toBeNull();
   });
 
   describe('rejects messages over 4096 bytes before parsing', () => {

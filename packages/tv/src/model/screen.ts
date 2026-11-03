@@ -46,6 +46,8 @@ export function tvScreen(view: RoomView, status: RoomStatus, stage: RevealStage 
       return 'lobby';
     case 'round':
       return roundScreen(view, serverNow);
+    // Until the TV knows the words stage (T17, WORDCTL-01), it runs the reveal as in the results.
+    case 'words':
     case 'results':
     case 'podium':
       return stage === null ? 'result' : REVEAL_SCREENS[stage];

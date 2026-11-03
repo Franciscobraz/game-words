@@ -37,7 +37,7 @@ export function createRevealClock({ room, serverNow, clockSynced }: RevealDeps):
   effect(() => {
     const { phase, results, round } = room.value;
     const synced = clockSynced.value;
-    if (phase !== 'results' && phase !== 'podium') {
+    if (phase !== 'words' && phase !== 'results' && phase !== 'podium') {
       plan.value = null;
       planned.value = null;
       plannedRoundId = null;

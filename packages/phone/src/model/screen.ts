@@ -47,6 +47,8 @@ export function screenFor(view: RoomView, serverNow: number): Screen {
       return view.hostId === view.myId ? 'host-lobby' : 'lobby';
     case 'round':
       return roundScreen(view, serverNow);
+    // Until the phone knows the words stage (T9, SYNC-01), it shows them as the results.
+    case 'words':
     case 'results':
       // The podium follows the last results at once: their screen would only flash (PHONE-01 AC 1).
       return view.results?.last === true ? 'podium' : 'round-result';
