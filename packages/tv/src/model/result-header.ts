@@ -2,7 +2,7 @@ import type { RoundResultsMessage } from '@bwords/core';
 import { STRINGS } from '../strings/pt-BR.ts';
 import type { Standings } from './standings.ts';
 
-/** What the result screen says around the scores (TVRES-01 AC 8-10). */
+/** What the result screen says around the scores (TVRES-01 AC 8-10, 13). */
 export interface ResultHeader {
   /** The muted word before the title; only between rounds (tv-round-result.png). */
   prefix: string | null;
@@ -12,7 +12,10 @@ export interface ResultHeader {
   confetti: boolean;
 }
 
-/** Between rounds, the round and who advances it; after the last, who won and what the host decides (TVRES-01 AC 8-10). */
+/**
+ * Between rounds, the round and who advances it; after the last, who won and what the host decides (TVRES-01 AC 8-10).
+ * A match whose best score is 0 has no winner, as the server counts no win for it: no name and no confetti (TVRES-01 AC 13).
+ */
 export function resultHeader(
   results: Pick<RoundResultsMessage, 'index' | 'last'>,
   { top }: Pick<Standings, 'top'>,
@@ -27,11 +30,13 @@ export function resultHeader(
       confetti: false,
     };
   }
+  const leaders = top.filter(({ place }) => place === 1);
+  const somebodyScored = (leaders[0]?.score ?? 0) > 0;
   return {
     prefix: null,
-    title: matchTitle(top.filter(({ place }) => place === 1)),
+    title: somebodyScored ? matchTitle(leaders) : STRINGS.nobodyScoredTitle,
     footer: hostName === null ? null : STRINGS.waitingAfterMatch(hostName),
-    confetti: true,
+    confetti: somebodyScored,
   };
 }
 

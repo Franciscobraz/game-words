@@ -2,8 +2,8 @@ import { describe, expect, test } from 'vitest';
 import { resultHeader } from './result-header.ts';
 import type { StandingRow } from './standings.ts';
 
-function row(nickname: string, place: number): StandingRow {
-  return { id: nickname, nickname, color: '#FF7A00', score: 10, place, disconnected: false, crowned: place === 1 };
+function row(nickname: string, place: number, score = 10): StandingRow {
+  return { id: nickname, nickname, color: '#FF7A00', score, place, disconnected: false, crowned: place === 1 };
 }
 
 const ROUNDS = 3;
@@ -30,6 +30,24 @@ describe('resultHeader', () => {
     const header = resultHeader({ index: 2, last: true }, { top: [row('Ana', 1), row('Beto', 1), row('Caio', 3)] }, 'Ana', ROUNDS);
 
     expect(header.title).toBe('Empate!');
+    expect(header.confetti).toBe(true);
+  });
+
+  test('says nobody scored when the best score of the match is 0, with one player or several', () => {
+    const alone = resultHeader({ index: 2, last: true }, { top: [row('Ana', 1, 0)] }, 'Ana', ROUNDS);
+    const allAtZero = resultHeader({ index: 2, last: true }, { top: [row('Ana', 1, 0), row('Beto', 1, 0), row('Caio', 1, 0)] }, 'Ana', ROUNDS);
+
+    for (const header of [alone, allAtZero]) {
+      expect(header.title).toBe('Ninguém pontuou');
+      expect(header.confetti).toBe(false);
+      expect(header.footer).toBe('Aguardando Ana: jogar de novo ou voltar ao lobby');
+    }
+  });
+
+  test('names the winner with confetti when the best score of the match is 1', () => {
+    const header = resultHeader({ index: 2, last: true }, { top: [row('Ana', 1, 1), row('Beto', 2, 0)] }, 'Ana', ROUNDS);
+
+    expect(header.title).toBe('Ana venceu!');
     expect(header.confetti).toBe(true);
   });
 

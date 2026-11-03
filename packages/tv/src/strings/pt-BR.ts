@@ -63,6 +63,7 @@ export const STRINGS = {
   resultLabel: 'Resultado',
   winnerTitle: (nickname: string) => `${nickname} venceu!`,
   tieTitle: 'Empate!',
+  nobodyScoredTitle: 'Ninguém pontuou',
   waitingToAdvance: (nickname: string) => `Aguardando ${nickname} avançar…`,
   matchStandings: 'Classificação da Partida',
   afterRound: (round: number) => `Após Rodada ${round}`,
