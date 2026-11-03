@@ -1216,6 +1216,9 @@ Proof: `npx vitest run packages/tv/src/model/reconnect.test.ts -t "stops trying 
 **C108** - Depois do limite, a tela pede "OK", e uma tecla recomeça as tentativas (TVEXIT-01, AC 9, 10)
 Proof: `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/connection.spec.ts -g "tries again after giving up"`
 
+**C109** - Uma reconexão que encontra outra partida terminada no mesmo índice troca as palavras e o plano pelos da partida nova (TVEXIT-01, AC 7)
+Proof: `npx vitest run packages/tv/src/state/reveal.test.ts -t "plans again when a reconnect finds another match ended at the same index"`
+
 ---
 
 ## Handoff

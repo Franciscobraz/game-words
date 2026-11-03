@@ -28,16 +28,22 @@ export interface RevealClock {
 export function createRevealClock({ room, serverNow }: RevealDeps): RevealClock {
   const plan = signal<RevealPlan | null>(null);
   const planned = signal<RoundResultsMessage | null>(null);
+  // The index repeats in every match; the round id is unique in the room, so another match is another plan.
+  let plannedRoundId: number | null = null;
 
   effect(() => {
     const { phase, results, round } = room.value;
     if (phase !== 'results' && phase !== 'podium') {
       plan.value = null;
       planned.value = null;
+      plannedRoundId = null;
       return;
     }
-    if (results === null || results.index === planned.peek()?.index) return;
+    if (results === null) return;
+    const roundId = round?.id ?? null;
+    if (results.index === planned.peek()?.index && roundId === plannedRoundId) return;
     planned.value = results;
+    plannedRoundId = roundId;
     plan.value = revealPlan(results, round?.endsAt ?? null, serverNow());
   });
 

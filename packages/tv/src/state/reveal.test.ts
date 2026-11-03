@@ -87,6 +87,21 @@ describe('createRevealClock', () => {
     expect(reveal.results.value).toBe(RESULTS);
   });
 
+  test('plans again when a reconnect finds another match ended at the same index', () => {
+    const { room, reveal, setNow } = setup();
+    room.value = IN_RESULTS;
+    const otherMatchEndsAt = ENDS_AT + 300_000;
+    const otherRound: RoundInfo = { ...ROUND, id: 7, endsAt: otherMatchEndsAt };
+    const otherResults: RoundResultsMessage = { ...RESULTS, shared: [{ word: 'bola', points: 2, foundBy: ['caio'] }] };
+
+    setNow(otherMatchEndsAt);
+    room.value = { ...IN_RESULTS, round: otherRound, results: null };
+    room.value = { ...IN_RESULTS, round: otherRound, results: otherResults };
+
+    expect(reveal.results.value).toBe(otherResults);
+    expect(reveal.plan.value?.wordsStartAt).toBe(otherMatchEndsAt + 2_000);
+  });
+
   test('restarts the words in a new store, as after a reload', () => {
     const reloaded = setup();
     reloaded.setNow(WORDS_AT + 30_000);
