@@ -15,24 +15,16 @@ import {
 import { expect, type Page, test } from '@playwright/test';
 import { displayWord } from '../src/model/word-rows.ts';
 import { TIME_UP_MS } from '../src/model/reveal.ts';
+import { HIGHLIGHT_STEP_MS } from '../src/model/word-scroll.ts';
 import { joinOnPhone, type Phone, PHONE_TEXT, swipeOnPhone } from './phones.ts';
 import { readQr } from './read-qr.ts';
 
 /**
  * The whole game through one address (Success Criteria, SERVE-01, TVRES-01 AC 12): the Worker of `wrangler dev` serves
  * the built TV at `/tv` and the built phone at `/<CÓDIGO>` (`npm run assets:build`, in the Playwright config). Two rounds
- * of real time, 30 s each, the least the server allows. The first round has a list long enough to scroll.
+ * of real time, 30 s each, the least the server allows. The first round has a list long enough to scroll. After each
+ * round the host's "VER RESULTADO" opens the result on the TV and on the phones (WORDCTL-01 AC 8-9, SYNC-01 AC 1-4).
  */
-
-// The M4 timing of the automatic result, which this match still expects until T28 plays it through "Ver resultado"
-// (WORDCTL-01 AC 9); the TV no longer exports it.
-const HOLD_AFTER_LAST_MS = 5_000;
-const M4_WORDS_PER_SECOND = 2;
-const M4_MAX_SCROLL_MS = 60_000;
-
-function scrollDurationMs(wordCount: number): number {
-  return Math.min((wordCount / M4_WORDS_PER_SECOND) * 1_000, M4_MAX_SCROLL_MS);
-}
 
 /** Where the Worker listens; the test goes to it directly, not through a Vite. */
 const WORKER_URL = 'http://localhost:8787';
@@ -164,6 +156,11 @@ function pointsOf({ longest, shared, caios, extras }: RoundPlan) {
   return { ana: anaAlone + wordPoints(shared.word), beto: wordPoints(shared.word), caio: 2 * wordPoints(caios.word) };
 }
 
+/** The words each player finds in the plan, the shared one included (RESULT-02 AC 5). */
+function wordsOf({ extras }: RoundPlan) {
+  return { ana: 2 + extras.length, beto: 1, caio: 1 };
+}
+
 /** Swipes `play` on the phone, and waits for "VÁLIDA (+N PTS)". */
 async function playWord(phone: Phone, play: Play): Promise<void> {
   await swipeOnPhone(phone.page, play.path, BOARD_SIZE);
@@ -214,19 +211,20 @@ test('plays a whole match through the worker', async ({ page, browser }) => {
   await expect(page.getByTestId('chip-seconds')).toContainText('0:30');
   await ana.page.getByRole('button', { name: PHONE_TEXT.startMatch }).click();
 
-  // First round: the phones play, the TV counts, and the reveal goes by itself up to the result.
+  // First round: the phones play, the TV counts, the list scrolls to its end and waits for the host's "VER RESULTADO".
   const firstStart = await roundStartOf(frames, 0);
   const firstPlan = planRound(firstStart.board, pack, EXTRA_WORDS_TO_SCROLL);
   await playRound(page, phones, firstStart, firstPlan, frames);
   await expectTimeUp(page, firstStart);
+  await expectLookAtTheTv(phones);
   await expectWordList(page, firstPlan, ROUNDS);
-  await expectListToReachItsEnd(page);
-  await expectResultAfterTheWait(page, firstPlan);
+  await expectListToReachItsEnd(page, firstPlan);
+  await showResultFromTheHost(page, ana);
 
   const firstPoints = pointsOf(firstPlan);
   await expect(page.getByTestId('result-title')).toHaveText(`Resultado·Rodada 1 de ${ROUNDS}`);
   await expect(page.getByTestId('result-footer')).toHaveText('Aguardando Ana avançar…');
-  await expectStandings(page, frames, firstPoints);
+  await expectStandings(page, frames, firstPoints, wordsOf(firstPlan));
   await expectLongestWord(page, firstPlan);
   await expect.poll(() => readQr(page, page.getByTestId('room-qr'))).toBe(roomUrl);
   for (const phone of [beto, caio]) await expect(phone.page.getByText(PHONE_TEXT.waitingToAdvance('Ana'))).toBeVisible();
@@ -235,24 +233,29 @@ test('plays a whole match through the worker', async ({ page, browser }) => {
   await ana.page.getByRole('button', { name: PHONE_TEXT.nextRound(2, ROUNDS) }).click();
   await expect(page.getByTestId('countdown-screen')).toContainText(`RODADA 2 DE ${ROUNDS}`);
 
-  // Last round: the phones go straight to the podium, and the TV still takes its time.
+  // Last round: the phones look at the TV through the words, and the podium opens on them with the TV's result.
   const lastStart = await roundStartOf(frames, 1);
   const lastPlan = planRound(lastStart.board, pack, 0);
   await playRound(page, phones, lastStart, lastPlan, frames);
   await expectTimeUp(page, lastStart);
-  await expect(ana.page.getByRole('button', { name: PHONE_TEXT.playAgain })).toBeVisible({ timeout: ROUND_END_TIMEOUT_MS });
+  await expectLookAtTheTv(phones);
+  await expect(ana.page.getByRole('button', { name: PHONE_TEXT.playAgain })).toHaveCount(0);
+  await expectWordList(page, lastPlan, ROUNDS);
+  await showResultFromTheHost(page, ana);
+  await expect(ana.page.getByRole('button', { name: PHONE_TEXT.playAgain })).toBeVisible();
   await expect(ana.page.getByRole('heading', { name: PHONE_TEXT.firstPlace })).toBeVisible();
   await expect(ana.page.getByRole('region', { name: PHONE_TEXT.yourPerformance }).locator('.match-performance__count')).toHaveText(String(2 + EXTRA_WORDS_TO_SCROLL + 2));
   await expect(beto.page.getByRole('region', { name: PHONE_TEXT.yourPerformance }).locator('.match-performance__count')).toHaveText('2');
-  await expectWordList(page, lastPlan, ROUNDS);
-  await expectResultAfterTheWait(page, lastPlan);
 
   const lastPoints = pointsOf(lastPlan);
   const totals = { ana: firstPoints.ana + lastPoints.ana, beto: firstPoints.beto + lastPoints.beto, caio: firstPoints.caio + lastPoints.caio };
+  const firstWords = wordsOf(firstPlan);
+  const lastWords = wordsOf(lastPlan);
+  const matchWords = { ana: firstWords.ana + lastWords.ana, beto: firstWords.beto + lastWords.beto, caio: firstWords.caio + lastWords.caio };
   await expect(page.getByTestId('result-title')).toHaveText('Ana venceu!');
   await expect(page.getByTestId('confetti')).toBeVisible();
   await expect(page.getByTestId('result-footer')).toHaveText('Aguardando Ana: jogar de novo ou voltar ao lobby');
-  await expectStandings(page, frames, totals);
+  await expectStandings(page, frames, totals, matchWords);
   await expectLongestWord(page, lastPlan);
 
   // "JOGAR DE NOVO" starts a new match on the three phones and on the TV.
@@ -334,48 +337,62 @@ async function expectWordList(page: Page, plan: RoundPlan, rounds: number): Prom
   await expect(rows.first().locator('.word-row__finder')).toHaveText(['A', 'B']);
 }
 
-/** The list moves until its last word is in view, and the screen stays there (TVWORDS-01 AC 6, 8). */
-async function expectListToReachItsEnd(page: Page): Promise<void> {
+/** The three phones say to look at the TV while it shows "Tempo!" and the words (SYNC-01 AC 1). */
+async function expectLookAtTheTv(phones: readonly Phone[]): Promise<void> {
+  for (const phone of phones) await expect(phone.page.getByRole('heading', { name: PHONE_TEXT.lookAtTv })).toBeVisible({ timeout: 10_000 });
+}
+
+/** The list moves one word a second until its last word is in view, and the screen stays on the words (WORDCTL-01 AC 1, 3). */
+async function expectListToReachItsEnd(page: Page, plan: RoundPlan): Promise<void> {
   const panel = page.getByTestId('word-scroll');
   const lastRow = page.getByTestId('word-row').last();
   const panelBox = await panel.boundingBox();
   if (panelBox === null) throw new Error('The list has no panel');
   expect((await lastRow.boundingBox())!.y).toBeGreaterThan(panelBox.y + panelBox.height);
 
+  const wordCount = 3 + plan.extras.length;
   await expect
     .poll(async () => {
       const box = await lastRow.boundingBox();
       return box === null ? Number.POSITIVE_INFINITY : box.y + box.height;
-    }, { timeout: scrollDurationMs(EXTRA_WORDS_TO_SCROLL + 3) + LATE_MS })
+    }, { timeout: wordCount * HIGHLIGHT_STEP_MS + LATE_MS })
     .toBeLessThanOrEqual(panelBox.y + panelBox.height + 1);
   await expect(page.getByTestId('words-screen')).toBeVisible();
 }
 
-/** With no action from anyone, the result opens when the scroll and the wait are over (TVWORDS-01 AC 6, 8; TVRES-01 AC 1). */
-async function expectResultAfterTheWait(page: Page, plan: RoundPlan): Promise<void> {
-  const wordCount = 3 + plan.extras.length;
-  const expectedMs = scrollDurationMs(wordCount) + HOLD_AFTER_LAST_MS;
-  await expect(page.getByTestId('result-screen')).toBeVisible({ timeout: expectedMs + 2 * LATE_MS });
+/** The TV opens the result only when the host taps "VER RESULTADO" on the phone (WORDCTL-01 AC 8-9). */
+async function showResultFromTheHost(page: Page, host: Phone): Promise<void> {
+  await expect(page.getByTestId('words-screen')).toBeVisible();
+  await expect(page.getByTestId('result-screen')).toHaveCount(0);
+  const tappedAt = Date.now();
+  await host.page.getByRole('button', { name: PHONE_TEXT.showResult }).click();
+  await expect(page.getByTestId('result-screen')).toBeVisible();
   const log = await screenLog(page);
-  const tookMs = lastTimeOf(log, 'result-screen') - lastTimeOf(log, 'words-screen');
-  expect(tookMs).toBeGreaterThanOrEqual(expectedMs - EARLY_MS);
-  expect(tookMs).toBeLessThanOrEqual(expectedMs + LATE_MS);
+  expect(lastTimeOf(log, 'result-screen')).toBeGreaterThanOrEqual(tappedAt - EARLY_MS);
 }
 
-/** The cards with place and accumulated points (TVRES-01 AC 2-3). */
-async function expectStandings(page: Page, frames: readonly ServerMessage[], points: { ana: number; beto: number; caio: number }): Promise<void> {
+/** Each player's words and points, by nickname. */
+interface Tally {
+  ana: number;
+  beto: number;
+  caio: number;
+}
+
+/** The cards with place, words and points: of the round between rounds, of the match after the last (RESULT-02 AC 2-3). */
+async function expectStandings(page: Page, frames: readonly ServerMessage[], points: Tally, words: Tally): Promise<void> {
   const players = playersIn(frames);
   const ranked = [
-    { nickname: 'Ana', score: points.ana },
-    { nickname: 'Beto', score: points.beto },
-    { nickname: 'Caio', score: points.caio },
+    { nickname: 'Ana', score: points.ana, words: words.ana },
+    { nickname: 'Beto', score: points.beto, words: words.beto },
+    { nickname: 'Caio', score: points.caio, words: words.caio },
   ].sort((a, b) => b.score - a.score);
-  for (const { nickname, score } of ranked) {
+  for (const { nickname, score, words: wordCount } of ranked) {
     const place = ranked.findIndex((row) => row.score === score) + 1;
     const card = page.getByTestId(`podium-card-${idOf(players, nickname)}`);
     await expect(card).toContainText(nickname);
     await expect(card).toContainText(`${place}º`);
     await expect(card.locator('.podium-card__points')).toHaveText(String(score));
+    await expect(card.locator('.podium-card__words')).toHaveText(`${wordCount} ${wordCount === 1 ? 'plvr' : 'plvrs'}`);
   }
   await expect(page.getByTestId('result-rest')).toHaveCount(0);
 }

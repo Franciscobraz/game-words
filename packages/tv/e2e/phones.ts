@@ -24,6 +24,8 @@ export const PHONE_TEXT = {
   validWord: (points: number) => `VÁLIDA (+${points} PTS)`,
   roundTally: (words: number, points: number) => `${words} pal · ${points} pts`,
   firstPlace: 'Você ficou em 1º Lugar!',
+  lookAtTv: 'Olhe para a TV',
+  showResult: 'VER RESULTADO',
 } as const;
 
 /** A phone of the match: one browser context, so one localStorage, per player. */
