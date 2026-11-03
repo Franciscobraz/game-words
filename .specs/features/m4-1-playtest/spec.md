@@ -46,6 +46,8 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 | Lista que cabe no painel | O destaque desce de palavra em palavra, uma por segundo, com a lista parada, e para na última | O destaque guia a leitura mesmo sem rolagem | n - default |
 | Som do destaque | Um "check" curto e sintetizado, como o de palavra válida do celular, a cada palavra destacada; é um efeito, então a opção "Música" não o desliga | Pedido do user | som: y - user: "Na lista de palavras, coloque o funcionamento de grifar e ou destacar uma palavra por vez enquanto a tela desce, para guiar a leitura dos usuários, junto efeito de grifar deve tocar um som de \"check\" ou \"pontuação\" valida."; fora da opção "Música": n - default |
 | Destaque no controle manual | Quando o anfitrião toca ▲ ou ▼, o destaque e o som param, e a lista fica sem destaque até o fim | O destaque segue a leitura automática; no manual, quem conduz é o anfitrião | n - default |
+| Jogadores ao lado da lista | Uma coluna à esquerda da lista, com os jogadores da rodada na ordem de entrada na sala; "N plvrs" já com o total da rodada; os pontos começam em 0 e somam a cada palavra destacada, com uma animação simples na linha de quem pontuou; no controle manual, os pontos saltam para o total; quem entrou atrasado e não jogou fica fora da coluna | O ranking continua revelado só em "Ver resultado" | y - user: "Aplique a recomendação mas adicione uma animação simples aos jogadores que receberam algum ponto no mesmo momento do check da palavra, a quantidade de palavras nessa pagina ja deve vir com valor da rodada completo, apenas os pontos vão somando." |
+| Sala guardada antes desta feature | Um jogador sem a contagem de palavras guardada conta 0 palavras | Salas abertas no momento do deploy; achado do batch 1 | n - default |
 | TV recarregada na lista | Volta ao topo, com a rolagem automática | A posição da lista só existe na TV | n - default |
 | Celular durante a lista | Jogadores, espectadores e o anfitrião veem "Olhe para a TV"; o anfitrião vê também ▲, ▼ e "Ver resultado" | Pedido do user | y - user: "no celular pode ter uma tela intermediaria que manda apenas olhar para tv" |
 | Texto da tela intermediária | "Olhe para a TV" e, abaixo, "As palavras da rodada estão passando lá" | Diz o que fazer e por quê | n - default |
@@ -121,6 +123,12 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 15. WHEN uma palavra passa a ficar destacada THEN the TV SHALL tocar um "check" curto
 16. WHEN o anfitrião toca ▲ ou ▼ THEN the TV SHALL tirar o destaque e parar o "check" até o fim da lista
 17. The TV SHALL destacar só com cor e escala, sem mudar a posição das outras palavras
+18. WHILE a TV mostra a lista de palavras, the TV SHALL mostrar ao lado dela uma coluna com cada jogador da rodada, na ordem de entrada na sala, com o círculo, o apelido, as palavras da rodada inteira ("N plvrs") e os pontos
+19. WHEN a lista de palavras abre THEN the TV SHALL mostrar os pontos de cada jogador em 0
+20. WHEN uma palavra passa a ficar destacada THEN the TV SHALL somar os pontos dela a cada jogador que a achou, no mesmo momento do "check"
+21. WHEN os pontos de um jogador sobem THEN the TV SHALL animar a linha desse jogador, só com `transform` e `opacity`
+22. WHEN o anfitrião toca ▲ ou ▼ THEN the TV SHALL mostrar os pontos completos da rodada de cada jogador
+23. WHEN o destaque chega à última palavra THEN the TV SHALL mostrar em cada jogador os mesmos pontos da rodada que o resultado mostra
 
 **Independent Test**: Terminar uma rodada com uma lista longa, conferir a rolagem a uma linha por segundo, rolar com ▲ e ▼, chegar ao fim, esperar e tocar "Ver resultado".
 
@@ -272,6 +280,7 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 
 ## Edge Cases
 
+- IF uma sala guardada antes desta feature traz jogadores sem a contagem de palavras THEN the servidor SHALL contar 0 palavras para eles
 - IF o anfitrião toca "Ver resultado" duas vezes THEN the servidor SHALL tratar o segundo toque como recusado, sem pular o resultado
 - IF o anfitrião está desconectado durante a lista THEN the TV SHALL continuar a rolagem automática até o fim e esperar o anfitrião, que volta pela passagem de anfitrião do M3
 - WHEN ninguém achou nenhuma palavra THEN the TV SHALL mostrar "Nenhuma palavra encontrada" e esperar "Ver resultado"
@@ -285,7 +294,7 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
 | TVAWAKE-01 | P1: Tela da TV sempre ativa (AC 1-5) | Design | Pending |
-| WORDCTL-01 | P1: Lista de palavras conduzida pelo anfitrião (AC 1-17) | Design | Pending |
+| WORDCTL-01 | P1: Lista de palavras conduzida pelo anfitrião (AC 1-23) | Design | Pending |
 | SYNC-01 | P1: Celulares sincronizados com a TV (AC 1-6) | Design | Pending |
 | RESULT-02 | P1: Resultado com pontos e palavras (AC 1-10) | Design | Pending |
 | MUSIC-01 | P2: Música e vinheta (AC 1-16) | Design | Pending |
@@ -294,7 +303,7 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 | NOZOOM-01 | P1: Celular sem zoom (AC 1-3) | Design | Pending |
 | M4FIX-01 | P1: Pendências do M4 (AC 1-5) | Design | Pending |
 
-**Coverage:** 75 total
+**Coverage:** 82 total
 
 ---
 
@@ -310,6 +319,8 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 | `tv-round-result.png`: "Resultado · Rodada 1 de 3" e "Aguardando Ana avançar…" em toda rodada | Na última rodada, "<vencedor> venceu!" e "Aguardando Ana: jogar de novo ou voltar ao lobby" | y - AD-024, que mantém AD-021 |
 
 ## Sources
+
+- `.specs/features/m4-tv/captures/tv-words.png` (capture do M4) - a lista de palavras ganha a coluna de jogadores à esquerda, por AD-030
 
 - `.specs/features/m4-1-playtest/context.md` - o pedido e as respostas do user, com as palavras dele
 - `.specs/features/m4-tv/spec.md` - os critérios do M4 que esta feature muda: TVWORDS-01 AC 1, 6-9; TVRES-01 AC 1-3; TVLOBBY-01 AC 10; SERVE-01; PHONE-01 AC 1

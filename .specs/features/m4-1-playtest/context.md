@@ -43,6 +43,8 @@ Os itens 3 e 6 e o pódio sincronizado contrariam decisões e critérios aprovad
 
 - Pedido de 2026-11-03: destacar uma palavra por vez enquanto a lista desce, com um som de "check" a cada destaque. user: "Na lista de palavras, coloque o funcionamento de grifar e ou destacar uma palavra por vez enquanto a tela desce, para guiar a leitura dos usuários, junto efeito de grifar deve tocar um som de \"check\" ou \"pontuação\" valida."
 
+- Pedido de 2026-11-03: jogadores ao lado da lista, com as palavras da rodada completas e os pontos somando com o destaque, com animação em quem pontuou (AD-030). user: "Aplique a recomendação mas adicione uma animação simples aos jogadores que receberam algum ponto no mesmo momento do check da palavra, a quantidade de palavras nessa pagina ja deve vir com valor da rodada completo, apenas os pontos vão somando."
+
 ### Música
 
 - Música original no estilo de jogos antigos, calma, gerada no navegador, sem arquivo nem licença. O user pode trocá-la depois.

@@ -78,7 +78,7 @@ T1 → T2 → T3 → T4 → T5 → T6 → T7 → T8
 "Olhe para a TV", os controles do anfitrião e a saída para `/join`.
 
 ```
-T8 → T9 → T10 → T11 → T12 → T13
+T8 → T9 → T10 → T11 → T12 → T13 → T45
 ```
 
 ### Phase 3: Retorno da palavra no celular
@@ -86,7 +86,7 @@ T8 → T9 → T10 → T11 → T12 → T13
 Preferências ligadas, o "check" e o caminho pintado.
 
 ```
-T13 → T14 → T15 → T16
+T45 → T14 → T15 → T16
 ```
 
 ### Phase 4: Lista conduzida na TV
@@ -94,7 +94,7 @@ T13 → T14 → T15 → T16
 A etapa pela fase, a rolagem com destaque e os comandos do anfitrião.
 
 ```
-T16 → T17 → T18 → T19 → T20 → T21
+T16 → T17 → T18 → T19 → T20 → T21 → T46
 ```
 
 ### Phase 5: Resultado na TV
@@ -398,11 +398,31 @@ T39 → T40 → T41 → T42 → T43 → T44
 
 ---
 
+### T45: Old rooms count 0 words
+
+**What**: `loadRoom` dá 0 ao campo `words` de um jogador guardado sem ele.
+**Where**: `packages/server/src/storage.ts` (modify)
+**Depends on**: T13
+**Reuses**: `sanitizeLoadedSettings`
+**Requirement**: RESULT-02
+
+**Done when**:
+
+- [ ] C111
+- [ ] Gate check passes
+- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+
+**Tests**: integration
+**Gate**: full
+**Commit**: `fix(server): count 0 words for players stored without them`
+
+---
+
 ### T14: Preferences on by default
 
 **What**: "Vibrar" e "Som ao acertar" começam ligados sem preferência guardada; a escolha guardada vale em qualquer sala.
 **Where**: `packages/phone/src/state/prefs.ts` (modify)
-**Depends on**: T13
+**Depends on**: T45
 **Reuses**: `PREFS_KEY`, `loadPrefs`
 **Requirement**: FEEDBACK-02
 
@@ -559,6 +579,26 @@ T39 → T40 → T41 → T42 → T43 → T44
 **Tests**: e2e
 **Gate**: full
 **Commit**: `feat(tv): let the host drive the words`
+
+---
+
+### T46: Players beside the words
+
+**What**: `model/words-players.ts` calcula, a cada passo do destaque, os pontos somados de cada jogador da rodada, na ordem de entrada, e quem acabou de pontuar; `WordsScreen` mostra a coluna à esquerda da lista, com "N plvrs" da rodada completa, e anima com `transform`/`opacity` a linha de quem pontuou no "check".
+**Where**: `packages/tv/src/model/words-players.ts` (create), `packages/tv/src/screens/WordsScreen.tsx` (modify)
+**Depends on**: T21
+**Reuses**: a regra de plural de "plvrs" da tabela de strings
+**Requirement**: WORDCTL-01
+
+**Done when**:
+
+- [ ] C112-C116
+- [ ] Gate check passes
+- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+
+**Tests**: unit, e2e
+**Gate**: full
+**Commit**: `feat(tv): show the players beside the words`
 
 ---
 
@@ -1349,6 +1389,24 @@ Proof: `node -e "const t=require('fs').readFileSync('packages/phone/playwright.c
 **C107** - `docs/DESIGN.md` cita `wrangler.jsonc` e não `wrangler.toml` (M4FIX-01, AC 5)
 Proof: `node -e "const t=require('fs').readFileSync('docs/DESIGN.md','utf8');process.exit(t.includes('wrangler.jsonc')&&!t.includes('wrangler.toml')?0:1)"`
 
+**C111** - Uma sala guardada com jogadores sem `words` volta com 0 palavras para eles (RESULT-02; Edge Cases)
+Proof: `npx vitest run packages/server/test/persistence.test.ts -t "counts 0 words for players stored without them"`
+
+**C112** - A coluna da lista traz os jogadores da rodada na ordem de entrada, com as palavras da rodada completas e os pontos em 0 ao abrir (WORDCTL-01, AC 18-19)
+Proof: `npx vitest run packages/tv/src/model/words-players.test.ts -t "starts every player of the round at 0 points with all their words"`
+
+**C113** - A cada palavra destacada, os pontos dela somam a quem a achou, e só esses jogadores são marcados para animar (WORDCTL-01, AC 20-21)
+Proof: `npx vitest run packages/tv/src/model/words-players.test.ts -t "adds the highlighted word to whoever found it"`
+
+**C114** - No controle manual, a coluna mostra os pontos completos da rodada (WORDCTL-01, AC 22)
+Proof: `npx vitest run packages/tv/src/model/words-players.test.ts -t "shows the full round points under manual control"`
+
+**C115** - Com o destaque na última palavra, os pontos de cada jogador são os do resultado da rodada (WORDCTL-01, AC 23)
+Proof: `npx vitest run packages/tv/src/model/words-players.test.ts -t "ends at the round points of the result"`
+
+**C116** - Na TV, a linha de quem pontuou anima no "check", e a coluna fica à esquerda da lista (WORDCTL-01, AC 18, 21)
+Proof: `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/words.spec.ts -g "animates the players who scored with the check"`
+
 **C108** - Na TV LG da sala, com a página aberta e sem tocar no controle, a TV não entra em descanso numa partida de 3 rodadas de 3 min (TVAWAKE-01, AC 1-5; Goals)
 Proof: walk - caminhada do user na TV real, depois do deploy que ele pedir; resultado em `**Walked:**`
 
@@ -1365,7 +1423,7 @@ Proof: walk - caminhada do user na TV e num celular reais; resultado em `**Walke
 The feature's live state, written as it happens - a compaction gives no warning.
 
 **Settled mid-build:** padrões da apresentação das tarefas aceitos com a aprovação: celulares recebem pontos e contagem de palavras, sem palavras, antes de "Ver resultado"; a música de fundo continua entre partidas e só recomeça ao recarregar a TV; sem chip "Música" no lobby da TV; peças de palavra curta demais voltam ao normal; user: "aprovo as tarefas"; none
-**Dispatched:** batch worker fase 1 (T1-T8) a partir do commit seguinte a 3b2216b (push feito em 3b2216b a pedido do user) - returned (T1 7901080, T2 145010e, T3 6830435, T4 ed36908, T5 997f084, T6 d8e4646, T7 c2580cf, T8 d29292a; vitest 1042 e tsc verdes, conferidos pelo orquestrador em d29292a; phone e2e 78+1 e tv e2e 77+1 vermelhos só em `full-match.spec.ts`, dentro da janela; `match.test.ts` do servidor vermelho de T3 a T6, fora da janela prevista, verde desde T6; sala guardada antes da mudança não tem o campo `words` dos jogadores, sem default). MUSIC-01 emendado depois do batch 1: as tarefas da fase 6 precisam ser reescritas antes do batch 5
+**Dispatched:** batch worker fase 1 (T1-T8) a partir do commit seguinte a 3b2216b (push feito em 3b2216b a pedido do user) - returned (T1 7901080, T2 145010e, T3 6830435, T4 ed36908, T5 997f084, T6 d8e4646, T7 c2580cf, T8 d29292a; vitest 1042 e tsc verdes, conferidos pelo orquestrador em d29292a; phone e2e 78+1 e tv e2e 77+1 vermelhos só em `full-match.spec.ts`, dentro da janela; `match.test.ts` do servidor vermelho de T3 a T6, fora da janela prevista, verde desde T6; sala guardada antes da mudança não tem o campo `words` dos jogadores, sem default). MUSIC-01 emendado depois do batch 1: as tarefas da fase 6 precisam ser reescritas antes do batch 5. T45 (salas antigas, default do orquestrador) e T46 (jogadores ao lado da lista, AD-030) entraram depois da aprovação das tarefas; user: "Aplique a recomendação mas adicione uma animação simples aos jogadores que receberam algum ponto no mesmo momento do check da palavra, a quantidade de palavras nessa pagina ja deve vir com valor da rodada completo, apenas os pontos vão somando."
 **Walked:** none
 
 ---
@@ -1374,9 +1432,9 @@ The feature's live state, written as it happens - a compaction gives no warning.
 
 ```
 Phase 1:  T1 --→ T2 --→ T3 --→ T4 --→ T5 --→ T6 --→ T7 --→ T8
-Phase 2:  T9 --→ T10 --→ T11 --→ T12 --→ T13
+Phase 2:  T9 --→ T10 --→ T11 --→ T12 --→ T13 --→ T45
 Phase 3:  T14 --→ T15 --→ T16
-Phase 4:  T17 --→ T18 --→ T19 --→ T20 --→ T21
+Phase 4:  T17 --→ T18 --→ T19 --→ T20 --→ T21 --→ T46
 Phase 5:  T22 --→ T23 --→ T24 --→ T25 --→ T26 --→ T27 --→ T28
 Phase 6:  T29 --→ T30 --→ T31 --→ T32 --→ T33 --→ T34 --→ T35
 Phase 7:  T36 --→ T37 --→ T38 --→ T39

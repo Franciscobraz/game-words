@@ -205,6 +205,12 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 - **Decisão:** o resultado da TV não mostra "Após Rodada N" ao lado do título; "Classificação da Rodada N" já diz a rodada (AD-027). Diverge de `m4-1-playtest/captures/tv-round-result.png`.
 - **Motivo:** pergunta: "\"Após Rodada N\" sai do resultado? [...] Recomendo tirar, porque o título \"Classificação da Rodada N\" já diz a rodada." user: "Sim, aprovo"
 
+### AD-030 - Jogadores ao lado da lista de palavras (active)
+
+- **Data:** 2026-11-03
+- **Decisão:** a lista de palavras da TV ganha uma coluna com os jogadores da rodada, na ordem de entrada, com as palavras da rodada completas e os pontos somando a cada palavra destacada, com uma animação na linha de quem pontuou. Diverge da composição de `m4-tv/captures/tv-words.png`, que só tem a lista.
+- **Motivo:** pergunta: "Na lista de palavras, ficaria muita informação, permanecer mostrando os participantes [...]?" Recomendação: totais que crescem com o destaque, na ordem de entrada. user: "Aplique a recomendação mas adicione uma animação simples aos jogadores que receberam algum ponto no mesmo momento do check da palavra, a quantidade de palavras nessa pagina ja deve vir com valor da rodada completo, apenas os pontos vão somando."
+
 ## Handoff
 
 - **Data:** 2026-11-03
