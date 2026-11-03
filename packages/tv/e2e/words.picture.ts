@@ -1,41 +1,38 @@
 import { expect, test } from '@playwright/test';
 import { fakeRoom } from './fake-room.ts';
 import { picturePath, pictureWindow } from './pictures.ts';
-import { ANA, BETO, CAIO, roundWelcome, SAMPLE_END, sampleResults } from './samples.ts';
+import { ANA, roundWelcome, SAMPLE_END, wordsCaptureResults, wordsCapturePlayers } from './samples.ts';
 
-// tv-words.png has 1920x1080 px.
-test.use(pictureWindow(1));
+// m4-1-playtest's tv-words.png is the 1920x1080 frame inside a 64 px margin; the TV fills the window (AD-030).
+test.use(pictureWindow(2));
 
-/** How far the capture's frame is into the scroll: CASA sits at this height, in px. */
-const CAPTURE_CASA_TOP_PX = 329;
+/** "Tempo!" comes before the words (TVPLAY-01 AC 10). */
+const TIME_UP_MS = 2_000;
 
-/** The capture's players; it draws Beto in a lighter blue. */
-const PLAYERS = [ANA, { ...BETO, color: '#7DD3FC' }, { ...CAIO, connected: true }];
+/** A screen reads the clock this often, so a change shows up to this late (`SERVER_CLOCK_TICK_MS`). */
+const TICK_MS = 150;
+
+/** Mid-way through the list: CERA, the 6th word, on the reading line, with Ana, Beto and Caio ahead as in the capture (WORDCTL-01 AC 13). */
+const MID_LIST_MS = 5 * 1_000;
 
 test('tv-words', async ({ page }) => {
   await page.clock.install({ time: SAMPLE_END });
   await page.clock.pauseAt(SAMPLE_END);
-  const room = await fakeRoom(page, roundWelcome(PLAYERS, ANA.id));
+  const room = await fakeRoom(page, roundWelcome(wordsCapturePlayers(), ANA.id));
   await page.goto('/');
   await expect(page.getByTestId('round-screen')).toBeVisible();
-  room.push(sampleResults());
-  await page.clock.runFor(2_200);
+  room.push(wordsCaptureResults());
+  room.push({ type: 'phase', phase: 'words' });
+  await page.clock.runFor(TIME_UP_MS + TICK_MS);
   await expect(page.getByTestId('words-screen')).toBeVisible();
   await page.evaluate(() => document.fonts.ready);
 
-  // The frame of the capture: the one transition is stopped by hand, at the moment CASA reaches its place.
-  await page.getByTestId('word-list').evaluate((list, casaTopPx) => {
-    const [scroll] = list.getAnimations();
-    if (scroll === undefined) throw new Error('The list is not scrolling');
-    scroll.pause();
-    scroll.currentTime = 0;
-    const casa = Array.from(list.querySelectorAll('[data-testid="word-row"]')).find((row) => row.textContent?.startsWith('CASA'))!;
-    const fromTop = casa.getBoundingClientRect().top - casaTopPx;
-    const distance = -new DOMMatrix(list.style.transform).m42;
-    const durationMs = Number(scroll.effect!.getComputedTiming().duration);
-    scroll.currentTime = (fromTop / distance) * durationMs;
-  }, CAPTURE_CASA_TOP_PX);
+  await page.clock.runFor(MID_LIST_MS);
+  await expect(page.locator('.word-row--highlighted')).toContainText('CERA');
+  // The list and the cards stand where they are heading: the panel already ordered by the points so far (WORDCTL-01 AC 24).
+  await page.evaluate(() => {
+    for (const animation of document.getAnimations()) animation.finish();
+  });
 
-  // Playwright's `animations: 'disabled'` would run the transition to its end.
-  await page.screenshot({ path: picturePath('tv-words') });
+  await page.screenshot({ path: picturePath('tv-words', 'm4-1-playtest'), animations: 'disabled' });
 });

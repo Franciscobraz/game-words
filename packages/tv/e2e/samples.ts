@@ -148,3 +148,42 @@ export function resultRoundResults(): RoundResultsMessage {
   });
   return { ...sampleResults(), players };
 }
+
+/** A player of tv-words.png with the words and points of the round that its panel draws. */
+interface WordsCapturePlayer {
+  player: PlayerInfo;
+  roundWords: number;
+  roundPoints: number;
+}
+
+/** The ten players of tv-words.png in joining order, the order its panel draws them in; Caio is disconnected. */
+const WORDS_CAPTURE_PLAYERS: readonly WordsCapturePlayer[] = [
+  { player: ANA, roundWords: 14, roundPoints: 20 },
+  { player: { ...BETO, color: '#7DD3FC' }, roundWords: 11, roundPoints: 12 },
+  { player: samplePlayer('p11', 'Gui', '#EAB308'), roundWords: 6, roundPoints: 10 },
+  { player: samplePlayer('p12', 'Bia', '#8B5CF6'), roundWords: 5, roundPoints: 8 },
+  { player: samplePlayer('p13', 'Leo', '#EF4444'), roundWords: 4, roundPoints: 6 },
+  { player: samplePlayer('p14', 'Mel', '#06B6D4'), roundWords: 3, roundPoints: 4 },
+  { player: CAIO, roundWords: 8, roundPoints: 3 },
+  { player: samplePlayer('p15', 'Ian', '#84CC16'), roundWords: 2, roundPoints: 2 },
+  { player: samplePlayer('p16', 'Pri', '#D946EF'), roundWords: 1, roundPoints: 1 },
+  { player: { ...DUDA, spectator: false }, roundWords: 0, roundPoints: 0 },
+];
+
+/** The players of tv-words.png. */
+export function wordsCapturePlayers(): PlayerInfo[] {
+  return WORDS_CAPTURE_PLAYERS.map(({ player }) => player);
+}
+
+/** The 13 words of tv-words.png, played by its ten players with the words and points its panel draws. */
+export function wordsCaptureResults(): RoundResultsMessage {
+  const players: PlayerResult[] = WORDS_CAPTURE_PLAYERS.map(({ player, roundWords, roundPoints }) => ({
+    playerId: player.id,
+    unique: SAMPLE_UNIQUE[player.id] ?? [],
+    roundPoints,
+    roundWords,
+    score: roundPoints,
+    words: roundWords,
+  }));
+  return { ...sampleResults(), players };
+}
