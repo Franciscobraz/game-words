@@ -69,7 +69,7 @@ export const STRINGS = {
   nobodyScoredTitle: 'Ninguém pontuou',
   waitingToAdvance: (nickname: string) => `Aguardando ${nickname} avançar…`,
   matchStandings: 'Classificação da Partida',
-  afterRound: (round: number) => `Após Rodada ${round}`,
+  roundStandings: (round: number) => `Classificação da Rodada ${round}`,
   place: (place: number) => `${place}º`,
   disconnectedNote: '(desconectado)',
   pointsUnit: (points: number) => (points === 1 ? 'pt' : 'pts'),

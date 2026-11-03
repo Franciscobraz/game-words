@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { resultHeader } from './result-header.ts';
+import { resultHeader, standingsTitle } from './result-header.ts';
 import type { StandingRow } from './standings.ts';
 
 function row(nickname: string, place: number, score = 10): StandingRow {
@@ -54,5 +54,14 @@ describe('resultHeader', () => {
   test('has no footer when the room has no host', () => {
     expect(resultHeader({ index: 0, last: false }, { top: [] }, null, ROUNDS).footer).toBeNull();
     expect(resultHeader({ index: 2, last: true }, { top: [] }, null, ROUNDS).footer).toBeNull();
+  });
+});
+
+describe('standingsTitle', () => {
+  test('titles the standings by the round between rounds and by the match after the last', () => {
+    expect(standingsTitle({ index: 0, last: false })).toBe('Classificação da Rodada 1');
+    expect(standingsTitle({ index: 1, last: false })).toBe('Classificação da Rodada 2');
+    expect(standingsTitle({ index: 2, last: true })).toBe('Classificação da Partida');
+    expect(standingsTitle({ index: 0, last: true })).toBe('Classificação da Partida');
   });
 });

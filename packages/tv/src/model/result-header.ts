@@ -40,6 +40,14 @@ export function resultHeader(
   };
 }
 
+/**
+ * What the standings follow: the round between rounds, the match after the last round. The round is in the title, so
+ * nothing beside it repeats it (RESULT-02 AC 6-7, AD-029).
+ */
+export function standingsTitle(results: Pick<RoundResultsMessage, 'index' | 'last'>): string {
+  return results.last ? STRINGS.matchStandings : STRINGS.roundStandings(results.index + 1);
+}
+
 /** A tie has no one name to show: everyone on it wins (TVRES-01 AC 10, DESIGN §2). */
 function matchTitle(winners: Standings['top']): string {
   const [winner] = winners;

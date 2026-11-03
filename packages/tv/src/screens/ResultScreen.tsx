@@ -10,7 +10,7 @@ import { boardLabels } from '../model/board-labels.ts';
 import { litTiles } from '../model/lit-tiles.ts';
 import { longestCard } from '../model/longest-card.ts';
 import { qrMatrix, roomUrl } from '../model/qr.ts';
-import { resultHeader } from '../model/result-header.ts';
+import { resultHeader, standingsTitle } from '../model/result-header.ts';
 import { standings } from '../model/standings.ts';
 import { useServerClock } from '../state/server-clock.ts';
 import { useStore } from '../state/store.ts';
@@ -56,8 +56,9 @@ export function ResultScreen() {
         </div>
         <div class="result__right">
           <div class="result__standings-title">
-            <h2 class="result__standings-heading">{STRINGS.matchStandings}</h2>
-            <span class="result__standings-round">{STRINGS.afterRound(results.index + 1)}</span>
+            <h2 class="result__standings-heading" data-testid="standings-title">
+              {standingsTitle(results)}
+            </h2>
           </div>
           <div class="result__cards">
             {top.map((row) => (
