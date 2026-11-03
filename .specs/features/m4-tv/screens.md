@@ -1,13 +1,13 @@
 # M4 TV screens
 
 **Verifier**: independent sub-agent (author != verifier)
-**Round**: 1
+**Round**: 2
 
 Fotos tiradas por este sub-agente, contra a pilha real (`wrangler dev` em 8787), com gestos reais de 10 celulares a 390x844 e a TV a 1920x1080. `tv-lobby.png` tem 3840x2160, então o lobby foi fotografado na mesma viewport de 1920x1080 com `deviceScaleFactor` 2; as outras três captures têm 1920x1080 e foram fotografadas a 1x. Nenhuma foto foi redimensionada. Os dados que seguem a partida (apelidos, cores, código, letras, palavras, números) não contam como diferença.
 
 | Screen | Compared with | Verdict | Finding |
 | --- | --- | --- | --- |
-| `captures/tv-lobby.running.png` | `captures/tv-lobby.png` | diverges | 2 rows differ |
+| `captures/tv-lobby.running.png` | `captures/tv-lobby.png` | matches | round 2: as 2 linhas que diferiam agora são same |
 | `captures/tv-round.running.png` | `captures/tv-round.png` | matches | |
 | `captures/tv-words.running.png` | `captures/tv-words.png` | matches | |
 | `captures/tv-round-result.running.png` | `captures/tv-round-result.png` | matches | |
@@ -20,7 +20,7 @@ Estado: 4 jogadores, Ana com 2 vitórias e Beto com 1, ganhas em partidas reais;
 | --- | --- | --- |
 | header: logo "B" laranja e "BWORDS" à esquerda, aviso de som no centro, cartão da sala à direita | same | "BWords", pela tabela de diferenças |
 | aviso: pílula com ícone de mudo, "Aperte", tecla "OK", "no controle para liberar o som" | same | nota: a pílula é um pouco mais escura que na capture. O navegador sem gesto bloqueou o som, e o aviso apareceu |
-| aviso: ícone de mudo dentro de um quadrado escuro arredondado, de cerca de 40 px | differs | o ícone solto na pílula, sem o quadrado atrás |
+| aviso: ícone de mudo dentro de um quadrado escuro arredondado, de cerca de 40 px | same | round 2: o ícone laranja dentro de um quadrado escuro de cantos arredondados, com 80 px de largura na foto a 2x, ou seja 40 px |
 | cartão da sala: "SALA" em cinza e o código em azul | same | |
 | painel esquerdo: "CONECTE-SE AGORA" | same | nada, pela tabela de diferenças |
 | painel esquerdo: título "Entre pelo celular" | same | |
@@ -33,7 +33,7 @@ Estado: 4 jogadores, Ana com 2 vitórias e Beto com 1, ganhas em partidas reais;
 | linha da Ana: quadrado com a inicial, apelido, coroa, "ANFITRIÃO(Ã)", troféu e "2 vitórias", borda na cor do jogador | same | nota: coroa e troféu em desenho chapado e dourado; na capture, emoji colorido |
 | linha do Beto: quadrado, apelido, troféu e "1 vitória", borda na cor do jogador | same | |
 | linha do Caio: esmaecida, sem borda colorida, "DESCONECTADO" à direita | same | |
-| linha da Duda: "ESPECTADOR(A)" na cor dela, sem troféu | differs | troféu e "0 vitórias". A foto não tem como mostrar o rótulo: o `core` só marca `spectator` em quem entra em `round` ou `results`, e a volta ao lobby zera o campo, de modo que nenhum gesto chega a um espectador no lobby |
+| linha da Duda: "ESPECTADOR(A)" na cor dela, sem troféu | same | round 2: troféu e "0 vitórias" na cor dela, como as outras linhas, pela tabela de diferenças (AD-023) |
 | vagas: "Vaga Livre #5" a "#10", com o número num quadrado e borda tracejada | same | nota: tracejado mais fino |
 | "CONFIGURAÇÕES" | same | |
 | chips, 1ª fila: Grade 4x4, Tempo 2 min, 3 rodadas, Mín. 3 letras, com ícones | same | |
