@@ -49,6 +49,20 @@
   line-height: 1.1;
 }
 
+.standing-line__words {
+  flex: none;
+  color: var(--color-text-muted);
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+}
+
+.standing-line__separator {
+  flex: none;
+  margin: 0 0.5rem;
+  color: var(--color-text-muted);
+  font-size: 1.25rem;
+}
+
 .standing-line__points {
   flex: none;
   color: var(--color-text-strong);

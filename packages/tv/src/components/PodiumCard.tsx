@@ -1,3 +1,4 @@
+import { scoreLabel } from '../model/score-label.ts';
 import type { StandingRow } from '../model/standings.ts';
 import { STRINGS } from '../strings/pt-BR.ts';
 import '../styles/podium-card.css';
@@ -10,8 +11,9 @@ export interface PodiumCardProps {
   confetti: boolean;
 }
 
-/** One of the first three: nickname, place and accumulated points; no circle, all the same height (TVRES-01 AC 2, 4). */
+/** One of the first three: nickname, place, words and points; no circle, all the same height (TVRES-01 AC 4, RESULT-02 AC 2-3). */
 export function PodiumCard({ row, confetti }: PodiumCardProps) {
+  const label = scoreLabel(row.words, row.score);
   return (
     <div class="podium-card" style={{ borderTopColor: row.color }} data-testid={`podium-card-${row.id}`}>
       {confetti && <Confetti />}
@@ -30,8 +32,10 @@ export function PodiumCard({ row, confetti }: PodiumCardProps) {
         </span>
       </div>
       <div class="podium-card__score">
-        <span class="podium-card__points">{row.score}</span>
-        <span class="podium-card__unit">{STRINGS.pointsUnit(row.score)}</span>
+        <span class="podium-card__words">{label.words}</span>
+        <span class="podium-card__separator">·</span>
+        <span class="podium-card__points">{label.points}</span>
+        <span class="podium-card__unit">{label.unit}</span>
       </div>
     </div>
   );

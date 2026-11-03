@@ -1,14 +1,27 @@
-import type { PlayerInfo, RoundResultsMessage, ServerMessage } from '@bwords/core';
+import type { PlayerInfo, PlayerResult, RoundResultsMessage, ServerMessage } from '@bwords/core';
 import { expect, type Page, test } from '@playwright/test';
-import { fakeRoom } from './fake-room.ts';
+import { type FakeRoom, fakeRoom } from './fake-room.ts';
 import { readQr } from './read-qr.ts';
-import { ANA, BETO, CAIO, lobbyWelcome, resultPlayers, roundWelcome, SAMPLE_BOARD, SAMPLE_CODE, SAMPLE_END, sampleResults, samplePlayer } from './samples.ts';
+import {
+  ANA,
+  BETO,
+  CAIO,
+  DUDA,
+  lobbyWelcome,
+  resultPlayers,
+  roundWelcome,
+  SAMPLE_BOARD,
+  SAMPLE_CODE,
+  SAMPLE_END,
+  sampleResults,
+  samplePlayer,
+} from './samples.ts';
 
 /** A screen reads the clock this often, so a change shows up to this late (`SERVER_CLOCK_TICK_MS`). */
 const TICK_MS = 150;
 
-/** "Tempo!" and the wait, with no words to scroll (TVPLAY-01 AC 10, TVWORDS-01 AC 9). */
-const UNTIL_RESULT_MS = 2_000 + 5_000;
+/** "Tempo!" comes before the words (TVPLAY-01 AC 10). */
+const TIME_UP_MS = 2_000;
 
 /** The two ends of the TV's screens (AD-016). */
 const SCREENS = [
@@ -16,32 +29,63 @@ const SCREENS = [
   { width: 1280, height: 720 },
 ] as const;
 
-/** Results with no words to scroll, so the result opens right after the wait. */
-function noWords(overrides: Partial<RoundResultsMessage> = {}): RoundResultsMessage {
-  return { ...sampleResults(), shared: [], players: [], ...overrides };
+/** The round of every player who is not a spectator, with their score and words as the round's (RESULT-02 AC 2). */
+function playedBy(players: readonly PlayerInfo[]): PlayerResult[] {
+  return players
+    .filter((player) => !player.spectator)
+    .map(({ id, score, words }) => ({ playerId: id, unique: [], roundPoints: score, roundWords: words, score, words }));
 }
 
-/** Opens the TV at the end of the round and goes up to the moment the result opens. */
-async function openResult(page: Page, players: PlayerInfo[], results: RoundResultsMessage = noWords()) {
+/** Results with no words to scroll, played by `players`. */
+function noWords(players: readonly PlayerInfo[], overrides: Partial<RoundResultsMessage> = {}): RoundResultsMessage {
+  return { ...sampleResults(), shared: [], players: playedBy(players), ...overrides };
+}
+
+/**
+ * Ends the round as the server does and opens the result as the host's "Ver resultado" does: the results and the words
+ * stage, then the result between rounds or the podium after the last (WORDCTL-01 AC 8-9).
+ */
+async function showResult(page: Page, room: FakeRoom, results: RoundResultsMessage) {
+  room.push(results);
+  room.push({ type: 'phase', phase: 'words' });
+  await page.clock.runFor(TIME_UP_MS + TICK_MS);
+  await expect(page.getByTestId('words-screen')).toBeVisible();
+  room.push(results.last ? { type: 'podium', ranking: [] } : { type: 'phase', phase: 'results' });
+  await page.clock.runFor(TICK_MS);
+  await expect(page.getByTestId('result-screen')).toBeVisible();
+}
+
+/** Opens the TV at the end of the round of `players` and goes up to the moment the result opens. */
+async function openResult(page: Page, players: PlayerInfo[], results: RoundResultsMessage = noWords(players)) {
   await page.clock.install({ time: SAMPLE_END });
   await page.clock.pauseAt(SAMPLE_END);
   const room = await fakeRoom(page, roundWelcome(players, players[0]?.id ?? null));
   await page.goto('/');
   await expect(page.getByTestId('round-screen')).toBeVisible();
-  room.push(results);
-  if (results.last) room.push({ type: 'podium', ranking: [] });
-  await page.clock.runFor(UNTIL_RESULT_MS + TICK_MS);
-  await expect(page.getByTestId('result-screen')).toBeVisible();
+  await showResult(page, room, results);
   return room;
 }
 
-test('shows the three cards with place and points', async ({ page }) => {
-  await openResult(page, [{ ...CAIO, connected: true, score: 16 }, { ...BETO, score: 25 }, { ...ANA, score: 34 }]);
+/** A player's round, as the server counts it. */
+function roundOf(player: PlayerInfo, roundWords: number, roundPoints: number): PlayerResult {
+  return { playerId: player.id, unique: [], roundPoints, roundWords, score: player.score, words: player.words };
+}
 
-  await expect(page.getByTestId(`podium-card-${ANA.id}`)).toHaveText(/Ana.*1º.*34.*pts/);
-  await expect(page.getByTestId(`podium-card-${BETO.id}`)).toHaveText(/Beto.*2º.*25.*pts/);
-  await expect(page.getByTestId(`podium-card-${CAIO.id}`)).toHaveText(/Caio.*3º.*16.*pts/);
-  await expect(page.getByTestId('result-rest')).toHaveCount(0);
+test('shows words and points on every card and line', async ({ page }) => {
+  const duda = { ...DUDA, spectator: false };
+  const bia = samplePlayer('p10', 'Bia', '#3B82F6');
+  const ana = { ...ANA, score: 40 };
+  const beto = { ...BETO, score: 30 };
+  const caio = { ...CAIO, connected: true, score: 20 };
+  const round = [roundOf(ana, 14, 34), roundOf(beto, 11, 25), roundOf(caio, 8, 16), roundOf(duda, 7, 14), roundOf(bia, 1, 1)];
+
+  await openResult(page, [ana, beto, caio, duda, bia], noWords([], { players: round }));
+
+  await expect(page.getByTestId(`podium-card-${ANA.id}`)).toHaveText(/^Ana.*1º14 plvrs·34pts$/);
+  await expect(page.getByTestId(`podium-card-${BETO.id}`)).toHaveText(/^Beto2º11 plvrs·25pts$/);
+  await expect(page.getByTestId(`podium-card-${CAIO.id}`)).toHaveText(/^Caio3º8 plvrs·16pts$/);
+  await expect(page.getByTestId(`standing-line-${duda.id}`)).toHaveText(/^4º.*Duda7 plvrs·14pts$/);
+  await expect(page.getByTestId(`standing-line-${bia.id}`)).toHaveText(/^5º.*Bia1 plvr·1pt$/);
 });
 
 test('lists the fourth player on, and says one point in the singular', async ({ page }) => {
@@ -69,7 +113,7 @@ test('marks a disconnected player', async ({ page }) => {
 });
 
 test('shows who found the longest word', async ({ page }) => {
-  await openResult(page, [{ ...ANA, score: 3 }], noWords({ longest: { word: 'seria', points: 3, spellings: ['seria', 'séria'], path: [0, 1], foundBy: [ANA.id] } }));
+  await openResult(page, [{ ...ANA, score: 3 }], noWords([ANA], { longest: { word: 'seria', points: 3, spellings: ['seria', 'séria'], path: [0, 1], foundBy: [ANA.id] } }));
   const card = page.getByTestId('longest-word');
 
   await expect(card).toContainText('A maior palavra do tabuleiro');
@@ -79,7 +123,7 @@ test('shows who found the longest word', async ({ page }) => {
 });
 
 test('says when nobody found the longest word', async ({ page }) => {
-  await openResult(page, [{ ...ANA, score: 0 }], noWords({ longest: { word: 'ternos', points: 4, path: [8, 5], foundBy: [] } }));
+  await openResult(page, [{ ...ANA, score: 0 }], noWords([ANA], { longest: { word: 'ternos', points: 4, path: [8, 5], foundBy: [] } }));
 
   await expect(page.getByTestId('longest-word')).toContainText('TERNOS');
   await expect(page.getByTestId('longest-word')).toContainText('Ninguém encontrou');
@@ -87,7 +131,7 @@ test('says when nobody found the longest word', async ({ page }) => {
 });
 
 test('hides the card when the board has no longest word', async ({ page }) => {
-  await openResult(page, [{ ...ANA, score: 0 }], noWords({ longest: null }));
+  await openResult(page, [{ ...ANA, score: 0 }], noWords([ANA], { longest: null }));
 
   await expect(page.getByTestId('board')).toBeVisible();
   await expect(page.getByTestId('longest-word')).toHaveCount(0);
@@ -101,14 +145,10 @@ test('lights the tiles of the longest word one by one, in its order', async ({ p
   const room = await fakeRoom(page, roundWelcome([{ ...ANA, score: 3 }], ANA.id));
   await page.goto('/');
   await expect(page.getByTestId('round-screen')).toBeVisible();
-  room.push(noWords());
-  await page.clock.runFor(UNTIL_RESULT_MS - TICK_MS);
-  await expect(page.getByTestId('words-screen')).toBeVisible();
   const tiles = page.getByTestId('board').locator('.board-grid__tile');
   const litLetters = () => page.locator('.board-grid__tile--lit').allTextContents();
 
-  await page.clock.runFor(TICK_MS * 2);
-  await expect(page.getByTestId('result-screen')).toBeVisible();
+  await showResult(page, room, noWords([ANA]));
   await expect(tiles).toHaveCount(16);
   expect(await litLetters()).toEqual(['T']);
 
@@ -130,7 +170,7 @@ test('shows the round between rounds', async ({ page }) => {
 });
 
 test('shows the winner and the confetti after the last round', async ({ page }) => {
-  await openResult(page, [{ ...ANA, score: 3 }, { ...BETO, score: 9 }], noWords({ index: 2, last: true }));
+  await openResult(page, [{ ...ANA, score: 3 }, { ...BETO, score: 9 }], noWords([ANA, BETO], { index: 2, last: true }));
 
   await expect(page.getByTestId('result-title')).toHaveText('Beto venceu!');
   await expect(page.getByTestId('result-footer')).toHaveText('Aguardando Ana: jogar de novo ou voltar ao lobby');
@@ -139,7 +179,7 @@ test('shows the winner and the confetti after the last round', async ({ page }) 
 });
 
 test('shows a tie after the last round', async ({ page }) => {
-  await openResult(page, [{ ...ANA, score: 5 }, { ...BETO, score: 5 }], noWords({ index: 2, last: true }));
+  await openResult(page, [{ ...ANA, score: 5 }, { ...BETO, score: 5 }], noWords([ANA, BETO], { index: 2, last: true }));
 
   await expect(page.getByTestId('result-title')).toHaveText('Empate!');
 });
@@ -167,9 +207,9 @@ test('follows the host out of the result', async ({ page }) => {
     salt: 'sample-salt',
   };
   const cases: { name: string; results: RoundResultsMessage; message: ServerMessage; screen: string }[] = [
-    { name: 'next', results: noWords(), message: nextRound, screen: 'countdown-screen' },
-    { name: 'play-again', results: noWords({ last: true }), message: nextRound, screen: 'countdown-screen' },
-    { name: 'back-to-lobby', results: noWords({ last: true }), message: lobbyWelcome([ANA], ANA.id), screen: 'lobby-screen' },
+    { name: 'next', results: noWords([ANA]), message: nextRound, screen: 'countdown-screen' },
+    { name: 'play-again', results: noWords([ANA], { last: true }), message: nextRound, screen: 'countdown-screen' },
+    { name: 'back-to-lobby', results: noWords([ANA], { last: true }), message: lobbyWelcome([ANA], ANA.id), screen: 'lobby-screen' },
   ];
 
   for (const { name, results, message, screen } of cases) {
