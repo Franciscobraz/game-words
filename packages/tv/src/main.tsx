@@ -10,8 +10,10 @@ import './styles/app.css';
 import { App } from './app.tsx';
 import { browserAudioContext, createAudio, openContext } from './device/audio.ts';
 import { createMusicPlayer } from './device/music.ts';
+import { browserWakeLock, onPageVisible } from './device/wake-lock.ts';
 import { TV_RECONNECT_POLICY } from './model/reconnect.ts';
 import { browserSchedule, browserSocket, requestNewRoom } from './net/browser.ts';
+import { createKeepAwake } from './state/awake.ts';
 import { createTvStore, StoreContext } from './state/store.ts';
 import { createTokenStore } from './state/token-store.ts';
 
@@ -41,6 +43,8 @@ const store = createTvStore(
   },
 );
 
+// The screen stays on while the room is open (TVAWAKE-01 AC 1-2).
+createKeepAwake({ wakeLock: browserWakeLock(), onVisible: onPageVisible, room: store.room.room });
 store.room.open();
 
 render(
