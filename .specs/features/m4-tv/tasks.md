@@ -1225,6 +1225,9 @@ Proof: `npx vitest run packages/tv/src/state/reveal.test.ts -t "restarts the wor
 **C111** - Com o relógio da TV 2 min adiantado antes da primeira amostra, o início da rodada ainda toca (TVAUDIO-01, AC 1, 6)
 Proof: `npx vitest run packages/tv/src/state/sound.test.ts -t "plays the start of the round with the TV clock two minutes ahead before the first sample"`
 
+**C112** - Na rodada 2, com o resultado da rodada 1 guardado, a TV, o jogador e o convidado que conectam não recebem `round-results` (PROTO-02, AC 3)
+Proof: `npx vitest run packages/core/src/room/machine.test.ts -t "sends no round-results in round 2, though the results of round 1 are kept"`
+
 ---
 
 ## Handoff

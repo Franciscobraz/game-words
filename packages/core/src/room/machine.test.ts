@@ -227,6 +227,38 @@ describe('player connections', () => {
   });
 });
 
+describe('connecting during a later round', () => {
+  test('sends no round-results in round 2, though the results of round 1 are kept', () => {
+    // PROTO-02 AC 3: nothing before the end of a round carries `foundBy`; the stored results are round 1's.
+    const ROUND_1_RESULTS: RoundResultsMessage = {
+      type: 'round-results',
+      index: 0,
+      shared: [{ word: 'abc', points: 1, foundBy: ['p1', 'p2'] }],
+      players: [],
+      longest: null,
+      possibleWords: 2,
+      last: false,
+    };
+    const inRound2 = (): RoomState => ({ ...midRound(), roundIndex: 1, results: ROUND_1_RESULTS });
+
+    const tv = step(inRound2(), message(pending('c-tv'), { type: 'hello', role: 'tv', token: TV_TOKEN }), 20_000, deps);
+    const phone = step(inRound2(), message(pending('c-back'), { type: 'hello', role: 'player', token: 'secret-p1' }), 20_000, deps);
+    const newcomer = step(inRound2(), message(pending('c-new'), { type: 'hello', role: 'player' }), 20_000, deps);
+
+    const CONNECTIONS = [
+      [tv.effects, 'c-tv'],
+      [phone.effects, 'c-back'],
+      [newcomer.effects, 'c-new'],
+    ] as const;
+    for (const [effects, id] of CONNECTIONS) {
+      const types = sentTo(effects, id).map((m) => m.type);
+      expect(types[0], id).toBe('welcome');
+      expect(types, id).not.toContain('round-results');
+      expect(JSON.stringify(sentTo(effects, id)), id).not.toContain('foundBy');
+    }
+  });
+});
+
 describe('clock sync', () => {
   test('answers a clock sync with both timestamps', () => {
     const state = roomWith([makePlayer('p1')]);
