@@ -56,8 +56,7 @@ export function createAudio(createContext: () => AudioContextLike | null): Audio
     play(cue, volume, muted) {
       // A blocked context keeps its time still: a sound scheduled now would all come out at the unlock.
       if (context === null || muted || volume <= 0 || context.state === SUSPENDED) return;
-      const peakGain = (volume / MAX_VOLUME) * FULL_VOLUME_GAIN;
-      SOUNDS[cue](context, peakGain);
+      SOUNDS[cue](context, effectsPeakGain(volume));
     },
     isBlocked: () => context !== null && context.state === SUSPENDED,
     async unlock() {
@@ -72,6 +71,11 @@ export function createAudio(createContext: () => AudioContextLike | null): Audio
       context?.addEventListener('statechange', listener);
     },
   };
+}
+
+/** The peak gain of the effects at the room's `volume` (0 to 100); the music plays at a share of it (MUSIC-01 AC 10). */
+export function effectsPeakGain(volume: number): number {
+  return (volume / MAX_VOLUME) * FULL_VOLUME_GAIN;
 }
 
 /** The context, or null when the browser does not give one. */

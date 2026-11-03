@@ -67,17 +67,25 @@ const SILENT_GAIN = 0.0001;
 /**
  * Plays `notes` from `atS` on the context's clock, each with its own oscillator and
  * a gain that starts at its share of `peakGain` and fades out by the end of the note.
+ * The notes go to `output`, the speakers unless told otherwise; the TV's music passes
+ * the gain of its track (MUSIC-01 AC 10).
  */
-export function playNotes(context: AudioContextLike, notes: readonly Note[], atS: number, peakGain: number): void {
-  for (const note of notes) playNote(context, note, atS + note.startS, peakGain * note.gain);
+export function playNotes(
+  context: AudioContextLike,
+  notes: readonly Note[],
+  atS: number,
+  peakGain: number,
+  output: AudioNodeLike = context.destination,
+): void {
+  for (const note of notes) playNote(context, note, atS + note.startS, peakGain * note.gain, output);
 }
 
-function playNote(context: AudioContextLike, note: Note, startS: number, gain: number): void {
+function playNote(context: AudioContextLike, note: Note, startS: number, gain: number, target: AudioNodeLike): void {
   const endS = startS + note.durationS;
   const output = context.createGain();
   output.gain.setValueAtTime(gain, startS);
   output.gain.exponentialRampToValueAtTime(SILENT_GAIN, endS);
-  output.connect(context.destination);
+  output.connect(target);
 
   const oscillator = context.createOscillator();
   oscillator.type = note.wave;

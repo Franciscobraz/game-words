@@ -122,3 +122,19 @@ describe('playNotes', () => {
     });
   });
 });
+
+describe('playNotes through an output', () => {
+  test('plays the notes through the output it is given', () => {
+    // MUSIC-01 AC 10: the TV's music goes through the gain of its track, not straight to the speakers.
+    const { context, destination, oscillators, gains } = fakeContext();
+    const trackGain = context.createGain();
+
+    playNotes(context, CHECK_SOUND, 7, 1, trackGain);
+
+    expect(oscillators).toHaveLength(CHECK_SOUND.length);
+    const noteGains = gains.filter((gain) => gain !== trackGain);
+    expect(noteGains).toHaveLength(CHECK_SOUND.length);
+    for (const gain of noteGains) expect(gain.target).toBe(trackGain);
+    expect(noteGains.some((gain) => gain.target === destination)).toBe(false);
+  });
+});

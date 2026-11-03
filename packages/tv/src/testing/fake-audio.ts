@@ -1,8 +1,9 @@
 import type { AudioContextLike, AudioNodeLike, AudioParamLike, GainNodeLike, OscillatorNodeLike } from '@bwords/core';
 
-/** An `AudioParam` that remembers its value and the peak it was set to. */
+/** An `AudioParam` that remembers its value, the peak it was set to and where its last ramp goes. */
 export interface FakeParam extends AudioParamLike {
   peak: number;
+  rampedTo: number | null;
 }
 
 /** A node that remembers what it connected to. */
@@ -37,11 +38,14 @@ function fakeParam(): FakeParam {
   const param: FakeParam = {
     value: 0,
     peak: 0,
+    rampedTo: null,
     setValueAtTime(value) {
       param.value = value;
       param.peak = Math.max(param.peak, value);
     },
-    exponentialRampToValueAtTime() {},
+    exponentialRampToValueAtTime(value) {
+      param.rampedTo = value;
+    },
   };
   return param;
 }
