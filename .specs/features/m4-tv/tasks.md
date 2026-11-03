@@ -1041,7 +1041,7 @@ Proof: `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/
 **C50** - `revealStage` dá "time-up" até 2 s depois do `endsAt` e "words" no instante seguinte (TVWORDS-01, AC 1)
 Proof: `npx vitest run packages/tv/src/model/reveal.test.ts -t "starts the words two seconds after the end"`
 
-**C51** - `scrollDurationMs` usa 2 palavras por segundo: 10 palavras dão 5 s (TVWORDS-01, AC 6)
+**C51** - `scrollDurationMs` dá meio segundo por palavra: 10 palavras dão 5 s, e 1 dá 0,5 s (TVWORDS-01, AC 6)
 Proof: `npx vitest run packages/tv/src/model/reveal.test.ts -t "scrolls two words per second"`
 
 **C52** - A rolagem para em 60 s: 120 palavras dão 60 s, e 121 ou 500 também (TVWORDS-01, AC 7)
@@ -1071,7 +1071,7 @@ Proof: browser captures/tv-words.running.png
 **C60** - A faixa do total de possíveis e de encontradas não sai do lugar durante a rolagem (TVWORDS-01, AC 2)
 Proof: `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/words.spec.ts -g "keeps the totals in place while scrolling"`
 
-**C61** - A lista rola sozinha, e a última palavra aparece inteira ao fim da duração (TVWORDS-01, AC 6)
+**C61** - A lista que não cabe rola sozinha em meio segundo por palavra (30 palavras, 15 s), e a última palavra aparece inteira ao fim (TVWORDS-01, AC 6)
 Proof: `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/words.spec.ts -g "scrolls until the last word is in view"`
 
 **C62** - Sem palavras, aparece "Nenhuma palavra encontrada" (TVWORDS-01, AC 9)
@@ -1233,6 +1233,9 @@ Proof: `npx vitest run packages/tv/src/model/result-header.test.ts -t "says nobo
 
 **C114** - Com a maior pontuação da partida em 1, a última rodada ainda dá "<vencedor> venceu!" e confete (TVRES-01, AC 13)
 Proof: `npx vitest run packages/tv/src/model/result-header.test.ts -t "names the winner with confetti when the best score of the match is 1"`
+
+**C115** - Uma lista que cabe no painel não se move durante a rolagem (TVWORDS-01, AC 6)
+Proof: `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/words.spec.ts -g "does not move a list that fits"`
 
 ---
 
