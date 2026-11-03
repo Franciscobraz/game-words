@@ -71,10 +71,11 @@ function setup(storage: KeyValueStorage = fakeStorage(), canVibrate = true) {
 }
 
 describe('preferences', () => {
-  test('starts with both preferences off', () => {
+  test('starts with vibrate and sound on without saved preferences', () => {
+    // FEEDBACK-02 AC 1: a browser that never saved a choice starts with "Vibrar" and "Som ao acertar" on.
     const { store } = setup();
 
-    expect(store.prefs.prefs.value).toEqual({ vibrate: false, sound: false });
+    expect(store.prefs.prefs.value).toEqual({ vibrate: true, sound: true });
   });
 
   test('keeps preferences across reloads', () => {
@@ -90,23 +91,24 @@ describe('preferences', () => {
     expect(afterReload.prefs.prefs.value).toEqual({ vibrate: true, sound: false });
   });
 
-  test('falls back to both off when the saved preferences are not readable', () => {
+  test('falls back to both on when the saved preferences are not readable', () => {
+    // FEEDBACK-02 AC 1: an unreadable choice counts as no choice.
     const storage = fakeStorage({ 'bwords.prefs': 'not json' });
 
     const { store } = setup(storage);
 
-    expect(store.prefs.prefs.value).toEqual({ vibrate: false, sound: false });
+    expect(store.prefs.prefs.value).toEqual({ vibrate: true, sound: true });
   });
 
   test('a storage that throws does not break the store', () => {
     // design, Error Handling: a blocked localStorage throws on every access; the phone still plays and the switches still work.
     const { store, connection } = setup(throwingStorage());
 
-    store.prefs.setPref('sound', true);
+    store.prefs.setPref('sound', false);
     store.room.openRoom('KBXT');
     connection.receive(welcome('lobby'));
 
-    expect(store.prefs.prefs.value).toEqual({ vibrate: false, sound: true });
+    expect(store.prefs.prefs.value).toEqual({ vibrate: true, sound: false });
     expect(store.room.room.value.phase).toBe('lobby');
   });
 
@@ -114,6 +116,7 @@ describe('preferences', () => {
     // PLAY-01 AC 18-19 through the real preferences: the round reads what the player switched on.
     const { store, connection, device, clock } = setup();
     store.prefs.setPref('vibrate', true);
+    store.prefs.setPref('sound', false);
     store.room.openRoom('KBXT');
     connection.handlers().onStatus('open');
     connection.receive(welcome('lobby'));

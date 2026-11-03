@@ -8,10 +8,10 @@ export interface Prefs {
   sound: boolean;
 }
 
-/** Both switches start off (PREF-01 AC 1). */
-export const DEFAULT_PREFS: Prefs = { vibrate: false, sound: false };
+/** Both switches start on in a browser with no saved choice (FEEDBACK-02 AC 1). */
+export const DEFAULT_PREFS: Prefs = { vibrate: true, sound: true };
 
-/** Where the preferences are kept, for every room alike (PREF-01 AC 2). */
+/** Where the preferences are kept, for every room alike (PREF-01 AC 2, FEEDBACK-02 AC 4). */
 export const PREFS_KEY = 'bwords.prefs';
 
 /** The Screen Wake Lock; the browser adapter swallows a refusal (design, Error Handling). */
@@ -84,7 +84,7 @@ export function createPrefsStore(deps: PrefsDeps, room: RoomStore): PrefsStore {
   };
 }
 
-/** The saved preferences, or both off when there are none or they do not parse. */
+/** The saved preferences, or the defaults, both on, when there are none or they do not parse. */
 function loadPrefs(storage: KeyValueStorage): Prefs {
   const saved = storage.get(PREFS_KEY);
   if (saved === null) return DEFAULT_PREFS;
