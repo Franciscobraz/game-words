@@ -8,7 +8,7 @@ export interface WordRackProps {
   /** One label per tile of the word ("Qu" in one). */
   letters: readonly string[];
   tone: RackTone;
-  /** The player's color, which lights the swipe and a valid word. */
+  /** The player's color, which lights the swipe. */
   color: string;
   /** The verdict on screen, with its text; null when none shows. */
   feedback: { kind: Feedback['kind']; text: string } | null;

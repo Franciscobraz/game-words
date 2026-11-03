@@ -35,12 +35,18 @@
   font-weight: var(--font-weight-black);
 }
 
-/* The swipe and a valid word light in the player's color. */
-.word-rack__word--swiping .word-rack__tile,
-.word-rack__word--valid .word-rack__tile {
+/* The swipe lights in the player's color. */
+.word-rack__word--swiping .word-rack__tile {
   background: var(--path-color);
   box-shadow: inset 0 -4px 0 color-mix(in srgb, var(--path-color) 60%, var(--color-surface-container-lowest));
   color: var(--color-surface-container-lowest);
+}
+
+/* A valid word turns green, like the tiles of its path (FEEDBACK-02 AC 5-6). */
+.word-rack__word--valid .word-rack__tile {
+  background: var(--color-valid);
+  box-shadow: inset 0 -4px 0 color-mix(in srgb, var(--color-valid) 60%, var(--color-surface-container-lowest));
+  color: var(--color-on-valid);
 }
 
 .word-rack__word--invalid .word-rack__tile {

@@ -2,7 +2,7 @@ import { wordPoints } from '@bwords/core';
 import { expect, type Page, test } from '@playwright/test';
 import { STRINGS } from '../src/strings/pt-BR.ts';
 import { boardOf, openRound, slideOver, swipe, tileCenter } from './round-room.ts';
-import { SAMPLE_WORDS } from './samples.ts';
+import { BETO, SAMPLE_WORDS } from './samples.ts';
 
 /** A round that opened a second ago and lasts two more minutes. */
 function openNow(page: Page, found: string[] = []) {
@@ -199,11 +199,32 @@ test('paints the path tiles with the color of the feedback while it shows', asyn
   }
 });
 
-/** The computed color of a theme token, read the way the browser resolves it on a background. */
+test('paints a valid word and its path green', async ({ page }) => {
+  // FEEDBACK-02 AC 5-6: while Beto swipes CASA, the word above the board and the path are in his color; on
+  // "VÁLIDA" both the word and the path tiles turn --color-valid.
+  await openNow(page);
+  const rackTiles = page.locator('.word-rack__tile');
+  const boardTiles = page.locator('.board-grid__tile');
+  const playerColor = await tokenColor(page, BETO.color);
+  const green = await tokenColor(page, '--color-valid');
+  expect(green).not.toBe(playerColor);
+
+  await slideOver(page, SAMPLE_WORDS.casa);
+  for (const tile of SAMPLE_WORDS.casa) await expect(boardTiles.nth(tile)).toHaveCSS('background-color', playerColor);
+  for (const index of [0, 1, 2, 3]) await expect(rackTiles.nth(index)).toHaveCSS('background-color', playerColor);
+
+  await page.mouse.up();
+
+  await expect(page.getByRole('status')).toHaveText(STRINGS.validWord(wordPoints('casa')));
+  for (const tile of SAMPLE_WORDS.casa) await expect(boardTiles.nth(tile)).toHaveCSS('background-color', green);
+  for (const index of [0, 1, 2, 3]) await expect(rackTiles.nth(index)).toHaveCSS('background-color', green);
+});
+
+/** The computed color of a theme token or of a literal color, read the way the browser resolves it on a background. */
 function tokenColor(page: Page, token: string): Promise<string> {
   return page.evaluate((name) => {
     const probe = document.createElement('div');
-    probe.style.backgroundColor = `var(${name})`;
+    probe.style.backgroundColor = name.startsWith('--') ? `var(${name})` : name;
     document.body.append(probe);
     const color = getComputedStyle(probe).backgroundColor;
     probe.remove();
