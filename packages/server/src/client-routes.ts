@@ -13,14 +13,17 @@ const CLIENT_ASSET_ROUTE = /^\/(tv|phone)\/assets\/[A-Za-z0-9][A-Za-z0-9._-]*$/;
 const TV_PAGE = '/tv/';
 const PHONE_PAGE = '/phone/';
 
+/** The phone's code entry (ROUTE-01 AC 3). It can never be a room code: the code alphabet has no I nor O. */
+const JOIN_PATH = '/join';
+
 /**
- * The path in the assets binding behind a page path, or null for a 404 (SERVE-01): `/tv` and `/tv/` are the TV,
- * `/` and `/<CODE>` in any case are the phone, and each client reaches its own built files. It is a closed list,
- * so the language pack sitting next to the clients is never served (PROTO-01 AC 8).
+ * The path in the assets binding behind a page path, or null for a 404 (ROUTE-01, AD-025): `/`, `/tv` and `/tv/` are
+ * the TV, `/join` and `/<CODE>` in any case are the phone, and each client reaches its own built files. It is a closed
+ * list, so the language pack sitting next to the clients is never served (PROTO-01 AC 8, ROUTE-01 AC 7).
  */
 export function clientAsset(pathname: string): string | null {
-  if (pathname === '/tv' || pathname === '/tv/') return TV_PAGE;
+  if (pathname === '/' || pathname === '/tv' || pathname === '/tv/') return TV_PAGE;
   // The phone opens a room from `/kbxt` as well as `/KBXT` (ENTRY-01 AC 1).
-  if (pathname === '/' || isRoomCode(pathname.slice(1).toUpperCase())) return PHONE_PAGE;
+  if (pathname === JOIN_PATH || isRoomCode(pathname.slice(1).toUpperCase())) return PHONE_PAGE;
   return CLIENT_ASSET_ROUTE.test(pathname) ? pathname : null;
 }

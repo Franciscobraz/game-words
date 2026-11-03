@@ -2,11 +2,11 @@ import { describe, expect, test } from 'vitest';
 import { clientAsset } from './client-routes.ts';
 
 describe('clientAsset', () => {
-  test.each(['/tv', '/tv/'])('sends %s to the tv page', (pathname) => {
+  test.each(['/', '/tv', '/tv/'])('sends %s to the tv page', (pathname) => {
     expect(clientAsset(pathname)).toBe('/tv/');
   });
 
-  test.each(['/', '/KBXT', '/kbxt'])('sends %s to the phone page', (pathname) => {
+  test.each(['/join', '/KBXT', '/kbxt'])('sends %s to the phone page', (pathname) => {
     expect(clientAsset(pathname)).toBe('/phone/');
   });
 
@@ -34,6 +34,7 @@ describe('clientAsset', () => {
     ['a code in a folder', '/tv/KBXT'],
     ['the upper case tv path', '/TV'],
     ['another client', '/debug/assets/index.js'],
+    ['the code entry with a trailing slash', '/join/'],
   ])('answers null to %s', (_, pathname) => {
     expect(clientAsset(pathname)).toBeNull();
   });

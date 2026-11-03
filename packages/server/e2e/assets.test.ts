@@ -56,12 +56,23 @@ describe('static assets', { timeout: 60_000 }, () => {
   });
 
   it('serves the tv at /tv', async () => {
+    // ROUTE-01 AC 2.
     await expectPage('/tv', 'tv');
     await expectPage('/tv/', 'tv');
   });
 
-  it('serves the phone at the root and at a room code', async () => {
-    await expectPage('/', 'phone');
+  it('serves the tv at the root', async () => {
+    // ROUTE-01 AC 1, AD-025.
+    await expectPage('/', 'tv');
+  });
+
+  it('serves the phone code entry at /join', async () => {
+    // ROUTE-01 AC 3.
+    await expectPage('/join', 'phone');
+  });
+
+  it('serves the phone at a room code', async () => {
+    // ROUTE-01 AC 4, in any case.
     await expectPage('/KBXT', 'phone');
     await expectPage('/kbxt', 'phone');
   });
