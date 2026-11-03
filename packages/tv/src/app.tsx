@@ -1,5 +1,6 @@
 import { useSignalEffect } from '@preact/signals';
 import type { ComponentType } from 'preact';
+import { AwakeVideo } from './components/AwakeVideo.tsx';
 import { ConnectionBanner } from './components/ConnectionBanner.tsx';
 import type { Screen } from './model/screen.ts';
 import { CountdownScreen } from './screens/CountdownScreen.tsx';
@@ -38,6 +39,7 @@ export function App() {
     <>
       <Current />
       <ConnectionBanner loss={room.connectionLoss.value} />
+      <AwakeVideo />
     </>
   );
 }

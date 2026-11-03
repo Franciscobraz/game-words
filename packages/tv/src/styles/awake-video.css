@@ -1,0 +1,11 @@
+/* The video that keeps the TV awake (TVAWAKE-01 AC 3, 5): 2 px in a corner, behind the page's background, so the
+   players never see it. It stays at full opacity, because some browsers pause a video they consider invisible. */
+.awake-video {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  width: 2px;
+  height: 2px;
+  pointer-events: none;
+}
