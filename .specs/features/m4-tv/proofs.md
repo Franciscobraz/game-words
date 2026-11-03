@@ -1,8 +1,8 @@
 # m4-tv proofs
 
-**HEAD**: 642f998
+**HEAD**: 619b4b1
 **Tree**: clean
-**Result**: 114 pass, 1 fail; mutations 2 killed, 1 not
+**Result**: 123 pass, 0 fail; mutations 3 killed, 0 not
 
 | Check | Proof | Ran | Passed | Result |
 | --- | --- | --- | --- | --- |
@@ -38,7 +38,7 @@
 | C30 | `npx vitest run packages/tv/src/model/lobby-rows.test.ts -t "fills the free slots up to ten"` | 1 | 1 | pass |
 | C31 | `npx vitest run packages/tv/src/model/settings-chips.test.ts -t "finds the chip of the changed setting"` | 1 | 1 | pass |
 | C32 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/lobby.spec.ts -g "the qr code reads th` | 1 | - | pass |
-| C33 | `browser captures/tv-lobby.running.png` | - | - | **diverges** (screens.md) |
+| C33 | `browser captures/tv-lobby.running.png` | - | - | pass |
 | C34 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/lobby.spec.ts -g "shows the code and t` | 1 | - | pass |
 | C35 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/lobby.spec.ts -g "mirrors a settings c` | 1 | - | pass |
 | C36 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/lobby.spec.ts -g "waits for the host i` | 1 | - | pass |
@@ -114,6 +114,14 @@
 | C106 | `npx vitest run packages/tv/src/model/reconnect.test.ts -t "waits longer after each attempt up to one minute"` | 1 | 1 | pass |
 | C107 | `npx vitest run packages/tv/src/model/reconnect.test.ts -t "stops trying after ten minutes"` | 1 | 1 | pass |
 | C108 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/connection.spec.ts -g "tries again aft` | 2 | - | pass |
+| C109 | `npx vitest run packages/tv/src/state/reveal.test.ts -t "plans again when a reconnect finds another match ended` | 1 | 1 | pass |
+| C110 | `npx vitest run packages/tv/src/state/reveal.test.ts -t "restarts the words at the server time after a reload, ` | 1 | 1 | pass |
+| C111 | `npx vitest run packages/tv/src/state/sound.test.ts -t "plays the start of the round with the TV clock two minu` | 1 | 1 | pass |
+| C112 | `npx vitest run packages/core/src/room/machine.test.ts -t "sends no round-results in round 2, though the result` | 1 | 1 | pass |
+| C113 | `npx vitest run packages/tv/src/model/result-header.test.ts -t "says nobody scored when the best score of the m` | 1 | 1 | pass |
+| C114 | `npx vitest run packages/tv/src/model/result-header.test.ts -t "names the winner with confetti when the best sc` | 1 | 1 | pass |
+| C115 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/words.spec.ts -g "does not move a list` | 1 | - | pass |
+| C116 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/lobby.spec.ts -g "shows each player wi` | 1 | - | pass |
 | Build | `npx tsc -b` | - | - | pass |
 | Build | `npm run lint -w @bwords/phone` | - | - | pass |
 | Build | `npm run lint -w @bwords/tv` | - | - | pass |
@@ -126,6 +134,6 @@
 
 | Mutation | Location | Killed |
 | --- | --- | --- |
-| a device connecting during a round also gets the stored round-results | `packages\core\src\room\machine.ts:198` | no |
+| a device connecting during a round also gets the stored round-results | `packages\core\src\room\machine.ts:198` | yes |
 | assets answered before the Worker, so the closed list of routes no longer guards the pack | `packages\server\wrangler.jsonc:9` | yes |
 | wins counted at the end of every round, not only the last | `packages\core\src\room\results.ts:74` | yes |
