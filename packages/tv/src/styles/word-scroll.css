@@ -6,11 +6,24 @@
   overflow: hidden;
 }
 
-/* The padding keeps the first and the last line clear of the fades when the list stops. */
+/* The padding keeps the first and the last line clear of the fades when the list stops. The rows are measured from
+   the list, so it is their offset parent. */
 .word-scroll__list {
+  position: relative;
   padding: 5rem 0 5.5rem;
   transition-property: transform;
+}
+
+/* By itself the list heads for the next word each second, in a straight line (WORDCTL-01 AC 1, 13). */
+.word-scroll__list--auto {
+  transition-duration: 1s;
   transition-timing-function: linear;
+}
+
+/* A step of the host moves half a panel at once (WORDCTL-01 AC 5-6). */
+.word-scroll__list--manual {
+  transition-duration: 0.4s;
+  transition-timing-function: ease-out;
 }
 
 .word-scroll__fade {
@@ -30,4 +43,10 @@
   bottom: 0;
   height: 5.5rem;
   background: linear-gradient(transparent, var(--color-background) 65%);
+}
+
+/* Only while the rows are measured, before a paint: their place without the highlight's scale. */
+.word-scroll__list--measuring .word-row {
+  transform: none;
+  transition-duration: 0s;
 }

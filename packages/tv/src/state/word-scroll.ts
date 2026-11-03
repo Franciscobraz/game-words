@@ -2,10 +2,7 @@ import type { RoundResultsMessage, ScrollDirection } from '@bwords/core';
 import { computed, effect, type ReadonlySignal, signal } from '@preact/signals';
 import { foundWordCount, type RevealPlan } from '../model/reveal.ts';
 import type { RoomView } from '../model/room-view.ts';
-import { autoOffset, highlightIndex, type ScrollLayout, stepOffset } from '../model/word-scroll.ts';
-
-/** Who moves the list: the clock, until the host's first step (WORDCTL-01 AC 5-6, 16). */
-export type ScrollMode = 'auto' | 'manual';
+import { autoHeading, autoOffset, highlightIndex, type ScrollLayout, type ScrollMode, stepOffset } from '../model/word-scroll.ts';
 
 /** What the list needs from the rest of the TV; the tests pass fakes (style guide §4, D). */
 export interface WordScrollDeps {
@@ -25,6 +22,11 @@ export interface WordScrollStore {
   mode: ReadonlySignal<ScrollMode>;
   /** How far the list has gone up, in pixels of the measured layout; 0 before the layout. */
   offset: ReadonlySignal<number>;
+  /**
+   * Where the screen moves the list to: in the automatic mode the place at the end of the current second, in a linear
+   * transition of a second; under the host, where the host left it (WORDCTL-01 AC 1, 5-6).
+   */
+  heading: ReadonlySignal<number>;
   /** The highlighted word, in list order; null before the list opens and after the host's first step. */
   highlight: ReadonlySignal<number | null>;
   /** The screen measured the panel and the rows. */
@@ -63,6 +65,13 @@ export function createWordScrollStore({ room, plan, results, serverNow, playChec
     return mode.value === 'manual' ? manualOffset.value : autoOffset(measured, now.value - startAt);
   });
 
+  const heading = computed(() => {
+    const measured = layout.value;
+    const startAt = listStartAt.value;
+    if (measured === null || startAt === null) return 0;
+    return mode.value === 'manual' ? manualOffset.value : autoHeading(measured, now.value - startAt);
+  });
+
   // A new list, or none: back to the automatic mode, with no word checked yet.
   let checkedIndex: number | null = null;
   let listedAt: number | null | undefined;
@@ -87,6 +96,7 @@ export function createWordScrollStore({ room, plan, results, serverNow, playChec
   return {
     mode,
     offset,
+    heading,
     highlight,
     setLayout(measured) {
       layout.value = measured;

@@ -132,7 +132,8 @@ test('reconnects to the same room of the real server after a cut socket', async 
 });
 
 test('does not restart the scroll after a cut socket', async ({ page, context }) => {
-  // TVEXIT-01 AC 7, with TVWORDS-01 AC 11 only for a reload: the same results keep the plan and the scroll.
+  // TVEXIT-01 AC 7, with WORDCTL-01 AC 11 only for a reload: the same results keep the plan, so the list goes on from
+  // where it was.
   const shared = Array.from({ length: 100 }, (_, index) => ({ word: `w${String(index).padStart(3, '0')}`, points: 1, foundBy: [ANA.id, BETO.id] }));
   const results: RoundResultsMessage = { ...sampleResults(), shared, players: [] };
   await stopClockAt(page, SAMPLE_END);
@@ -141,22 +142,31 @@ test('does not restart the scroll after a cut socket', async ({ page, context })
   await page.goto('/');
   await expect(page.getByTestId('round-screen')).toBeVisible();
   room.push(results);
+  room.push({ type: 'phase', phase: 'words' });
   await page.clock.runFor(TIME_UP_MS + TICK_MS);
   await expect(page.getByTestId('words-screen')).toBeVisible();
-  const list = page.getByTestId('word-list');
-  await list.evaluate((element) => {
-    for (const animation of element.getAnimations()) animation.currentTime = 20_000;
-  });
+  await page.clock.runFor(20_000);
+  await finishMoves(page);
+  const first = page.getByTestId('word-row').first();
+  const before = (await first.boundingBox())!.y;
+  expect(before).toBeLessThan((await page.getByTestId('word-scroll').boundingBox())!.y);
   await cutAndStayAway(page, room);
   await expect(page.getByTestId('words-screen')).toBeVisible();
 
-  room.comeBack({ ...welcome, phase: 'results' }, [results]);
+  room.comeBack({ ...welcome, phase: 'words' }, [results]);
   await runUntilReconnected(page);
+  await finishMoves(page);
 
   await expect(page.getByTestId('words-screen')).toBeVisible();
-  const elapsed = await list.evaluate((element) => element.getAnimations()[0]?.currentTime ?? null);
-  expect(Number(elapsed)).toBeGreaterThanOrEqual(20_000);
+  expect((await first.boundingBox())!.y).toBeLessThanOrEqual(before);
 });
+
+/** Ends every running transition, so the list stands where it is heading. */
+async function finishMoves(page: Page) {
+  await page.evaluate(() => {
+    for (const animation of document.getAnimations()) animation.finish();
+  });
+}
 
 test('shows the right time after reconnecting', async ({ page, context }) => {
   // Edge Cases: the times come from the server's clock, so the countdown and the timer go on without starting over.

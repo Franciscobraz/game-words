@@ -3,7 +3,7 @@ import { signal } from '@preact/signals';
 import { describe, expect, test } from 'vitest';
 import type { RevealPlan } from '../model/reveal.ts';
 import { INITIAL_VIEW, type RoomView } from '../model/room-view.ts';
-import { autoOffset, type ScrollLayout, stepOffset } from '../model/word-scroll.ts';
+import { autoHeading, autoOffset, type ScrollLayout, stepOffset } from '../model/word-scroll.ts';
 import { createWordScrollStore } from './word-scroll.ts';
 
 const WORDS_AT = 200_000;
@@ -99,6 +99,16 @@ describe('createWordScrollStore', () => {
     at(WORDS_AT + 25_000);
     expect(words.highlight.value).toBeNull();
     expect(checks()).toBe(checksBefore);
+  });
+
+  test("heads for the next word in the automatic mode and for the host's place under the host", () => {
+    const { words, at } = setup();
+    at(WORDS_AT + 10_400);
+    expect(words.heading.value).toBe(autoHeading(LAYOUT, 10_400));
+
+    words.step('down');
+
+    expect(words.heading.value).toBe(words.offset.value);
   });
 
   test('steps from where the host left the list', () => {

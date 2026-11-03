@@ -10,6 +10,9 @@ export interface ScrollLayout {
   words: readonly { topPx: number; heightPx: number }[];
 }
 
+/** Who moves the list: the clock, until the host's first step (WORDCTL-01 AC 5-6, 16). */
+export type ScrollMode = 'auto' | 'manual';
+
 /** The highlight moves to the next word every second (WORDCTL-01 AC 13-14, AD-024). */
 export const HIGHLIGHT_STEP_MS = 1_000;
 
@@ -54,6 +57,17 @@ export function autoOffset(layout: ScrollLayout, elapsedMs: number): number {
   const to = targetOffset(layout, index + 1);
   const fraction = (elapsedMs - index * HIGHLIGHT_STEP_MS) / HIGHLIGHT_STEP_MS;
   return from + (to - from) * fraction;
+}
+
+/**
+ * Where the list arrives at the end of the current second while it moves by itself. The screen moves it there in a
+ * linear transition of one second, so the list passes each word's place on its second, as `autoOffset` says
+ * (WORDCTL-01 AC 1, 13).
+ */
+export function autoHeading(layout: ScrollLayout, elapsedMs: number): number {
+  if (elapsedMs < 0) return targetOffset(layout, 0);
+  const nextStepMs = (Math.floor(elapsedMs / HIGHLIGHT_STEP_MS) + 1) * HIGHLIGHT_STEP_MS;
+  return autoOffset(layout, nextStepMs);
 }
 
 /** The offset after one step of the host, half the panel down or up, stopping at the top or the last word whole (WORDCTL-01 AC 5-7). */

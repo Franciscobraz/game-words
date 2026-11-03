@@ -29,11 +29,12 @@ const SCREENS: Record<Screen, ComponentType> = {
 
 /** Shows the screen for the room as the server describes it, at the server's time (TVUI-01). */
 export function App() {
-  const { room, reveal, sound, press } = useStore();
+  const { room, reveal, sound, words, press } = useStore();
   const serverNow = useServerClock(room.serverNow);
   const screen = useComputed(() => tvScreen(room.room.value, room.status.value, reveal.stageAt(serverNow.value), serverNow.value));
   useAnyPress(press);
   useSignalEffect(() => sound.tick(serverNow.value));
+  useSignalEffect(() => words.tick(serverNow.value));
   const Current = SCREENS[screen.value];
   return (
     <>

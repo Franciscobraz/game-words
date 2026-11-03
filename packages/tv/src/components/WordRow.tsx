@@ -6,11 +6,13 @@ import { PlayerCircle } from './PlayerCircle.tsx';
 /** Props of `WordRow`. */
 export interface WordRowProps {
   row: WordRowData;
+  /** The word on the reading line while the list moves by itself (WORDCTL-01 AC 13, 17). */
+  highlighted: boolean;
 }
 
 /** A line of the words' list: a group's title or a word, with who found it and its points (TVWORDS-01 AC 3, 5). */
-export function WordRow({ row }: WordRowProps) {
-  return row.kind === 'title' ? <GroupTitle group={row.group} /> : <FoundWord row={row} />;
+export function WordRow({ row, highlighted }: WordRowProps) {
+  return row.kind === 'title' ? <GroupTitle group={row.group} /> : <FoundWord row={row} highlighted={highlighted} />;
 }
 
 interface GroupTitleProps {
@@ -28,11 +30,14 @@ function GroupTitle({ group }: GroupTitleProps) {
 
 interface FoundWordProps {
   row: Extract<WordRowData, { kind: 'word' }>;
+  highlighted: boolean;
 }
 
-function FoundWord({ row }: FoundWordProps) {
+function FoundWord({ row, highlighted }: FoundWordProps) {
+  const striped = row.striped ? ' word-row--striped' : '';
+  const lit = highlighted ? ' word-row--highlighted' : '';
   return (
-    <div class={row.striped ? 'word-row word-row--striped' : 'word-row'} data-testid="word-row">
+    <div class={`word-row${striped}${lit}`} data-testid="word-row">
       <span class="word-row__word">{row.word}</span>
       <span class="word-row__spellings">{row.spellings.length > 0 && STRINGS.spellings(row.spellings)}</span>
       {row.finders.map((finder) => (

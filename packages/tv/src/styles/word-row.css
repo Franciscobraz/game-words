@@ -8,9 +8,24 @@
   border-radius: 1.125rem;
 }
 
+/* Only the transform animates: the highlight never moves the other lines (WORDCTL-01 AC 17). */
+.word-row {
+  transition: transform 0.2s ease-out;
+}
+
 .word-row--striped,
 .word-row--title {
   background: var(--color-surface-container-low);
+}
+
+/* The word on the reading line: color and scale only (WORDCTL-01 AC 13, 17). */
+.word-row--highlighted {
+  background: var(--color-surface-container-highest);
+  transform: scale(1.03);
+}
+
+.word-row--highlighted .word-row__word {
+  color: var(--color-action);
 }
 
 .word-row--title {

@@ -5,17 +5,17 @@ import { WordRow } from '../components/WordRow.tsx';
 import { WordScroll } from '../components/WordScroll.tsx';
 import { qrMatrix, roomUrl } from '../model/qr.ts';
 import { foundWordCount } from '../model/reveal.ts';
-import { wordRows } from '../model/word-rows.ts';
+import { highlightedRow, wordRows } from '../model/word-rows.ts';
 import { useStore } from '../state/store.ts';
 import { STRINGS } from '../strings/pt-BR.ts';
 import '../styles/words.css';
 
-// The list moves one word a second until T21 drives it from the scroll store (AD-024).
-const INTERIM_MS_PER_WORD = 1_000;
-
-/** The words of the round: the totals stand still and the list scrolls by itself (TVWORDS-01). */
+/**
+ * The words of the round: the totals stand still, the list moves by itself one word a second with a word highlighted on
+ * the reading line, the host's steps take it over, and the screen waits for "Ver resultado" (TVWORDS-01, WORDCTL-01).
+ */
 export function WordsScreen() {
-  const { room, reveal } = useStore();
+  const { room, reveal, words } = useStore();
   const { code, players, settings } = room.room.value;
   // From the reveal clock, not the view: a reconnect's `welcome` empties the view's results, and the scroll must not restart.
   const results = reveal.results.value;
@@ -27,6 +27,7 @@ export function WordsScreen() {
   const rows = useMemo(() => (results === null ? [] : wordRows(results, playersAtStart)), [results, playersAtStart]);
   if (results === null || plan === null || settings === null) return null;
   const found = foundWordCount(results);
+  const highlighted = highlightedRow(rows, words.highlight.value);
   return (
     <main class="screen words" data-testid="words-screen">
       <header class="words__header">
@@ -54,9 +55,9 @@ export function WordsScreen() {
         {found === 0 ? (
           <p class="words__empty">{STRINGS.noWordsFound}</p>
         ) : (
-          <WordScroll durationMs={found * INTERIM_MS_PER_WORD}>
+          <WordScroll offsetPx={words.heading.value} mode={words.mode.value} onLayout={words.setLayout}>
             {rows.map((row, index) => (
-              <WordRow row={row} key={index} />
+              <WordRow row={row} highlighted={index === highlighted} key={index} />
             ))}
           </WordScroll>
         )}

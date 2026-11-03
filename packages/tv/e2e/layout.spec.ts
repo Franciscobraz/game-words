@@ -303,6 +303,12 @@ function rowGeometry(page: Page, index: number): Promise<RowGeometry> {
 
 /** The first word row has many spellings, the second has none; the same finders, so the circles line up. */
 async function expectCirclesInPlace(page: Page, players: readonly PlayerInfo[], spellings: readonly string[], size: string) {
+  // The highlight scales its row (WORDCTL-01 AC 17): two seconds on it is on the third word, and these two rows stand at
+  // their own size.
+  await page.clock.runFor(2_000);
+  await page.evaluate(() => {
+    for (const animation of document.getAnimations()) animation.finish();
+  });
   // Stopped where the rows are, at the top of the list: this check is about the columns, not the scroll.
   await page.getByTestId('word-list').evaluate((list) => {
     for (const animation of list.getAnimations()) animation.pause();

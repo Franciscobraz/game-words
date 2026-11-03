@@ -55,6 +55,18 @@ function wordRow(group: 'shared' | 'unique', { word, finderIds }: FoundWord, ind
   };
 }
 
+/** The line of the `wordIndex`-th word, counting only words, in list order; null for no word (WORDCTL-01 AC 13). */
+export function highlightedRow(rows: readonly WordRow[], wordIndex: number | null): number | null {
+  if (wordIndex === null) return null;
+  let words = 0;
+  for (const [index, row] of rows.entries()) {
+    if (row.kind !== 'word') continue;
+    if (words === wordIndex) return index;
+    words += 1;
+  }
+  return null;
+}
+
 /** Upper case without accents (TVWORDS-01 AC 5). */
 export function displayWord(word: string): string {
   const withoutAccents = word.normalize('NFD').replace(/\p{Mark}/gu, '');

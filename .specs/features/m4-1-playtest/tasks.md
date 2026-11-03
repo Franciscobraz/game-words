@@ -591,10 +591,10 @@ T39 → T40 → T41 → T42 → T43 → T44
 
 **Done when**:
 
-- [ ] C50-C59
-- [ ] `words.spec.ts` e `connection.spec.ts` da TV verdes
-- [ ] Gate check passes
-- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+- [x] C50-C59
+- [x] `words.spec.ts` e `connection.spec.ts` da TV verdes
+- [x] Gate check passes
+- [x] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: e2e
 **Gate**: full

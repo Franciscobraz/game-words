@@ -1,3 +1,4 @@
+import { CHECK_SOUND } from '@bwords/core';
 import { expect, type Page, test } from '@playwright/test';
 import { fakeRoom } from './fake-room.ts';
 import { recordSounds, type StartedSound } from './record-sounds.ts';
@@ -48,10 +49,13 @@ test('plays the cues of a round, each once', async ({ page }) => {
   room.push({ type: 'phase', phase: 'words' });
   await page.clock.runFor(TIME_UP_MS + TICK_MS);
   await expect(page.getByTestId('words-screen')).toBeVisible();
-  await expect.poll(async () => (await heard(page)).length).toBe(4);
+  // The start of the list, and the "check" of its first highlighted word (WORDCTL-01 AC 15).
+  await expect.poll(async () => (await heard(page)).length).toBe(4 + CHECK_SOUND.length);
 
-  await page.clock.runFor(1_000);
-  expect(await heard(page)).toHaveLength(4);
+  await page.clock.runFor(500);
+  expect(await heard(page)).toHaveLength(4 + CHECK_SOUND.length);
+  await page.clock.runFor(500);
+  await expect.poll(async () => (await heard(page)).length).toBe(4 + 2 * CHECK_SOUND.length);
 });
 
 test('plays in the volume of the room, and nothing when it is muted', async ({ page }) => {

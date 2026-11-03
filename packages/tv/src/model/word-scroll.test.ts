@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { autoOffset, highlightIndex, maxOffset, type ScrollLayout, stepOffset, targetOffset } from './word-scroll.ts';
+import { autoHeading, autoOffset, highlightIndex, maxOffset, type ScrollLayout, stepOffset, targetOffset } from './word-scroll.ts';
 
 const ROW_PX = 60;
 const PANEL_PX = 600;
@@ -91,6 +91,23 @@ describe('autoOffset', () => {
     expect(highlightIndex(3_000, 4)).toBe(3);
     expect(highlightIndex(60_000, 4)).toBe(3);
     for (const elapsedMs of [0, 999, 1_000, 2_500, 3_000, 60_000]) expect(autoOffset(layout, elapsedMs)).toBe(0);
+  });
+});
+
+describe('autoHeading', () => {
+  test('heads for the place of the next word during each second', () => {
+    const layout = rowsLayout(30);
+
+    expect(autoHeading(layout, 10_000)).toBe(autoOffset(layout, 11_000));
+    expect(autoHeading(layout, 10_999)).toBe(autoOffset(layout, 11_000));
+    expect(autoHeading(layout, 11_000)).toBe(autoOffset(layout, 12_000));
+  });
+
+  test('stays at the top before the list opens and at the end after the last word', () => {
+    const layout = rowsLayout(30);
+
+    expect(autoHeading(layout, -1)).toBe(0);
+    expect(autoHeading(layout, 29_000)).toBe(maxOffset(layout));
   });
 });
 

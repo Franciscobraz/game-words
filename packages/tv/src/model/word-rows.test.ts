@@ -1,6 +1,6 @@
 import type { PlayerInfo, ResultWord, RoundResultsMessage, SharedWord } from '@bwords/core';
 import { describe, expect, test } from 'vitest';
-import { wordRows, type WordRow } from './word-rows.ts';
+import { highlightedRow, wordRows, type WordRow } from './word-rows.ts';
 
 function player(id: string, nickname: string): PlayerInfo {
   return { id, nickname, color: '#FF7A00', connected: true, spectator: false, score: 0, words: 0, wins: 0 };
@@ -105,5 +105,23 @@ describe('wordRows', () => {
     expect(lineTexts(rows)).toEqual(['#shared', 'CASA', '#unique', 'TIA']);
     expect(rows[1]).toMatchObject({ finders: [ANA], points: 1 });
     expect(rows[3]).toMatchObject({ finders: [], points: 2 });
+  });
+});
+
+describe('highlightedRow', () => {
+  test('finds the line of a word, skipping the titles of the groups', () => {
+    const rows = wordRows(resultsWith([sharedWord('casa'), sharedWord('asa')], { ana: [uniqueWord('tia')] }), PLAYERS);
+    // #shared, ASA, CASA, #unique, TIA
+
+    expect(highlightedRow(rows, 0)).toBe(1);
+    expect(highlightedRow(rows, 1)).toBe(2);
+    expect(highlightedRow(rows, 2)).toBe(4);
+  });
+
+  test('has no line without a highlight or past the last word', () => {
+    const rows = wordRows(resultsWith([sharedWord('casa')], {}), PLAYERS);
+
+    expect(highlightedRow(rows, null)).toBeNull();
+    expect(highlightedRow(rows, 1)).toBeNull();
   });
 });
