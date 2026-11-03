@@ -13,13 +13,14 @@ const ROUND: RoundInfo = { id: 1, index: 0, board: [['a']], startsAt: STARTS_AT,
 const SETTINGS: Settings = { size: 4, seconds: 120, rounds: 3, minLength: 3, filterProfanity: true, pack: 'pt-BR', volume: 50, muted: false };
 const IN_ROUND: RoomView = { ...INITIAL_VIEW, code: 'KBXT', phase: 'round', settings: SETTINGS, round: ROUND };
 
-/** The sound store over a fake context, in the room `initial`. */
-function setup(initial: RoomView = IN_ROUND, state = 'running') {
+/** The sound store over a fake context, in the room `initial`; the clock reads the server unless told otherwise. */
+function setup(initial: RoomView = IN_ROUND, state = 'running', synced = true) {
   const context = fakeAudioContext(state);
   const room = signal(initial);
   const plan = signal<RevealPlan | null>(null);
-  const sound = createSoundStore({ audio: createAudio(() => context), room, plan });
-  return { context, room, plan, sound };
+  const clockSynced = signal(synced);
+  const sound = createSoundStore({ audio: createAudio(() => context), room, plan, clockSynced });
+  return { context, room, plan, clockSynced, sound };
 }
 
 describe('createSoundStore', () => {
@@ -69,6 +70,18 @@ describe('createSoundStore', () => {
     expect(context.oscillators).toHaveLength(afterWhistle);
   });
 
+  test('plays the start of the round with the TV clock two minutes ahead before the first sample', () => {
+    const { context, clockSynced, sound } = setup(IN_ROUND, 'running', false);
+    const tvClockAheadMs = 120_000;
+    sound.tick(STARTS_AT - 1_000 + tvClockAheadMs);
+
+    clockSynced.value = true;
+    sound.tick(STARTS_AT - 1);
+    sound.tick(STARTS_AT);
+
+    expect(context.oscillators).toHaveLength(1);
+  });
+
   test('plays the start of the scroll from the plan', () => {
     const { context, room, plan, sound } = setup({ ...IN_ROUND, phase: 'round' });
     const wordsStartAt = ENDS_AT + 2_000;
@@ -103,7 +116,7 @@ describe('createSoundStore', () => {
   });
 
   test('has no notice without web audio', () => {
-    const sound = createSoundStore({ audio: createAudio(() => null), room: signal(IN_ROUND), plan: signal(null) });
+    const sound = createSoundStore({ audio: createAudio(() => null), room: signal(IN_ROUND), plan: signal(null), clockSynced: signal(true) });
 
     expect(sound.blocked.value).toBe(false);
   });

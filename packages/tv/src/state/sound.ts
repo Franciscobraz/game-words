@@ -9,6 +9,8 @@ export interface SoundDeps {
   audio: AudioDevice;
   room: ReadonlySignal<RoomView>;
   plan: ReadonlySignal<RevealPlan | null>;
+  /** Whether the clock reads the server yet; readings of the TV's own clock cross nothing. */
+  clockSynced: ReadonlySignal<boolean>;
 }
 
 /** The sounds of the TV as signals and actions (TVAUDIO-01). */
@@ -17,12 +19,15 @@ export interface SoundStore {
   blocked: ReadonlySignal<boolean>;
   /** Lets the sound play; a key or a click is the gesture the browser asks for (TVAUDIO-01 AC 4). */
   unlock(): void;
-  /** Reads the server clock and plays the cues crossed since the last reading (TVAUDIO-01 AC 1-2, 6). */
+  /**
+   * Reads the server clock and plays the cues crossed since the last reading (TVAUDIO-01 AC 1-2, 6). Readings before the
+   * first clock sample are the TV's own clock, which can be minutes ahead, so the count starts at the first synced one.
+   */
   tick(serverNow: number): void;
 }
 
 /** Links the room and the clock to the audio device; `cuesBetween` decides, and this only plays. */
-export function createSoundStore({ audio, room, plan }: SoundDeps): SoundStore {
+export function createSoundStore({ audio, room, plan, clockSynced }: SoundDeps): SoundStore {
   const blocked = signal(audio.isBlocked());
   let lastMoment: CueMoment | null = null;
 
@@ -37,6 +42,7 @@ export function createSoundStore({ audio, room, plan }: SoundDeps): SoundStore {
       void audio.unlock().then(refreshBlocked);
     },
     tick(serverNow) {
+      if (!clockSynced.peek()) return;
       const view = room.peek();
       const moment: CueMoment = {
         // A new sync can move the server clock back by a little; the same instant must not be crossed twice.

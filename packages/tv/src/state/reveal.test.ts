@@ -22,14 +22,16 @@ const RESULTS: RoundResultsMessage = {
 const IN_ROUND: RoomView = { ...INITIAL_VIEW, code: 'KBXT', phase: 'round', round: ROUND };
 const IN_RESULTS: RoomView = { ...IN_ROUND, phase: 'results', results: RESULTS };
 
-/** A reveal clock over a room signal and a clock the test moves. */
-function setup(initial: RoomView = IN_ROUND) {
+/** A reveal clock over a room signal and a clock the test moves; the clock reads the server unless told otherwise. */
+function setup(initial: RoomView = IN_ROUND, synced = true) {
   const room = signal(initial);
+  const clockSynced = signal(synced);
   let now = ENDS_AT;
-  const reveal = createRevealClock({ room, serverNow: () => now });
+  const reveal = createRevealClock({ room, serverNow: () => now, clockSynced });
   return {
     room,
     reveal,
+    clockSynced,
     setNow(value: number) {
       now = value;
     },
@@ -109,6 +111,23 @@ describe('createRevealClock', () => {
     reloaded.room.value = IN_RESULTS;
 
     expect(reloaded.reveal.stageAt(WORDS_AT + 30_000)).toBe('words');
+  });
+
+  test('restarts the words at the server time after a reload, with the TV clock two minutes off', () => {
+    const serverArrival = WORDS_AT + 30_000;
+    for (const skewMs of [120_000, -120_000]) {
+      const reloaded = setup(IN_ROUND, false);
+      reloaded.setNow(serverArrival + skewMs);
+
+      reloaded.room.value = IN_RESULTS;
+      expect(reloaded.reveal.plan.value, `${skewMs} ms`).toBeNull();
+      expect(reloaded.reveal.results.value, `${skewMs} ms`).toBe(RESULTS);
+      reloaded.setNow(serverArrival);
+      reloaded.clockSynced.value = true;
+
+      expect(reloaded.reveal.plan.value?.wordsStartAt, `${skewMs} ms`).toBe(serverArrival);
+      expect(reloaded.reveal.stageAt(serverArrival), `${skewMs} ms`).toBe('words');
+    }
   });
 
   test('forgets the plan when the next round starts', () => {

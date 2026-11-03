@@ -1,5 +1,5 @@
 import type { CloseReason, ConnectionStatus, RoomConnection, Schedule, ServerMessage } from '@bwords/core';
-import { type Signal, signal } from '@preact/signals';
+import { type ReadonlySignal, type Signal, signal } from '@preact/signals';
 import { type ConnectionLoss, NO_CONNECTION_AFTER_MS } from '../model/reconnect.ts';
 import { applyServerMessage, INITIAL_VIEW, type RoomView } from '../model/room-view.ts';
 import type { SavedRoom, TokenStore } from './token-store.ts';
@@ -52,8 +52,10 @@ export interface RoomStore {
   status: Signal<RoomStatus>;
   /** How long the room has been out of reach, for the banner (TVEXIT-01 AC 5-6, 9). */
   connectionLoss: Signal<ConnectionLoss>;
-  /** The server clock now (TVPLAY-01 AC 3). */
+  /** The server clock now (TVPLAY-01 AC 3); the TV's own clock until `clockSynced`. */
   serverNow(): number;
+  /** Whether a `time` sample came back, so `serverNow` reads the server and not the TV's own clock. */
+  clockSynced: ReadonlySignal<boolean>;
   /** Goes back to the saved room, or creates one when there is none (TVROOM-01 AC 1-2). */
   open(): void;
   /** A key or a click: on "Sala expirada" it opens a new room, and after the reconnect limit it tries again (TVEXIT-01 AC 3, 10). */
@@ -66,6 +68,7 @@ export function createRoomStore(deps: RoomDeps): RoomStore {
   const room = signal<RoomView>(INITIAL_VIEW);
   const status = signal<RoomStatus>('closed');
   const connectionLoss = signal<ConnectionLoss>('none');
+  const clockSynced = signal(false);
   let cancelNoConnection: (() => void) | null = null;
 
   const link = deps.openConnection({
@@ -113,6 +116,8 @@ export function createRoomStore(deps: RoomDeps): RoomStore {
 
   function receive(msg: ServerMessage): void {
     room.value = applyServerMessage(room.value, msg);
+    // The connection takes the sample in before handing the message on, so `serverNow` already reads the server here.
+    if (msg.type === 'time') clockSynced.value = true;
     if (msg.type === 'welcome') setLoss('none');
     if (isRoomRefused(msg)) replaceRoom();
     if (msg.type === 'closed') endRoom(closeAction(msg.reason));
@@ -172,6 +177,7 @@ export function createRoomStore(deps: RoomDeps): RoomStore {
     status,
     connectionLoss,
     serverNow: () => link.serverNow(),
+    clockSynced,
     open() {
       const saved = tokens.load();
       if (saved === null) void createRoom();

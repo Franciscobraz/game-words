@@ -178,6 +178,24 @@ describe('opening the room', () => {
   });
 });
 
+describe('the server clock', () => {
+  test('reads the server only after the first time sample', async () => {
+    const { clock, sockets, store } = setup(SAVED_ROOM);
+    const serverAheadMs = 120_000;
+    store.open();
+    await settle();
+    sockets.last().open();
+    sockets.last().receive(welcome(SAVED_ROOM.code, 'results'));
+    expect(store.clockSynced.value).toBe(false);
+
+    const clientTime = clock.now();
+    sockets.last().receive({ type: 'time', clientTime, serverTime: clientTime + serverAheadMs });
+
+    expect(store.clockSynced.value).toBe(true);
+    expect(store.serverNow()).toBe(clock.now() + serverAheadMs);
+  });
+});
+
 describe('when the room ends', () => {
   /** A store with room `SAVED_ROOM` open and running. */
   async function openRoom(rooms: readonly (SavedRoom | null)[] = [NEW_ROOM]) {

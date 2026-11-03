@@ -1219,6 +1219,12 @@ Proof: `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/
 **C109** - Uma reconexão que encontra outra partida terminada no mesmo índice troca as palavras e o plano pelos da partida nova (TVEXIT-01, AC 7)
 Proof: `npx vitest run packages/tv/src/state/reveal.test.ts -t "plans again when a reconnect finds another match ended at the same index"`
 
+**C110** - Numa recarga com o relógio da TV 2 min adiantado ou atrasado, a rolagem recomeça na hora do servidor, depois da primeira amostra de relógio (TVWORDS-01, AC 11)
+Proof: `npx vitest run packages/tv/src/state/reveal.test.ts -t "restarts the words at the server time after a reload, with the TV clock two minutes off"`
+
+**C111** - Com o relógio da TV 2 min adiantado antes da primeira amostra, o início da rodada ainda toca (TVAUDIO-01, AC 1, 6)
+Proof: `npx vitest run packages/tv/src/state/sound.test.ts -t "plays the start of the round with the TV clock two minutes ahead before the first sample"`
+
 ---
 
 ## Handoff

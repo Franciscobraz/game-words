@@ -20,8 +20,8 @@ export interface TvStore {
  */
 export function createTvStore(deps: RoomDeps, audio: AudioDevice): TvStore {
   const room = createRoomStore(deps);
-  const reveal = createRevealClock({ room: room.room, serverNow: room.serverNow });
-  const sound = createSoundStore({ audio, room: room.room, plan: reveal.plan });
+  const reveal = createRevealClock({ room: room.room, serverNow: room.serverNow, clockSynced: room.clockSynced });
+  const sound = createSoundStore({ audio, room: room.room, plan: reveal.plan, clockSynced: room.clockSynced });
   return {
     room,
     reveal,
