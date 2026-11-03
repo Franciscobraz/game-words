@@ -141,11 +141,36 @@ describe('applyServerMessage', () => {
     expect(applyServerMessage(before, { type: 'counts', counts: [{ playerId: ANA.id, count: 3 }] })).toBe(before);
   });
 
-  test('round-results moves to the results with the message', () => {
-    const view = applyServerMessage(inRound(), RESULTS);
+  test('round-results keeps the results and leaves the phase to the phase message', () => {
+    // SYNC-01 AC 1: on the words the phone still points to the TV when the results come in.
+    const onWords = applyServerMessage(inRound(), { type: 'phase', phase: 'words' });
+
+    const view = applyServerMessage(onWords, RESULTS);
+
+    expect(view.phase).toBe('words');
+    expect(view.results).toBe(RESULTS);
+  });
+
+  test('phase with words moves the round to the words', () => {
+    const view = applyServerMessage(inRound(), { type: 'phase', phase: 'words' });
+
+    expect(view.phase).toBe('words');
+    expect(view.round).toEqual(ROUND);
+  });
+
+  test('phase with results moves the words to the results', () => {
+    const onWords = applyServerMessage(applyServerMessage(inRound(), { type: 'phase', phase: 'words' }), RESULTS);
+
+    const view = applyServerMessage(onWords, { type: 'phase', phase: 'results' });
 
     expect(view.phase).toBe('results');
     expect(view.results).toBe(RESULTS);
+  });
+
+  test('scroll, meant for the TV, leaves the view as it is', () => {
+    const before = applyServerMessage(inRound(), { type: 'phase', phase: 'words' });
+
+    expect(applyServerMessage(before, { type: 'scroll', direction: 'down' })).toBe(before);
   });
 
   test('podium moves to the podium with the ranking', () => {

@@ -83,8 +83,9 @@ export function createRoundStore(deps: RoundDeps): RoundStore {
       case 'submit-result':
         settleBatch(msg.results);
         return;
-      case 'round-results':
-        // The server closed the round: paths still waiting would come back `round-closed` (Edge Cases).
+      case 'phase':
+        // The server closed the round on the words: paths still waiting would come back `round-closed` (Edge Cases).
+        if (msg.phase !== 'words') return;
         dropPending();
         path.value = [];
         return;

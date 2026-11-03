@@ -1,4 +1,4 @@
-import { hashPrefixes, type PlayerInfo, type RoundResultsMessage, type Settings, type WelcomeMessage } from '@bwords/core';
+import { hashPrefixes, type PlayerInfo, type Settings, type WelcomeMessage } from '@bwords/core';
 import { describe, expect, test } from 'vitest';
 import { fakeClock, fakeConnection, fakeDevice, fakeStorage } from '../testing/fakes.ts';
 import { createRoomStore } from './room.ts';
@@ -71,8 +71,6 @@ function roundWelcome(found: string[] = []): WelcomeMessage {
     salt: base64Url(SALT),
   };
 }
-
-const RESULTS: RoundResultsMessage = { type: 'round-results', index: 0, shared: [], players: [], longest: null, possibleWords: 0, last: false };
 
 /** Beto's phone in the open round, 10 s in, with fake server, clock and device. */
 async function setup(options: { prefs?: HitPrefs; at?: number } = {}) {
@@ -292,13 +290,13 @@ describe('sending', () => {
     expect(submits()).toEqual([{ type: 'submit', paths: [CASA] }]);
   });
 
-  test('drops pending paths when the results arrive', async () => {
+  test('drops pending paths when the round ends on the words', async () => {
     // Edge Cases: the server closed the round, so the paths still waiting are not sent.
     const { clock, connection, round, swipe, submits } = await setup();
 
     await swipe(CASA);
     expect(round.pendingPaths.value).toHaveLength(1);
-    connection.receive(RESULTS);
+    connection.receive({ type: 'phase', phase: 'words' });
 
     expect(round.pendingPaths.value).toEqual([]);
     clock.advance(1_000);

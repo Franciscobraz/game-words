@@ -1,6 +1,6 @@
 import type { PlayerInfo, RoundResultsMessage, Settings } from '@bwords/core';
 import { describe, expect, test } from 'vitest';
-import { INITIAL_VIEW, type RoomView } from './room-view.ts';
+import { applyServerMessage, INITIAL_VIEW, type RoomView } from './room-view.ts';
 import { screenFor } from './screen.ts';
 
 const SETTINGS: Settings = {
@@ -91,6 +91,20 @@ describe('screenFor', () => {
     const results = view({ phase: 'results', round: ROUND, results: { ...RESULTS, last: true } });
 
     expect(screenFor(results, 0)).toBe('podium');
+  });
+
+  test('shows look at the tv on the words to players, spectators and the host', () => {
+    // SYNC-01 AC 1: Beto plays, Duda watches, Ana hosts.
+    const words = view({ phase: 'words', round: ROUND });
+
+    expect(screenFor(words, 0)).toBe('look-at-tv');
+    expect(screenFor({ ...words, myId: DUDA.id }, 0)).toBe('look-at-tv');
+    expect(screenFor({ ...words, myId: ANA.id }, 0)).toBe('look-at-tv');
+
+    // The results of the last round reach a phone only with show-result; alone they move no screen.
+    const withResults = applyServerMessage(words, { ...RESULTS, last: true });
+    expect(screenFor(withResults, 0)).toBe('look-at-tv');
+    expect(screenFor(applyServerMessage(words, RESULTS), 0)).toBe('look-at-tv');
   });
 
   test('round-result in the results', () => {

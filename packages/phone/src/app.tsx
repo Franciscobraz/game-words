@@ -28,6 +28,8 @@ const SCREENS: Record<Screen, ComponentType> = {
   countdown: CountdownScreen,
   board: BoardScreen,
   spectator: SpectatorScreen,
+  // The room tag alone until the look-at-the-TV screen arrives with T11 (SYNC-01 AC 1).
+  'look-at-tv': ConnectingScreen,
   'round-result': RoundResultScreen,
   podium: PodiumScreen,
   kicked: KickedScreen,

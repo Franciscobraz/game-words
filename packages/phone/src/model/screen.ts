@@ -11,6 +11,7 @@ export type Screen =
   | 'countdown'
   | 'board'
   | 'spectator'
+  | 'look-at-tv'
   | 'round-result'
   | 'podium'
   | 'kicked'
@@ -47,8 +48,9 @@ export function screenFor(view: RoomView, serverNow: number): Screen {
       return view.hostId === view.myId ? 'host-lobby' : 'lobby';
     case 'round':
       return roundScreen(view, serverNow);
-    // Until the phone knows the words stage (T9, SYNC-01), it shows them as the results.
     case 'words':
+      // The TV shows "Tempo!" and the words; every phone, the host's included, points to it (SYNC-01 AC 1, 5).
+      return 'look-at-tv';
     case 'results':
       // The podium follows the last results at once: their screen would only flash (PHONE-01 AC 1).
       return view.results?.last === true ? 'podium' : 'round-result';

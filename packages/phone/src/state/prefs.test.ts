@@ -167,6 +167,8 @@ describe('wake lock', () => {
     screen.show();
     expect(screen.held).toBe(true);
 
+    // The last round ends on the words, and the results come in before the podium (SYNC-01).
+    connection.receive({ type: 'phase', phase: 'words' });
     connection.receive({ type: 'round-results', index: 0, shared: [], players: [], longest: null, possibleWords: 0, last: true });
     expect(screen.held).toBe(false);
     screen.hide();

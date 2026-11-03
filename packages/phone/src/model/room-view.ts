@@ -95,11 +95,13 @@ export function applyServerMessage(view: RoomView, msg: ServerMessage): RoomView
     case 'counts':
       return view;
     case 'round-results':
-      return { ...view, phase: 'results', results: msg };
+      // Only the data: the phase comes from `phase` and `podium`, so the order of the messages never picks the screen.
+      return { ...view, results: msg };
     case 'podium':
       return { ...view, phase: 'podium', podium: msg.ranking };
-    // The words stage and the host's list steps reach the phone screens with T9 (SYNC-01).
     case 'phase':
+      return { ...view, phase: msg.phase };
+    // The host's list steps are meant for the TV.
     case 'scroll':
     case 'time':
       return view;
