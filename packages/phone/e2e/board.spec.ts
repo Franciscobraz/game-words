@@ -1,8 +1,20 @@
-import { wordPoints } from '@bwords/core';
+import { CHECK_SOUND, wordPoints } from '@bwords/core';
 import { expect, type Page, test } from '@playwright/test';
 import { STRINGS } from '../src/strings/pt-BR.ts';
+import { fakeRoom } from './fake-room.ts';
 import { boardOf, openRound, slideOver, swipe, tileCenter } from './round-room.ts';
-import { BETO, SAMPLE_WORDS } from './samples.ts';
+import {
+  ANA,
+  BETO,
+  lobbyWelcome,
+  roundStartOf,
+  SAMPLE_CODE,
+  SAMPLE_WORDS,
+  sampleHashFrame,
+  sampleResults,
+  sampleRound,
+  SCORED_PLAYERS,
+} from './samples.ts';
 
 /** A round that opened a second ago and lasts two more minutes. */
 function openNow(page: Page, found: string[] = []) {
@@ -219,6 +231,69 @@ test('paints a valid word and its path green', async ({ page }) => {
   for (const tile of SAMPLE_WORDS.casa) await expect(boardTiles.nth(tile)).toHaveCSS('background-color', green);
   for (const index of [0, 1, 2, 3]) await expect(rackTiles.nth(index)).toHaveCSS('background-color', green);
 });
+
+test('plays only the check on the phone with the music on', async ({ page }) => {
+  // MUSIC-01 AC 16: the room has the music on; from the lobby to the result, Beto's phone plays the notes of the
+  // check for CASA and nothing else.
+  await recordStartedNotes(page);
+  const frame = await sampleHashFrame();
+  const room = await fakeRoom(page, (msg) => {
+    if (msg.type === 'hello') return { replies: [lobbyWelcome([ANA, BETO], BETO.id)] };
+    if (msg.type === 'submit') return { replies: [{ type: 'submit-result', results: [{ ok: true, word: 'casa' }] }] };
+    return { replies: [] };
+  });
+  expect(lobbyWelcome([ANA, BETO], BETO.id).settings.music).toBe(true);
+  await page.goto(`/${SAMPLE_CODE}`);
+  await expect(page.getByText(STRINGS.waitingForHostToStart(ANA.nickname))).toBeVisible();
+
+  const now = Date.now();
+  room.push(roundStartOf(sampleRound(now - 1_000, now + 120_000)));
+  room.push(frame);
+  await swipe(page, SAMPLE_WORDS.casa);
+  await expect(page.getByRole('status')).toHaveText(STRINGS.validWord(wordPoints('casa')));
+
+  room.push({ type: 'phase', phase: 'words' });
+  await expect(page.getByRole('heading', { name: STRINGS.lookAtTvTitle })).toBeVisible();
+  room.push({ type: 'players', players: SCORED_PLAYERS, hostId: ANA.id });
+  room.push(sampleResults());
+  room.push({ type: 'phase', phase: 'results' });
+  await expect(page.getByRole('region', { name: STRINGS.quickScoreboard })).toBeVisible();
+
+  const started = await page.evaluate(() => (window as unknown as { started: number[] }).started);
+  expect(started).toEqual(CHECK_SOUND.map((note) => note.frequencyHz));
+});
+
+/** Replaces the browser's `AudioContext` with one that notes the frequency of each oscillator the page starts. */
+async function recordStartedNotes(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    const started: number[] = [];
+    (window as unknown as { started: number[] }).started = started;
+    const param = () => ({ value: 0, setValueAtTime() {}, exponentialRampToValueAtTime() {} });
+    class RecordingContext {
+      state = 'running';
+      currentTime = 0;
+      destination = {};
+      addEventListener() {}
+      resume() {
+        return Promise.resolve();
+      }
+      createGain() {
+        return { gain: param(), connect() {} };
+      }
+      createOscillator() {
+        const oscillator = {
+          type: 'sine',
+          frequency: param(),
+          connect() {},
+          start: () => started.push(oscillator.frequency.value),
+          stop() {},
+        };
+        return oscillator;
+      }
+    }
+    (window as unknown as { AudioContext: unknown }).AudioContext = RecordingContext;
+  });
+}
 
 /** The computed color of a theme token or of a literal color, read the way the browser resolves it on a background. */
 function tokenColor(page: Page, token: string): Promise<string> {

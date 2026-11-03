@@ -113,11 +113,13 @@ test('toggles the profanity filter', async ({ page }) => {
 });
 
 test('has no fast mode control', async ({ page }) => {
-  // FAST-01 AC 2: the panel is on screen, its only switch is the filter, and no text mentions fast mode.
+  // FAST-01 AC 2: the panel is on screen, its only switches are the filter and the music (MUSIC-01 AC 13), and no text
+  // mentions fast mode.
   const room = await hostRoom(page);
   try {
     await expect(page.getByRole('switch', { name: STRINGS.filterProfanity })).toBeVisible();
-    await expect(page.getByRole('switch')).toHaveCount(1);
+    await expect(page.getByRole('switch', { name: STRINGS.tvMusic })).toBeVisible();
+    await expect(page.getByRole('switch')).toHaveCount(2);
     await expect(page.getByText(/fast\s*mode|resultados rápidos/i)).toHaveCount(0);
   } finally {
     room.close();
@@ -147,6 +149,23 @@ test('sends the volume on release and the mute toggle', async ({ page }) => {
     await page.getByRole('button', { name: STRINGS.muteTv }).click();
     await room.beto.waitFor(settingsWith({ muted: true }));
     await expect(page.getByRole('button', { name: STRINGS.muteTv })).toHaveAttribute('aria-pressed', 'true');
+  } finally {
+    room.close();
+  }
+});
+
+test('switches the music in the host lobby', async ({ page }) => {
+  // MUSIC-01 AC 13-14: "Música" starts on in a new room, and a tap sends `music: false`.
+  const room = await hostRoom(page);
+  const music = page.getByRole('switch', { name: STRINGS.tvMusic });
+  try {
+    await expect(music).toHaveAttribute('aria-checked', 'true');
+
+    await music.click();
+
+    const sent = await room.beto.waitFor(settingsWith({ music: false }));
+    expect(sent.settings.music).toBe(false);
+    await expect(music).toHaveAttribute('aria-checked', 'false');
   } finally {
     room.close();
   }

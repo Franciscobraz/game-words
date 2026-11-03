@@ -71,6 +71,7 @@ export const STRINGS = {
   minLettersOption: (minLength: number) => `${minLength}`,
   filterProfanity: 'Filtrar palavrões',
   tvVolume: 'Volume da TV',
+  tvMusic: 'Música',
   dictionary: 'Dicionário',
   dictionaryPtBr: 'Português (BR)',
   playerActions: (nickname: string) => `Ações de ${nickname}`,
