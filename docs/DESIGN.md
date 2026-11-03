@@ -23,6 +23,7 @@ Jogo de encontrar palavras em tabuleiro de letras, inspirado no Boggle Party (Ne
 | Filtrar palavrões | ligado / desligado | **ligado** |
 | Dicionário (pacote de idioma) | Português (BR) no MVP | pt-BR |
 | Volume / mudo da TV | — | ligado |
+| Música da TV | ligada / desligada | **ligada** |
 
 - A configuração é fixa durante a partida. O anfitrião só pode alterá-la no **lobby**, antes de a partida começar ou depois que ela termina.
 - Enquanto o anfitrião edita, as configurações aparecem **espelhadas ao vivo na TV**.
@@ -50,15 +51,15 @@ Jogo de encontrar palavras em tabuleiro de letras, inspirado no Boggle Party (Ne
 1. **Lobby:** jogadores entram e o anfitrião configura.
 2. **Contagem regressiva "3, 2, 1"** na TV e nos celulares. O tabuleiro aparece para todos ao mesmo tempo no "já".
 3. **Rodada:** timer controlado pelo servidor. Envios que chegarem até ~300 ms depois do fim ainda valem, para compensar a latência.
-4. **Resultado da rodada** (ver §4.3). Entre as rodadas, o anfitrião avança para a próxima.
-5. A última rodada encerra a partida sem nenhum toque do anfitrião, e as vitórias já contam (AD-021). O celular vai direto para o **pódio final**, e a TV mostra as palavras e o resultado com o vencedor. As opções são "Jogar de novo" (começa direto uma nova partida com os mesmos jogadores e configurações, placar zerado), "Voltar ao lobby" (placar zerado, para esperar mais gente entrar) ou "Encerrar sala".
-6. Durante a partida (contagem, rodada ou resultado), o anfitrião pode **voltar ao lobby** pelo menu: a rodada em andamento é cancelada e o placar zera.
+4. **Palavras e resultado da rodada** (ver §4.3). A TV mostra as palavras da rodada, e o anfitrião toca "Ver resultado" quando a sala terminou de ler; TV e celulares abrem o resultado juntos (AD-024, AD-026). Entre as rodadas, o anfitrião avança para a próxima.
+5. Na última rodada, o "Ver resultado" abre o **pódio final** nos celulares e o resultado com o vencedor na TV, e as vitórias contam (AD-021, AD-026). As opções são "Jogar de novo" (começa direto uma nova partida com os mesmos jogadores e configurações, placar zerado), "Voltar ao lobby" (placar zerado, para esperar mais gente entrar) ou "Encerrar sala".
+6. Durante a partida (contagem, rodada, lista de palavras ou resultado), o anfitrião pode **voltar ao lobby** pelo menu: a rodada em andamento é cancelada e o placar zera.
 
 ---
 
 ## 2. Sala, jogadores e anfitrião
 
-- **Sem contas no MVP.** Abrir `/tv` cria a sala automaticamente e mostra o QR code e um **código de 4 letras**, sem letras ambíguas (O/0, I/1). A TV não precisa de nenhum botão do controle remoto (exceto, se o navegador exigir, um "OK" para liberar o áudio).
+- **Sem contas no MVP.** Abrir o endereço do jogo (`/` ou `/tv`) na TV cria a sala automaticamente e mostra o QR code e um **código de 4 letras**, sem letras ambíguas (O/0, I/1). A TV não precisa de nenhum botão do controle remoto (exceto, se o navegador exigir, um "OK" para liberar o áudio).
 - **Até 10 jogadores** por sala.
 - **Apelido:** de 2 a 12 caracteres, **único na sala**, com comparação que ignora maiúsculas e acentos ("João" = "joao").
 - **Cor:** seletor livre com uma paleta de 10 sugestões e a opção "personalizada".
@@ -71,7 +72,7 @@ Jogo de encontrar palavras em tabuleiro de letras, inspirado no Boggle Party (Ne
   - É quem controla tudo: configurações, iniciar, próxima rodada, jogar de novo, voltar ao lobby, encerrar e expulsar jogador.
 - **Entrada atrasada:** quem entra durante uma rodada fica assistindo e joga a partir da próxima, começando com 0 pontos.
 - **Reconexão:** um token salvo no celular recupera o nome, a cor, os pontos e as palavras da rodada. Se a TV recarregar a página, ela volta para a mesma sala.
-- **Expiração:** configurável em `wrangler.toml`.
+- **Expiração:** configurável em `packages/server/wrangler.jsonc`.
   - `ROOM_IDLE_TIMEOUT_MIN` (padrão 30) e `TV_DISCONNECT_TIMEOUT_MIN` (padrão 10).
   - **`0` = nunca expira.**
   - O estado da sala é persistido no storage do Durable Object a cada mudança. Nada se perde se a TV entrar em espera ou se o servidor hibernar.
@@ -82,12 +83,15 @@ Jogo de encontrar palavras em tabuleiro de letras, inspirado no Boggle Party (Ne
 
 ## 3. Celular (controle)
 
+- Entra pelo QR code, que abre `/<CÓDIGO>`, ou por `/join`, onde o jogador digita o código (AD-025).
 - Mostra o **tabuleiro completo**. O gesto principal é **deslizar** pelas letras e enviar ao soltar; a alternativa é tocar letra por letra e apertar "enviar".
 - A palavra em formação aparece no topo, e o jogador vê a lista das próprias palavras.
-- **Feedback instantâneo:** "válida ✓", "inválida ✗" ou "já encontrada" (ver §6.2).
-- **Preferências locais** (localStorage), ambas **desligadas por padrão**:
+- **Feedback instantâneo:** "válida ✓", "inválida ✗" ou "já encontrada" (ver §6.2). A palavra e as peças do caminho ficam verdes, vermelhas ou amarelas pelo tempo do feedback.
+- **Preferências locais** (localStorage), ambas **ligadas por padrão**; a escolha guardada vale em toda sala daquele navegador:
   - Vibrar. Só funciona no Android; no iOS o Safari não suporta vibração e a opção fica escondida.
-  - Som ao acertar.
+  - Som ao acertar: o mesmo "check" que a TV toca na lista de palavras.
+- Enquanto a TV mostra "Tempo!" e a lista de palavras, o celular mostra "Olhe para a TV". O anfitrião vê também ▲, ▼ e "Ver resultado" (AD-024, AD-026).
+- **Sem zoom:** nem toque duplo nem pinça mudam a escala da página, também no Safari do iPhone; cada toque de um toque duplo conta.
 - Mantém a tela acesa com a **Screen Wake Lock API** durante o lobby e a rodada.
 - O celular do anfitrião tem o menu de controle da sala.
 - Tema claro/escuro automático.
@@ -97,48 +101,58 @@ Jogo de encontrar palavras em tabuleiro de letras, inspirado no Boggle Party (Ne
 ## 4. TV (tela principal)
 
 ### 4.1 Lobby
-- QR code grande, código da sala, lista de jogadores com suas cores, vitórias da sessão e coroa (ver §2), e as configurações espelhadas ao vivo. Jogadores desconectados aparecem esmaecidos.
+- QR code grande, código da sala, o endereço "ou acesse <host>/<CÓDIGO>" com o host em que a TV está aberta, lista de jogadores com suas cores, vitórias da sessão e coroa (ver §2), e as configurações espelhadas ao vivo. Jogadores desconectados aparecem esmaecidos.
+- Sem ninguém na sala, o rodapé diz "Quem entrar primeiro vira anfitrião(ã)".
 
 ### 4.2 Rodada
 - Tabuleiro grande, timer e o **número** de palavras de cada jogador ao vivo, sem revelar quais são.
 - O código da sala e um QR pequeno ficam no topo (AD-022). A lista traz só quem joga a rodada, sem os espectadores.
 - Quando o tempo acaba, a TV mostra "0:00", o tabuleiro esmaecido e "Tempo!" por 2 s.
 
-### 4.3 Depois da rodada (AD-021)
-Toda rodada passa pelo mesmo fluxo, sozinho, a partir do "Tempo!":
+### 4.3 Depois da rodada (AD-021, AD-024)
+Toda rodada passa pelo mesmo fluxo a partir do "Tempo!", e o anfitrião conduz a passagem para o resultado:
 
-1. **Palavras da rodada.** Uma faixa fixa traz o total de palavras possíveis e o de encontradas. Abaixo, a lista rola sozinha: primeiro as **palavras em comum**, depois as **únicas**, com "pontos em dobro".
+1. **Palavras da rodada.** Uma faixa fixa traz o total de palavras possíveis e o de encontradas. Abaixo, a lista: primeiro as **palavras em comum**, depois as **únicas**, com "pontos em dobro".
    - Cada grupo vai da menor palavra para a maior e, no mesmo tamanho, em ordem alfabética.
    - Cada linha traz a palavra com as grafias reais (ver §5.5), um círculo na cor de cada jogador que a achou e os pontos.
-   - A rolagem anda a 2 palavras por segundo e acelera para durar no máximo 60 s.
-   - Sem nenhuma palavra encontrada, a tela diz "Nenhuma palavra encontrada".
-2. **Espera de 5 s** com a última palavra à vista.
-3. **Resultado**, numa tela só, que espera o anfitrião.
-   - 1º, 2º e 3º em cartões, com os pontos acumulados. Do 4º em diante, uma lista em ordem de pontos.
-   - O tabuleiro da rodada, com as peças da **maior palavra** acendendo uma por vez, a cada 400 ms.
-   - "A maior palavra do tabuleiro", com as grafias reais, e "Ana encontrou!" ou "Ninguém encontrou". Em caso de empate, aparece uma que alguém encontrou; se ninguém encontrou, a primeira em ordem alfabética. Não há outra lista de "palavras perdidas".
-   - O código da sala e um QR pequeno, para quem chegou atrasado.
+   - A lista sobe sozinha a altura de uma linha por segundo, sem limite de duração. Uma lista que cabe no painel fica parada.
+   - Uma palavra por vez fica **destacada**, a que passa pela linha de leitura no terço de cima do painel, com um "check" curto. Numa lista parada, o destaque desce de palavra em palavra, uma por segundo.
+   - A lista para com a última palavra inteira na tela e espera o anfitrião. Não há ida automática ao resultado.
+   - ▲ e ▼ no celular do anfitrião param a rolagem automática e movem a lista meia altura do painel; o destaque e o "check" param até o fim da lista.
+   - À direita, o painel **Jogadores** (AD-030) traz cada jogador da rodada com as palavras da rodada inteira e os pontos, que começam em 0 e somam a cada palavra destacada. O painel se reordena pelos pontos, e cada card desliza até a posição nova.
+   - Sem nenhuma palavra encontrada, a tela diz "Nenhuma palavra encontrada" e espera "Ver resultado".
+2. **Resultado**, numa tela só, aberto pelo "Ver resultado" do anfitrião, na mesma hora na TV e nos celulares (AD-026).
+   - 1º, 2º e 3º em cartões, do 4º em diante uma lista, cada um com palavras e pontos, como "14 plvrs · 34 pts" e "1 plvr · 1 pt".
+   - Entre as rodadas, os valores e a ordem são os da rodada, sob "Classificação da Rodada N"; na última, a soma da partida, sob "Classificação da Partida" (AD-027).
+   - O cartão "A maior palavra do tabuleiro", com as grafias reais e "Ana encontrou!" ou "Ninguém encontrou", fica acima do tabuleiro da rodada, cujas peças acendem uma por vez, a cada 400 ms. Em caso de empate, aparece uma que alguém encontrou; se ninguém encontrou, a primeira em ordem alfabética. Não há outra lista de "palavras perdidas".
+   - O código da sala e um QR pequeno, sem rótulo, para quem chegou atrasado.
    - Entre as rodadas, o título é "Resultado · Rodada 1 de 3" e o rodapé, "Aguardando Ana avançar…".
    - Na última rodada, o título é "Ana venceu!", ou "Empate!", com confete, e o rodapé é "Aguardando Ana: jogar de novo ou voltar ao lobby".
 
-Se o anfitrião avançar, jogar de novo ou voltar ao lobby durante a rolagem, ela é interrompida. Recarregar a TV recomeça a rolagem do início.
+Se o anfitrião voltar ao lobby durante a lista, a TV e os celulares vão para o lobby. Recarregar a TV durante a lista recomeça do topo, com a rolagem automática.
 
 ### 4.4 Áudio
-- Efeitos curtos na TV, sintetizados com Web Audio, sem arquivos: início da rodada, últimos 10 s, apito no "Tempo!" e início da rolagem. O volume e o mudo são controlados pelo anfitrião.
-- Se o navegador bloquear o som, o lobby pede "OK" no controle.
-- Sem música no MVP.
+- Efeitos curtos na TV, sintetizados com Web Audio, sem arquivos: início da rodada, últimos 10 s, apito no "Tempo!", início da rolagem e o "check" de cada palavra destacada. O volume e o mudo são controlados pelo anfitrião.
+- **Música** (AD-028): quatro músicas originais, geradas no navegador, sem arquivo de áudio, a 50% do volume dos efeitos:
+  - a do lobby, também em "abrindo a sala" e "Sala expirada";
+  - a da partida, na contagem, na rodada, no "Tempo!" e na lista de palavras, 1,5x mais rápida no mesmo tom nos últimos 15 s de cada rodada; ela continua de onde parou;
+  - uma vinheta de 30 s em loop no resultado entre as rodadas;
+  - a de partida finalizada, mais festiva, no resultado da última rodada.
+- A opção "Música" do lobby do anfitrião desliga as quatro; os efeitos continuam. A aba substituída fica em silêncio, e "Reconectando…" mantém a música da tela. O celular toca só os efeitos.
+- Se o navegador bloquear o som, o lobby pede "OK" no controle; a música entra na liberação, do ponto em que estaria.
 
 ### 4.5 Visual
 - Fundo escuro e peças grandes com alto contraste, legíveis a 3 m.
 - Base de 1920×1080, responsiva até 720p.
 - Tokens de cor centralizados para permitir troca de tema.
 - Uma fonte embutida (Nunito ou Inter), reduzida aos caracteres usados.
+- **Tela sempre ativa** enquanto a sala está aberta, em três camadas, sem mudar nada do que os jogadores veem: a Screen Wake Lock, pedida de novo quando a página volta a ficar visível; um vídeo mudo de 2x2 px em loop, gerado de um canvas na cor do fundo, atrás da página; e a música. Um navegador que recusa uma camada não mostra erro.
 
 ### 4.6 Fim da sala e conexão
 - **Encerrada pelo anfitrião:** a TV abre uma sala nova sozinha.
 - **Expirada:** a TV mostra "Sala expirada" e espera "OK" ou uma recarga, sem criar sala.
 - **Aberta em outra aba:** a TV só avisa e para de reconectar.
-- **Conexão caída:** a tela atual fica, com a faixa "Reconectando…". Depois de 30 s, a faixa vira "Sem conexão", e a TV continua tentando.
+- **Conexão caída:** a tela atual fica, com a faixa "Reconectando…"; na rodada, a faixa fica abaixo do cartão do código. Depois de 30 s, a faixa vira "Sem conexão", e a TV continua tentando.
 - **Espera entre tentativas:** 0,5 s, 1 s, 2 s, 4 s, 8 s, 16 s, 32 s e depois 60 s.
 - **Limite:** em 10 min, o mesmo prazo padrão de `TV_DISCONNECT_TIMEOUT_MIN`, a TV para de tentar e pede "OK" para recomeçar.
 
@@ -197,7 +211,11 @@ São aceitas as formas flexionadas: plurais, femininos e conjugações.
 
 ### 6.1 Infraestrutura (custo zero)
 - **Cloudflare Workers + Durable Objects** (plano Free, backend SQLite), com **um Durable Object por sala** e WebSocket nativo com Hibernation.
-- **Arquivos estáticos** (TV e celular) no mesmo domínio, via Workers Static Assets. `npm run assets:build` monta a pasta `packages/server/public/` com os dois clientes e o pacote de idioma. O Worker só serve uma lista fechada de caminhos (`/tv`, `/`, `/<CÓDIGO>` e os arquivos dos clientes), e o pacote de idioma responde 404.
+- **Arquivos estáticos** (TV e celular) no mesmo domínio, via Workers Static Assets. `npm run assets:build` monta a pasta `packages/server/public/` com os dois clientes e o pacote de idioma. O Worker só serve uma lista fechada de caminhos, e o pacote de idioma responde 404 (AD-025):
+  - `/`, `/tv` e `/tv/` servem a TV;
+  - `/join` serve a entrada por código do celular, e `/<CÓDIGO>`, em qualquer caixa, o celular da sala. "JOIN" nunca é um código, porque o alfabeto dos códigos não tem I nem O;
+  - os arquivos de cada cliente.
+- A configuração do Worker, as variáveis de expiração e o binding de assets ficam em `packages/server/wrangler.jsonc`.
 - Subdomínio grátis `bwords.<usuario>.workers.dev`.
 - **WebRTC P2P foi descartado:** ainda exige um servidor de sinalização, o suporte nas TVs é incerto e redes 4G/CGNAT precisam de TURN.
 
@@ -268,6 +286,7 @@ bwords/
 2. **Servidor:** sala no Durable Object, protocolo, anfitrião, reconexão, persistência e expiração configurável.
 3. **Celular:** entrada na sala, apelido e cor, tabuleiro com deslizar, feedback, preferências e menu do anfitrião.
 4. **TV:** lobby com QR, rodada, página de palavras, resultado com a maior palavra e o vencedor, áudio e o Worker servindo os dois clientes.
+4.1. **Teste em casa (playtest):** tela da TV sempre ativa, lista de palavras conduzida pelo anfitrião, resultado com palavras e pontos na mesma hora na TV e nos celulares, música, `/` na TV e `/join` no celular, celular sem zoom.
 5. **Polimento:** filtro de palavrões no gerador, E2E, CI/deploy, orçamento de desempenho e teste em TV real.
 
 ---
@@ -278,4 +297,4 @@ bwords/
 - Biblioteca gratuita de avatares.
 - Modos cooperativo e por turnos.
 - Outros idiomas de dicionário e de interface.
-- Música de fundo.
+- Escolha de outra música pelo anfitrião.

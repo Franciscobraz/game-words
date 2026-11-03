@@ -50,7 +50,7 @@ Este documento descreve o layout das telas para servir de prompt a uma IA gerado
 - **Coluna da esquerda (~40%): entrada.**
   - Título curto: "Entre pelo celular".
   - **QR code grande** (~420 px), em um cartão branco para garantir a leitura.
-  - Embaixo, o **código da sala** em letras enormes e espaçadas ("K B X T"), com o texto "ou acesse bwords.…workers.dev e digite o código".
+  - Embaixo, o **código da sala** em letras enormes e espaçadas ("K B X T"), com o texto "ou acesse <host>/KBXT", com o host em que a TV está aberta (AD-025).
 - **Coluna da direita (~60%): sala.**
   - **Lista de jogadores** (até 10), um por linha: bolinha da cor, apelido, número de vitórias (ex.: "🏆 2") e a coroa para quem lidera. A anfitriã tem uma etiqueta "anfitriã".
   - Jogador desconectado aparece **esmaecido** (opacidade baixa), com um ícone de sinal cortado.
@@ -61,7 +61,7 @@ Este documento descreve o layout das telas para servir de prompt a uma IA gerado
 
 **Estados:**
 
-- **Sala vazia:** a lista mostra "Ninguém entrou ainda". O primeiro a entrar vira o anfitrião.
+- **Sala vazia:** a lista mostra "Ninguém entrou ainda", e o rodapé, "Quem entrar primeiro vira anfitrião(ã)".
 - **Áudio bloqueado pelo navegador:** um aviso discreto: "Aperte OK no controle para liberar o som".
 - **Depois de uma partida** (voltando ao lobby): as vitórias e a coroa já estão atualizadas.
 
@@ -73,7 +73,7 @@ Este documento descreve o layout das telas para servir de prompt a uma IA gerado
 
 ### 2a. Entrada (antes de entrar na sala)
 
-- **Topo:** logo pequeno do BWords e o código da sala ("Sala KBXT"). Quem abriu o link digitado, sem o QR, vê um campo para digitar o código de 4 letras.
+- **Topo:** logo pequeno do BWords e o código da sala ("Sala KBXT"). Quem abriu `/join`, sem o QR, vê antes a entrada pelo código (§11).
 - **Campo "Seu apelido"**, de 2 a 12 caracteres, com um contador. Erro embaixo do campo: "Esse apelido já está em uso".
 - **Seletor de cor:**
   - Uma linha de 10 bolinhas sugeridas e uma 11ª, "personalizada" (abre a roda de cores).
@@ -107,6 +107,7 @@ A contagem regressiva e as telas de passagem do celular (código digitado, remov
   - Filtrar palavrões: interruptor (ligado).
   - Dicionário: um seletor com "Português (BR)" (a única opção no MVP).
   - Volume da TV: um controle deslizante e um botão de mudo.
+  - Música: interruptor, ligado numa sala nova; desliga as músicas da TV, e os efeitos continuam (AD-028).
 - **Lista de jogadores com ações:** ao tocar num jogador, abre uma folha de baixo (bottom sheet) com "Tornar anfitrião" e "Remover da sala". Remover pede confirmação ("Remover Beto? Ele perde os pontos.").
 - **Botão principal fixo embaixo:** "Iniciar partida". Fica desabilitado com uma dica se não houver jogadores suficientes **(sugestão: definir o mínimo)**.
 - **Menu (⋮) no topo:** "Encerrar sala", com confirmação.
@@ -128,7 +129,7 @@ A contagem regressiva e as telas de passagem do celular (código digitado, remov
 - **Coluna da direita: jogadores ao vivo.** Uma linha por jogador: cor, apelido e o **número de palavras** encontradas ("12 palavras"), sem mostrar quais são. O número dá um "pulo" quando aumenta. A lista traz só quem joga a rodada, sem os espectadores. Desconectados ficam esmaecidos.
 - **Topo:** o código da sala e um QR pequeno (AD-022).
 
-**Estado de fim:** quando o tempo acaba, o timer mostra "0:00", o tabuleiro fica esmaecido e "Tempo!" aparece sobre ele, por 2 s. Depois a tela vai sozinha para a página de palavras (§8).
+**Estado de fim:** quando o tempo acaba, o timer mostra "0:00", o tabuleiro fica esmaecido e "Tempo!" aparece sobre ele, por 2 s. Depois a tela vai sozinha para a página de palavras (§8), e os celulares mostram "Olhe para a TV" (§13).
 
 ---
 
@@ -175,7 +176,7 @@ Esta tela saiu (AD-021). O fim da partida na TV é o resultado da última rodada
 
 ## 7. Pódio no celular (todos)
 
-**Objetivo:** mostrar ao jogador como ele foi, e ao anfitrião, o que fazer em seguida. Abre direto ao fim da última rodada, sem nenhum toque (AD-021), com o resumo pessoal somando também essa rodada.
+**Objetivo:** mostrar ao jogador como ele foi, e ao anfitrião, o que fazer em seguida. Abre quando o anfitrião toca "Ver resultado" na última rodada, na mesma hora que o resultado na TV (AD-026), com o resumo pessoal somando também essa rodada.
 
 **Para todos:**
 
@@ -194,9 +195,9 @@ Esta tela saiu (AD-021). O fim da partida na TV é o resultado da última rodada
 
 ---
 
-## 8. Depois da rodada na TV (AD-021)
+## 8. Depois da rodada na TV (AD-021, AD-024)
 
-**Objetivo:** mostrar todas as palavras encontradas e quem achou cada uma, e depois o placar. O mesmo fluxo vale para toda rodada, e a TV o percorre sozinha. As captures binding são `tv-words.png` e `tv-round-result.png`, em `.specs/features/m4-tv/captures/`.
+**Objetivo:** mostrar todas as palavras encontradas e quem achou cada uma, e depois o placar. O mesmo fluxo vale para toda rodada. A lista anda sozinha, e o anfitrião conduz pelo celular: ▲ e ▼ movem a lista, e "Ver resultado" abre o resultado na TV e nos celulares. As captures binding são `tv-words.png` e `tv-round-result.png`, em `.specs/features/m4-1-playtest/captures/`.
 
 **Grafias reais:** as palavras aparecem em maiúsculas sem acento, seguidas das grafias do dicionário em letra menor e mais clara: "FACA (faca, faça)", "CORACOES (corações)". Quando a única grafia é igual à palavra, não aparece nada a mais.
 
@@ -204,26 +205,28 @@ Esta tela saiu (AD-021). O fim da partida na TV é o resultado da última rodada
 
 - **Topo:** o logo, "Palavras · Rodada 1 de 3", o código da sala e um QR pequeno.
 - **Faixa que não rola:** o total de palavras possíveis e o de palavras encontradas.
-- **Lista em rolagem automática:** primeiro "Palavras em comum", depois "Palavras Únicas", com "pontos em dobro". Cada grupo vai da menor palavra para a maior e, no mesmo tamanho, em ordem alfabética.
+- **Lista:** primeiro "Palavras em comum", depois "Palavras Únicas", com "pontos em dobro". Cada grupo vai da menor palavra para a maior e, no mesmo tamanho, em ordem alfabética.
 - **Cada linha:** a palavra, as grafias reais, um círculo na cor de cada jogador que a achou, com a inicial, e os pontos ("+1").
-- **Velocidade:** 2 palavras por segundo, acelerando para durar no máximo 60 s. Quando a última palavra aparece inteira, a tela espera 5 s e vai para o resultado.
-- **Ninguém achou nada:** "Nenhuma palavra encontrada", por 5 s.
+- **Velocidade:** a lista sobe a altura de uma linha por segundo, sem limite de duração; uma lista que cabe no painel fica parada. Ela para com a última palavra inteira na tela e espera o anfitrião.
+- **Destaque:** uma palavra por vez, a que passa pela linha de leitura no terço de cima do painel, fica destacada só com cor e escala, com um "check" curto. Numa lista parada, o destaque desce de palavra em palavra, uma por segundo. Quando o anfitrião toca ▲ ou ▼, o destaque some até o fim da lista.
+- **Painel "Jogadores", à direita (AD-030):** um card por jogador da rodada, com o círculo e a borda na cor dele, o apelido, "14 palavras" da rodada inteira e os pontos, que começam em 0 e somam a cada palavra destacada, com uma animação na linha de quem pontuou. O painel se ordena pelos pontos, e cada card desliza inteiro até a posição nova. O 1º tem o fundo mais claro. Desconectado leva "DESCONECTADO" e fica esmaecido.
+- **Ninguém achou nada:** "Nenhuma palavra encontrada", até o anfitrião tocar "Ver resultado".
 
 ### 8b. Resultado
 
-Uma tela só, que espera o anfitrião.
+Uma tela só, aberta pelo "Ver resultado" do anfitrião, que espera o anfitrião avançar.
 
-- **Topo:** o logo, o título, o código da sala e um QR pequeno.
-- **Esquerda:** o tabuleiro da rodada e, ao abrir a tela, as peças da maior palavra acendendo uma por vez, a cada 400 ms, sem linha ligando. Abaixo, "A maior palavra do tabuleiro", a palavra com as grafias reais e "Ana encontrou!" ou "Ninguém encontrou". Se o tabuleiro não tem palavra mais longa, não há peças acesas nem esse cartão.
-- **Direita:** "Classificação da Partida". 1º, 2º e 3º em cartões da mesma altura, com apelido, posição e pontos acumulados. Do 4º em diante, uma lista em ordem de pontos, com posição, círculo, apelido e pontos. Com até 3 jogadores, a lista some. Quem está desconectado leva "(desconectado)" ao lado do apelido.
-- **Entre as rodadas:** o título é "Resultado · Rodada 1 de 3", e o rodapé é "Aguardando Ana avançar…".
-- **Última rodada:** o título é "Ana venceu!", ou "Empate!" se a partida empatar, com confete. O rodapé é "Aguardando Ana: jogar de novo ou voltar ao lobby".
+- **Topo:** o logo, o título e o código da sala com um QR pequeno, sem rótulo.
+- **Esquerda:** o cartão "A maior palavra do tabuleiro", com a palavra, as grafias reais e "Ana encontrou!" ou "Ninguém encontrou", e abaixo dele o tabuleiro da rodada, com as peças da maior palavra acendendo uma por vez, a cada 400 ms, sem linha ligando. Se o tabuleiro não tem palavra mais longa, não há peças acesas nem esse cartão.
+- **Direita:** 1º, 2º e 3º em cartões da mesma altura e, do 4º em diante, uma lista, com posição, círculo, apelido, palavras e pontos: "14 plvrs · 34 pts", "1 plvr · 1 pt". Com até 3 jogadores, a lista some. Quem está desconectado leva "(desconectado)" ao lado do apelido.
+- **Entre as rodadas:** "Classificação da Rodada 1", com as palavras e os pontos da rodada e a ordem por eles (AD-027). O título é "Resultado · Rodada 1 de 3", e o rodapé é "Aguardando Ana avançar…".
+- **Última rodada:** "Classificação da Partida", com a soma da partida. O título é "Ana venceu!", ou "Empate!" se a partida empatar, com confete. O rodapé é "Aguardando Ana: jogar de novo ou voltar ao lobby".
 
 ---
 
 ## 9. Resultado da rodada no celular
 
-**Objetivo:** enquanto a TV mostra as palavras e o resultado, mostrar ao jogador o resumo dele e, ao anfitrião, o botão de avançar. **(sugestão:** o DESIGN não detalha esta tela.)
+**Objetivo:** enquanto a TV mostra o resultado, mostrar ao jogador o resumo dele e, ao anfitrião, o botão de avançar. A tela abre com o "Ver resultado" do anfitrião, junto com a TV (AD-026); antes dele, o celular mostra "Olhe para a TV" (§13). **(sugestão:** o DESIGN não detalha esta tela.)
 
 **Para todos:**
 
@@ -236,7 +239,7 @@ Uma tela só, que espera o anfitrião.
 
 **Só para o anfitrião:**
 
-- **Botão principal fixo embaixo:** "Próxima rodada". Depois da última rodada esta tela não aparece: o celular vai direto para o pódio (§7).
+- **Botão principal fixo embaixo:** "Próxima rodada". Na última rodada esta tela não aparece: o "Ver resultado" abre o pódio (§7).
 - Menu (⋮) com "Voltar ao lobby", que pede confirmação (cancela a partida e zera o placar).
 
 **Só para participantes:** a mensagem embaixo "Aguardando Ana avançar…".
@@ -256,7 +259,7 @@ Uma tela só, que espera o anfitrião.
 
 ## 11. Telas de passagem do celular
 
-**Entrada pelo código digitado** (quem abriu o endereço sem escanear o QR):
+**Entrada pelo código digitado** (quem abriu `/join` sem escanear o QR, e quem toca "Entrar em outra sala"):
 
 - Logo do BWords no topo e o título "Entrar numa sala".
 - **Quatro caixas grandes**, uma por letra, que avançam sozinhas a cada letra digitada e abrem o teclado em maiúsculas.
@@ -296,7 +299,18 @@ A TV não tem botões: tudo aqui acontece sozinho ou com "OK" no controle. As fo
 
 **Conexão caída:**
 
-- A tela atual fica, e o timer continua pelo relógio do servidor, com uma faixa fina no topo: "Reconectando…".
+- A tela atual fica, e o timer continua pelo relógio do servidor, com uma faixa fina no topo: "Reconectando…". Na rodada, a faixa fica logo abaixo do cartão do código, que continua inteiro à vista.
 - Depois de 30 s sem reconectar, a faixa fica vermelha e vira "Sem conexão". A TV continua tentando, com esperas de 0,5 s, 1 s, 2 s, 4 s, 8 s, 16 s, 32 s e depois 60 s.
 - Depois de 10 min, a TV para de tentar, e a faixa acrescenta "Aperte OK no controle para tentar de novo". Uma tecla ou um clique recomeçam as tentativas do início.
 - Quando a conexão volta, a faixa some e a tela mostra o estado atual da sala.
+
+---
+
+## 13. Olhe para a TV (celular)
+
+**Objetivo:** levar os olhos da sala para a TV enquanto as palavras da rodada passam lá (AD-026), e dar ao anfitrião o controle da lista (AD-024).
+
+- Abre no "Tempo!" e fica durante toda a lista de palavras, para jogadores, espectadores e o anfitrião. Quem conecta ou reconecta nesse intervalo cai nela.
+- **Centro:** "Olhe para a TV" em letras grandes e, abaixo, "As palavras da rodada estão passando lá".
+- **Só para o anfitrião:** ▲ e ▼, que param a rolagem automática da TV e movem a lista meia altura do painel, e o botão principal "VER RESULTADO", que abre o resultado ou, na última rodada, o pódio, na TV e nos celulares ao mesmo tempo. Todos os alvos têm 48 px ou mais.
+- O celular nunca recebe as palavras da rodada nesta tela.
