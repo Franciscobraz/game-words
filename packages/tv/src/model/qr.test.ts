@@ -10,6 +10,11 @@ describe('the room address', () => {
     expect(displayAddress('https://bwords.example')).toBe('bwords.example');
     expect(displayAddress('http://localhost:5176')).toBe('localhost:5176');
   });
+
+  test('writes the room address as the host and the code', () => {
+    // ROUTE-01 AC 5: the host the TV is open on, never a fixed domain.
+    expect(displayAddress(roomUrl('http://localhost:5176', 'KBXT'))).toBe('localhost:5176/KBXT');
+  });
 });
 
 describe('qrMatrix', () => {

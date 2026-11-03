@@ -33,7 +33,7 @@ test('shows the code and the real address', async ({ page }) => {
 
   const host = new URL(page.url()).host;
   await expect(page.getByTestId('room-code')).toHaveText(SAMPLE_CODE);
-  await expect(page.getByTestId('room-address')).toHaveText(`ou acesse ${host} e digite o código`);
+  await expect(page.getByTestId('room-address')).toHaveText(`ou acesse ${host}/${SAMPLE_CODE}`);
 });
 
 test('shows each player with color, nickname and wins', async ({ page }) => {
@@ -102,7 +102,7 @@ test('shows the empty lobby', async ({ page }) => {
   await expect(page.getByText('Ninguém entrou ainda')).toBeVisible();
   await expect(page.getByTestId('player-count')).toHaveText('0 / 10');
   await expect(page.getByTestId('free-slot')).toHaveCount(10);
-  await expect(page.getByTestId('lobby-footer')).toHaveText('O primeiro a entrar vira anfitrião(ã)');
+  await expect(page.getByTestId('lobby-footer')).toHaveText('Quem entrar primeiro vira anfitrião(ã)');
 });
 
 test('has none of the texts the spec takes out of the capture', async ({ page }) => {

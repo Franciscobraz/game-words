@@ -6,12 +6,12 @@ import { QrCode } from './QrCode.tsx';
 /** Props of `JoinCard`. */
 export interface JoinCardProps {
   code: string;
-  /** The address without the scheme, as a person types it. */
+  /** The room's address without the scheme, `<host>/<CODE>`, as a person types it (ROUTE-01 AC 5). */
   address: string;
   matrix: QrMatrix;
 }
 
-/** How to enter: the QR, the code in large letters and the address to type (TVLOBBY-01 AC 2-3). */
+/** How to enter: the QR, the code in large letters and the room's address to type (TVLOBBY-01 AC 2-3, ROUTE-01 AC 5). */
 export function JoinCard({ code, address, matrix }: JoinCardProps) {
   return (
     <section class="join-card">
@@ -23,7 +23,7 @@ export function JoinCard({ code, address, matrix }: JoinCardProps) {
         {code}
       </p>
       <p class="join-card__address" data-testid="room-address">
-        {STRINGS.orVisit} <span class="join-card__host">{address}</span> {STRINGS.andTypeCode}
+        {STRINGS.orVisit} <span class="join-card__host">{address}</span>
       </p>
     </section>
   );

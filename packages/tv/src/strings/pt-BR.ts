@@ -19,14 +19,13 @@ export const STRINGS = {
   roomLabel: 'SALA',
   joinByPhone: 'Entre pelo celular',
   orVisit: 'ou acesse',
-  andTypeCode: 'e digite o código',
   players: 'Jogadores',
   nobodyYet: 'Ninguém entrou ainda',
   freeSlot: (place: number) => `Vaga Livre #${place}`,
   settings: 'CONFIGURAÇÕES',
   winsCount: (wins: number) => (wins === 1 ? '1 vitória' : `${wins} vitórias`),
   playerCount: (count: number, max: number) => `${count} / ${max}`,
-  firstJoinerHosts: 'O primeiro a entrar vira anfitrião(ã)',
+  firstJoinerHosts: 'Quem entrar primeiro vira anfitrião(ã)',
   waitingForHost: (nickname: string) => `Aguardando ${nickname} iniciar a partida…`,
 
   // Settings chips (TVLOBBY-01 AC 8)

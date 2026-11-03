@@ -28,7 +28,7 @@ export function LobbyScreen() {
         <RoomCard label={STRINGS.roomLabel} code={roomCode} matrix={null} size="large" />
       </header>
       <div class="lobby__body">
-        <JoinCard code={roomCode} address={displayAddress(location.origin)} matrix={matrix} />
+        <JoinCard code={roomCode} address={displayAddress(roomUrl(location.origin, roomCode))} matrix={matrix} />
         <PlayersPanel players={players} hostId={hostId} settings={settings} pulse={pulse} />
       </div>
       <footer class="lobby__footer">

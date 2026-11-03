@@ -8,9 +8,9 @@ export function roomUrl(origin: string, code: string): string {
   return `${origin}/${code}`;
 }
 
-/** The address as the lobby writes it, without the scheme (TVLOBBY-01 AC 3). */
-export function displayAddress(origin: string): string {
-  return origin.replace(/^[a-z]+:\/\//, '');
+/** An address as the lobby writes it, without the scheme: the room's own one, `<host>/<CODE>` (ROUTE-01 AC 5). */
+export function displayAddress(url: string): string {
+  return url.replace(/^[a-z]+:\/\//, '');
 }
 
 /**
