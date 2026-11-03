@@ -1,5 +1,7 @@
 # M4.1 Playtest Tasks
 
+**Approved**: 2026-11-03 - user: "aprovo as tarefas, antes de começar o batch 1, faça push dos commits até aqui."
+
 ## Execution Protocol (MANDATORY -- do not skip)
 
 Implement these tasks with the `tlc-spec-driven` skill: **activate it by name and follow its Execute flow and Critical Rules.** Do not search for skill files by filesystem path. The skill is the source of truth for the full flow (per-task cycle, sub-agent delegation, the walk, check_proofs, the Verifier and the screens sub-agent).
@@ -1362,7 +1364,7 @@ Proof: walk - caminhada do user na TV e num celular reais; resultado em `**Walke
 
 The feature's live state, written as it happens - a compaction gives no warning.
 
-**Settled mid-build:** none
+**Settled mid-build:** padrões da apresentação das tarefas aceitos com a aprovação: celulares recebem pontos e contagem de palavras, sem palavras, antes de "Ver resultado"; a música de fundo continua entre partidas e só recomeça ao recarregar a TV; sem chip "Música" no lobby da TV; peças de palavra curta demais voltam ao normal; user: "aprovo as tarefas"; none
 **Dispatched:** none
 **Walked:** none
 
