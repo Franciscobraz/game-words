@@ -12,7 +12,6 @@ export interface LobbySlotRowProps {
 /** The text of each status (TVLOBBY-01 AC 5). */
 const STATUS_TEXT: Record<PlayerStatus, string> = {
   disconnected: STRINGS.disconnectedTag,
-  spectator: STRINGS.spectatorTag,
 };
 
 /** One line of the players' panel: a player or a free place (TVLOBBY-01 AC 4-7). */

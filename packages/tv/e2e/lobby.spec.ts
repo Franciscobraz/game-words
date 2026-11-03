@@ -49,7 +49,9 @@ test('shows each player with color, nickname and wins', async ({ page }) => {
   await expect(page.getByTestId(`player-${BETO.id}`).getByRole('img', { name: STRINGS.crown })).toHaveCount(0);
   await expect(page.getByTestId(`player-${CAIO.id}`)).toContainText('DESCONECTADO');
   await expect(page.getByTestId(`player-${CAIO.id}`)).toHaveClass(/lobby-slot--dimmed/);
-  await expect(page.getByTestId(`player-${DUDA.id}`)).toContainText('ESPECTADOR(A)');
+  // AD-023: the lobby has no spectator; a line still marked as one shows the wins, like every other.
+  await expect(page.getByTestId(`player-${DUDA.id}`)).toContainText('0 vitórias');
+  await expect(page.getByTestId(`player-${DUDA.id}`)).not.toContainText('ESPECTADOR(A)');
   await expect(page.getByTestId('player-count')).toHaveText('4 / 10');
   await expect(page.getByTestId('free-slot')).toHaveCount(6);
   await expect(page.getByText('Vaga Livre #5')).toBeVisible();

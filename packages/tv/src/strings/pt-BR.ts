@@ -13,7 +13,6 @@ export const STRINGS = {
   // Players, in every screen (AD-013)
   hostTag: 'ANFITRIÃO(Ã)',
   disconnectedTag: 'DESCONECTADO',
-  spectatorTag: 'ESPECTADOR(A)',
   crown: 'Mais vitórias',
 
   // Lobby (TVLOBBY-01)

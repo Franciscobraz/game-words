@@ -1,8 +1,8 @@
 import { crownedPlayers, MAX_PLAYERS, type PlayerInfo } from '@bwords/core';
 import { STRINGS } from '../strings/pt-BR.ts';
 
-/** What the right side of a player's line says besides the wins (TVLOBBY-01 AC 5, tv-lobby.png). */
-export type PlayerStatus = 'disconnected' | 'spectator';
+/** What the right side of a player's line says besides the wins (TVLOBBY-01 AC 5); the lobby has no spectator (AD-023). */
+export type PlayerStatus = 'disconnected';
 
 /** The line of a player in the lobby (TVLOBBY-01 AC 4-6). */
 export interface LobbyPlayerSlot {
@@ -54,13 +54,7 @@ export function lobbyFooter(players: readonly PlayerInfo[], hostId: string | nul
 
 function playerSlot(player: PlayerInfo, isHost: boolean, crowned: boolean): LobbyPlayerSlot {
   const { id, nickname, color, wins } = player;
-  const status = statusOf(player);
+  const status: PlayerStatus | null = player.connected ? null : 'disconnected';
   const winsText = wins === 0 && status !== null ? null : STRINGS.winsCount(wins);
   return { kind: 'player', id, nickname, color, wins, isHost, crowned, status, winsText };
-}
-
-/** A disconnected spectator reads as disconnected: that is what the room needs to know first. */
-function statusOf(player: PlayerInfo): PlayerStatus | null {
-  if (!player.connected) return 'disconnected';
-  return player.spectator ? 'spectator' : null;
 }

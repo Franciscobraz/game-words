@@ -39,18 +39,6 @@ describe('lobbySlots', () => {
     expect(anaSlot?.status).toBeNull();
   });
 
-  test('marks a spectator', () => {
-    const duda = player('p4', 'Duda', { spectator: true });
-
-    expect(playerSlots([duda], 'p1')[0]?.status).toBe('spectator');
-  });
-
-  test('a disconnected spectator reads as disconnected', () => {
-    const duda = player('p4', 'Duda', { spectator: true, connected: false });
-
-    expect(playerSlots([duda], 'p1')[0]?.status).toBe('disconnected');
-  });
-
   test('writes the wins, leaving them out only of a line with a status and no wins', () => {
     const noWins = player('p5', 'Eva');
     const caio = player('p3', 'Caio', { connected: false });

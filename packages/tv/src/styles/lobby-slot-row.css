@@ -113,10 +113,6 @@
   color: var(--color-on-surface-variant);
 }
 
-.lobby-slot__status--spectator {
-  color: var(--player-color);
-}
-
 .lobby-slot__place {
   display: flex;
   flex: none;

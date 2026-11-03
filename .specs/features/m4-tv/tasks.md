@@ -1237,6 +1237,9 @@ Proof: `npx vitest run packages/tv/src/model/result-header.test.ts -t "names the
 **C115** - Uma lista que cabe no painel não se move durante a rolagem (TVWORDS-01, AC 6)
 Proof: `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/words.spec.ts -g "does not move a list that fits"`
 
+**C116** - No lobby, cada jogador aparece com cor, apelido e vitórias, e uma linha ainda marcada como espectador mostra "0 vitórias", sem "ESPECTADOR(A)" (TVLOBBY-01, AC 4; AD-023)
+Proof: `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/lobby.spec.ts -g "shows each player with color, nickname and wins"`
+
 ---
 
 ## Handoff
