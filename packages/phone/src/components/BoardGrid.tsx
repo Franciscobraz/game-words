@@ -1,5 +1,5 @@
 import { useRef } from 'preact/hooks';
-import type { LinePoint } from '../model/board-view.ts';
+import type { LinePoint, PathTone } from '../model/board-view.ts';
 import { HIT_RADIUS_RATIO, isInsideBoard, type Point, tileAtPoint } from '../model/hit-test.ts';
 import '../styles/board-grid.css';
 
@@ -14,6 +14,10 @@ export interface BoardGridProps {
   line: readonly LinePoint[];
   /** The player's color, which lights the path (PLAY-01 AC 2). */
   color: string;
+  /** The tiles of the word the feedback judges; none when no feedback shows. */
+  feedbackPath?: readonly number[];
+  /** The verdict's color for `feedbackPath`; null leaves the tiles as they are (FEEDBACK-02 AC 6). */
+  tone?: PathTone | null;
   /** A locked board is faded and ignores the finger (PLAY-01 AC 20, SPEC-01 AC 1). */
   locked: boolean;
   /** Name of the board for assistive technology. */
@@ -30,7 +34,19 @@ export interface BoardGridProps {
  * calls `onRelease` when the finger lifts or leaves it (PLAY-01 AC 2-4, 16). It
  * fills its parent, which gives it a square.
  */
-export function BoardGrid({ labels, size, path, line, color, locked, label, onReachTile, onRelease }: BoardGridProps) {
+export function BoardGrid({
+  labels,
+  size,
+  path,
+  line,
+  color,
+  feedbackPath = [],
+  tone = null,
+  locked,
+  label,
+  onReachTile,
+  onRelease,
+}: BoardGridProps) {
   const gridRef = useRef<HTMLDivElement>(null);
   /** The pointer that swipes; a second finger is ignored. */
   const swipingPointer = useRef<number | null>(null);
@@ -89,14 +105,18 @@ export function BoardGrid({ labels, size, path, line, color, locked, label, onRe
       </svg>
       {labels.map((tileText, index) => (
         <span key={index} class="board-grid__cell">
-          <span class={tileClass(path.includes(index), index === last)}>{tileText}</span>
+          <span class={tileClass(path.includes(index), index === last, feedbackPath.includes(index) ? tone : null)}>
+            {tileText}
+          </span>
         </span>
       ))}
     </div>
   );
 }
 
-function tileClass(isLit: boolean, isLast: boolean): string {
-  if (!isLit) return 'board-grid__tile';
-  return `board-grid__tile board-grid__tile--lit${isLast ? ' board-grid__tile--last' : ''}`;
+/** A tile under the finger lights in the player's color; one of the judged word takes the verdict's color. */
+function tileClass(isLit: boolean, isLast: boolean, tone: PathTone | null): string {
+  if (isLit) return `board-grid__tile board-grid__tile--lit${isLast ? ' board-grid__tile--last' : ''}`;
+  if (tone !== null) return `board-grid__tile board-grid__tile--${tone}`;
+  return 'board-grid__tile';
 }

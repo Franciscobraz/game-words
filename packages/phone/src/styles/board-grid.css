@@ -68,6 +68,22 @@
   color: var(--color-surface-container-lowest);
 }
 
+/* The tiles of the judged word, in the color of its verdict while the feedback shows (FEEDBACK-02 AC 6). */
+.board-grid__tile--valid {
+  background: var(--color-valid);
+  color: var(--color-on-valid);
+}
+
+.board-grid__tile--already-found {
+  background: var(--color-already-found);
+  color: var(--color-on-already-found);
+}
+
+.board-grid__tile--invalid {
+  background: var(--color-invalid);
+  color: var(--color-on-invalid);
+}
+
 .board-grid__tile--last {
   outline: 3px solid var(--color-on-surface);
   outline-offset: 2px;

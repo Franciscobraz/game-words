@@ -46,6 +46,8 @@ export interface RoundStore {
   path: Signal<Path>;
   /** The feedback on screen, for 0.5 s after a release; null when none shows. */
   feedback: Signal<Feedback | null>;
+  /** The tiles of the word the feedback judges, painted with its verdict while it shows (FEEDBACK-02 AC 6). */
+  feedbackPath: Signal<Path>;
   /** Valid paths not sent yet. */
   pendingPaths: Signal<readonly QueuedPath[]>;
   /** The finger reached `tile`: the path grows, shrinks or stays (PLAY-01 AC 2-4). Ignored while the board is locked. */
@@ -59,6 +61,7 @@ export function createRoundStore(deps: RoundDeps): RoundStore {
   const { room, schedule } = deps;
   const path = signal<Path>([]);
   const feedback = signal<Feedback | null>(null);
+  const feedbackPath = signal<Path>([]);
   const pendingPaths = signal<readonly QueuedPath[]>([]);
 
   /** Each batch sent and not answered yet, oldest first; the server answers in order. */
@@ -151,18 +154,21 @@ export function createRoundStore(deps: RoundDeps): RoundStore {
     cancelFeedback?.();
     cancelFeedback = null;
     feedback.value = null;
+    feedbackPath.value = [];
   }
 
   function isOpen(): boolean {
     return isBoardOpen(room.room.value, room.connection.value, room.serverNow());
   }
 
-  function showFeedback(next: Feedback): void {
+  function showFeedback(next: Feedback, swiped: Path): void {
     cancelFeedback?.();
     feedback.value = next;
+    feedbackPath.value = swiped;
     cancelFeedback = schedule(() => {
       cancelFeedback = null;
       feedback.value = null;
+      feedbackPath.value = [];
     }, FEEDBACK_VISIBLE_MS);
   }
 
@@ -214,6 +220,7 @@ export function createRoundStore(deps: RoundDeps): RoundStore {
   return {
     path,
     feedback,
+    feedbackPath,
     pendingPaths,
     extendPathTo(tile) {
       const round = room.room.value.round;
@@ -234,7 +241,7 @@ export function createRoundStore(deps: RoundDeps): RoundStore {
       if (latest.phase !== 'round' || latest.round?.id !== round.id) return;
 
       const verdict = recheckFound(judged, latest);
-      showFeedback(verdict);
+      showFeedback(verdict, swiped);
       if (verdict.kind === 'valid') accept(swiped, verdict.word, verdict.points, round);
     },
   };

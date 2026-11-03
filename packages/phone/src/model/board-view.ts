@@ -63,6 +63,30 @@ export function rackContent(board: Board, path: Path, feedback: Feedback | null)
   return { letters: [], tone: 'swiping' };
 }
 
+/** The colors the tiles of a judged word take; a too-short word has none (FEEDBACK-02 AC 6). */
+export type PathTone = 'valid' | 'already-found' | 'invalid';
+
+/**
+ * The color of the tiles of the word the feedback judges, the same as its verdict
+ * (FEEDBACK-02 AC 6); null without a feedback and for a word too short, whose tiles
+ * stay as they are.
+ */
+export function pathTone(feedback: Feedback | null): PathTone | null {
+  if (feedback === null) return null;
+  switch (feedback.kind) {
+    case 'valid':
+    case 'already-found':
+    case 'invalid':
+      return feedback.kind;
+    case 'too-short':
+      return null;
+    default: {
+      const never: never = feedback;
+      return never;
+    }
+  }
+}
+
 /** The verdict of a release: "VÁLIDA (+N PTS)", "JÁ ENCONTRADA", "INVÁLIDA" or "MUITO CURTA" (PLAY-01 AC 7-10). */
 export function feedbackText(feedback: Feedback): string {
   switch (feedback.kind) {

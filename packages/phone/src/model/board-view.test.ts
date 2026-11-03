@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { STRINGS } from '../strings/pt-BR.ts';
-import { boardLabels, feedbackText, foundChips, pathLine, rackContent, tileLabel, wordLetters } from './board-view.ts';
+import { boardLabels, feedbackText, foundChips, pathLine, pathTone, rackContent, tileLabel, wordLetters } from './board-view.ts';
 
 /** The board of the captures: C A S A / Qu E R O / T I N S / L U A M. */
 const BOARD = [
@@ -45,6 +45,22 @@ describe('rackContent', () => {
 
   test('is empty with no swipe and no feedback', () => {
     expect(rackContent(BOARD, [], null)).toEqual({ letters: [], tone: 'swiping' });
+  });
+});
+
+describe('pathTone', () => {
+  // FEEDBACK-02 AC 6: the tiles take the verdict's color; a word too short leaves them as they are.
+  test.each([
+    [{ kind: 'valid', word: 'casa', points: 2 }, 'valid'],
+    [{ kind: 'already-found', word: 'casa' }, 'already-found'],
+    [{ kind: 'invalid', word: 'cqe' }, 'invalid'],
+    [{ kind: 'too-short', word: 'ca' }, null],
+  ] as const)('%o paints the path %s', (feedback, tone) => {
+    expect(pathTone(feedback)).toBe(tone);
+  });
+
+  test('no feedback paints nothing', () => {
+    expect(pathTone(null)).toBeNull();
   });
 });
 

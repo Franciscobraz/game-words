@@ -173,6 +173,32 @@ test('colors each verdict and shakes an invalid word', async ({ page }) => {
   }
 });
 
+test('paints the path tiles with the color of the feedback while it shows', async ({ page }) => {
+  // FEEDBACK-02 AC 6: CASA valid in green, CER invalid in red, CASA again already found in yellow, while each
+  // feedback shows; a word too short leaves the tiles plain; after the 500 ms of the feedback the tiles are plain again.
+  await openNow(page);
+  await expect(boardOf(page)).toBeVisible();
+  const tiles = page.locator('.board-grid__tile');
+  const plain = await tiles.nth(15).evaluate((element) => getComputedStyle(element).backgroundColor);
+  const verdicts = [
+    { tiles: SAMPLE_WORDS.casa, token: '--color-valid' },
+    { tiles: [0, 5, 6], token: '--color-invalid' },
+    { tiles: SAMPLE_WORDS.casa, token: '--color-already-found' },
+    { tiles: [0, 1], token: null },
+  ];
+
+  for (const verdict of verdicts) {
+    await swipe(page, verdict.tiles);
+    await expect(page.getByRole('status')).toBeVisible();
+    const color = verdict.token === null ? plain : await tokenColor(page, verdict.token);
+    for (const tile of verdict.tiles) await expect(tiles.nth(tile)).toHaveCSS('background-color', color);
+    await expect(tiles.nth(15)).toHaveCSS('background-color', plain);
+
+    await expect(page.getByRole('status')).toHaveCount(0);
+    for (const tile of verdict.tiles) await expect(tiles.nth(tile)).toHaveCSS('background-color', plain);
+  }
+});
+
 /** The computed color of a theme token, read the way the browser resolves it on a background. */
 function tokenColor(page: Page, token: string): Promise<string> {
   return page.evaluate((name) => {

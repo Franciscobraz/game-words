@@ -5,7 +5,7 @@ import { MatchHostMenu } from '../components/HostMenu.tsx';
 import { RoundTimer } from '../components/RoundTimer.tsx';
 import { WordRack } from '../components/WordRack.tsx';
 import { isBoardOpen } from '../model/board-lock.ts';
-import { boardLabels, feedbackText, foundChips, pathLine, rackContent } from '../model/board-view.ts';
+import { boardLabels, feedbackText, foundChips, pathLine, pathTone, rackContent } from '../model/board-view.ts';
 import { formatClock, isAlert, isTimeUp } from '../model/clock.ts';
 import { foundTotals } from '../model/found.ts';
 import { roundPosition } from '../model/round-position.ts';
@@ -75,6 +75,8 @@ export function BoardScreen() {
           path={path}
           line={pathLine(path, size)}
           color={color}
+          feedbackPath={round.feedbackPath.value}
+          tone={pathTone(feedback)}
           locked={locked}
           label={STRINGS.board}
           onReachTile={round.extendPathTo}

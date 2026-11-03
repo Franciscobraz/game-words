@@ -290,6 +290,21 @@ describe('sending', () => {
     expect(submits()).toEqual([{ type: 'submit', paths: [CASA] }]);
   });
 
+  test('keeps the judged path with the feedback until it goes', async () => {
+    // FEEDBACK-02 AC 6: the tiles of CASA stay with the feedback for its 500 ms, then the board is plain again.
+    const { clock, round, swipe } = await setup();
+
+    await swipe(CASA);
+    expect(round.feedback.value?.kind).toBe('valid');
+    expect(round.feedbackPath.value).toEqual(CASA);
+
+    clock.advance(499);
+    expect(round.feedbackPath.value).toEqual(CASA);
+    clock.advance(1);
+    expect(round.feedback.value).toBeNull();
+    expect(round.feedbackPath.value).toEqual([]);
+  });
+
   test('drops pending paths when the round ends on the words', async () => {
     // Edge Cases: the server closed the round, so the paths still waiting are not sent.
     const { clock, connection, round, swipe, submits } = await setup();
