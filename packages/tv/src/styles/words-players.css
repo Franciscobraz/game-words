@@ -1,0 +1,166 @@
+/* The "Jogadores" panel beside the words (WORDCTL-01 AC 18-29, tv-words.png). Everything in rem (AD-016). */
+.words-players {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-self: flex-start;
+  width: 34rem;
+  margin-left: 2rem;
+  padding: 1rem 1.25rem 1.25rem;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container-low);
+}
+
+.words-players__header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  height: 3.25rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 0.0625rem solid var(--color-card-stroke);
+}
+
+.words-players__title {
+  margin: 0;
+  color: var(--color-text-strong);
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-black);
+  line-height: 1;
+}
+
+.words-players__count {
+  margin-left: 0.75rem;
+  padding: 0.3125rem 0.625rem;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-high);
+  color: var(--color-on-surface);
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+}
+
+.words-players__round {
+  margin-left: auto;
+  color: var(--color-on-surface-variant);
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.06em;
+}
+
+/* Room for the most players of a room (MAX_PLAYERS, 10): the panel keeps its size as the cards move (AC 26). */
+.words-players__list {
+  position: relative;
+  flex: none;
+  height: 46rem;
+}
+
+/* Each card stands at its place and slides there whole, with a transform only (AC 24-25). */
+.words-player {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3.75rem;
+  transform: translateY(calc(var(--place) * 4.6rem));
+  transition: transform 0.6s ease-in-out;
+}
+
+.words-player__card {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 1rem;
+  border-left: 0.25rem solid var(--player-color);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container);
+}
+
+/* The first place stands out (AC 29). */
+.words-player__card--leader {
+  background: var(--color-surface-container-highest);
+}
+
+/* A disconnected player stays, faded (AC 27). */
+.words-player__card--away > * {
+  opacity: 0.5;
+}
+
+/* The player who found the highlighted word, on its "check" (AC 21). */
+.words-player__card--scored {
+  animation: words-player-score 0.5s ease-out;
+}
+
+.words-player__identity {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  margin-left: 0.875rem;
+}
+
+.words-player__name-line {
+  display: flex;
+  align-items: center;
+}
+
+.words-player__name {
+  color: var(--color-text-strong);
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-black);
+  line-height: 1.2;
+}
+
+.words-player__tag {
+  margin-left: 0.75rem;
+  color: var(--color-on-surface-variant);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.06em;
+}
+
+.words-player__words {
+  color: var(--color-on-surface-variant);
+  font-size: 0.9375rem;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.2;
+}
+
+.words-player__points {
+  display: flex;
+  flex: none;
+  align-items: baseline;
+  margin-left: 0.75rem;
+  color: var(--color-text-strong);
+}
+
+/* The points of the first and the second in each one's color (AC 29). */
+.words-player__points--colored {
+  color: var(--player-color);
+}
+
+.words-player__number {
+  font-size: 1.625rem;
+  font-weight: var(--font-weight-black);
+  line-height: 1;
+}
+
+.words-player__unit {
+  margin-left: 0.25rem;
+  color: var(--color-on-surface-variant);
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-bold);
+}
+
+@keyframes words-player-score {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}

@@ -57,6 +57,10 @@ export const STRINGS = {
   noWordsFound: 'Nenhuma palavra encontrada',
   spellings: (spellings: readonly string[]) => `(${spellings.join(', ')})`,
   wordPoints: (points: number) => `+${points}`,
+  playersTitle: 'Jogadores',
+  playersInRoom: (count: number) => `${count} na sala`,
+  roundTag: (round: number) => `RODADA ${round}`,
+  wordCount: (count: number) => `${count} ${count === 1 ? 'palavra' : 'palavras'}`,
 
   // Result of the round (TVRES-01)
   resultLabel: 'Resultado',

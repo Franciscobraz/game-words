@@ -3,16 +3,19 @@ import { BrandHeader } from '../components/BrandHeader.tsx';
 import { RoomCard } from '../components/RoomCard.tsx';
 import { WordRow } from '../components/WordRow.tsx';
 import { WordScroll } from '../components/WordScroll.tsx';
+import { WordsPlayersPanel } from '../components/WordsPlayersPanel.tsx';
 import { qrMatrix, roomUrl } from '../model/qr.ts';
 import { foundWordCount } from '../model/reveal.ts';
 import { highlightedRow, wordRows } from '../model/word-rows.ts';
+import { wordsPlayers } from '../model/words-players.ts';
 import { useStore } from '../state/store.ts';
 import { STRINGS } from '../strings/pt-BR.ts';
 import '../styles/words.css';
 
 /**
  * The words of the round: the totals stand still, the list moves by itself one word a second with a word highlighted on
- * the reading line, the host's steps take it over, and the screen waits for "Ver resultado" (TVWORDS-01, WORDCTL-01).
+ * the reading line, the host's steps take it over, and the screen waits for "Ver resultado"; the players of the round
+ * stand beside it, ordered by the points of the words so far (TVWORDS-01, WORDCTL-01, tv-words.png).
  */
 export function WordsScreen() {
   const { room, reveal, words } = useStore();
@@ -27,7 +30,9 @@ export function WordsScreen() {
   const rows = useMemo(() => (results === null ? [] : wordRows(results, playersAtStart)), [results, playersAtStart]);
   if (results === null || plan === null || settings === null) return null;
   const found = foundWordCount(results);
-  const highlighted = highlightedRow(rows, words.highlight.value);
+  const highlight = words.highlight.value;
+  const highlighted = highlightedRow(rows, highlight);
+  const cards = wordsPlayers(results, players, { highlight, mode: words.mode.value });
   return (
     <main class="screen words" data-testid="words-screen">
       <header class="words__header">
@@ -41,26 +46,29 @@ export function WordsScreen() {
           <RoomCard label={null} code={roomCode} matrix={matrix} size="medium" />
         </div>
       </header>
-      <div class="words__column">
-        <div class="words__totals" data-testid="word-totals">
-          <span class="words__total">
-            <span class="words__count words__count--possible">{results.possibleWords}</span>
-            {STRINGS.possibleWords(results.possibleWords)}
-          </span>
-          <span class="words__total">
-            <span class="words__count words__count--found">{found}</span>
-            {STRINGS.foundWords(found)}
-          </span>
+      <div class="words__body">
+        <div class="words__column">
+          <div class="words__totals" data-testid="word-totals">
+            <span class="words__total">
+              <span class="words__count words__count--possible">{results.possibleWords}</span>
+              {STRINGS.possibleWords(results.possibleWords)}
+            </span>
+            <span class="words__total">
+              <span class="words__count words__count--found">{found}</span>
+              {STRINGS.foundWords(found)}
+            </span>
+          </div>
+          {found === 0 ? (
+            <p class="words__empty">{STRINGS.noWordsFound}</p>
+          ) : (
+            <WordScroll offsetPx={words.heading.value} mode={words.mode.value} onLayout={words.setLayout}>
+              {rows.map((row, index) => (
+                <WordRow row={row} highlighted={index === highlighted} key={index} />
+              ))}
+            </WordScroll>
+          )}
         </div>
-        {found === 0 ? (
-          <p class="words__empty">{STRINGS.noWordsFound}</p>
-        ) : (
-          <WordScroll offsetPx={words.heading.value} mode={words.mode.value} onLayout={words.setLayout}>
-            {rows.map((row, index) => (
-              <WordRow row={row} highlighted={index === highlighted} key={index} />
-            ))}
-          </WordScroll>
-        )}
+        <WordsPlayersPanel cards={cards} round={results.index + 1} highlight={highlight} />
       </div>
     </main>
   );

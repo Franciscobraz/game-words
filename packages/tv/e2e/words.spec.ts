@@ -1,7 +1,7 @@
-import type { RoundResultsMessage, ServerMessage } from '@bwords/core';
+import type { PlayerInfo, RoundResultsMessage, ServerMessage } from '@bwords/core';
 import { expect, type Page, test } from '@playwright/test';
 import { type FakeRoom, fakeRoom } from './fake-room.ts';
-import { ANA, BETO, lobbyWelcome, roundWelcome, SAMPLE_END, sampleResults } from './samples.ts';
+import { ANA, BETO, CAIO, lobbyWelcome, roundWelcome, SAMPLE_END, sampleResults } from './samples.ts';
 
 /** A screen reads the clock this often, so a change shows up to this late (`SERVER_CLOCK_TICK_MS`). */
 const TICK_MS = 150;
@@ -30,11 +30,11 @@ function endRound(room: FakeRoom, results: RoundResultsMessage): void {
   room.push({ type: 'phase', phase: 'words' });
 }
 
-/** Opens the TV at the end of the round and ends it with `results`, already past "Tempo!". */
-async function openWords(page: Page, results: RoundResultsMessage) {
+/** Opens the TV at the end of the round of `players` and ends it with `results`, already past "Tempo!". */
+async function openWords(page: Page, results: RoundResultsMessage, players: PlayerInfo[] = [ANA, BETO]) {
   await page.clock.install({ time: SAMPLE_END });
   await page.clock.pauseAt(SAMPLE_END);
-  const room = await fakeRoom(page, roundWelcome([ANA, BETO], ANA.id));
+  const room = await fakeRoom(page, roundWelcome(players, ANA.id));
   await page.goto('/');
   await expect(page.getByTestId('round-screen')).toBeVisible();
   endRound(room, results);
@@ -388,5 +388,105 @@ test('fits the words with a long list at both ends of the screens', async ({ pag
     expect(totalsBottom).toBeLessThan(panelBottom);
     expect(panelBottom).toBeLessThanOrEqual(screen.height);
     await fresh.close();
+  }
+});
+
+// The players beside the words (WORDCTL-01 AC 18-29)
+
+const TRIO = [ANA, BETO, { ...CAIO, connected: true }];
+
+/**
+ * The list ASA (Ana, Beto, 1), CASA (Beto, Caio, 2), TIA (Caio, 4), QUERO (Beto, 6): the panel reads Ana, Beto, Caio on
+ * ASA, Beto, Caio, Ana on CASA, Caio, Beto, Ana on TIA, and Beto, Caio, Ana on QUERO.
+ */
+function trioResults(): RoundResultsMessage {
+  return {
+    ...sampleResults(),
+    shared: [
+      { word: 'asa', points: 1, foundBy: [ANA.id, BETO.id] },
+      { word: 'casa', points: 2, foundBy: [BETO.id, CAIO.id] },
+    ],
+    players: [
+      { playerId: BETO.id, unique: [{ word: 'quero', points: 6 }], roundPoints: 9, roundWords: 3, score: 9, words: 3 },
+      { playerId: CAIO.id, unique: [{ word: 'tia', points: 4 }], roundPoints: 6, roundWords: 2, score: 6, words: 2 },
+      { playerId: ANA.id, unique: [], roundPoints: 1, roundWords: 1, score: 1, words: 1 },
+    ],
+  };
+}
+
+const card = (page: Page, id: string) => page.getByTestId(`words-player-${id}`);
+
+/** The names of the panel's cards from top to bottom, as the screen draws them. */
+async function panelOrder(page: Page): Promise<string[]> {
+  const cards = await page.locator('.words-player').evaluateAll((elements) =>
+    elements.map((element) => ({ name: element.querySelector('.words-player__name')!.textContent!, top: element.getBoundingClientRect().top })),
+  );
+  return cards.sort((a, b) => a.top - b.top).map(({ name }) => name);
+}
+
+test('animates the players who scored with the check', async ({ page }) => {
+  // WORDCTL-01 AC 18, 20-21: the panel stands right of the list; on ASA, Ana and Beto score and their cards play the
+  // animation, and on CASA, Beto and Caio.
+  await openWords(page, trioResults(), TRIO);
+  const scoring = (id: string) =>
+    card(page, id)
+      .locator('.words-player__card')
+      .evaluate((element) => element.getAnimations().some((animation) => (animation as CSSAnimation).animationName === 'words-player-score'));
+  const list = (await page.getByTestId('word-scroll').boundingBox())!;
+  const panel = (await page.getByTestId('words-players').boundingBox())!;
+  expect(panel.x).toBeGreaterThanOrEqual(list.x + list.width);
+
+  await expect(card(page, ANA.id).getByTestId('words-player-points')).toHaveText('1');
+  await expect(card(page, BETO.id).getByTestId('words-player-points')).toHaveText('1');
+  await expect(card(page, CAIO.id).getByTestId('words-player-points')).toHaveText('0');
+  expect([await scoring(ANA.id), await scoring(BETO.id), await scoring(CAIO.id)]).toEqual([true, true, false]);
+
+  await goTo(page, 1_500);
+
+  await expect(card(page, BETO.id).getByTestId('words-player-points')).toHaveText('3');
+  await expect(card(page, CAIO.id).getByTestId('words-player-points')).toHaveText('2');
+  expect([await scoring(ANA.id), await scoring(BETO.id), await scoring(CAIO.id)]).toEqual([false, true, true]);
+});
+
+test('slides the whole card to its new place', async ({ page }) => {
+  // WORDCTL-01 AC 24-25: on CASA, Ana goes from the top to the third place; her whole card moves in a transition of
+  // its transform to the place Caio had.
+  await openWords(page, trioResults(), TRIO);
+  await finishMoves(page);
+  expect(await panelOrder(page)).toEqual(['Ana', 'Beto', 'Caio']);
+  const slots = await Promise.all([ANA, BETO, CAIO].map(async ({ id }) => (await card(page, id).boundingBox())!.y));
+
+  await goTo(page, 1_500);
+  await expect(card(page, BETO.id).getByTestId('words-player-points')).toHaveText('3');
+  const moving = await card(page, ANA.id).evaluate((element) =>
+    element.getAnimations().map((animation) => (animation as CSSTransition).transitionProperty),
+  );
+  await finishMoves(page);
+
+  expect(moving).toEqual(['transform']);
+  expect(await panelOrder(page)).toEqual(['Beto', 'Caio', 'Ana']);
+  expect((await card(page, ANA.id).boundingBox())!.y).toBeCloseTo(slots[2]!, 0);
+  expect((await card(page, BETO.id).boundingBox())!.y).toBeCloseTo(slots[0]!, 0);
+});
+
+test('keeps the panel and the cards the same size while they reorder', async ({ page }) => {
+  // WORDCTL-01 AC 26: from ASA to QUERO the order changes three times; the panel and every card keep their size.
+  await openWords(page, trioResults(), TRIO);
+  const sizes = async () => {
+    await finishMoves(page);
+    const boxes = [await page.getByTestId('words-players').boundingBox(), ...(await Promise.all(TRIO.map(({ id }) => card(page, id).boundingBox())))];
+    return boxes.map((box) => [box!.width, box!.height]);
+  };
+  const atAsa = await sizes();
+
+  for (const [elapsedMs, order] of [
+    [1_500, ['Beto', 'Caio', 'Ana']],
+    [2_500, ['Caio', 'Beto', 'Ana']],
+    [3_500, ['Beto', 'Caio', 'Ana']],
+  ] as const) {
+    await goTo(page, elapsedMs);
+    await finishMoves(page);
+    expect(await panelOrder(page)).toEqual(order);
+    expect(await sizes()).toEqual(atAsa);
   }
 });
