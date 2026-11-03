@@ -147,7 +147,7 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 - **Motivo:** pergunta do M4 sobre o fast mode depois do AD-019: "Tirar a opção [...] Manter a opção". O user escolheu tirar.
 - user: "o fast mode pode ser removido."
 
-### AD-021 - Palavras em rolagem e depois resultado final na TV (active)
+### AD-021 - Palavras em rolagem e depois resultado final na TV (superseded by AD-024)
 
 - **Data:** 2026-10-30
 - **Decisão:** ao fim da rodada a TV abre sozinha uma página com a quantidade de palavras possíveis e a rolagem automática de todas as palavras encontradas: primeiro as em comum, depois as únicas, cada grupo da menor para a maior, com a pontuação e um círculo na cor de quem achou. Cinco segundos depois da última palavra, vai para o resultado final, sem lista de palavras: pódio com 1º, 2º e 3º maiores, os outros jogadores abaixo em ordem de pontos e o tabuleiro com a palavra mais longa marcada. Essa página espera o anfitrião escolher jogar novamente ou voltar ao lobby. Substitui AD-019 e diverge de DESIGN §4.3 e de `docs/screens.md` §6 e §8.
@@ -167,6 +167,36 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 - **Decisão:** a TV não mostra "ESPECTADOR(A)" no lobby: ali todo jogador é jogador. A marca de espectador só existe em quem entrou durante a rodada ou o resultado, e a volta ao lobby a zera. A linha da Duda em `tv-lobby.png` não é seguida.
 - **Motivo:** pergunta do round 1 de telas: "O que fazer com a linha da Duda (espectador no lobby)? [...] Recomendo registrar que não existe espectador no lobby, sem mudar a regra." Opção escolhida: a recomendada.
 - user: "Não existe espectador no lobby"
+
+### AD-024 - Lista de palavras conduzida pelo anfitrião (active)
+
+- **Data:** 2026-11-03
+- **Decisão:** a lista de palavras rola sozinha a 1 palavra por segundo, sem limite de duração; ▲ e ▼ no celular do anfitrião assumem o controle; a TV só mostra o resultado quando o anfitrião toca "Ver resultado". Substitui a ida automática ao resultado de AD-021, que vale no resto (lista de palavras e depois resultado).
+- **Motivo:** teste em TV real. user: "Navegar automaticamente para a pagina de resultados não foi uma boa decisão, devemos dá o controle de rolar a lista de palavras ao anfitrião e a funcionalidade de ir para tela de resultados manualmente."; recomendações aceitas: "concordo com o recomendado"
+
+### AD-025 - A TV na raiz e a entrada por código em /join (active)
+
+- **Data:** 2026-11-03
+- **Decisão:** `/` e `/tv` abrem a TV, `/join` abre a entrada por código, `/<CÓDIGO>` abre o celular, e a TV mostra o endereço completo da sala. Muda SERVE-01 do M4, que servia o celular em `/`.
+- **Motivo:** o celular chega quase sempre pelo QR. user: "A rota padrão \"/\" pode ser o \"/tv\""; "a tela de entrar com codigo pode virar \"/join\""
+
+### AD-026 - Resultado e pódio na mesma hora na TV e nos celulares (active)
+
+- **Data:** 2026-11-03
+- **Decisão:** enquanto a TV mostra "Tempo!" e a lista de palavras, os celulares mostram "Olhe para a TV"; o resultado e o pódio abrem nos celulares junto com a TV, no "Ver resultado" do anfitrião. Substitui o pódio direto no celular ao fim da última rodada (M4, PHONE-01 AC 1).
+- **Motivo:** user: "Sincronize a exibição do pódio no mesmo momento entre a tv e os celulares para manter a atenção dos jogadores na tela da tv na hora que as palavras estiverem sendo exibidas"
+
+### AD-027 - Resultado da rodada com pontos e palavras da rodada (active)
+
+- **Data:** 2026-11-03
+- **Decisão:** entre as rodadas, o resultado mostra palavras e pontos da rodada, ordenados pelos pontos da rodada, sob "Classificação da Rodada N"; no da última rodada, a soma da partida, sob "Classificação da Partida". Diverge da capture do Stitch, que traz "Classificação da Partida" em todo resultado, e de TVRES-01 AC 2 do M4 (pontos acumulados).
+- **Motivo:** pergunta: "Entre as rodadas, o placar ordena pelos pontos da rodada?" user: "Sim, pela rodada"; e "Mantenha coerencia entre pontos e palavras, deve ser mostrados pontos e palavras por rodada, na rodada final mostrar o somatorio dos 2 valores."
+
+### AD-028 - Música de fundo e vinheta do resultado (active)
+
+- **Data:** 2026-11-03
+- **Decisão:** a TV toca uma música original, calma, gerada no navegador, da primeira contagem até a lista da última rodada, e uma vinheta animada de cerca de 30 s em loop em todo resultado; o lobby do anfitrião tem a opção "Música". Diverge de DESIGN §4.4 (sem música no MVP).
+- **Motivo:** teste em família. user: "o silencio na sala pode ser um problema"; "Mantenha a mesma vinheta em todas as salas, ela deve ser mais longa, pode ter 30s e ficar rodando em looping."
 
 ## Handoff
 
