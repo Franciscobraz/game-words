@@ -62,9 +62,14 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 | Endereço na TV | "ou acesse <host>/<CÓDIGO>" no lugar de "ou acesse <host> e digite o código" | Quem não lê o QR digita o endereço inteiro | y - user: "sim" (pergunta 7 do teste) |
 | Zoom | Sem zoom por toque duplo nem por pinça em nenhuma tela do celular | Pedido do user | y - user: "Remover a possibilidade de dar zoom na tela do celular" |
 | Pendências do M4 | Socket que cai antes do `welcome`, faixa "Reconectando…" abaixo do cartão do código, 4 workers no E2E do celular, "Quem entrar primeiro vira anfitrião(ã)", `wrangler.jsonc` no DESIGN | Achados do fechamento do M4 | y - user: "aceito as sugestões das 7 pendencias" |
+| Retorno da palavra no celular | Já existe desde o M3 (PLAY-01 AC 6-9, 18-19): a palavra acima do tabuleiro fica verde em "VÁLIDA", amarela em "JÁ ENCONTRADA" e vermelha em "INVÁLIDA"; vibração e som só em "VÁLIDA". Esta feature muda o som e o padrão das preferências | Pedido do user; o resto já está feito | y - user: "no celular após selecionar e validar a palavra selecionada, o resultado da validação \"já encontrada\", \"válida\" e \"incorreta\" e pintar a palavra com a cor correspondente de cada efeito e ao ser uma palavra válida pode vibrar e fazer o mesmo som de \"check\" utilizado na lista de palavras. Todos os sons devem vir ativados por padrão, após o usuário configurar no celular dele, podemos manter as configurações feitas em outras sessões se possivel e ativa-las iguais assim que o usuário conectar no lobby" |
+| Pintar também as peças do caminho no tabuleiro | Depende da pergunta aberta | Hoje só a palavra acima do tabuleiro muda de cor | n - pergunta aberta |
+| Preferências ligadas por padrão | "Vibrar" e "Som ao acertar" começam ligadas num celular sem preferência guardada; quem já guardou uma escolha a mantém | Muda PREF-01 AC 1 do M3 | y - user: "no celular após selecionar e validar a palavra selecionada, o resultado da validação \"já encontrada\", \"válida\" e \"incorreta\" e pintar a palavra com a cor correspondente de cada efeito e ao ser uma palavra válida pode vibrar e fazer o mesmo som de \"check\" utilizado na lista de palavras. Todos os sons devem vir ativados por padrão, após o usuário configurar no celular dele, podemos manter as configurações feitas em outras sessões se possivel e ativa-las iguais assim que o usuário conectar no lobby" |
+| Preferências entre sessões | Continuam no `localStorage` do navegador e valem em toda sala, como em PREF-01 AC 2 do M3; outro navegador ou aba anônima começa do padrão | Não há conta de jogador onde guardar | y - user: "no celular após selecionar e validar a palavra selecionada, o resultado da validação \"já encontrada\", \"válida\" e \"incorreta\" e pintar a palavra com a cor correspondente de cada efeito e ao ser uma palavra válida pode vibrar e fazer o mesmo som de \"check\" utilizado na lista de palavras. Todos os sons devem vir ativados por padrão, após o usuário configurar no celular dele, podemos manter as configurações feitas em outras sessões se possivel e ativa-las iguais assim que o usuário conectar no lobby" |
+| Vibração no iPhone | O Safari do iPhone não tem `navigator.vibrate`, então "Vibrar" continua escondido lá (PREF-01 AC 3 do M3) | Limite da plataforma | y - fato de plataforma |
 | Mudanças em testes do M3 e do M4 | Os testes da navegação automática para o resultado, do pódio direto no celular, do celular em `/`, dos pontos acumulados entre as rodadas e do texto do endereço mudam junto com os critérios novos | Os critérios mudaram; nenhum teste é apagado sem o critério que o substitui | n - default |
 
-**Open questions:** "Após Rodada N" ao lado do título: sair (recomendado) ou ficar.
+**Open questions:** "Após Rodada N" ao lado do título: sair (recomendado) ou ficar; pintar também as peças do caminho no tabuleiro.
 
 ---
 
@@ -183,6 +188,24 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 
 ---
 
+### P2: Retorno da palavra no celular
+
+**User Story**: Como jogador, quero ouvir o mesmo "check" da TV quando acerto uma palavra, com som e vibração já ligados.
+
+**Why P2**: Pedido do user depois do teste; o retorno por cor já existe.
+
+**Acceptance Criteria**:
+
+1. IF o celular não tem preferências guardadas THEN the celular SHALL começar com "Vibrar" e "Som ao acertar" ligados
+2. WHERE "Som ao acertar" está ligado, WHEN o feedback é "VÁLIDA" THEN the celular SHALL tocar o mesmo "check" que a TV toca na lista de palavras
+3. WHERE "Vibrar" está ligado, WHEN o feedback é "VÁLIDA" THEN the celular SHALL vibrar 50 ms
+4. WHEN o jogador entra numa sala THEN the celular SHALL usar as preferências guardadas no navegador, de qualquer sala anterior
+5. The celular SHALL manter a palavra acima do tabuleiro verde em "VÁLIDA", amarela em "JÁ ENCONTRADA" e vermelha em "INVÁLIDA" (PLAY-01 AC 7-9 do M3)
+
+**Independent Test**: Num navegador limpo, entrar numa sala, acertar uma palavra e ouvir o "check" com vibração; desligar o som, entrar em outra sala e conferir que continua desligado.
+
+---
+
 ### P1: Rotas ⭐ MVP
 
 **User Story**: Como dono da TV, quero abrir o endereço do jogo sem caminho e cair na TV; como jogador, quero entrar pelo QR ou pelo endereço com o código.
@@ -256,11 +279,12 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 | SYNC-01 | P1: Celulares sincronizados com a TV (AC 1-6) | Design | Pending |
 | RESULT-02 | P1: Resultado com pontos e palavras (AC 1-10) | Design | Pending |
 | MUSIC-01 | P2: Música e vinheta (AC 1-10) | Design | Pending |
+| FEEDBACK-02 | P2: Retorno da palavra no celular (AC 1-5) | Design | Pending |
 | ROUTE-01 | P1: Rotas (AC 1-7) | Design | Pending |
 | NOZOOM-01 | P1: Celular sem zoom (AC 1-3) | Design | Pending |
 | M4FIX-01 | P1: Pendências do M4 (AC 1-5) | Design | Pending |
 
-**Coverage:** 63 total, 0 mapped to tasks, 63 unmapped ⚠️
+**Coverage:** 68 total, 0 mapped to tasks, 68 unmapped ⚠️
 
 ---
 

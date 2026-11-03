@@ -81,6 +81,11 @@ Os itens 3 e 6 e o pódio sincronizado contrariam decisões e critérios aprovad
   - Entre as rodadas, a ordem e as posições seguem os pontos da rodada, com o título "Classificação da Rodada N"; no resultado da última rodada, seguem a soma da partida. user: "Sim, pela rodada" (pergunta: "Entre as rodadas, o placar ordena pelos pontos da rodada?")
 - Perguntas feitas antes, com a recomendação: (1) o cartão do código sem "CÓDIGO DA SALA", como no Stitch; (2) palavras da partida inteira, somadas pelo servidor, para combinar com os pontos acumulados; (3) "plvrs", como no Stitch; (4) vinheta curta a cada resultado e comemoração mais longa no da última rodada, com a música de fundo em silêncio no resultado, a opção "Música" desligando as duas e sem repetir numa TV recarregada.
 
+### Retorno da palavra no celular (pedido de 2026-11-03)
+
+- user: "no celular após selecionar e validar a palavra selecionada, o resultado da validação \"já encontrada\", \"válida\" e \"incorreta\" e pintar a palavra com a cor correspondente de cada efeito e ao ser uma palavra válida pode vibrar e fazer o mesmo som de \"check\" utilizado na lista de palavras. Todos os sons devem vir ativados por padrão, após o usuário configurar no celular dele, podemos manter as configurações feitas em outras sessões se possivel e ativa-las iguais assim que o usuário conectar no lobby"
+- O retorno por cor, a vibração e o som em "VÁLIDA" e as preferências guardadas no navegador já existem desde o M3; mudam o som (o mesmo "check" da lista da TV) e o padrão das preferências (ligadas).
+
 ### Pendências do fechamento do M4 (2026-11-03)
 
 - Entram nesta feature, como recomendado:
