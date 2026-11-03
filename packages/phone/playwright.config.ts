@@ -18,6 +18,8 @@ const PHONE_URL = 'http://localhost:5175';
 export default defineConfig({
   testDir: 'e2e',
   fullyParallel: true,
+  // More at once and Vite's dev server refuses a connection now and then on Windows; the page then stays blank.
+  workers: 4,
   use: {
     ...devices['Desktop Chrome'],
     baseURL: PHONE_URL,

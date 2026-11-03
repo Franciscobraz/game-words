@@ -1061,8 +1061,8 @@ T39 → T40 → T41 → T42 → T43 → T44
 
 **Done when**:
 
-- [ ] C106
-- [ ] Gate check passes
+- [x] C106
+- [x] Gate check passes
 
 **Tests**: none
 **Gate**: build
