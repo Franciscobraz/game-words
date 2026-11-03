@@ -15,6 +15,7 @@ const SETTINGS: Settings = {
   pack: 'pt-BR',
   volume: 80,
   muted: false,
+  music: true,
 };
 
 const SAVED_ROOM: SavedRoom = { code: 'KBXT', tvToken: 'saved-tv-token' };

@@ -3,7 +3,7 @@ import { step } from './machine.ts';
 import type { Phase } from './protocol.ts';
 import { sanitizeLoadedSettings } from './settings.ts';
 import { DEFAULT_SETTINGS } from './state.ts';
-import { allMessages, fakeDeps, makePlayer, message, playerConn, roomWith, sentTo } from './test-helpers.ts';
+import { allMessages, fakeDeps, makePlayer, message, playerConn, roomWith, run, sentTo } from './test-helpers.ts';
 
 const deps = fakeDeps();
 
@@ -61,5 +61,40 @@ describe('fast mode', () => {
     expect(settings).toEqual({ ...DEFAULT_SETTINGS, size: 6, volume: 40 });
     // Settings without the field come back the same.
     expect(sanitizeLoadedSettings(DEFAULT_SETTINGS)).toEqual(DEFAULT_SETTINGS);
+  });
+});
+
+describe('music', () => {
+  test('turns the music on in a room stored without it', () => {
+    // MUSIC-01 AC 9: a room saved before the music keeps its other settings.
+    const { music: _absent, ...stored } = { ...DEFAULT_SETTINGS, size: 5 as const, volume: 30 };
+
+    const settings = sanitizeLoadedSettings(stored);
+
+    expect(settings).toEqual({ ...DEFAULT_SETTINGS, size: 5, volume: 30, music: true });
+    // A stored choice is kept.
+    expect(sanitizeLoadedSettings({ ...DEFAULT_SETTINGS, music: false }).music).toBe(false);
+  });
+
+  test('changes the music only in the lobby', () => {
+    // Edge Cases: the change made in the lobby holds for the next match; MUSIC-01 AC 8.
+    const lobby = roomWith([makePlayer('p1'), makePlayer('p2')]);
+    const host = playerConn(lobby.players[0]!);
+
+    const off = run(lobby, [message(host, { type: 'settings', patch: { music: false } }), message(host, { type: 'start' })]);
+
+    expect(sentTo(off.effects, '*')).toContainEqual({ type: 'settings', settings: { ...DEFAULT_SETTINGS, music: false } });
+    expect(off.state.settings.music).toBe(false);
+
+    for (const phase of ['round', 'words', 'results', 'podium'] as const) {
+      const state = roomWith([makePlayer('p1')], { phase });
+      const r = step(state, message(playerConn(state.players[0]!), { type: 'settings', patch: { music: true } }), 0, deps);
+      expect(r.state, phase).toBe(state);
+      expect(allMessages(r.effects), phase).toEqual([{ type: 'error', code: 'wrong-phase' }]);
+    }
+
+    const notBool = step(lobby, message(host, { type: 'settings', patch: { music: 'off' } }), 0, deps);
+    expect(notBool.state).toBe(lobby);
+    expect(allMessages(notBool.effects)).toEqual([{ type: 'error', code: 'bad-settings' }]);
   });
 });

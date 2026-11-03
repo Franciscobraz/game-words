@@ -26,6 +26,13 @@ describe('createRoom', () => {
     expect(room.lastActionAt).toBe(1000);
   });
 
+  test('starts a new room with the music on', () => {
+    // MUSIC-01 AC 9.
+    const room = createRoom('ABCD', 'tv-token', 0, CFG);
+
+    expect(room.settings.music).toBe(true);
+  });
+
   test('rooms do not share settings objects', () => {
     const a = createRoom('ABCD', 't1', 0, CFG);
     const b = createRoom('EFGH', 't2', 0, CFG);

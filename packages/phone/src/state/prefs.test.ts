@@ -13,6 +13,7 @@ const SETTINGS: Settings = {
   pack: 'pt-BR',
   volume: 80,
   muted: false,
+  music: true,
 };
 
 const BETO: PlayerInfo = { id: 'beto', nickname: 'Beto', color: '#ff5e5e', connected: true, spectator: false, score: 0, wins: 0 };

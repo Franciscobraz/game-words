@@ -13,6 +13,7 @@ const SETTINGS: Settings = {
   pack: 'pt-BR',
   volume: 80,
   muted: false,
+  music: true,
 };
 
 const BOARD = [

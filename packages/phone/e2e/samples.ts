@@ -24,6 +24,7 @@ export const SAMPLE_SETTINGS: Settings = {
   pack: 'pt-BR',
   volume: 80,
   muted: false,
+  music: true,
 };
 
 export const ANA: PlayerInfo = { id: 'p1', nickname: 'Ana', color: PALETTE[1]!, connected: true, spectator: false, score: 0, wins: 2 };

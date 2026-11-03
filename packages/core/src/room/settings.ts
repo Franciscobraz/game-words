@@ -20,11 +20,15 @@ export const handleSettings: Handler<'settings'> = ({ state, conn }, msg) => {
   };
 };
 
+/** Settings as a room stored by an older version may hold them. */
+export type StoredSettings = Omit<Settings, 'music'> & { music?: boolean; fastMode?: unknown };
+
 /**
  * The settings of a stored room, as the game knows them today: a room saved before
- * AD-020 may still carry `fastMode`, which is dropped on load (FAST-01 AC 4).
+ * AD-020 may still carry `fastMode`, which is dropped on load (FAST-01 AC 4), and a
+ * room saved before the music has the music on (MUSIC-01 AC 9).
  */
-export function sanitizeLoadedSettings(stored: Settings & { fastMode?: unknown }): Settings {
-  const { fastMode: _dropped, ...settings } = stored;
-  return settings;
+export function sanitizeLoadedSettings(stored: StoredSettings): Settings {
+  const { fastMode: _dropped, music, ...settings } = stored;
+  return { ...settings, music: music ?? true };
 }

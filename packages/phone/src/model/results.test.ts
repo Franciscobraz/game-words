@@ -143,6 +143,7 @@ describe('resultRounds', () => {
     pack: 'pt-BR',
     volume: 80,
     muted: false,
+    music: true,
   };
 
   test('names the round that ended and the next one, none after the last', () => {

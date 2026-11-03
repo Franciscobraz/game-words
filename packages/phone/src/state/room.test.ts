@@ -12,6 +12,7 @@ const SETTINGS: Settings = {
   pack: 'pt-BR',
   volume: 80,
   muted: false,
+  music: true,
 };
 
 /** The server's answer to `hello` in the lobby of KBXT; `playerId` null means a newcomer. */

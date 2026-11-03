@@ -112,6 +112,7 @@ export const DEFAULT_SETTINGS: Settings = {
   pack: 'pt-BR',
   volume: 100,
   muted: false,
+  music: true,
 };
 
 /**
@@ -160,6 +161,7 @@ const SETTING_RULES: Record<keyof Settings, (v: unknown) => boolean> = {
   pack: (v) => v === 'pt-BR',
   volume: (v) => isIntIn(v, 0, 100),
   muted: isBool,
+  music: isBool,
 };
 
 /**

@@ -11,6 +11,7 @@ const SETTINGS: Settings = {
   pack: 'pt-BR',
   volume: 80,
   muted: false,
+  music: true,
 };
 
 const ANA: PlayerInfo = { id: 'p-ana', nickname: 'Ana', color: '#ff7a00', connected: true, spectator: false, score: 12, wins: 1 };

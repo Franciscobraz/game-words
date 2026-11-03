@@ -13,6 +13,7 @@ export const SAMPLE_SETTINGS: Settings = {
   pack: 'pt-BR',
   volume: 80,
   muted: false,
+  music: true,
 };
 
 /** The colors the captures draw; a player can pick any of them with the custom color (JOIN-01 AC 2-3). */

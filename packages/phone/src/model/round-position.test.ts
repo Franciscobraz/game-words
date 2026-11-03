@@ -11,6 +11,7 @@ const SETTINGS: Settings = {
   pack: 'pt-BR',
   volume: 80,
   muted: false,
+  music: true,
 };
 
 function roundAt(index: number): RoundInfo {

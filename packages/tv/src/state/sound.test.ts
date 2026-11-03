@@ -10,7 +10,7 @@ import { createSoundStore } from './sound.ts';
 const STARTS_AT = 100_000;
 const ENDS_AT = STARTS_AT + 120_000;
 const ROUND: RoundInfo = { id: 1, index: 0, board: [['a']], startsAt: STARTS_AT, endsAt: ENDS_AT };
-const SETTINGS: Settings = { size: 4, seconds: 120, rounds: 3, minLength: 3, filterProfanity: true, pack: 'pt-BR', volume: 50, muted: false };
+const SETTINGS: Settings = { size: 4, seconds: 120, rounds: 3, minLength: 3, filterProfanity: true, pack: 'pt-BR', volume: 50, muted: false, music: true };
 const IN_ROUND: RoomView = { ...INITIAL_VIEW, code: 'KBXT', phase: 'round', settings: SETTINGS, round: ROUND };
 
 /** The sound store over a fake context, in the room `initial`; the clock reads the server unless told otherwise. */

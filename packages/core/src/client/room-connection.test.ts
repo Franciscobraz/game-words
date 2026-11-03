@@ -295,7 +295,7 @@ describe('reconnecting', () => {
       role: 'player',
       code: 'KBXT',
       phase: 'lobby',
-      settings: { size: 4, seconds: 60, rounds: 1, minLength: 3, filterProfanity: true, pack: 'pt-BR', volume: 100, muted: false },
+      settings: { size: 4, seconds: 60, rounds: 1, minLength: 3, filterProfanity: true, pack: 'pt-BR', volume: 100, muted: false, music: true },
       players: [],
       hostId: null,
       round: null,
