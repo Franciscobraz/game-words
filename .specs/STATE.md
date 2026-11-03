@@ -174,14 +174,7 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 - **Marcos concluídos:** M0, M1, M2, M3 e M4 (Done, verificados). O M4 fechou com `validate_verification.py` exit 0 em `619b4b1` (123 provas, 3 mutações killed, `screens.md` round 2 com as 4 telas `matches`); `proofs.md` foi commitado em `4eb4102`. Os 7 achados do Verifier estão fechados em `verification.md`, e as lições, em `.specs/LESSONS.md` (L-008 confirmada).
 - **Publicado:** a Cloudflare roda o M4 de `29f0c43`; as correções dos achados ainda não foram publicadas. Deploy só com pedido do user.
 - **Próximo passo:** o spec de `m4-1-playtest` (`.specs/features/m4-1-playtest/context.md`). As respostas do primeiro bloco estão lá; os pedidos novos da tela de resultado (contagem de palavras, maior palavra acima do tabuleiro, música de fim de rodada) têm 4 perguntas abertas com o user. A capture nova sai do HTML da tela "TV - Resultado da Rodada" do Stitch, renderizado a 1920x1080, não do screenshot, que está desatualizado.
-- **Pendente do user (do fechamento do M4):**
-  1. Bug existente em `packages/core/src/client/room-connection.ts`: um socket que abre e cai antes do `welcome` deixa um prazo órfão, que derruba uma conexão saudável (30 s no celular, 10 min na TV). Correção proposta: `cancelOffline ??= schedule(...)`.
-  2. A pasta `C:\c\`, fora do repositório, criada por um spec temporário, com 3 PNGs: a remoção foi bloqueada, e ela continua lá.
-  3. A faixa de conexão cobre a borda de cima do cartão do código na rodada: aceitar ou ajustar?
-  4. `workers: 4` também no config do celular, que tem o mesmo risco?
-  5. "O primeiro a entrar vira anfitrião(ã)" tem "O primeiro" no masculino (TVLOBBY-01 AC 10 contra AD-013).
-  6. `docs/DESIGN.md` ainda cita `wrangler.toml`, e o arquivo é `wrangler.jsonc`.
-  7. Recarregar a TV na rolagem passa por outras telas por cerca de 100 ms; pode ser um flash de um quadro.
+- **Pendências do fechamento do M4:** decididas em 2026-11-03 e levadas para `m4-1-playtest` (`context.md`); a pasta `C:\c\` fica para o user apagar.
 - **Deixado de lado pelo user:** uma vitória que pareceu indevida numa partida em família. O servidor só dá vitória no fim da última rodada, à maior pontuação; uma simulação de 1.200 partidas não reproduziu. O user volta ao caso se ele se repetir.
 - **Instabilidade em aberto:** com 8 workers o Vite recusava módulos no Windows, por isso o `workers: 4` na TV. Conferir as portas 8787, 9229, 5175 e 5176 livres antes de rodar E2E.
 - **Depois de `m4-1-playtest`:** o M5, com a lista de palavrões vazia.

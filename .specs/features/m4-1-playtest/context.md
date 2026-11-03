@@ -79,6 +79,18 @@ Os itens 3 e 6 e o pódio sincronizado contrariam decisões e critérios aprovad
   - Entre as rodadas, a ordem e as posições seguem os pontos da rodada, com o título "Classificação da Rodada N"; no resultado da última rodada, seguem a soma da partida. user: "Sim, pela rodada" (pergunta: "Entre as rodadas, o placar ordena pelos pontos da rodada?")
 - Perguntas feitas antes, com a recomendação: (1) o cartão do código sem "CÓDIGO DA SALA", como no Stitch; (2) palavras da partida inteira, somadas pelo servidor, para combinar com os pontos acumulados; (3) "plvrs", como no Stitch; (4) vinheta curta a cada resultado e comemoração mais longa no da última rodada, com a música de fundo em silêncio no resultado, a opção "Música" desligando as duas e sem repetir numa TV recarregada.
 
+### Pendências do fechamento do M4 (2026-11-03)
+
+- Entram nesta feature, como recomendado:
+  - um socket que abre e cai antes do `welcome` não deixa prazo esquecido que derrube a conexão seguinte (`packages/core/src/client/room-connection.ts`);
+  - na rodada, a faixa "Reconectando…" fica abaixo do cartão do código, sem cobri-lo;
+  - o config de E2E do celular usa 4 workers, como o da TV;
+  - o lobby da TV diz "Quem entrar primeiro vira anfitrião(ã)" (AD-013);
+  - `docs/DESIGN.md` cita `wrangler.jsonc` no lugar de `wrangler.toml`.
+- O flash de cerca de 100 ms ao recarregar a TV na rolagem fica como está; a rolagem muda nesta feature.
+- A pasta `C:\c\`, fora do repositório, com 3 imagens de teste: o user aprovou apagar, mas a trava de segurança do Claude Code recusou `rm -rf` nela, e a remoção fica com o user.
+- user: "aceito as sugestões das 7 pendencias, pode seguir com o fechamento do M4"
+
 ## Deferred Ideas
 
 - **Dicas de palavras (item 7):** fica para uma próxima versão, fora desta feature. O design terá de resolver um conflito: hoje nenhuma palavra da rodada chega a um cliente antes do resultado (L-008, DESIGN §6.2), e uma dica é exatamente isso.
