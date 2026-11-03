@@ -59,6 +59,42 @@ test('keeps the screen with the reconnecting banner', async ({ page, context }) 
   await expect.poll(() => room.socketCount()).toBeGreaterThan(1);
 });
 
+test('keeps the code card whole under the reconnecting banner', async ({ page, context }) => {
+  // M4FIX-01 AC 2: on the round the banner sits below the code card, from 720p to 1080p.
+  await stopClockAt(page, SAMPLE_START + 10_000);
+  const room = await cuttableRoom(context, roundWelcome([ANA, BETO], ANA.id));
+  await page.goto('/');
+  await expect(page.getByTestId('round-clock')).toHaveText('1:50');
+
+  await cutAndStayAway(page, room);
+
+  for (const screen of [
+    { width: 1920, height: 1080 },
+    { width: 1280, height: 720 },
+  ]) {
+    await page.setViewportSize(screen);
+    const hidden = await page.evaluate(() => {
+      const card = document.querySelector('.round .room-card')!;
+      const box = card.getBoundingClientRect();
+      // The middle of each edge, just inside it: the rounded corners are not part of the card.
+      const inset = 2;
+      const middleX = box.left + box.width / 2;
+      const middleY = box.top + box.height / 2;
+      const edges = [
+        [middleX, box.top + inset],
+        [middleX, box.bottom - inset],
+        [box.left + inset, middleY],
+        [box.right - inset, middleY],
+      ] as const;
+      return edges.filter(([x, y]) => !card.contains(document.elementFromPoint(x, y))).map(([x, y]) => `${x},${y}`);
+    });
+    expect(hidden, `${screen.width}x${screen.height}`).toEqual([]);
+    const card = (await page.locator('.round .room-card').boundingBox())!;
+    const strip = (await banner(page).boundingBox())!;
+    expect(strip.y, `${screen.width}x${screen.height}`).toBeGreaterThanOrEqual(card.y + card.height);
+  }
+});
+
 test('shows no connection after thirty seconds', async ({ page, context }) => {
   // TVEXIT-01 AC 6: at 29.999 s it still says "Reconectando…"; at 30 s it says "Sem conexão" and goes on trying.
   await stopClockAt(page, SAMPLE_START + 10_000);

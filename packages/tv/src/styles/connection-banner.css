@@ -29,3 +29,12 @@
   margin-left: 1.5rem;
   font-weight: var(--font-weight-semibold);
 }
+
+/* On the round the strip starts below the code card, in the margin above the board, so the card stays whole
+   (M4FIX-01 AC 2). The card stands centered in .round__header of round.css and a little taller than it: its bottom
+   is near 6.9rem. A slimmer strip ends before the players' cards, at 9.6875rem. */
+.round ~ .connection-banner {
+  top: 7rem;
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+}
