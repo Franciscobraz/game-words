@@ -67,6 +67,12 @@ Os itens 3 e 6 e o pódio sincronizado contrariam decisões e critérios aprovad
 
 ---
 
+### Tela de resultado da rodada (pedido de 2026-11-03)
+
+- user: "Novos requisitos: 1. Na pagina de resultado da rodada, 1. Deve ser mostrado quantas palavras aquela pessoa encontrou, hoje só é mostrado quantos pontos ela fez. (o layout no stitch da pagina está corrigido) 2. A area que mostra a maior palavra do tabuleiro deve vir acima do tabuleiro que mostra. (o layout no stitch da pagina está corrigido) 3. nessa pagina deve tocar uma musica animada de fim da rodada, festejar o podio(pode manter criando como estamos criando os outros sons)."
+- A referência é a tela "TV - Resultado da Rodada" do Stitch (projeto 13555119467933870727, screen `8e179fbf565d4dd0bb10dfa9c5c3117d`). O screenshot do Stitch está desatualizado; o HTML da tela tem o layout corrigido: o cartão da maior palavra acima do tabuleiro e "N plvrs · P pts" em cada cartão e linha ("1 plvr · 1 pt" no singular). A capture sai do HTML renderizado a 1920x1080. user: "veja novamente no stitch, ele não perdeu os pontos na pagina de resultado da rodada"
+- Perguntas abertas, com a recomendação: (1) o cartão do código sem "CÓDIGO DA SALA", como no Stitch; (2) palavras da partida inteira, somadas pelo servidor, para combinar com os pontos acumulados; (3) "plvrs", como no Stitch; (4) vinheta curta a cada resultado e comemoração mais longa no da última rodada, com a música de fundo em silêncio no resultado, a opção "Música" desligando as duas e sem repetir numa TV recarregada.
+
 ## Deferred Ideas
 
 - **Dicas de palavras (item 7):** fica para uma próxima versão, fora desta feature. O design terá de resolver um conflito: hoje nenhuma palavra da rodada chega a um cliente antes do resultado (L-008, DESIGN §6.2), e uma dica é exatamente isso.
