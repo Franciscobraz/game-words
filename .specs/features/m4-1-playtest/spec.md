@@ -46,7 +46,9 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 | Lista que cabe no painel | O destaque desce de palavra em palavra, uma por segundo, com a lista parada, e para na última | O destaque guia a leitura mesmo sem rolagem | n - default |
 | Som do destaque | Um "check" curto e sintetizado, como o de palavra válida do celular, a cada palavra destacada; é um efeito, então a opção "Música" não o desliga | Pedido do user | som: y - user: "Na lista de palavras, coloque o funcionamento de grifar e ou destacar uma palavra por vez enquanto a tela desce, para guiar a leitura dos usuários, junto efeito de grifar deve tocar um som de \"check\" ou \"pontuação\" valida."; fora da opção "Música": n - default |
 | Destaque no controle manual | Quando o anfitrião toca ▲ ou ▼, o destaque e o som param, e a lista fica sem destaque até o fim | O destaque segue a leitura automática; no manual, quem conduz é o anfitrião | n - default |
-| Jogadores ao lado da lista | Uma coluna à esquerda da lista, com os jogadores da rodada na ordem de entrada na sala; "N plvrs" já com o total da rodada; os pontos começam em 0 e somam a cada palavra destacada, com uma animação simples na linha de quem pontuou; no controle manual, os pontos saltam para o total; quem entrou atrasado e não jogou fica fora da coluna | O ranking continua revelado só em "Ver resultado" | y - user: "Aplique a recomendação mas adicione uma animação simples aos jogadores que receberam algum ponto no mesmo momento do check da palavra, a quantidade de palavras nessa pagina ja deve vir com valor da rodada completo, apenas os pontos vão somando." |
+| Jogadores ao lado da lista | Painel "Jogadores" à direita da lista, como na tela do Stitch; "N palavras" por extenso, já com o total da rodada; os pontos começam em 0 e somam a cada palavra destacada, com uma animação na linha de quem pontuou; o painel se reordena pelos pontos a cada palavra, e no empate vale a ordem de entrada; cada card desliza inteiro até a posição nova; painel e cards com tamanho fixo; desconectado com "DESCONECTADO" e card esmaecido; quem entrou atrasado e não jogou fica fora; no controle manual, os pontos saltam para o total | Pedido do user; o ranking da rodada se forma durante a lista | y - user: "a listagem de jogadores na pagina de lista de palavras, toda vez que uma palavra for \"computada\" ou seja os pontos forem aplicados aos jogadores que acharam aquela palavra, a lista deve ficar alterando a posição dos usuários com uma animação suave. veja o layout da pagina Plaavras da Rodada no stitch"; user: "1. Concordo. 2. Concordo, ajustado no stitch tabém 3. Concordo, ajustado no stitch também 4. Ajustado no Stitch 5. O card todo deve fazer a animação de troca de posições quando necessario. A lista deve maner um tamanho fixo para evitar comportamentos e ou glitchs indejados e os itens da lista se ordenam de acordo com os pontos" |
+| Destaque do líder no painel | O card do 1º tem o fundo mais claro, e os pontos do 1º e do 2º ficam na cor de cada um, acompanhando a ordem a cada reordenação | Como no Stitch | n - default; o user respondeu só sobre a animação na pergunta 5 |
+| "N na sala" no topo do painel | Conta os jogadores do painel, os da rodada | O painel não mostra quem não jogou | n - default |
 | Sala guardada antes desta feature | Um jogador sem a contagem de palavras guardada conta 0 palavras | Salas abertas no momento do deploy; achado do batch 1 | n - default |
 | TV recarregada na lista | Volta ao topo, com a rolagem automática | A posição da lista só existe na TV | n - default |
 | Celular durante a lista | Jogadores, espectadores e o anfitrião veem "Olhe para a TV"; o anfitrião vê também ▲, ▼ e "Ver resultado" | Pedido do user | y - user: "no celular pode ter uma tela intermediaria que manda apenas olhar para tv" |
@@ -123,12 +125,19 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 15. WHEN uma palavra passa a ficar destacada THEN the TV SHALL tocar um "check" curto
 16. WHEN o anfitrião toca ▲ ou ▼ THEN the TV SHALL tirar o destaque e parar o "check" até o fim da lista
 17. The TV SHALL destacar só com cor e escala, sem mudar a posição das outras palavras
-18. WHILE a TV mostra a lista de palavras, the TV SHALL mostrar ao lado dela uma coluna com cada jogador da rodada, na ordem de entrada na sala, com o círculo, o apelido, as palavras da rodada inteira ("N plvrs") e os pontos
+18. WHILE a TV mostra a lista de palavras, the TV SHALL mostrar à direita dela o painel "Jogadores" com cada jogador da rodada: o círculo e a borda na cor do jogador, o apelido, as palavras da rodada inteira ("14 palavras", "1 palavra") e os pontos ("20 pts", "1 pt")
 19. WHEN a lista de palavras abre THEN the TV SHALL mostrar os pontos de cada jogador em 0
 20. WHEN uma palavra passa a ficar destacada THEN the TV SHALL somar os pontos dela a cada jogador que a achou, no mesmo momento do "check"
 21. WHEN os pontos de um jogador sobem THEN the TV SHALL animar a linha desse jogador, só com `transform` e `opacity`
 22. WHEN o anfitrião toca ▲ ou ▼ THEN the TV SHALL mostrar os pontos completos da rodada de cada jogador
 23. WHEN o destaque chega à última palavra THEN the TV SHALL mostrar em cada jogador os mesmos pontos da rodada que o resultado mostra
+24. WHEN os pontos mudam THEN the TV SHALL ordenar o painel pelos pontos, do maior para o menor, e no empate pela ordem de entrada na sala
+25. WHEN um jogador muda de posição no painel THEN the TV SHALL deslizar o card inteiro dele até a posição nova, só com `transform`
+26. The TV SHALL manter o painel e cada card com tamanho fixo, sem crescer nem encolher com a reordenação
+27. IF um jogador da rodada está desconectado THEN the TV SHALL mostrar "DESCONECTADO" ao lado do apelido e esmaecer o card
+28. The TV SHALL deixar fora do painel quem entrou atrasado e não jogou a rodada
+29. WHILE um jogador está em 1º, the TV SHALL dar ao card dele o fundo mais claro e mostrar os pontos do 1º e do 2º na cor de cada um
+30. WHEN a lista de palavras abre THEN the TV SHALL mostrar a tela em `.specs/features/m4-1-playtest/captures/tv-words.png`
 
 **Independent Test**: Terminar uma rodada com uma lista longa, conferir a rolagem a uma linha por segundo, rolar com ▲ e ▼, chegar ao fim, esperar e tocar "Ver resultado".
 
@@ -294,7 +303,7 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
 | TVAWAKE-01 | P1: Tela da TV sempre ativa (AC 1-5) | Design | Pending |
-| WORDCTL-01 | P1: Lista de palavras conduzida pelo anfitrião (AC 1-23) | Design | Pending |
+| WORDCTL-01 | P1: Lista de palavras conduzida pelo anfitrião (AC 1-30) | Design | Pending |
 | SYNC-01 | P1: Celulares sincronizados com a TV (AC 1-6) | Design | Pending |
 | RESULT-02 | P1: Resultado com pontos e palavras (AC 1-10) | Design | Pending |
 | MUSIC-01 | P2: Música e vinheta (AC 1-16) | Design | Pending |
@@ -303,7 +312,7 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 | NOZOOM-01 | P1: Celular sem zoom (AC 1-3) | Design | Pending |
 | M4FIX-01 | P1: Pendências do M4 (AC 1-5) | Design | Pending |
 
-**Coverage:** 82 total
+**Coverage:** 89 total
 
 ---
 
@@ -318,9 +327,14 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 | `tv-round-result.png`: confete entre as rodadas | Confete só na última rodada | y - AD-024, que mantém AD-021 |
 | `tv-round-result.png`: "Resultado · Rodada 1 de 3" e "Aguardando Ana avançar…" em toda rodada | Na última rodada, "<vencedor> venceu!" e "Aguardando Ana: jogar de novo ou voltar ao lobby" | y - AD-024, que mantém AD-021 |
 
+| `tv-words.png`: nenhuma palavra destacada | Uma palavra por vez destacada na linha de leitura (WORDCTL-01 AC 13-17) | y - AD-024 |
+| `tv-words.png`: círculos das palavras nas cores do tema | Círculos na cor de cada jogador, como no M4 | y - AD-030 |
+| `tv-words.png`: margem de 64 px em volta do quadro | A tela ocupa a janela inteira, como as outras telas da TV | y - AD-030 |
+
 ## Sources
 
-- `.specs/features/m4-tv/captures/tv-words.png` (capture do M4) - a lista de palavras ganha a coluna de jogadores à esquerda, por AD-030
+- Stitch, projeto 13555119467933870727, tela "TV - Palavras da Rodada" (`9e9f8f8f1b9943febdfd28d7883c943f`), depois dos ajustes do user: a capture foi renderizada do HTML; ela tem 1920x1208 porque o HTML põe 64 px de margem em volta do quadro de 1920x1080, e a comparação vale para a composição desse quadro
+- ![tv-words](captures/tv-words.png) - binding - lista de palavras com o painel "Jogadores" à direita, ordenado pelos pontos
 
 - `.specs/features/m4-1-playtest/context.md` - o pedido e as respostas do user, com as palavras dele
 - `.specs/features/m4-tv/spec.md` - os critérios do M4 que esta feature muda: TVWORDS-01 AC 1, 6-9; TVRES-01 AC 1-3; TVLOBBY-01 AC 10; SERVE-01; PHONE-01 AC 1

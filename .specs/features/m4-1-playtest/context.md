@@ -47,6 +47,8 @@ Os itens 3 e 6 e o pódio sincronizado contrariam decisões e critérios aprovad
 
 - Emenda de 2026-11-03 à coluna de jogadores: a cada palavra computada, a coluna se reordena pelos pontos com uma animação suave; substitui a ordem de entrada. A referência é a tela "TV - Palavras da Rodada" do Stitch (screen `9e9f8f8f1b9943febdfd28d7883c943f`), renderizada do HTML em `captures/tv-words.png` (1920x1208, porque o HTML tem 64 px de margem em volta do quadro de 1920x1080). user: "a listagem de jogadores na pagina de lista de palavras, toda vez que uma palavra for \"computada\" ou seja os pontos forem aplicados aos jogadores que acharam aquela palavra, a lista deve ficar alterando a posição dos usuários com uma animação suave. veja o layout da pagina Plaavras da Rodada no stitch"
 
+- Respostas sobre a tela do Stitch: user: "1. Concordo. 2. Concordo, ajustado no stitch tabém 3. Concordo, ajustado no stitch também 4. Ajustado no Stitch 5. O card todo deve fazer a animação de troca de posições quando necessario. A lista deve maner um tamanho fixo para evitar comportamentos e ou glitchs indejados e os itens da lista se ordenam de acordo com os pontos"
+
 ### Música
 
 - Música original no estilo de jogos antigos, calma, gerada no navegador, sem arquivo nem licença. O user pode trocá-la depois.
