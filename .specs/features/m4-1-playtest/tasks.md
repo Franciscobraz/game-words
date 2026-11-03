@@ -1365,7 +1365,7 @@ Proof: walk - caminhada do user na TV e num celular reais; resultado em `**Walke
 The feature's live state, written as it happens - a compaction gives no warning.
 
 **Settled mid-build:** padrões da apresentação das tarefas aceitos com a aprovação: celulares recebem pontos e contagem de palavras, sem palavras, antes de "Ver resultado"; a música de fundo continua entre partidas e só recomeça ao recarregar a TV; sem chip "Música" no lobby da TV; peças de palavra curta demais voltam ao normal; user: "aprovo as tarefas"; none
-**Dispatched:** none
+**Dispatched:** batch worker fase 1 (T1-T8) a partir do commit seguinte a 3b2216b (push feito em 3b2216b a pedido do user)
 **Walked:** none
 
 ---
