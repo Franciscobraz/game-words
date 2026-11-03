@@ -18,8 +18,8 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 ### Regras de execução
 
 - **Style guide:** todo código segue `docs/style-guide.md`: legibilidade (§3.1), SOLID (§4), componentes (§5), CSS só com flexbox e margens (§5.1), Signals (AD-015), cores só por tokens (AD-017).
-- **Limites exatos (L-001):** todo limite tem um teste no valor exato e um logo depois: 999 e 1.000 ms do destaque, o topo e a última palavra inteira nos passos de ▲ e ▼, 0 e 1 em "plvr" e "pt", 29,9 e 30 s da vinheta, 1 e 2 dedos no bloqueio da pinça.
-- **Um caso por ramo de tabela (L-007):** `applyServerMessage` (TV e celular), `screenFor`, `tvScreen`, `musicTrack`, `COMMAND_PHASES` das mensagens novas e `clientAsset` têm um caso por ramo.
+- **Limites exatos (L-001):** todo limite tem um teste no valor exato e um logo depois: 999 e 1.000 ms do destaque, o topo e a última palavra inteira nos passos de ▲ e ▼, 0 e 1 em "plvr" e "pt", 29,9 e 30 s da vinheta, 15 000 e 15 001 ms antes do fim da rodada na aceleração da música, 1 e 2 dedos no bloqueio da pinça.
+- **Um caso por ramo de tabela (L-007):** `applyServerMessage` (TV e celular), `screenFor`, `tvScreen`, `musicTrack` (uma linha por tela), `COMMAND_PHASES` das mensagens novas e `clientAsset` têm um caso por ramo.
 - **Sem vazamento (L-008):** a prova de que nenhuma palavra da rodada chega a um celular antes de "Ver resultado" passa por toda mensagem que um celular e um convidado podem receber, inclusive o `welcome` de quem conecta ou reconecta na fase `words` (C17, C19).
 - **Nomes dos testes:** cada teste citado em `## Checks` usa exatamente o nome da prova, porque `check_proofs.py` seleciona por `-t` (Vitest) e `-g` (Playwright).
 - **Testes do M3 e do M4 que mudam:** só mudam os que um critério desta feature substitui, e o commit lista quais e por qual critério. Nenhum teste é enfraquecido. A lista prevista: celular `podium.spec.ts` "opens the podium when the last round ends" (vira C30), `prefs.test.ts` "starts with both preferences off" (vira C36), `prefs.spec.ts` "opens the preferences with both switches off" (passa a esperar as duas ligadas, FEEDBACK-02 AC 1), `exit.spec.ts` "enter another room opens the code screen" (vira C34), `entry.spec.ts` "shows the code screen at the root" (vira "shows the code screen at /join", C35), `round.test.ts` "drops pending paths when the results arrive" (passa a valer para a mensagem `phase` com `words`); TV `words.spec.ts` "follows the host during the scroll", "takes the last round through the words before the result", "scrolls until the last word is in view" e "says when no word was found" (viram C50-C59), `reveal.test.ts` de `scrollDurationMs` e `hold` (viram C42), `result.spec.ts` "shows the three cards with place and points" e "shows the round between rounds" (viram C67 e C70), `lobby.spec.ts` "shows the code and the real address" (C99) e "shows the empty lobby" (C100); servidor `assets.test.ts` "serves the phone at the root and at a room code" (vira C94 e C97).
@@ -107,7 +107,7 @@ T21 → T22 → T23 → T24 → T25 → T26 → T27 → T47 → T28
 
 ### Phase 6: Música e vinheta
 
-A música de fundo, a vinheta e a opção "Música".
+As quatro músicas em todas as telas da TV (lobby, partida, vinheta e partida finalizada), a partida 1,5x mais rápida nos 15 s finais, a 50% dos efeitos, e a opção "Música".
 
 ```
 T28 → T29 → T30 → T31 → T32 → T33 → T34 → T35
@@ -787,76 +787,79 @@ T39 → T40 → T41 → T42 → T43 → T44
 
 ### T29: Which music plays
 
-**What**: `musicTrack(phase, settings, closeReason)`: fundo na contagem, na rodada e na lista; vinheta no resultado; nada no lobby ou com `music` desligada.
+**What**: `musicTrack(screen, phase, settings)`, a tabela de telas da TV para as faixas `lobby`, `match`, `jingle`, `finale` ou nenhuma, e `matchTempo(view, serverNow)`, 1,5 dos 15 s finais da rodada até a contagem seguinte.
 **Where**: `packages/tv/src/model/music.ts` (create)
 **Depends on**: T28
-**Reuses**: -
+**Reuses**: `Screen` de `model/screen.ts`, `DEFAULT_SETTINGS`
 **Requirement**: MUSIC-01
 
 **Done when**:
 
-- [ ] C75-C79
+- [ ] C75, C76, C77, C78, C79, C126, C127, C129
+- [ ] Um caso por linha da tabela de telas, inclusive `open-failed` com a música do lobby (L-007)
+- [ ] Limites em 15 000 e 15 001 ms antes do fim (L-001)
 - [ ] Gate check passes
 - [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: unit
 **Gate**: quick
-**Commit**: `feat(tv): decide which music plays`
+**Commit**: `feat(tv): decide which music plays on each screen`
 
 ---
 
-### T30: Songs as notes
+### T30: Four songs as notes
 
-**What**: `BACKGROUND_SONG` (calma, cerca de 72 bpm) e `JINGLE_SONG` (128 bpm, 16 compassos, 30 s) escritas pelo projeto; `notesInWindow` com a volta do loop.
+**What**: `LOBBY_SONG`, `MATCH_SONG`, `JINGLE_SONG` (128 bpm, 16 compassos, 30 s) e `FINALE_SONG`, escritas pelo projeto a partir de uma partitura curta; `notesInWindow` com a volta do loop.
 **Where**: `packages/tv/src/model/songs.ts` (create)
 **Depends on**: T29
-**Reuses**: `Note`
+**Reuses**: `Note` de `@bwords/core`
 **Requirement**: MUSIC-01
 
 **Done when**:
 
-- [ ] C80
-- [ ] Uma janela que cruza o fim do loop traz as notas do começo
+- [ ] C80, C132
+- [ ] Toda nota de cada música começa dentro do comprimento dela
 - [ ] Gate check passes
 - [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: unit
 **Gate**: quick
-**Commit**: `feat(tv): write the background music and the jingle`
+**Commit**: `feat(tv): write the four songs`
 
 ---
 
 ### T31: Music positions
 
-**What**: `advanceMusic`: o fundo continua de onde parou; a vinheta recomeça a cada resultado; as posições andam mesmo com o som bloqueado.
+**What**: `advanceMusic(clock, track, elapsedMs, tempo)`: a faixa atual anda `elapsedMs * tempo` na partitura; `lobby` e `match` continuam de onde pararam; `jingle` e `finale` recomeçam cada vez que viram a faixa; as posições andam mesmo com o som bloqueado.
 **Where**: `packages/tv/src/model/music-clock.ts` (create)
 **Depends on**: T30
-**Reuses**: -
+**Reuses**: `MusicTrack` de `model/music.ts`
 **Requirement**: MUSIC-01
 
 **Done when**:
 
-- [ ] C81
+- [ ] C81, C131
 - [ ] Gate check passes
 - [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: unit
 **Gate**: quick
-**Commit**: `feat(tv): keep where the music is`
+**Commit**: `feat(tv): keep where each song is`
 
 ---
 
 ### T32: Music player
 
-**What**: `createMusicPlayer(context)`: agenda a janela seguinte, num ganho por faixa a 30% dos efeitos, e começa da posição atual quando o som é liberado.
+**What**: `createMusicPlayer(context)`: agenda as notas até 300 ms à frente, com início e duração divididos pelo tempo e a frequência intacta, num ganho por faixa a 50% de `effectsPeakGain(volume)`; troca de faixa com fade; nada agendado com o som bloqueado, e a partir da posição atual depois da liberação. `device/audio.ts` exporta `effectsPeakGain`, e `playNotes` do `core` ganha o `output` opcional, com teste no `core`.
 **Where**: `packages/tv/src/device/music.ts` (create)
 **Depends on**: T31
-**Reuses**: `playNotes`, `fake-audio.ts`
+**Reuses**: `playNotes`, `notesInWindow`, `packages/tv/src/testing/fake-audio.ts`
 **Requirement**: MUSIC-01
 
 **Done when**:
 
-- [ ] C82, C83
+- [ ] C82, C83, C125
+- [ ] `playNotes` sem `output` toca no `context.destination`, como antes (C21 e C46 verdes)
 - [ ] Gate check passes
 - [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
@@ -868,27 +871,28 @@ T39 → T40 → T41 → T42 → T43 → T44
 
 ### T33: Music store
 
-**What**: `state/music.ts` liga sala, relógio e player; `createTvStore` o cria; os outros sons seguem com a música desligada.
+**What**: `state/music.ts` liga a tela, a sala, o relógio da música e o player a cada tique; `createTvStore` o cria, com a tela como `computed` do store (que `app.tsx` passa a ler) e um só `AudioContext` aberto em `main.tsx` para efeitos e música; `packages/tv/e2e/record-sounds.ts` grava as notas da música à parte (`window.music`), para os E2E de efeitos do M4 seguirem iguais.
 **Where**: `packages/tv/src/state/music.ts` (create)
 **Depends on**: T32
-**Reuses**: `createSoundStore`, `musicTrack`, `advanceMusic`
+**Reuses**: `createSoundStore`, `tvScreen`, `musicTrack`, `matchTempo`, `advanceMusic`
 **Requirement**: MUSIC-01
 
 **Done when**:
 
 - [ ] C84
+- [ ] `packages/tv/e2e/audio.spec.ts` e `lobby.spec.ts` verdes, sem mudar nenhum teste
 - [ ] Gate check passes
 - [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: unit
-**Gate**: quick
-**Commit**: `feat(tv): play the music by the stage of the room`
+**Gate**: full
+**Commit**: `feat(tv): play the music of each screen`
 
 ---
 
 ### T34: Music switch in the host lobby
 
-**What**: Toggle "Música" no `SettingsPanel`, que manda `{ music }`.
+**What**: Toggle "Música" no `SettingsPanel`, ligado numa sala nova, que manda `{ music }`; o celular continua sem música, só com o "check".
 **Where**: `packages/phone/src/components/SettingsPanel.tsx` (modify)
 **Depends on**: T33
 **Reuses**: `Toggle`
@@ -896,7 +900,7 @@ T39 → T40 → T41 → T42 → T43 → T44
 
 **Done when**:
 
-- [ ] C85
+- [ ] C85, C130
 - [ ] Gate check passes
 - [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
@@ -908,21 +912,21 @@ T39 → T40 → T41 → T42 → T43 → T44
 
 ### T35: Music in the browser
 
-**What**: E2E da TV: a música segue as fases com o áudio gravado e nenhum arquivo de áudio é pedido.
+**What**: E2E da TV: cada tela começa a música dela, "Reconectando…" mantém a música e nenhum arquivo de áudio é pedido.
 **Where**: `packages/tv/e2e/music.spec.ts` (create)
 **Depends on**: T34
-**Reuses**: `packages/tv/e2e/record-sounds.ts`
+**Reuses**: `packages/tv/e2e/record-sounds.ts`, `packages/tv/e2e/cuttable-room.ts`, `model/songs.ts`
 **Requirement**: MUSIC-01
 
 **Done when**:
 
-- [ ] C86, C87
+- [ ] C86, C87, C128
 - [ ] Gate check passes
 - [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: e2e
 **Gate**: build
-**Commit**: `test(tv): hear the music through the match`
+**Commit**: `test(tv): hear the music on every screen`
 
 ---
 
@@ -1117,10 +1121,10 @@ Proof: `npx vitest run packages/core/src/room/results.test.ts -t "adds up the wo
 **C3** - No fim da rodada a sala vai para `words`: só a TV recebe `round-results`, e todos recebem `phase` com `words` (SYNC-01, AC 1; WORDCTL-01, AC 9)
 Proof: `npx vitest run packages/core/src/room/results.test.ts -t "ends the round on the words with the results only to the tv"`
 
-**C4** - Uma sala nova começa com `music` ligada (MUSIC-01, AC 9)
+**C4** - Uma sala nova começa com `music` ligada (MUSIC-01, AC 14)
 Proof: `npx vitest run packages/core/src/room/state.test.ts -t "starts a new room with the music on"`
 
-**C5** - Uma sala guardada sem `music` carrega com a música ligada (MUSIC-01, AC 9)
+**C5** - Uma sala guardada sem `music` carrega com a música ligada (MUSIC-01, AC 14)
 Proof: `npx vitest run packages/core/src/room/settings.test.ts -t "turns the music on in a room stored without it"`
 
 **C6** - Uma mudança de `music` no lobby vale para a partida seguinte, e fora do lobby recebe `wrong-phase` (Edge Cases)
@@ -1330,44 +1334,68 @@ Proof: browser captures/tv-round-result.running.png
 **C74** - Uma partida de 2 rodadas com a TV e 3 celulares vai de `/tv` a "JOGAR DE NOVO" pelo Worker, com "Ver resultado" em cada rodada (WORDCTL-01, AC 8; SYNC-01, AC 3)
 Proof: `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/full-match.spec.ts -g "plays a whole match through the worker"`
 
-**C75** - A música de fundo é a faixa na contagem, na rodada e na lista de toda rodada, inclusive a última (MUSIC-01, AC 1)
-Proof: `npx vitest run packages/tv/src/model/music.test.ts -t "plays the background from the countdown to the end of the words of the last round"`
+**C75** - No lobby, em "abrindo a sala" e em "sala expirada", a faixa é a música do lobby (MUSIC-01, AC 1)
+Proof: `npx vitest run packages/tv/src/model/music.test.ts -t "plays the lobby music on the lobby, the opening and the expired room"`
 
-**C76** - No lobby, sem sala e numa sala expirada não há faixa (MUSIC-01, AC 3)
-Proof: `npx vitest run packages/tv/src/model/music.test.ts -t "keeps the lobby silent"`
+**C76** - Na contagem, na rodada, em "Tempo!" e na lista de palavras, a faixa é a música da partida (MUSIC-01, AC 2)
+Proof: `npx vitest run packages/tv/src/model/music.test.ts -t "plays the match music on the countdown, the round, the time up and the words"`
 
-**C77** - No resultado de qualquer rodada e no pódio a faixa é a vinheta, e o fundo fica em silêncio (MUSIC-01, AC 4)
-Proof: `npx vitest run packages/tv/src/model/music.test.ts -t "plays the jingle on every result and silences the background"`
+**C77** - Com 15 000 ms para o fim da rodada a música da partida fica 1,5x mais rápida, e assim segue em "Tempo!" e na lista; com 15 001 ms ainda está na velocidade normal (MUSIC-01, AC 3)
+Proof: `npx vitest run packages/tv/src/model/music.test.ts -t "speeds the match music up 1.5 times from 15 seconds before the end"`
 
-**C78** - Com `music` desligada não há fundo nem vinheta em nenhuma fase (MUSIC-01, AC 8)
-Proof: `npx vitest run packages/tv/src/model/music.test.ts -t "plays no music and no jingle with the music off"`
+**C78** - Na contagem da rodada seguinte, a música da partida volta à velocidade normal (MUSIC-01, AC 4)
+Proof: `npx vitest run packages/tv/src/model/music.test.ts -t "brings the match music back to its tempo on the next countdown"`
 
-**C79** - A faixa segue o `music` da sala, então a mudança feita no lobby vale na partida seguinte (Edge Cases)
-Proof: `npx vitest run packages/tv/src/model/music.test.ts -t "follows the music setting the lobby left for the next match"`
+**C79** - No resultado de uma rodada que não é a última, a faixa é a vinheta (MUSIC-01, AC 6)
+Proof: `npx vitest run packages/tv/src/model/music.test.ts -t "plays the jingle on the result between rounds"`
 
-**C80** - A vinheta recomeça aos 30 s: uma nota em 29,9 s é do fim, e a de 30 s é a primeira (MUSIC-01, AC 7)
+**C80** - A vinheta recomeça aos 30 s: uma nota em 29,9 s é do fim, e a de 30 s é a primeira (MUSIC-01, AC 12)
 Proof: `npx vitest run packages/tv/src/model/songs.test.ts -t "loops the jingle every 30 seconds"`
 
-**C81** - Depois de um resultado, o fundo continua da posição em que parou, sem voltar ao começo (MUSIC-01, AC 2)
-Proof: `npx vitest run packages/tv/src/model/music-clock.test.ts -t "resumes the background where it stopped after a result"`
+**C81** - Depois de um resultado, a música da partida continua da posição em que parou, inclusive o trecho andado no tempo rápido (MUSIC-01, AC 5)
+Proof: `npx vitest run packages/tv/src/model/music-clock.test.ts -t "resumes the match music where it stopped after a result"`
 
-**C82** - O ganho mais alto da música e da vinheta fica abaixo do ganho dos efeitos no mesmo volume (MUSIC-01, AC 5)
-Proof: `npx vitest run packages/tv/src/device/music.test.ts -t "plays the music and the jingle below the other sounds"`
+**C82** - Cada faixa toca com metade do ganho de pico dos efeitos no mesmo volume da sala, e nada com a sala muda (MUSIC-01, AC 10)
+Proof: `npx vitest run packages/tv/src/device/music.test.ts -t "plays every track at half the gain of the effects"`
 
-**C83** - Com o som bloqueado nada é agendado; na liberação, a música começa do ponto em que estaria (MUSIC-01, AC 10)
+**C83** - Com o som bloqueado nada é agendado; na liberação, a música começa da posição em que estaria (MUSIC-01, AC 15)
 Proof: `npx vitest run packages/tv/src/device/music.test.ts -t "starts after the unlock at the point the music would be"`
 
-**C84** - Com `music` desligada, o apito, os bipes e o `check` continuam tocando (MUSIC-01, AC 8)
-Proof: `npx vitest run packages/tv/src/state/music.test.ts -t "leaves the other sounds playing with the music off"`
+**C84** - Com `music` desligada nenhuma faixa toca, e o apito, os bipes e o `check` continuam tocando (MUSIC-01, AC 13)
+Proof: `npx vitest run packages/tv/src/state/music.test.ts -t "silences every track and leaves the other sounds playing with the music off"`
 
-**C85** - No lobby do anfitrião, "Música" começa ligada e o toque manda `music: false` (MUSIC-01, AC 8, 9)
+**C85** - No lobby do anfitrião, "Música" começa ligada numa sala nova e o toque manda `music: false` (MUSIC-01, AC 13, 14)
 Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/host-lobby.spec.ts -g "switches the music in the host lobby"`
 
-**C86** - A TV não pede nenhum arquivo de áudio durante uma partida (MUSIC-01, AC 6)
+**C86** - A TV não pede nenhum arquivo de áudio em nenhuma tela (MUSIC-01, AC 11)
 Proof: `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/music.spec.ts -g "loads no audio file"`
 
-**C87** - No navegador, a música toca na contagem, a vinheta no resultado, e nada no lobby (MUSIC-01, AC 1, 3, 4)
-Proof: `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/music.spec.ts -g "plays the background in the round and the jingle on the result"`
+**C87** - No navegador, cada tela começa pelas primeiras notas da sua música: a do lobby em "abrindo a sala", a da partida na primeira contagem, a vinheta no resultado entre as rodadas e a da partida finalizada no pódio (MUSIC-01, AC 1, 2, 6, 7)
+Proof: `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/music.spec.ts -g "plays the music of each screen in the browser"`
+
+**C125** - A 1,5x, as notas da música da partida têm as mesmas frequências, com início e duração divididos por 1,5 (MUSIC-01, AC 3)
+Proof: `npx vitest run packages/tv/src/device/music.test.ts -t "keeps the pitch and shortens the steps at 1.5 times the tempo"`
+
+**C126** - No resultado da última rodada, a faixa é a música de partida finalizada (MUSIC-01, AC 7)
+Proof: `npx vitest run packages/tv/src/model/music.test.ts -t "plays the finale on the result of the last round"`
+
+**C127** - Em "A TV foi aberta em outra aba" não há faixa (MUSIC-01, AC 8)
+Proof: `npx vitest run packages/tv/src/model/music.test.ts -t "plays nothing on the replaced tab"`
+
+**C128** - Com a faixa "Reconectando…", a TV continua a música da tela, sem recomeçá-la (MUSIC-01, AC 9)
+Proof: `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/music.spec.ts -g "keeps the music of the screen while reconnecting"`
+
+**C129** - Com `music` desligada, nenhuma tela da TV tem faixa (MUSIC-01, AC 13)
+Proof: `npx vitest run packages/tv/src/model/music.test.ts -t "plays no track on any screen with the music off"`
+
+**C130** - O celular toca só as notas do `check`, do lobby ao resultado, com `music` ligada na sala (MUSIC-01, AC 16)
+Proof: `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/board.spec.ts -g "plays only the check on the phone with the music on"`
+
+**C131** - A vinheta e a música de partida finalizada começam do zero a cada resultado, e a do lobby continua de onde parou (MUSIC-01, AC 1, 6, 7)
+Proof: `npx vitest run packages/tv/src/model/music-clock.test.ts -t "starts the jingle and the finale from the top on each result"`
+
+**C132** - Nas quatro músicas, uma janela que cruza o fim traz as notas do começo (MUSIC-01, AC 6, 7, 11)
+Proof: `npx vitest run packages/tv/src/model/songs.test.ts -t "wraps a window across the end of each song to its start"`
 
 **C88** - Com a página aberta e visível, a TV mantém uma Screen Wake Lock pedida, em qualquer fase (TVAWAKE-01, AC 1)
 Proof: `npx vitest run packages/tv/src/state/awake.test.ts -t "holds a screen wake lock while the page is open and visible"`
@@ -1477,7 +1505,7 @@ Proof: walk - caminhada do user na TV real, depois do deploy que ele pedir; resu
 **C109** - Num iPhone real, toques rápidos nos botões do lobby do anfitrião e a pinça em todas as telas não dão zoom (NOZOOM-01, AC 1-3; Goals)
 Proof: walk - caminhada do user no Safari do iPhone; resultado em `**Walked:**`
 
-**C110** - Na sala, a música calma se ouve na contagem, na rodada e na lista, a vinheta no resultado, o "check" na lista e no celular, e "Música" desligada cala as duas (MUSIC-01, AC 1-10; FEEDBACK-02, AC 2; Goals)
+**C110** - Na sala, a música do lobby se ouve no lobby; a da partida na contagem, na rodada e na lista, mais rápida e no mesmo tom nos 15 s finais e normal de novo na contagem seguinte, continuando de onde parou; a vinheta no resultado entre as rodadas; a da partida finalizada no pódio; a música fica abaixo dos efeitos e o "check" se ouve por cima dela na lista; o celular toca só o "check"; e "Música" desligada no lobby cala as quatro, com os efeitos tocando (MUSIC-01, AC 1-16; FEEDBACK-02, AC 2; Goals)
 Proof: walk - caminhada do user na TV e num celular reais; resultado em `**Walked:**`
 
 ---

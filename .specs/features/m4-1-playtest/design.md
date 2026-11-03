@@ -146,7 +146,7 @@ A palavra da rodada só chega a um celular depois do `show-result`. A TV recebe 
 ### Core: música na sala
 
 - **Location**: `packages/core/src/room/state.ts`, `settings.ts`
-- **Interfaces**: `Settings.music: boolean`; `DEFAULT_SETTINGS.music = true` (MUSIC-01 AC 9); `SETTING_RULES.music = isBool`; `sanitizeLoadedSettings` põe `music: true` numa sala guardada sem o campo. Só muda no lobby, porque `settings` só vale lá: a mudança vale na partida seguinte (Edge Cases).
+- **Interfaces**: `Settings.music: boolean`; `DEFAULT_SETTINGS.music = true` (MUSIC-01 AC 14); `SETTING_RULES.music = isBool`; `sanitizeLoadedSettings` põe `music: true` numa sala guardada sem o campo. Só muda no lobby, porque `settings` só vale lá: a mudança vale na partida seguinte (Edge Cases).
 
 ### Core: som compartilhado
 
@@ -178,7 +178,7 @@ A palavra da rodada só chega a um celular depois do `show-result`. A TV recebe 
 | `components/BoardGrid.tsx` | Prop `tone` (`valid`, `already-found`, `invalid`, `too-short` ou nada); com `tone`, as peças do caminho do feedback usam `--color-valid`, `--color-already-found` ou `--color-invalid` | FEEDBACK-02 AC 6 |
 | `state/round.ts` | O feedback guarda o caminho solto (`path`), para o tabuleiro pintar | FEEDBACK-02 AC 6 |
 | `screens/ExitScreens.tsx` | "ENTRAR EM OUTRA SALA" vai para `/join` | ROUTE-01 AC 6 |
-| `components/SettingsPanel.tsx` | Toggle "Música" | MUSIC-01 AC 8 |
+| `components/SettingsPanel.tsx` | Toggle "Música"; o celular não toca música, só o "check" | MUSIC-01 AC 13, 14, 16 |
 | `index.html`, `styles/app.css`, `device/no-zoom.ts` | Sem zoom (abaixo) | NOZOOM-01 |
 
 "Too short" não tem cor própria no spec: as peças voltam ao normal, como hoje a palavra.
@@ -216,19 +216,42 @@ A palavra da rodada só chega a um celular depois do `show-result`. A TV recebe 
 | `components/PodiumCard.tsx`, `StandingLine.tsx` | "N plvrs · P pts" | RESULT-02 AC 2-3 |
 | `screens/ResultScreen.tsx` | Cartão da maior palavra acima do tabuleiro; `RoomCard` com `label={null}`; lista do 4º em diante em duas colunas, como a capture | RESULT-02 AC 1, 8, 9 |
 
-### TV: música e vinheta
+### TV: música
+
+Quatro músicas, uma por grupo de telas da TV (AD-028 e o complemento). A faixa sai da tela, não da fase: `tvScreen` já resolve a contagem, "Tempo!", a aba substituída e a conexão caída, que mantém a tela (TVEXIT-01 AC 5). O celular não ganha nenhum módulo de música (MUSIC-01 AC 16).
+
+| Tela da TV (`Screen`) | Faixa | Requisito |
+| --- | --- | --- |
+| `opening`, `open-failed`, `lobby`, `expired` | `lobby` | MUSIC-01 AC 1 |
+| `countdown`, `round` (inclui "Tempo!"), `words` | `match` | MUSIC-01 AC 2 |
+| `result` na fase `results` | `jingle` | MUSIC-01 AC 6 |
+| `result` na fase `podium` | `finale` | MUSIC-01 AC 7 |
+| `replaced` | nenhuma | MUSIC-01 AC 8 |
+| qualquer tela com `music: false` | nenhuma | MUSIC-01 AC 13 |
+
+`open-failed` não está no AC 1; entra com a música do lobby porque o pedido é "todas as telas da TV" e só a aba substituída fica em silêncio. A faixa nunca olha o `status` da conexão, então "Reconectando…" mantém a música da tela (MUSIC-01 AC 9).
 
 | Módulo | Função | Requisito |
 | --- | --- | --- |
-| `model/music.ts` | `musicTrack(phase, settings, closeReason)`: `round` e `words` → `background`; `results` e `podium` → `jingle`; lobby, sem sala ou `music: false` → `null` | MUSIC-01 AC 1, 3, 4, 8 |
-| `model/songs.ts` | `BACKGROUND_SONG` e `JINGLE_SONG` como tabelas de `Note` escritas a partir de uma partitura curta (`score(bpm, voices)`); `notesInWindow(song, fromS, toS)` com a volta do loop | MUSIC-01 AC 6, 7 |
-| `model/music-clock.ts` | `advanceMusic(clock, track, elapsedMs)`: a posição da `background` só anda enquanto ela é a faixa e nunca volta ao zero; a `jingle` volta ao zero a cada resultado novo | MUSIC-01 AC 2, 10 |
-| `device/music.ts` | `createMusicPlayer(context)`: agenda as notas da janela seguinte (lookahead de 300 ms) num ganho por faixa; troca de faixa abaixa e solta o ganho antigo; contexto bloqueado não agenda nada | MUSIC-01 AC 5, 10 |
-| `state/music.ts` | Liga sala, relógio e player: a cada tique anda o relógio da música pelo tempo real (`now()` injetado) e pede a janela ao player | MUSIC-01 AC 1-10 |
+| `model/music.ts` | `musicTrack(screen, phase, settings)`: a tabela acima, pura, com um caso por linha (L-007); `settings` nulo, antes do primeiro `welcome`, vale como `DEFAULT_SETTINGS`. `matchTempo(view, serverNow)`: `FAST_TEMPO = 1.5` quando a fase é `round` ou `words` e `serverNow >= round.endsAt - FAST_TEMPO_REMAINING_MS` (15 000 ms); senão `1` | MUSIC-01 AC 1-4, 6-8, 13 |
+| `model/songs.ts` | `interface Song { lengthS; notes: readonly Note[] }`; `LOBBY_SONG`, `MATCH_SONG`, `JINGLE_SONG` e `FINALE_SONG` escritas a partir de uma partitura curta (`score(bpm, bars, voices)`); `notesInWindow(song, fromS, toS)` com a volta do loop | MUSIC-01 AC 11, 12 |
+| `model/music-clock.ts` | `advanceMusic(clock, track, elapsedMs, tempo)`: a posição da faixa atual anda `elapsedMs * tempo`, em segundos da partitura; `lobby` e `match` guardam a posição quando saem e continuam dela; `jingle` e `finale` voltam ao zero cada vez que viram a faixa | MUSIC-01 AC 5-7, 15 |
+| `device/music.ts` | `createMusicPlayer(context)`: `play({ track, positionS, tempo, volume, muted })` agenda as notas até 300 ms à frente num ganho por faixa; a troca de faixa abaixa e solta o ganho antigo; `track: null` cala; um contexto bloqueado não agenda nada | MUSIC-01 AC 3, 10, 15 |
+| `state/music.ts` | `createMusicStore({ player, screen, room, now })`: a cada tique do relógio do servidor (100 ms), anda o relógio da música pelo tempo real (`now()` injetado, não o relógio do servidor, que pula numa ressincronização) e chama o player. `createTvStore` o cria com `screen` como `computed` do store e o mesmo `AudioContext` dos efeitos | MUSIC-01 AC 1-15 |
 
-- **Música original**: o projeto escreve as notas; não há arquivo nem trecho de música de terceiros. A `background` é calma, em torno de 72 bpm, onda triangular com baixo suave, em escala pentatônica maior; a `jingle` é animada, a 128 bpm, 16 compassos de 4 tempos: exatamente 30 s (MUSIC-01 AC 7).
-- **Volume**: `MUSIC_GAIN_RATIO = 0,3` do ganho dos efeitos, no mesmo volume e mudo da sala (MUSIC-01 AC 5). O "check", o apito e os bipes não passam por `music` (MUSIC-01 AC 8).
-- **Som liberado depois**: o relógio da música anda pela regra, toque o navegador ou não. Na liberação, o player começa da posição atual (MUSIC-01 AC 10).
+- **Músicas originais**: o projeto escreve as notas; não há arquivo nem trecho de música de terceiros (MUSIC-01 AC 11). Estilo de jogos antigos, em escala pentatônica maior, onda triangular com baixo suave:
+  - `lobby`: tranquila, cerca de 84 bpm, 8 compassos;
+  - `match`: calma, sem ansiedade (pedido original), cerca de 80 bpm, 16 compassos; nos últimos 15 s soa a 120 bpm;
+  - `jingle`: animada, 128 bpm, 16 compassos de 4 tempos: exatamente 30 s (MUSIC-01 AC 12);
+  - `finale`: mais festiva que a vinheta, cerca de 132 bpm, com uma voz quadrada por cima, 16 compassos.
+- **1,5x sem mudar o tom (MUSIC-01 AC 3)**: a posição da partitura anda 1,5 s a cada segundo real, e o player converte o tempo da partitura em tempo do `AudioContext` dividindo pelo `tempo`: uma nota em `t` toca em `currentTime + (t - positionS) / tempo`, com duração `durationS / tempo`. A frequência de cada oscilador não muda, então o tom fica igual e só os passos ficam mais curtos. `playbackRate` não serve: não há `AudioBuffer`, e num buffer ele muda o tom junto.
+- **Quando acelera e quando volta**: o `tempo` é função pura da fase, de `round.endsAt` e do relógio do servidor. Fica em 1,5 dos 15 s finais até o fim da lista da rodada; o resultado toca outra faixa; a contagem seguinte traz um `round` novo, com `endsAt` no futuro, e o `tempo` volta a 1 (MUSIC-01 AC 4). É a leitura da assumption "de volta ao normal na rodada seguinte"; se o user quiser o tempo normal já em "Tempo!", muda só `matchTempo`. Uma TV recarregada nos 15 s finais já toca rápido.
+- **Continuação (MUSIC-01 AC 5)**: a posição da `match` nunca volta ao zero numa TV aberta, nem entre partidas (Handoff: "a música de fundo continua entre partidas e só recomeça ao recarregar a TV"). Com o tempo rápido ela anda mais, e a volta ao normal continua do ponto em que chegou.
+- **Volume (MUSIC-01 AC 10)**: o ganho de cada faixa é `MUSIC_GAIN_RATIO = 0.5` do ganho de pico dos efeitos no mesmo volume da sala; `device/audio.ts` exporta `effectsPeakGain(volume)`, a conta que hoje fica dentro de `play`. Sala muda ou volume 0 cala a música também. O "check", o apito e os bipes não passam pelo player, então `music: false` não os cala (MUSIC-01 AC 13).
+- **Som bloqueado (MUSIC-01 AC 15)**: o relógio da música anda pela regra, toque o navegador ou não. Com o contexto `suspended`, o player não agenda nada e esquece até onde agendou, porque um contexto bloqueado tem o tempo parado e soltaria tudo de uma vez na liberação. No primeiro tique depois da liberação, ele agenda a partir da posição atual, que é o ponto em que a música estaria. A liberação continua sendo a tecla ou o clique do M4 (`store.press`).
+- **Um contexto só**: `main.tsx` abre um `AudioContext` e o passa aos efeitos e à música; a liberação de um vale para os dois.
+- **Notas pelo ganho da faixa**: `playNotes` do `core` ganha o parâmetro opcional `output` (padrão `context.destination`), para cada nota da música passar pelo ganho da faixa; o "check" continua igual.
+- **E2E**: `packages/tv/e2e/record-sounds.ts` separa as notas cujo ganho liga a outro ganho (as da música, em `window.music`) das que vão direto aos alto-falantes ou a um parâmetro (os efeitos e o vibrato do apito, em `window.sounds`, como hoje). Assim os E2E de efeitos do M4 (`audio.spec.ts`) seguem sem mudança com a música tocando. Os E2E de música comparam as primeiras notas gravadas em cada tela com as primeiras notas da música dela, importada de `model/songs.ts`.
 
 ### TV: tela sempre ativa
 
@@ -237,7 +260,7 @@ A palavra da rodada só chega a um celular depois do `show-result`. A TV recebe 
   - `keepsAwake(view)`: verdadeiro até a sala expirar (`idle`, `tv-gone`) ou a aba ser substituída (`replaced`); em todas as fases (assumption "Quando a tela fica ativa").
   - `createKeepAwake({ wakeLock, onVisible, room })`: pede a Screen Wake Lock enquanto `keepsAwake` e a página estiver visível; pede de novo ao voltar a ficar visível (TVAWAKE-01 AC 1-2).
   - `AwakeVideo`: um `<video muted loop playsinline autoplay aria-hidden>` de 2x2 px no canto, cuja fonte é `canvas.captureStream(1)` de um canvas pintado com `--color-background`, lida do CSS. `play()` recusado é registrado com `console.warn` e o jogo segue (TVAWAKE-01 AC 3-5).
-  - A música de fundo é a terceira camada, quando toca.
+  - A música da tela é a terceira camada, quando toca: em toda tela, menos a aba substituída e com `music: false`.
 - **Sem arquivo de vídeo**: o stream do canvas dispensa um binário no repositório e qualquer dúvida de licença. A cor do fundo faz o vídeo sumir mesmo com opacidade total, sem depender de `opacity: 0`, que alguns navegadores tratam como vídeo que pode pausar.
 
 ### Rotas
@@ -291,7 +314,7 @@ type ServerMessage =
 
 interface Settings {
   /* ...as do M4... */
-  /** Background music and the result jingle on the TV; on in a new room (MUSIC-01 AC 8-9). */
+  /** Every music track on the TV; on in a new room (MUSIC-01 AC 13-14). */
   music: boolean;
 }
 
@@ -322,12 +345,14 @@ interface ScrollLayout {
   words: readonly { topPx: number; heightPx: number }[];
 }
 
+// packages/tv/src/model/music.ts
+type MusicTrack = 'lobby' | 'match' | 'jingle' | 'finale';
+
 // packages/tv/src/model/music-clock.ts
-type MusicTrack = 'background' | 'jingle';
 interface MusicClock {
   track: MusicTrack | null;
-  backgroundS: number;
-  jingleS: number;
+  /** Where each track is, in seconds of its score; the real time is this divided by the tempo. */
+  positionsS: Readonly<Record<MusicTrack, number>>;
 }
 ```
 
@@ -343,7 +368,7 @@ interface MusicClock {
 | Anfitrião desconectado durante a lista | A TV segue em `auto` até o fim e espera; a passagem de anfitrião do M3 dá os controles a outro | O novo anfitrião vê ▲, ▼ e "Ver resultado" |
 | Navegador sem Screen Wake Lock ou que recusa | `console.warn`, segue | Nenhum aviso na tela |
 | `captureStream` ou `play()` do vídeo indisponível ou recusado | `console.warn`, sem vídeo | Nenhum aviso na tela |
-| Som bloqueado | A música anda no relógio sem tocar; o aviso de som do M4 continua | A música entra na liberação, do ponto em que estaria |
+| Som bloqueado | A música anda no relógio sem tocar; o aviso de som do M4 continua | A música entra na liberação, do ponto em que estaria (MUSIC-01 AC 15) |
 | Navegador sem Web Audio | Sem música e sem "check" | Nenhum aviso, como no M4 |
 | Sala guardada sem `music` | `sanitizeLoadedSettings` liga | Música ligada |
 
@@ -361,8 +386,10 @@ interface MusicClock {
 | `canvas.captureStream` e a proteção de tela da LG | DESIGN §4.5 | Não confirmei na documentação se o navegador da TV conta um vídeo de stream como mídia ativa | Três camadas; a prova é a caminhada na TV real. Se falhar, uma tarefa nova troca a fonte do vídeo por um arquivo MP4 gerado pelo projeto |
 | `Input.synthesizePinchGesture` é experimental no CDP | Playwright, `packages/phone/e2e/zoom.spec.ts` | O teste da pinça pode quebrar com o Chromium | Se o comando sumir, a prova da pinça vira caminhada; o iPhone já é caminhada |
 | O Safari do iOS ignora `user-scalable=no` | `packages/phone/index.html` | Zoom por pinça no iPhone | `gesturestart` e `touchmove` de dois dedos; prova no iPhone real |
-| Música tocando por cima do "check" | `state/music.ts` | O "check" some | Música a 30% do ganho dos efeitos |
+| Música tocando por cima do "check" | `device/music.ts` | O "check" some | Música a 50% do ganho dos efeitos, valor do user (MUSIC-01 AC 10); a caminhada C110 confere o "check" audível |
 | Lookahead da música num navegador de TV lento | `device/music.ts` | Notas atrasadas | Agendar no relógio do `AudioContext`, com 300 ms de folga, nunca por `setTimeout` por nota |
+| Troca de tempo com notas já agendadas | `device/music.ts` | Até 300 ms ainda no tempo antigo nos 15 s finais | Aceito: menos de meio tempo da partitura; o tique seguinte agenda no tempo novo |
+| A tela da TV hoje é um `useComputed` em `app.tsx` | `packages/tv/src/app.tsx:34` | Duas contas da tela que podem divergir | O `screen` passa a ser um `computed` do store, e `app.tsx` o lê de lá (T33) |
 | `tools/debug` com `switch` exaustivo sobre a fase | `tools/debug/src/main.tsx` | `tsc` vermelho | A T1 trata `words` em todo `switch` exaustivo do repositório, como no M4 |
 
 ---
@@ -377,7 +404,9 @@ interface MusicClock {
 | Destaque | Índice por segundo; a lista se move para pôr a palavra destacada na linha de leitura | Toda palavra é destacada, inclusive as do começo e do fim |
 | Contagem de palavras | `PlayerInfo.words` e `PlayerResult.roundWords`/`words` | A TV recarregada recupera tudo do `welcome` e do último `round-results` |
 | Som compartilhado | Receita e tocador em `core/src/client/synth.ts`, sobre interfaces estruturais | Sem tipos de DOM no `core`; um lugar para o "check" |
-| Música | Notas escritas no código, tocadas com Web Audio | MUSIC-01 AC 6; sem arquivo nem licença de terceiros |
+| Música | Quatro partituras escritas no código, tocadas com Web Audio | MUSIC-01 AC 11; sem arquivo nem licença de terceiros |
+| Faixa da música | Tabela pura de `Screen` para faixa | A tela já resolve contagem, "Tempo!", aba substituída e conexão caída |
+| 1,5x sem mudar o tom | Reagendar as notas com passos divididos pelo tempo | Osciladores não têm `playbackRate`; o tom é a frequência, que não muda |
 | Vídeo da tela ativa | `canvas.captureStream`, sem arquivo | Nada binário no repositório |
 | Prova do zoom | Playwright com `isMobile: true` no arquivo do teste, pinça por CDP; iPhone por caminhada | O Chromium de desktop ignora o meta viewport |
 | Prova de config e docs | Comando `node -e` que lê o arquivo, julgado pelo exit code | Não há suíte que alcance `playwright.config.ts` nem `docs/` |
