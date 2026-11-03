@@ -530,10 +530,10 @@ T39 → T40 → T41 → T42 → T43 → T44
 
 **Done when**:
 
-- [ ] C43-C45
-- [ ] Limites exatos: 999 e 1.000 ms; passo que chega ao topo e à última palavra inteira
-- [ ] Gate check passes
-- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+- [x] C43-C45
+- [x] Limites exatos: 999 e 1.000 ms; passo que chega ao topo e à última palavra inteira
+- [x] Gate check passes
+- [x] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: unit
 **Gate**: quick
