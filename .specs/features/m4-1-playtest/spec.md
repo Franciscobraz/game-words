@@ -7,7 +7,7 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 ## Goals
 
 - [ ] Uma TV com a página aberta e sem nenhum toque não entra em descanso durante uma partida de 3 rodadas de 3 min, conferida numa TV real
-- [ ] O anfitrião conduz a lista de palavras pelo celular e decide quando a TV mostra o resultado (AD-024)
+- [ ] O anfitrião conduz a lista de palavras pelo celular e decide quando a TV mostra o resultado, e uma palavra destacada por vez guia a leitura (AD-024)
 - [ ] Uma música calma acompanha a partida, e uma vinheta animada toca no resultado, com a opção de desligar as duas (AD-028)
 - [ ] O resultado mostra pontos e palavras de cada jogador, como em `captures/tv-round-result.png`, e abre na mesma hora na TV e nos celulares (AD-026, AD-027)
 - [ ] `/` abre a TV, e a entrada por código fica em `/join` (AD-025)
@@ -38,6 +38,10 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 | Controle do anfitrião | ▲ e ▼ no celular do anfitrião; o primeiro toque para a rolagem automática, e cada toque move a lista meia altura do painel | Toques curtos, sem segurar | ▲/▼ y - user: "concordo com o recomendado"; meia altura: n - default |
 | "Ver resultado" | No celular do anfitrião durante toda a lista, inclusive no "Tempo!" | A TV não vai mais sozinha para o resultado | y - user: "concordo com o recomendado" |
 | Fim da lista | A lista para com a última palavra inteira na tela e espera o anfitrião | Sem navegação automática | y - user: "Navegar automaticamente para a pagina de resultados não foi uma boa decisão" |
+| Palavra em destaque | Uma palavra por vez fica destacada, a que passa por uma linha de leitura fixa no terço de cima do painel; com a lista subindo uma linha por segundo, o destaque troca a cada segundo e segue a ordem da lista | Guia a leitura | destaque: y - user: "Na lista de palavras, coloque o funcionamento de grifar e ou destacar uma palavra por vez enquanto a tela desce, para guiar a leitura dos usuários, junto efeito de grifar deve tocar um som de \"check\" ou \"pontuação\" valida."; linha de leitura: n - default |
+| Lista que cabe no painel | O destaque desce de palavra em palavra, uma por segundo, com a lista parada, e para na última | O destaque guia a leitura mesmo sem rolagem | n - default |
+| Som do destaque | Um "check" curto e sintetizado, como o de palavra válida do celular, a cada palavra destacada; é um efeito, então a opção "Música" não o desliga | Pedido do user | som: y - user: "Na lista de palavras, coloque o funcionamento de grifar e ou destacar uma palavra por vez enquanto a tela desce, para guiar a leitura dos usuários, junto efeito de grifar deve tocar um som de \"check\" ou \"pontuação\" valida."; fora da opção "Música": n - default |
+| Destaque no controle manual | Quando o anfitrião toca ▲ ou ▼, o destaque e o som param, e a lista fica sem destaque até o fim | O destaque segue a leitura automática; no manual, quem conduz é o anfitrião | n - default |
 | TV recarregada na lista | Volta ao topo, com a rolagem automática | A posição da lista só existe na TV | n - default |
 | Celular durante a lista | Jogadores, espectadores e o anfitrião veem "Olhe para a TV"; o anfitrião vê também ▲, ▼ e "Ver resultado" | Pedido do user | y - user: "no celular pode ter uma tela intermediaria que manda apenas olhar para tv" |
 | Texto da tela intermediária | "Olhe para a TV" e, abaixo, "As palavras da rodada estão passando lá" | Diz o que fazer e por quê | n - default |
@@ -104,6 +108,11 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 10. IF quem não é o anfitrião manda rolar ou ver o resultado THEN the servidor SHALL recusar o pedido
 11. WHEN a TV é recarregada durante a lista THEN the TV SHALL voltar à lista, do topo, com a rolagem automática
 12. WHEN o anfitrião passa para outro jogador durante a lista THEN the celular do novo anfitrião SHALL mostrar ▲, ▼ e "Ver resultado"
+13. WHILE a lista anda sozinha, the TV SHALL destacar uma palavra por vez, a que está na linha de leitura do terço de cima do painel
+14. WHILE a lista cabe no painel, the TV SHALL destacar as palavras uma por vez, na ordem da lista, trocando a cada segundo, e parar na última
+15. WHEN uma palavra passa a ficar destacada THEN the TV SHALL tocar um "check" curto
+16. WHEN o anfitrião toca ▲ ou ▼ THEN the TV SHALL tirar o destaque e parar o "check" até o fim da lista
+17. The TV SHALL destacar só com cor e escala, sem mudar a posição das outras palavras
 
 **Independent Test**: Terminar uma rodada com uma lista longa, conferir a rolagem a uma linha por segundo, rolar com ▲ e ▼, chegar ao fim, esperar e tocar "Ver resultado".
 
@@ -243,7 +252,7 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
 | TVAWAKE-01 | P1: Tela da TV sempre ativa (AC 1-5) | Design | Pending |
-| WORDCTL-01 | P1: Lista de palavras conduzida pelo anfitrião (AC 1-12) | Design | Pending |
+| WORDCTL-01 | P1: Lista de palavras conduzida pelo anfitrião (AC 1-17) | Design | Pending |
 | SYNC-01 | P1: Celulares sincronizados com a TV (AC 1-6) | Design | Pending |
 | RESULT-02 | P1: Resultado com pontos e palavras (AC 1-10) | Design | Pending |
 | MUSIC-01 | P2: Música e vinheta (AC 1-10) | Design | Pending |
@@ -251,7 +260,7 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 | NOZOOM-01 | P1: Celular sem zoom (AC 1-3) | Design | Pending |
 | M4FIX-01 | P1: Pendências do M4 (AC 1-5) | Design | Pending |
 
-**Coverage:** 58 total, 0 mapped to tasks, 58 unmapped ⚠️
+**Coverage:** 63 total, 0 mapped to tasks, 63 unmapped ⚠️
 
 ---
 

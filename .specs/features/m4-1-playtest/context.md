@@ -41,6 +41,8 @@ Os itens 3 e 6 e o pódio sincronizado contrariam decisões e critérios aprovad
 - "Ver resultado" fica disponível no celular do anfitrião o tempo todo; a TV não vai mais sozinha para o resultado.
 - user: "concordo com o recomendado" (perguntas 2 e 3)
 
+- Pedido de 2026-11-03: destacar uma palavra por vez enquanto a lista desce, com um som de "check" a cada destaque. user: "Na lista de palavras, coloque o funcionamento de grifar e ou destacar uma palavra por vez enquanto a tela desce, para guiar a leitura dos usuários, junto efeito de grifar deve tocar um som de \"check\" ou \"pontuação\" valida."
+
 ### Música
 
 - Música original no estilo de jogos antigos, calma, gerada no navegador, sem arquivo nem licença. O user pode trocá-la depois.
