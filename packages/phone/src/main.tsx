@@ -30,7 +30,7 @@ const store = createPhoneStore({
 // The page keeps its scale on a pinch, in Safari on iOS too (NOZOOM-01 AC 2).
 preventZoom(document);
 
-// `/KBXT` opens room KBXT; `/` stays on the code screen (ENTRY-01 AC 1-2).
+// `/KBXT` opens room KBXT; `/join` stays on the code screen (ENTRY-01 AC 1-2, ROUTE-01 AC 3).
 const code = parseRoomPath(location.pathname);
 if (code !== null) store.room.openRoom(code);
 
