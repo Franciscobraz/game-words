@@ -1,4 +1,4 @@
-import type { AudioContextLike, AudioNodeLike, AudioParamLike, GainNodeLike, OscillatorNodeLike } from '../device/audio.ts';
+import type { AudioContextLike, AudioNodeLike, AudioParamLike, GainNodeLike, OscillatorNodeLike } from '@bwords/core';
 
 /** An `AudioParam` that remembers its value and the peak it was set to. */
 export interface FakeParam extends AudioParamLike {
@@ -95,6 +95,7 @@ export function fakeAudioContext(state: string, { refusesResume = false } = {}):
     createOscillator() {
       const oscillator: FakeOscillator = {
         ...fakeNode(),
+        type: 'sine',
         frequency: fakeParam(),
         startedAt: null,
         stoppedAt: null,

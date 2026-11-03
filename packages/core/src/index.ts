@@ -1,6 +1,7 @@
 export * from './client/clock-sync.ts';
 export * from './client/places.ts';
 export * from './client/room-connection.ts';
+export * from './client/synth.ts';
 export * from './dawg.ts';
 export * from './generator.ts';
 export * from './lang/ptBR.ts';

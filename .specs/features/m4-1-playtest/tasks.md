@@ -263,10 +263,10 @@ T39 → T40 → T41 → T42 → T43 → T44
 
 **Done when**:
 
-- [ ] C21
-- [ ] Testes de `packages/tv/src/device/audio.test.ts` verdes, mesma contagem
-- [ ] Gate check passes
-- [ ] Test count: anterior + novos, nenhum removido sem o critério que o substitui
+- [x] C21
+- [x] Testes de `packages/tv/src/device/audio.test.ts` verdes, mesma contagem
+- [x] Gate check passes
+- [x] Test count: anterior + novos, nenhum removido sem o critério que o substitui
 
 **Tests**: unit
 **Gate**: quick

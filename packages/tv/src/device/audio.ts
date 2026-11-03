@@ -1,39 +1,5 @@
+import type { AudioContextLike, GainNodeLike } from '@bwords/core';
 import type { AudioCue } from '../model/audio-cues.ts';
-
-/** The part of an `AudioParam` the sounds use. */
-export interface AudioParamLike {
-  value: number;
-  setValueAtTime(value: number, time: number): unknown;
-  exponentialRampToValueAtTime(value: number, time: number): unknown;
-}
-
-/** The part of an `AudioNode` the sounds use; a node connects to another node or to a param. */
-export interface AudioNodeLike {
-  connect(target: AudioNodeLike | AudioParamLike): unknown;
-}
-
-/** The part of a `GainNode` the sounds use. */
-export interface GainNodeLike extends AudioNodeLike {
-  gain: AudioParamLike;
-}
-
-/** The part of an `OscillatorNode` the sounds use. */
-export interface OscillatorNodeLike extends AudioNodeLike {
-  frequency: AudioParamLike;
-  start(time: number): void;
-  stop(time: number): void;
-}
-
-/** The part of an `AudioContext` the TV uses; the tests pass a fake (style guide §4, L). */
-export interface AudioContextLike {
-  readonly state: string;
-  readonly currentTime: number;
-  readonly destination: AudioNodeLike;
-  resume(): Promise<void>;
-  createOscillator(): OscillatorNodeLike;
-  createGain(): GainNodeLike;
-  addEventListener(type: 'statechange', listener: () => void): void;
-}
 
 /** The sounds of the TV, in the room's volume and mute (TVAUDIO-01). */
 export interface AudioDevice {
