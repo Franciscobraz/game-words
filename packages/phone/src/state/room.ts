@@ -5,6 +5,7 @@ import {
   type ConnectionStatus,
   type HashFrame,
   type RoomConnection,
+  type ScrollDirection,
   type ServerMessage,
   type Settings,
 } from '@bwords/core';
@@ -52,6 +53,10 @@ export interface RoomStore {
   playAgain(): void;
   backToLobby(): void;
   closeRoom(): void;
+  /** ▲ or ▼ on the host's phone: the TV steps the words list (WORDCTL-01 AC 5-6). */
+  scroll(direction: ScrollDirection): void;
+  /** "VER RESULTADO" on the host's phone: the TV and the phones open the result (WORDCTL-01 AC 8). */
+  showResult(): void;
   /** Sends the swiped paths the phone judged valid (PLAY-01 AC 12). */
   submit(paths: number[][]): void;
   /**
@@ -136,6 +141,8 @@ export function createRoomStore(deps: RoomDeps): RoomStore {
     playAgain: () => send({ type: 'play-again' }),
     backToLobby: () => send({ type: 'back-to-lobby' }),
     closeRoom: () => send({ type: 'close-room' }),
+    scroll: (direction) => send({ type: 'scroll', direction }),
+    showResult: () => send({ type: 'show-result' }),
     submit: (paths) => send({ type: 'submit', paths }),
     listen(listener) {
       listeners.add(listener);

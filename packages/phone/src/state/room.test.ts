@@ -164,6 +164,21 @@ describe('actions', () => {
     expect(connection.sent).toEqual([expected]);
   });
 
+  test('sends scroll and show-result for the host buttons', () => {
+    // WORDCTL-01 AC 5, 6, 8: ▲, ▼ and "VER RESULTADO", in the order the host taps them.
+    const { connection, store } = setup();
+
+    store.scroll('up');
+    store.scroll('down');
+    store.showResult();
+
+    expect(connection.sent).toEqual([
+      { type: 'scroll', direction: 'up' },
+      { type: 'scroll', direction: 'down' },
+      { type: 'show-result' },
+    ]);
+  });
+
   test('leaving the room closes the connection and forgets the room', () => {
     // EXIT-01 AC 5: after "ENTRAR EM OUTRA SALA" the phone knows no room, so the code screen shows.
     const { connection, store } = setup();
