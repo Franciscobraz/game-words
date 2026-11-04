@@ -9,7 +9,7 @@
 
 | Finding | Evidence | Fix | Closed |
 | --- | --- | --- | --- |
-| O JSDoc da opção `music` cita critérios que o amendment renumerou: "música ligada numa sala nova" e "sala guardada sem `music`" são MUSIC-01 AC 13-14, não AC 8-9 (AC 8 hoje é a aba substituída, AC 9 o "Reconectando…"); o style guide §7 pede o requisito certo no JSDoc | `packages/core/src/room/protocol.ts:110` - `(MUSIC-01 AC 8-9)`; `packages/core/src/room/settings.ts:29` - `(MUSIC-01 AC 9)` | trocar para `MUSIC-01 AC 13-14` em `protocol.ts` e `MUSIC-01 AC 14` em `settings.ts`; só comentário, sem decisão do user | |
+| O JSDoc da opção `music` cita critérios que o amendment renumerou: "música ligada numa sala nova" e "sala guardada sem `music`" são MUSIC-01 AC 13-14, não AC 8-9 (AC 8 hoje é a aba substituída, AC 9 o "Reconectando…"); o style guide §7 pede o requisito certo no JSDoc | `packages/core/src/room/protocol.ts:110` - `(MUSIC-01 AC 8-9)`; `packages/core/src/room/settings.ts:29` - `(MUSIC-01 AC 9)` | trocar para `MUSIC-01 AC 13-14` em `protocol.ts` e `MUSIC-01 AC 14` em `settings.ts`; só comentário, sem decisão do user | `264b1ab` - C4, C5 e C85 seguem verdes; só comentário mudou |
 
 ## Mutations
 
