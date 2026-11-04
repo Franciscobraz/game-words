@@ -330,11 +330,10 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 | `tv-words.png`: "APENAS 1 JOGADOR" ao lado de "Palavras Únicas" | Nada, como no M4 | y - AD-022 |
 | `tv-words.png`: nenhuma palavra destacada | Uma palavra por vez destacada na linha de leitura (WORDCTL-01 AC 13-17) | y - AD-024 |
 | `tv-words.png`: círculos das palavras nas cores do tema | Círculos na cor de cada jogador, como no M4 | y - AD-030 |
-| `tv-words.png`: margem de 64 px em volta do quadro | A tela ocupa a janela inteira, como as outras telas da TV | y - AD-030 |
 
 ## Sources
 
-- Stitch, projeto 13555119467933870727, tela "TV - Palavras da Rodada" (`9e9f8f8f1b9943febdfd28d7883c943f`), depois dos ajustes do user: a capture foi renderizada do HTML; ela tem 1920x1208 porque o HTML põe 64 px de margem em volta do quadro de 1920x1080, e a comparação vale para a composição desse quadro
+- Stitch, projeto 13555119467933870727, tela "TV - Palavras da Rodada" (`9e9f8f8f1b9943febdfd28d7883c943f`), depois dos ajustes do user: a capture foi renderizada do HTML a 1920x1080, sem a margem de 64 px que o HTML põe em volta do quadro (normalizada no fechamento, porque o gate exige a foto e a capture do mesmo tamanho)
 - ![tv-words](captures/tv-words.png) - binding - lista de palavras com o painel "Jogadores" à direita, ordenado pelos pontos
 
 - `.specs/features/m4-1-playtest/context.md` - o pedido e as respostas do user, com as palavras dele
