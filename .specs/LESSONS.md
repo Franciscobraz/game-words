@@ -132,6 +132,12 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - evidence: packages/tv/src/model/lobby-rows.ts:63 (finding 7) (specs)
 - last seen: 2026-11-03T14:42:49Z
 
+### L-021 - Update the requirement citations in code when an amendment renumbers the criteria
+- signal: `spec_precision_gap` · recurrence: 1 feature(s) · scope: `specs` · harmful: 0
+- features: m4-1-playtest
+- evidence: packages/core/src/room/protocol.ts:110 (verification finding) (specs)
+- last seen: 2026-11-04T01:12:28Z
+
 ## Quarantined (failed when applied - ignore)
 
 A confirmed lesson that recurred alongside failure. Kept for the maintainer to review.

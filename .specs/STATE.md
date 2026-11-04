@@ -215,14 +215,15 @@ Decisões de projeto ficam em `docs/DESIGN.md` (inclui A1, §5.5) e nas tabelas 
 ## Handoff
 
 - **Data:** 2026-11-03
-- **Marcos concluídos:** M0, M1, M2, M3 e M4 (Done, verificados). O M4 fechou com `validate_verification.py` exit 0 em `619b4b1` (123 provas, 3 mutações killed, `screens.md` round 2 com as 4 telas `matches`); `proofs.md` foi commitado em `4eb4102`. Os 7 achados do Verifier estão fechados em `verification.md`, e as lições, em `.specs/LESSONS.md` (L-008 confirmada).
-- **Publicado:** a Cloudflare roda o M4 de `29f0c43`; as correções dos achados ainda não foram publicadas. Deploy só com pedido do user.
-- **Próximo passo:** o spec de `m4-1-playtest` (`.specs/features/m4-1-playtest/context.md`). As respostas do primeiro bloco estão lá; os pedidos novos da tela de resultado (contagem de palavras, maior palavra acima do tabuleiro, música de fim de rodada) têm 4 perguntas abertas com o user. A capture nova sai do HTML da tela "TV - Resultado da Rodada" do Stitch, renderizado a 1920x1080, não do screenshot, que está desatualizado.
-- **Pendências do fechamento do M4:** decididas em 2026-11-03 e levadas para `m4-1-playtest` (`context.md`); a pasta `C:\c\` fica para o user apagar.
-- **Deixado de lado pelo user:** uma vitória que pareceu indevida numa partida em família. O servidor só dá vitória no fim da última rodada, à maior pontuação; uma simulação de 1.200 partidas não reproduziu. O user volta ao caso se ele se repetir.
-- **Instabilidade em aberto:** com 8 workers o Vite recusava módulos no Windows, por isso o `workers: 4` na TV. Conferir as portas 8787, 9229, 5175 e 5176 livres antes de rodar E2E.
-- **Depois de `m4-1-playtest`:** o M5, com a lista de palavrões vazia.
-- **Branch:** `main`. `origin/main` está em `c4746d1`; todo o M4 ainda não foi enviado. Push só com pedido.
+- **Marcos concluídos:** M0, M1, M2, M3, M4 e M4.1 (`m4-1-playtest`).
+- **M4.1:** 48 tarefas, walk sem problema (`fd31734`), telas `matches` no round 1, Verifier com 1 achado fechado (`264b1ab`) e 3 mutações killed. Fechamento aprovado pelo user com uma falha do Build na suíte E2E do celular, que passa sozinha: user: "não precisa ficar rerodando por causa desse erro, pode aprovar essa finalização, iremos resolver esses erros de E2E ajustando os prints do stitch depois". O gate (`validate_verification.py`) fica com esse erro registrado.
+- **Próximo passo do user:** push e deploy feitos por ele, à mão; depois, as caminhadas em aparelho real (C108 TV LG sem descanso, C109 iPhone sem zoom, C110 músicas e "check" na sala), com o resultado registrado no `**Walked:**` do `m4-1-playtest`.
+- **Melhorias futuras no processo (anotadas, sem tarefa):**
+  1. Uma ferramenta no projeto que gere as captures do Stitch pelo HTML da tela, sempre a 1920x1080 na TV e 390 px no celular, em escala 2, sem a margem externa e escalando o que vier em outro tamanho; o Stitch não obedece as medidas. user: "Infelizmente eu não consegui fazer o stitch obedecer as medidas das telas [...] então precisamos resolver no codigo e do nosso lado."; "deixe apenas anotado como melhorias futuras no processo"
+  2. A instabilidade dos E2E no Windows: no Build serial, uma suíte do celular ou da TV cai uma vez (Vite recusando a conexão, ou o teste de feedback em 100 ms) e passa sozinha; o user vai tratar junto com os ajustes das captures.
+- **Ideias para outra versão:** dicas de palavras, significado das palavras (Wikcionário pelo Worker, com cache), a vitória que pareceu indevida numa partida em família (o user volta ao caso se ele se repetir).
+- **Depois:** o M5, com a lista de palavrões vazia.
+- **Branch:** `main`. Push só com pedido; o user fará este.
 - **Modo de execução preferido pelo usuário:** subagentes, um batch por vez, parando para mostrar o resultado e perguntar antes do próximo.
-- **Teste manual:** `npm run assets:build`, depois `npm run dev -w @bwords/server`; TV em `http://localhost:8787/tv`, celular em `http://localhost:8787/<CÓDIGO>`.
-- **Ambiente Windows:** os scripts da skill precisam de `PYTHONUTF8=1`; `check_proofs.py` também precisa de `PYTHONPATH` apontando para uma pasta com um `sitecustomize.py` que mapeia `signal.SIGHUP` para `SIGTERM` e resolve launchers `.cmd` (como o `npx`) via `shutil.which`. Recriar no scratchpad da sessão se sumir.
+- **Teste manual:** `npm run assets:build`, depois `npm run dev -w @bwords/server`; TV em `http://localhost:8787/` ou `/tv`, celular em `/<CÓDIGO>`, entrada por código em `/join`.
+- **Ambiente Windows:** os scripts da skill precisam de `PYTHONUTF8=1`; `check_proofs.py` também precisa de `PYTHONPATH` apontando para uma pasta com um `sitecustomize.py` que mapeia `signal.SIGHUP` para `SIGTERM` e resolve launchers `.cmd` (como o `npx`) via `shutil.which`. Recriar no scratchpad da sessão se sumir. Em node e Playwright, nunca caminhos `/c/...`: criam a pasta `C:\c\`.

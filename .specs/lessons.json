@@ -3,7 +3,7 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 21,
+  "next_id": 22,
   "lessons": [
     {
       "id": "L-001",
@@ -366,6 +366,24 @@
       ],
       "created": "2026-11-03T14:42:49Z",
       "last_seen": "2026-11-03T14:42:49Z"
+    },
+    {
+      "id": "L-021",
+      "key": "spec_precision_gap::update the requirement citations in code when an amendment renumbers the criteria",
+      "text": "Update the requirement citations in code when an amendment renumbers the criteria",
+      "signal": "spec_precision_gap",
+      "scope": "specs",
+      "status": "candidate",
+      "features": [
+        "m4-1-playtest"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "packages/core/src/room/protocol.ts:110 (verification finding) (specs)"
+      ],
+      "created": "2026-11-04T01:12:28Z",
+      "last_seen": "2026-11-04T01:12:28Z"
     }
   ]
 }
