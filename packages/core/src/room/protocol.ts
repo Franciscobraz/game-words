@@ -107,7 +107,7 @@ export interface Settings {
   /** 0-100 */
   volume: number;
   muted: boolean;
-  /** Background music and the result jingle on the TV; on in a new room (MUSIC-01 AC 8-9). */
+  /** Background music and the result jingle on the TV; on in a new room (MUSIC-01 AC 13-14). */
   music: boolean;
 }
 
