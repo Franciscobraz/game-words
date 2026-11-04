@@ -1,0 +1,23 @@
+[
+  {
+    "file": "packages/core/src/room/machine.ts",
+    "old": "if (state.phase === 'words') return to.role === 'tv' ? results : [];",
+    "new": "if (state.phase === 'words') return results;",
+    "proof": "npx vitest run packages/core/src/room/machine.test.ts -t \"sends no word of the round to a phone or a guest on the words\"",
+    "label": "C17 - welcome on the words sends round-results to phones and guests too (L-008 leak)"
+  },
+  {
+    "file": "packages/tv/src/model/standings.ts",
+    "old": "const ranked = [...inRound].sort((a, b) => tallyOf(b).points - tallyOf(a).points);",
+    "new": "const ranked = [...inRound].sort((a, b) => b.score - a.score);",
+    "proof": "npx vitest run packages/tv/src/model/standings.test.ts -t \"orders and places by the round points between rounds\"",
+    "label": "C62 - result between rounds ordered by the match score instead of the round points"
+  },
+  {
+    "file": "packages/tv/src/model/music.ts",
+    "old": "serverNow >= round.endsAt - FAST_TEMPO_REMAINING_MS",
+    "new": "serverNow > round.endsAt - FAST_TEMPO_REMAINING_MS",
+    "proof": "npx vitest run packages/tv/src/model/music.test.ts -t \"speeds the match music up 1.5 times from 15 seconds before the end\"",
+    "label": "C77 - match music speeds up only after 15 000 ms remaining (bound shifted by one)"
+  }
+]

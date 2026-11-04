@@ -1,8 +1,8 @@
 # m4-1-playtest proofs
 
-**HEAD**: fd31734
+**HEAD**: 6392af4
 **Tree**: clean
-**Result**: 137 pass, 2 fail; mutations 0 killed, 0 not
+**Result**: 139 pass, 0 fail; mutations 3 killed, 0 not
 
 | Check | Proof | Ran | Passed | Result |
 | --- | --- | --- | --- | --- |
@@ -78,7 +78,7 @@
 | C70 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/result.spec.ts -g "ranks by the round ` | 1 | - | pass |
 | C71 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/result.spec.ts -g "ranks by the match ` | 1 | - | pass |
 | C72 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/result.spec.ts -g "keeps the words and` | 1 | - | pass |
-| C73 | `browser captures/tv-round-result.running.png` | - | - | **not judged** (screens.md) |
+| C73 | `browser captures/tv-round-result.running.png` | - | - | pass |
 | C74 | `npx playwright test -c packages/tv/playwright.config.ts packages/tv/e2e/full-match.spec.ts -g "plays a whole m` | 1 | - | pass |
 | C75 | `npx vitest run packages/tv/src/model/music.test.ts -t "plays the lobby music on the lobby, the opening and the` | 1 | 1 | pass |
 | C76 | `npx vitest run packages/tv/src/model/music.test.ts -t "plays the match music on the countdown, the round, the ` | 1 | 1 | pass |
@@ -133,7 +133,7 @@
 | C120 | `npx vitest run packages/tv/src/model/words-players.test.ts -t "tags the disconnected and leaves out who did no` | 1 | 1 | pass |
 | C121 | `npx vitest run packages/tv/src/model/words-players.test.ts -t "marks the first two places"` | 1 | 1 | pass |
 | C122 | `npx vitest run packages/tv/src/model/words-players.test.ts -t "writes words and points in full, singular at on` | 1 | 1 | pass |
-| C123 | `browser captures/tv-words.running.png` | - | - | **not judged** (screens.md) |
+| C123 | `browser captures/tv-words.running.png` | - | - | pass |
 | C124 | `npx playwright test -c packages/phone/playwright.config.ts packages/phone/e2e/board.spec.ts -g "paints a valid` | 1 | - | pass |
 | C108 | `walk - caminhada do user na TV real, depois do deploy que ele pedir; resultado em **Walked:**` | - | - | pass (Walked) |
 | C109 | `walk - caminhada do user no Safari do iPhone; resultado em **Walked:**` | - | - | pass (Walked) |
@@ -145,3 +145,11 @@
 | Build | `npx playwright test` | - | - | pass |
 | Build | `npx playwright test -c packages/phone/playwright.config.ts` | - | - | pass |
 | Build | `npx playwright test -c packages/tv/playwright.config.ts` | - | - | pass |
+
+## Mutations
+
+| Mutation | Location | Killed |
+| --- | --- | --- |
+| C17 - welcome on the words sends round-results to phones and guests too (L-008 leak) | `packages\core\src\room\machine.ts:210` | yes |
+| C62 - result between rounds ordered by the match score instead of the round points | `packages\tv\src\model\standings.ts:43` | yes |
+| C77 - match music speeds up only after 15 000 ms remaining (bound shifted by one) | `packages\tv\src\model\music.ts:50` | yes |
