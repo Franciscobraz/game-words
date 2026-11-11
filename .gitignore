@@ -6,3 +6,21 @@ packages/server/public/
 *.tsbuildinfo
 test-results/
 playwright-report/
+
+# Local secrets (wrangler dev reads .dev.vars)
+.dev.vars
+.env
+.env.*
+
+# Local Claude Code settings
+.claude/settings.local.json
+
+# Python caches from the skill scripts
+__pycache__/
+*.pyc
+
+# Logs, coverage and OS files
+*.log
+coverage/
+.DS_Store
+Thumbs.db
