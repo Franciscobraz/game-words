@@ -17,7 +17,9 @@
     "bench:cf": "node spikes/m0/src/bench-cf.ts",
     "report": "node spikes/m0/src/report.ts",
     "play": "npm run dev -w @bwords/play",
-    "debug": "node tools/debug/launch.ts"
+    "debug": "node tools/debug/launch.ts",
+    "skills:link": "node tools/skills-link/src/link.ts",
+    "postinstall": "npm run skills:link"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",

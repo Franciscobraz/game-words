@@ -5,6 +5,7 @@
     { "path": "packages/server" },
     { "path": "tools/dict-build" },
     { "path": "tools/assets-build" },
+    { "path": "tools/skills-link" },
     { "path": "spikes/m0" },
     { "path": "spikes/m0/tsconfig.worker.json" },
     { "path": "tools/play" },

@@ -15,6 +15,9 @@ playwright-report/
 # Local Claude Code settings
 .claude/settings.local.json
 
+# Claude Code skills: links to .agents/skills, made by npm run skills:link
+.claude/skills/
+
 # Python caches from the skill scripts
 __pycache__/
 *.pyc
