@@ -4,7 +4,7 @@ Jogo de encontrar palavras: uma TV mostra o jogo e cada jogador usa o celular co
 
 ## Antes de escrever código
 
-- Siga o style guide do projeto, importado abaixo. Ele vale para toda tarefa, inclusive as que não o mencionam.
+- Leia e siga o style guide do projeto, [`docs/style-guide.md`](docs/style-guide.md). Ele vale para toda tarefa, inclusive as que não o mencionam. Ferramentas que expandem imports `@` o carregam pela linha abaixo.
 - Decisões de projeto ficam em `.specs/STATE.md` (`AD-NNN`) e em `docs/DESIGN.md`. Consulte-as antes de propor algo que as contrarie.
 - Código em inglês, documentos em português, com os termos técnicos em inglês (AD-001).
 
@@ -13,7 +13,7 @@ Jogo de encontrar palavras: uma TV mostra o jogo e cada jogador usa o celular co
 ## Processo: Spec-Driven Development
 
 - Toda mudança de código passa por Spec-Driven Development: especificar, desenhar, quebrar em tarefas e executar, com a profundidade ajustada ao tamanho da mudança.
-- **Skill padrão:** `tlc-spec-driven`. O user pode escolher outra skill de Spec-Driven Development dizendo o nome dela no pedido, para uma feature, ou registrando a troca como decisão em `.specs/STATE.md`, para o projeto todo. Sem essa escolha, use a padrão.
+- **Skill padrão:** `tlc-spec-driven`, em `.agents/skills/tlc-spec-driven/` (comece pelo `SKILL.md`). O user pode escolher outra skill de Spec-Driven Development dizendo o nome dela no pedido, para uma feature, ou registrando a troca como decisão em `.specs/STATE.md`, para o projeto todo. Sem essa escolha, use a padrão.
 - Uma feature termina com a mesma skill com que começou, porque cada skill tem o seu formato de artefatos. Trocar no meio de uma feature exige pedido explícito do user.
 - Nenhum código de feature antes de o spec estar aprovado pelo user.
 - Os artefatos ficam em `.specs/features/<feature>/`; as decisões de projeto, em `.specs/STATE.md`.
@@ -45,11 +45,13 @@ Jogo de encontrar palavras: uma TV mostra o jogo e cada jogador usa o celular co
 - `.specs/LESSONS.md` - lições de verificações passadas
 - `.specs/features/<feature>/` - spec, design, tasks e provas de cada marco
 - `packages/theme/tokens.css` - paleta, tipografia, raios e espaços de todas as telas; nenhuma cor literal fora dele (AD-017)
+- `.agents/skills/` - as skills do projeto, para qualquer ferramenta de AI (AD-031)
 
 ## Ambiente
 
 - **Pacote do dicionário:** o binário pt-BR é git-ignored. Rode `npm run dict:build` uma vez antes de `npm run debug`, `npm run play` ou do servidor; os testes usam um pacote de fixture e não precisam dele.
 - **Portas:** 8787 `wrangler dev`, 5173 `play`, 5174 `debug`, 5175 celular, 5176 TV.
+- **Skills:** a fonte é `.agents/skills/`. O Claude Code só lê `.claude/skills/`, que é git-ignored e feita de links para `.agents/skills/`; o `npm install` a gera, e `npm run skills:link` a refaz (AD-031).
 - **Windows:** os scripts Python da skill rodam com `PYTHONUTF8=1` (ver o Handoff em `.specs/STATE.md`).
 
 ## Comandos
@@ -60,6 +62,7 @@ Jogo de encontrar palavras: uma TV mostra o jogo e cada jogador usa o celular co
 - `npm run assets:build` - gera os dois clientes e monta `packages/server/public/`, que o Worker serve (`/` e `/tv` na TV, `/join` e `/<CÓDIGO>` no celular)
 - `npm run deploy` - gera os clientes e publica o Worker; só com pedido do user (`docs/deploy.md`)
 - `npm run debug` - `wrangler dev` (8787) e a página de debug (5174)
+- `npm run skills:link` - liga cada skill de `.agents/skills/` em `.claude/skills/`
 - `npx playwright test` - E2E do `play`
 - `npx playwright test -c packages/phone/playwright.config.ts` - E2E do celular
 - `npx playwright test -c packages/tv/playwright.config.ts` - E2E da TV; roda `assets:build` antes, porque a partida inteira joga pelo Worker
