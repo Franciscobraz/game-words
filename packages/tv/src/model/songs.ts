@@ -35,7 +35,7 @@ const REST = '.';
 
 /**
  * Writes the notes of `voices` over `bars` bars of four beats at `bpm`. The songs are written by the project, in the
- * major pentatonic of old games: a triangle melody over a soft bass (MUSIC-01 AC 11).
+ * style of a 16-bit racing game: a triangle lead over a pumping bass, with low squares on top (MUSIC-01 AC 11, AD-032).
  */
 export function score(bpm: number, bars: number, voices: readonly Voice[]): Song {
   const beatS = SECONDS_PER_MINUTE / bpm;
@@ -90,51 +90,136 @@ function pitchHz(name: string): number {
   return A4_HZ * 2 ** ((midi - A4_MIDI) / SEMITONES_PER_OCTAVE);
 }
 
-/** The quiet triangle under every melody. */
-const BASS = { wave: 'triangle', gain: 0.45 } as const;
-const MELODY = { wave: 'triangle', gain: 0.8 } as const;
+/** A pumping bass, one entry per bar: the root, then the octave above, four times a bar (AD-032). */
+export function pump(roots: readonly string[]): string {
+  return bars(roots, (root) => repeat(`${root} ${octaveUp(root)}`, PUMPS_PER_BAR));
+}
 
-/** Calm, for waiting in the lobby: quarter notes over a slow bass, 84 bpm, 8 bars (MUSIC-01 AC 1). */
-export const LOBBY_SONG: Song = score(84, 8, [
-  { ...MELODY, beatsPerStep: 1, steps: 'E4 G4 A4 G4  E4 D4 C4 -  D4 E4 G4 E4  D4 - - .  E4 G4 A4 C5  A4 G4 E4 G4  D4 E4 D4 C4  C4 - - .' },
-  { ...BASS, beatsPerStep: 2, steps: 'C3 G2  A2 E2  D3 A2  G2 D3  C3 G2  A2 E3  D3 G2  C3 -' },
-]);
+/** Sixteenth notes up and back over each bar's chord of three notes, such as `'A3 C4 E4'` (AD-032). */
+export function arpeggio(chords: readonly string[]): string {
+  return bars(chords, (chord) => {
+    const [root, third, fifth] = chord.split(' ');
+    return repeat(`${root} ${third} ${fifth} ${third}`, ARPEGGIOS_PER_BAR);
+  });
+}
 
-/** Calm, with no hurry, for the round and the words: 80 bpm, 16 bars, and 120 bpm at 1.5 times (MUSIC-01 AC 2-3). */
-export const MATCH_SONG: Song = score(80, 16, [
+/** One note per bar, short on beats two and four, with rests on one and three (AD-032). */
+export function offbeats(notes: readonly string[]): string {
+  return bars(notes, (note) => `${REST} ${note} ${REST} ${note}`);
+}
+
+/** Root and octave pairs in a bar of eighth notes. */
+const PUMPS_PER_BAR = 4;
+/** Runs of four sixteenth notes in a bar. */
+const ARPEGGIOS_PER_BAR = 4;
+
+function bars(perBar: readonly string[], write: (bar: string) => string): string {
+  return perBar.map(write).join('  ');
+}
+
+function repeat(steps: string, times: number): string {
+  return Array.from({ length: times }, () => steps).join(' ');
+}
+
+/** The same pitch an octave higher: `A2` gives `A3`. */
+function octaveUp(name: string): string {
+  const match = /^([A-G]#?)(\d)$/.exec(name);
+  if (match === null) throw new Error(`Not a pitch: ${name}`);
+  return `${match[1]}${Number(match[2]) + 1}`;
+}
+
+/** The pumping triangle under every song. */
+const BASS = { wave: 'triangle', gain: 0.45, beatsPerStep: 0.5 } as const;
+/** The lead, in eighth notes. */
+const LEAD = { wave: 'triangle', gain: 0.8, beatsPerStep: 0.5 } as const;
+/** A low square on the same notes as the lead, for the edge of a synth lead. */
+const LEAD_DOUBLE = { wave: 'square', gain: 0.14, beatsPerStep: 0.5 } as const;
+/** Low squares on top: stabs on the off-beats and the arpeggio. */
+const STABS = { wave: 'square', gain: 0.12, beatsPerStep: 1 } as const;
+const ARPEGGIO = { wave: 'square', gain: 0.08, beatsPerStep: 0.25 } as const;
+
+const LOBBY_LEAD =
+  'E4 - - G4 - B4 - A4  G4 - E4 - - . C5 B4  A4 - - F#4 - D4 - F#4  E4 - - - - . . .  ' +
+  'E4 - - G4 - B4 - D5  E5 - D5 - C5 - B4 G4  A4 - - D5 - F#4 - A4  F#4 - - - D#4 - F#4 .  ' +
+  'G4 - - C5 - E5 - D5  D5 - - A4 - F#4 - A4  B4 - - D5 - F#5 - D5  E5 - - - B4 . G4 .  ' +
+  'C5 - - E5 - G5 - E5  F#5 - - D5 - A4 - D5  B4 - E5 - G5 - F#5 -  D#5 - - - B4 - F#4 .';
+
+/** The lobby: E minor, 126 bpm, the lead doubled over stabs on the off-beats (MUSIC-01 AC 1, AD-032). */
+export const LOBBY_SONG: Song = score(126, 16, [
+  { ...LEAD, steps: LOBBY_LEAD },
+  { ...LEAD_DOUBLE, steps: LOBBY_LEAD },
   {
-    ...MELODY,
-    beatsPerStep: 1,
-    steps:
-      'G4 A4 C5 A4  G4 E4 D4 -  E4 G4 A4 G4  E4 - - .  D4 E4 G4 A4  G4 E4 D4 E4  C4 D4 E4 G4  A4 - - . ' +
-      'C5 - A4 G4  A4 - G4 E4  G4 - E4 D4  E4 - - .  D4 E4 G4 E4  D4 C4 D4 E4  D4 - C4 D4  C4 - - .',
+    ...STABS,
+    steps: offbeats(['G4', 'E4', 'F#4', 'G4', 'G4', 'E4', 'F#4', 'D#4', 'E4', 'F#4', 'D4', 'G4', 'E4', 'F#4', 'G4', 'D#4']),
   },
-  { ...BASS, beatsPerStep: 2, steps: 'C3 G2  A2 E2  F2 C3  G2 -' },
+  { ...BASS, steps: pump(['E2', 'C2', 'D2', 'E2', 'E2', 'C2', 'D2', 'B1', 'C2', 'D2', 'B1', 'E2', 'C2', 'D2', 'E2', 'B1']) },
 ]);
 
-/** Lively, for the result between rounds: eighth notes at 128 bpm, 16 bars, exactly 30 s (MUSIC-01 AC 6, 12). */
+const MATCH_LEAD =
+  'A4 - - C5 - E5 - D5  C5 - A4 - - . F4 G4  B4 - - D5 - G5 - F5  E5 - - - - . . .  ' +
+  'A4 - - C5 - E5 - G5  A5 - G5 - F5 - E5 C5  D5 - - B4 - G4 - B4  G#4 - - - B4 - E5 .  ' +
+  'F5 - - E5 - C5 - A4  D5 - - B4 - G4 - D5  E5 - - G5 - B4 - E5  C5 - - - A4 . E5 .  ' +
+  'F5 - - E5 - F5 - A5  G5 - - F5 - D5 - B4  C5 - E5 - A5 - G5 -  G#5 - - - E5 - B4 .';
+
+/**
+ * The round and the words: A minor, 126 bpm, the lead doubled over an arpeggio; 189 bpm at 1.5 times (MUSIC-01 AC 2-3,
+ * AD-032).
+ */
+export const MATCH_SONG: Song = score(126, 16, [
+  { ...LEAD, steps: MATCH_LEAD },
+  { ...LEAD_DOUBLE, steps: MATCH_LEAD },
+  {
+    ...ARPEGGIO,
+    steps: arpeggio([
+      'A3 C4 E4', 'F3 A3 C4', 'G3 B3 D4', 'A3 C4 E4', 'A3 C4 E4', 'F3 A3 C4', 'G3 B3 D4', 'E3 G#3 B3',
+      'F3 A3 C4', 'G3 B3 D4', 'E3 G3 B3', 'A3 C4 E4', 'F3 A3 C4', 'G3 B3 D4', 'A3 C4 E4', 'E3 G#3 B3',
+    ]),
+  },
+  { ...BASS, steps: pump(['A2', 'F2', 'G2', 'A2', 'A2', 'F2', 'G2', 'E2', 'F2', 'G2', 'E2', 'A2', 'F2', 'G2', 'A2', 'E2']) },
+]);
+
+/**
+ * The result between rounds: the race held back, A minor, the lead alone with rests, ending on E so the race goes on;
+ * 128 bpm, 16 bars, exactly 30 s (MUSIC-01 AC 6, 12, AD-032).
+ */
 export const JINGLE_SONG: Song = score(128, 16, [
   {
-    ...MELODY,
-    beatsPerStep: 0.5,
+    ...LEAD,
     steps:
-      'C5 . E5 G5 - E5 C5 .  A4 . C5 E5 - C5 A4 .  A4 . C5 D5 - C5 A4 .  G4 A4 G4 E4 D4 . . .  ' +
-      'C5 . E5 G5 - A5 G5 .  E5 . C5 A4 - C5 E5 .  D5 . C5 A4 - G4 A4 .  G4 - - . D5 - C5 .',
+      'A4 . C5 . E5 - D5 .  C5 - A4 . . . . .  G4 . C5 . E5 - G5 .  D5 - - - . . . .  ' +
+      'A4 . C5 . E5 - G5 .  A5 - G5 . F5 - E5 .  D5 . B4 . G4 - B4 .  D5 - - - . . . .  ' +
+      'F5 . E5 . C5 - A4 .  B4 . D5 . G5 - F5 .  E5 - - C5 - A4 - C5  E5 - - - . . . .  ' +
+      'F5 . A5 . F5 - C5 .  G5 . D5 . B4 - D5 .  G#4 . B4 . E5 - D5 .  B4 - - - . . . .',
   },
-  { ...BASS, beatsPerStep: 1, steps: 'C3 G3 C3 G3  A2 E3 A2 E3  F2 C3 F2 C3  G2 D3 G2 D3' },
+  {
+    ...STABS,
+    gain: 0.1,
+    steps: offbeats(['E4', 'F4', 'E4', 'D4', 'E4', 'F4', 'D4', 'D4', 'F4', 'D4', 'E4', 'E4', 'F4', 'D4', 'G#4', 'G#4']),
+  },
+  { ...BASS, steps: pump(['A2', 'F2', 'C3', 'G2', 'A2', 'F2', 'G2', 'G2', 'F2', 'G2', 'A2', 'A2', 'F2', 'G2', 'E2', 'E2']) },
 ]);
 
-/** Festive, for the podium: faster than the jingle, with a square voice on top, 132 bpm, 16 bars (MUSIC-01 AC 7). */
+const FINALE_LEAD =
+  'G4 . C5 . E5 . G5 -  C6 - - - E5 - G5 .  G#5 - - D#5 - C5 - D#5  A#5 - - F5 - D5 - F5  ' +
+  'G5 - - E5 - C5 - E5  F5 - A5 - C6 - A5 F5  G5 - - D5 - B4 - D5  G5 . G5 . A5 . B5 .  ' +
+  'C6 - - G5 - E5 - G5  A5 - - E5 - C5 - E5  F5 - - C5 - A4 - C5  D5 - E5 - F5 - G5 -  ' +
+  'G#5 - - - D#5 - G#5 -  A#5 - - - F5 - A#5 -  C6 - - - G5 - C6 -  C6 - - - - . . .';
+
+/**
+ * The podium: the victory, C major after the minor race, with a fanfare and the bVI-bVII-I cadence (Ab-Bb-C, written in
+ * sharps); 132 bpm (MUSIC-01 AC 7, AD-032).
+ */
 export const FINALE_SONG: Song = score(132, 16, [
+  { ...LEAD, steps: FINALE_LEAD },
+  { ...LEAD_DOUBLE, gain: 0.16, steps: FINALE_LEAD },
   {
-    ...MELODY,
-    beatsPerStep: 0.5,
-    steps:
-      'C5 C5 E5 G5 - G5 E5 G5  A5 - G5 E5 C5 - D5 E5  D5 D5 G5 D5 E5 D5 C5 D5  E5 - C5 - G4 - . .  ' +
-      'C5 C5 E5 G5 - A5 G5 E5  A5 - C6 A5 G5 - E5 G5  D5 E5 G5 A5 G5 E5 D5 E5  C5 - G4 - C5 - . .',
+    ...ARPEGGIO,
+    steps: arpeggio([
+      'C4 E4 G4', 'C4 E4 G4', 'G#3 C4 D#4', 'A#3 D4 F4', 'C4 E4 G4', 'F3 A3 C4', 'G3 B3 D4', 'G3 B3 D4',
+      'C4 E4 G4', 'A3 C4 E4', 'F3 A3 C4', 'G3 B3 D4', 'G#3 C4 D#4', 'A#3 D4 F4', 'C4 E4 G4', 'C4 E4 G4',
+    ]),
   },
-  { wave: 'square', gain: 0.2, beatsPerStep: 1, steps: 'E4 . G4 .  F4 . A4 .  D4 . G4 .  E4 . C4 .  E4 . G4 .  F4 . A4 .  G4 . B3 .  C4 . . .' },
-  { ...BASS, beatsPerStep: 1, steps: 'C3 G2 C3 G2  F2 C3 F2 C3  G2 D3 G2 D3  C3 G2 C3 G2' },
+  { ...BASS, steps: pump(['C3', 'C3', 'G#2', 'A#2', 'C3', 'F2', 'G2', 'G2', 'C3', 'A2', 'F2', 'G2', 'G#2', 'A#2', 'C3', 'C3']) },
 ]);
 
 /** The song of each track. */

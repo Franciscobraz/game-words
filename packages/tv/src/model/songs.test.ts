@@ -1,5 +1,16 @@
 import { describe, expect, test } from 'vitest';
-import { FINALE_SONG, JINGLE_SONG, LOBBY_SONG, MATCH_SONG, notesInWindow, score, type Song } from './songs.ts';
+import {
+  arpeggio,
+  FINALE_SONG,
+  JINGLE_SONG,
+  LOBBY_SONG,
+  MATCH_SONG,
+  notesInWindow,
+  offbeats,
+  pump,
+  score,
+  type Song,
+} from './songs.ts';
 
 const SONGS: readonly [string, Song][] = [
   ['lobby', LOBBY_SONG],
@@ -31,6 +42,40 @@ describe('score', () => {
     const song = score(60, 2, [{ wave: 'triangle', gain: 1, beatsPerStep: 2, steps: 'C3 G2' }]);
 
     expect(song.notes.map((note) => note.startS)).toEqual([0, 2, 4, 6]);
+  });
+});
+
+describe('the voices written per bar', () => {
+  test('pumps each root and its octave in eighth notes, four times a bar', () => {
+    const steps = pump(['A2', 'F#2']);
+
+    expect(steps.split(/\s+/)).toEqual([
+      'A2', 'A3', 'A2', 'A3', 'A2', 'A3', 'A2', 'A3',
+      'F#2', 'F#3', 'F#2', 'F#3', 'F#2', 'F#3', 'F#2', 'F#3',
+    ]);
+  });
+
+  test('runs up and back over each chord in sixteenth notes', () => {
+    const steps = arpeggio(['A3 C4 E4']).split(/\s+/);
+
+    expect(steps).toHaveLength(16);
+    expect(steps.slice(0, 8)).toEqual(['A3', 'C4', 'E4', 'C4', 'A3', 'C4', 'E4', 'C4']);
+  });
+
+  test('plays a note on beats two and four and rests on one and three', () => {
+    expect(offbeats(['G4', 'E4']).split(/\s+/)).toEqual(['.', 'G4', '.', 'G4', '.', 'E4', '.', 'E4']);
+  });
+
+  test('fills a bar of the score with one entry', () => {
+    // 60 bpm: a bar is 4 s. The pump is in eighths, the arpeggio in sixteenths, the off-beats in quarters.
+    const song = score(60, 1, [
+      { wave: 'triangle', gain: 1, beatsPerStep: 0.5, steps: pump(['C3']) },
+      { wave: 'square', gain: 1, beatsPerStep: 0.25, steps: arpeggio(['C4 E4 G4']) },
+      { wave: 'square', gain: 1, beatsPerStep: 1, steps: offbeats(['E4']) },
+    ]);
+
+    expect(song.notes.filter((note) => note.wave === 'triangle')).toHaveLength(8);
+    expect(song.notes.filter((note) => note.wave === 'square')).toHaveLength(16 + 2);
   });
 });
 

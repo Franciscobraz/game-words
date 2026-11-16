@@ -4,6 +4,8 @@
 
 **Amended**: 2026-11-03 - MUSIC-01 AC 1-16: quatro músicas em todas as telas da TV, aceleração nos últimos 15 s, 50% do volume dos efeitos; user: "Certifique-se que em todas as telas tenham algum musica tocando, nós temos musica do lobby, musica de partida em progresso que deve ser acelerada em 1.5x nos últimos 15s da partida e a musica de partida finalizada no pódio. o volume da musica pode ser 50% do volume dos efeitos."; user: "quando falei \"todas as telas agora\" quis dizer \"todas as telas da TV\""; user: "Mantenha o recomendado para as três"
 
+**Amended**: 2026-11-16 - Goals: as músicas ganham a pegada de corrida 16-bit, no lugar de "calma" (AD-032); os critérios não mudam; user: "preciso de uma musica mais animada, essa ficou muito calma"
+
 ## Problem Statement
 
 O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcionou, mas mostrou o que atrapalha uma partida na sala de casa: a TV entra em descanso, a lista de palavras corre rápido demais e some sozinha, a sala fica em silêncio, o celular dá zoom com toques rápidos, o resultado não diz quantas palavras cada um achou e os celulares mostram o pódio antes da TV. Esta feature corrige isso e fecha as pendências deixadas pelo M4.
@@ -12,7 +14,7 @@ O primeiro teste em TV e celular reais, com o M4 publicado na Cloudflare, funcio
 
 - [ ] Uma TV com a página aberta e sem nenhum toque não entra em descanso durante uma partida de 3 rodadas de 3 min, conferida numa TV real
 - [ ] O anfitrião conduz a lista de palavras pelo celular e decide quando a TV mostra o resultado, e uma palavra destacada por vez guia a leitura (AD-024)
-- [ ] Uma música calma acompanha a partida, e uma vinheta animada toca no resultado, com a opção de desligar as duas (AD-028)
+- [ ] Uma música com pegada de corrida 16-bit acompanha a partida, e uma vinheta toca no resultado, com a opção de desligar as duas (AD-028, AD-032)
 - [ ] O resultado mostra pontos e palavras de cada jogador, como em `captures/tv-round-result.png`, e abre na mesma hora na TV e nos celulares (AD-026, AD-027)
 - [ ] `/` abre a TV, e a entrada por código fica em `/join` (AD-025)
 - [ ] O celular não dá zoom por toque duplo nem por pinça, conferido num iPhone real

@@ -1,4 +1,4 @@
-import { type AudioContextLike, CHECK_SOUND, type GainNodeLike, playNotes } from '@bwords/core';
+import { type AudioContextLike, CHECK_SOUND, type GainNodeLike, type Note, playNotes } from '@bwords/core';
 import type { AudioCue } from '../model/audio-cues.ts';
 
 /** The sounds of the TV, in the room's volume and mute (TVAUDIO-01). */
@@ -13,17 +13,26 @@ export interface AudioDevice {
   onBlockedChange(listener: () => void): void;
 }
 
-/** A short tone. */
-interface Tone {
-  frequencyHz: number;
-  durationS: number;
-}
-
-/** The short tones: high to start, low to warn, and in between when the words begin (TVAUDIO-01 AC 1). */
-const TONES: Record<Exclude<AudioCue, 'time-up' | 'check'>, Tone> = {
-  'round-start': { frequencyHz: 880, durationS: 0.3 },
-  'last-seconds': { frequencyHz: 440, durationS: 0.2 },
-  'words-start': { frequencyHz: 660, durationS: 0.25 },
+/**
+ * The short beeps, in chiptune notes on the pitches of the match music, A and E (TVAUDIO-01 AC 1, AD-032): high to
+ * start, low to warn, and in between when the words begin. The squares play softer, to sound as loud as a triangle.
+ */
+export const BEEPS: Record<Exclude<AudioCue, 'time-up' | 'check'>, readonly Note[]> = {
+  // A5 and A6, the start lights of a race.
+  'round-start': [
+    { startS: 0, durationS: 0.09, frequencyHz: 880, wave: 'square', gain: 0.45 },
+    { startS: 0.1, durationS: 0.25, frequencyHz: 1_760, wave: 'square', gain: 0.45 },
+  ],
+  // Two short A4s, a warning light.
+  'last-seconds': [
+    { startS: 0, durationS: 0.08, frequencyHz: 440, wave: 'square', gain: 0.5 },
+    { startS: 0.12, durationS: 0.08, frequencyHz: 440, wave: 'square', gain: 0.5 },
+  ],
+  // E5 rising to A5.
+  'words-start': [
+    { startS: 0, durationS: 0.1, frequencyHz: 659.25, wave: 'triangle', gain: 0.9 },
+    { startS: 0.1, durationS: 0.18, frequencyHz: 880, wave: 'triangle', gain: 1 },
+  ],
 };
 
 /** The whistle: high and about 0.6 s long, with the fast flutter of a referee's whistle (TVAUDIO-01 AC 6). */
@@ -98,15 +107,6 @@ function fadingOutput(context: AudioContextLike, peakGain: number, durationS: nu
   return output;
 }
 
-function playTone(context: AudioContextLike, tone: Tone, peakGain: number): void {
-  const start = context.currentTime;
-  const oscillator = context.createOscillator();
-  oscillator.frequency.value = tone.frequencyHz;
-  oscillator.connect(fadingOutput(context, peakGain, tone.durationS));
-  oscillator.start(start);
-  oscillator.stop(start + tone.durationS);
-}
-
 /** A high oscillator whose frequency a slow one shakes. */
 function playWhistle(context: AudioContextLike, peakGain: number): void {
   const start = context.currentTime;
@@ -131,9 +131,9 @@ function playWhistle(context: AudioContextLike, peakGain: number): void {
 
 /** How each cue sounds (style guide §4, O): a new sound is a new entry. */
 const SOUNDS: Record<AudioCue, (context: AudioContextLike, peakGain: number) => void> = {
-  'round-start': (context, peakGain) => playTone(context, TONES['round-start'], peakGain),
-  'last-seconds': (context, peakGain) => playTone(context, TONES['last-seconds'], peakGain),
-  'words-start': (context, peakGain) => playTone(context, TONES['words-start'], peakGain),
+  'round-start': (context, peakGain) => playNotes(context, BEEPS['round-start'], context.currentTime, peakGain),
+  'last-seconds': (context, peakGain) => playNotes(context, BEEPS['last-seconds'], context.currentTime, peakGain),
+  'words-start': (context, peakGain) => playNotes(context, BEEPS['words-start'], context.currentTime, peakGain),
   'time-up': playWhistle,
   // The same recipe as the phone's valid word (WORDCTL-01 AC 15, FEEDBACK-02 AC 2).
   check: (context, peakGain) => playNotes(context, CHECK_SOUND, context.currentTime, peakGain),

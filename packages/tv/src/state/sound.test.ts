@@ -1,7 +1,7 @@
 import type { RoundInfo, Settings } from '@bwords/core';
 import { signal } from '@preact/signals';
 import { describe, expect, test } from 'vitest';
-import { createAudio } from '../device/audio.ts';
+import { BEEPS, createAudio } from '../device/audio.ts';
 import type { RevealPlan } from '../model/reveal.ts';
 import { INITIAL_VIEW, type RoomView } from '../model/room-view.ts';
 import { fakeAudioContext } from '../testing/fake-audio.ts';
@@ -31,7 +31,7 @@ describe('createSoundStore', () => {
 
     sound.tick(STARTS_AT);
     const halfVolume = context.loudestOutput();
-    expect(context.oscillators).toHaveLength(1);
+    expect(context.oscillators).toHaveLength(BEEPS['round-start'].length);
 
     const louder = setup({ ...IN_ROUND, settings: { ...SETTINGS, volume: 100 } });
     louder.sound.tick(STARTS_AT - 1);
@@ -79,7 +79,7 @@ describe('createSoundStore', () => {
     sound.tick(STARTS_AT - 1);
     sound.tick(STARTS_AT);
 
-    expect(context.oscillators).toHaveLength(1);
+    expect(context.oscillators).toHaveLength(BEEPS['round-start'].length);
   });
 
   test('plays the start of the scroll from the plan', () => {
@@ -93,7 +93,7 @@ describe('createSoundStore', () => {
     expect(context.oscillators).toHaveLength(0);
     sound.tick(wordsStartAt);
 
-    expect(context.oscillators).toHaveLength(1);
+    expect(context.oscillators).toHaveLength(BEEPS['words-start'].length);
   });
 
   test('plays a cue asked for now, in the volume and mute of the room', () => {

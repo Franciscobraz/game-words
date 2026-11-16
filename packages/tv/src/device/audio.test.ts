@@ -1,10 +1,31 @@
-import { CHECK_SOUND } from '@bwords/core';
+import { CHECK_SOUND, type Note } from '@bwords/core';
 import { describe, expect, test } from 'vitest';
 import type { AudioCue } from '../model/audio-cues.ts';
-import { fakeAudioContext, type FakeGain } from '../testing/fake-audio.ts';
-import { createAudio } from './audio.ts';
+import { fakeAudioContext, type FakeAudioContext, type FakeGain } from '../testing/fake-audio.ts';
+import { BEEPS, createAudio, effectsPeakGain } from './audio.ts';
 
 const CUES: readonly AudioCue[] = ['round-start', 'last-seconds', 'time-up', 'words-start', 'check'];
+const BEEP_CUES = ['round-start', 'last-seconds', 'words-start'] as const;
+
+/** What each oscillator of the context played. */
+function playedNotes(context: FakeAudioContext) {
+  return context.oscillators.map((oscillator) => ({
+    wave: oscillator.type,
+    frequencyHz: oscillator.frequency.value,
+    startS: oscillator.startedAt,
+    stopS: oscillator.stoppedAt,
+  }));
+}
+
+/** The same shape for `notes` played from `startS`. */
+function scheduled(notes: readonly Note[], startS: number) {
+  return notes.map((note) => ({
+    wave: note.wave,
+    frequencyHz: note.frequencyHz,
+    startS: startS + note.startS,
+    stopS: startS + note.startS + note.durationS,
+  }));
+}
 
 describe('createAudio', () => {
   test.each(CUES)('follows the room volume and mute: %s', (cue) => {
@@ -28,17 +49,17 @@ describe('createAudio', () => {
     expect(context.oscillators).toHaveLength(soundsBeforeMute);
   });
 
-  test.each<AudioCue>(['round-start', 'last-seconds', 'words-start'])('plays a short tone that ends by itself: %s', (cue) => {
+  test.each(BEEP_CUES)('plays the notes of its short beep, which ends by itself: %s', (cue) => {
+    // TVAUDIO-01 AC 1, AD-032: the chiptune notes of the beep, from the context's now, straight to the speakers.
     const context = fakeAudioContext('running');
 
     createAudio(() => context).play(cue, 100, false);
 
-    expect(context.oscillators).toHaveLength(1);
-    const [tone] = context.oscillators;
-    expect(tone!.startedAt).toBe(context.currentTime);
-    expect(tone!.stoppedAt! - tone!.startedAt!).toBeLessThanOrEqual(0.5);
-    expect(tone!.target).toBe(context.outputs.at(-1));
-    expect(context.outputs.at(-1)!.target).toBe(context.destination);
+    const played = playedNotes(context);
+    const startS = context.currentTime;
+    expect(played).toEqual(scheduled(BEEPS[cue], startS));
+    expect(Math.max(...played.map((note) => note.stopS!)) - startS).toBeLessThanOrEqual(0.5);
+    for (const output of context.outputs) expect(output.target).toBe(context.destination);
   });
 
   test('whistles with a high oscillator and vibrato for about 0.6 s', () => {
@@ -71,13 +92,9 @@ describe('createAudio', () => {
     const halfVolume = context.outputs.slice(CHECK_SOUND.length).map((output) => output.gain.peak);
     audio.play('check', 100, true);
 
-    const played = context.oscillators.map((note) => ({ wave: note.type, frequencyHz: note.frequency.value, startS: note.startedAt, stopS: note.stoppedAt }));
-    const check = (startS: number) =>
-      CHECK_SOUND.map((note) => ({ wave: note.wave, frequencyHz: note.frequencyHz, startS: startS + note.startS, stopS: startS + note.startS + note.durationS }));
-    expect(played).toEqual([...check(context.currentTime), ...check(context.currentTime)]);
-    const toneContext = fakeAudioContext('running');
-    createAudio(() => toneContext).play('round-start', 100, false);
-    const effectPeak = toneContext.loudestOutput();
+    const check = scheduled(CHECK_SOUND, context.currentTime);
+    expect(playedNotes(context)).toEqual([...check, ...check]);
+    const effectPeak = effectsPeakGain(100);
     expect(fullVolume).toHaveLength(CHECK_SOUND.length);
     fullVolume.forEach((peak, index) => expect(peak).toBeCloseTo(effectPeak * CHECK_SOUND[index]!.gain));
     halfVolume.forEach((peak, index) => expect(peak).toBeCloseTo(fullVolume[index]! / 2));
@@ -96,7 +113,7 @@ describe('createAudio', () => {
     expect(context.state).toBe('running');
     expect(audio.isBlocked()).toBe(false);
     audio.play('round-start', 100, false);
-    expect(context.oscillators).toHaveLength(1);
+    expect(context.oscillators).toHaveLength(BEEPS['round-start'].length);
   });
 
   test('stays blocked when the browser refuses to resume', async () => {

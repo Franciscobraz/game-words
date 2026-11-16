@@ -1,5 +1,6 @@
 import { CHECK_SOUND } from '@bwords/core';
 import { expect, type Page, test } from '@playwright/test';
+import { BEEPS } from '../src/device/audio.ts';
 import { fakeRoom } from './fake-room.ts';
 import { recordSounds, type StartedSound } from './record-sounds.ts';
 import { ANA, BETO, lobbyWelcome, roundWelcome, SAMPLE_END, SAMPLE_SETTINGS, SAMPLE_START, sampleResults } from './samples.ts';
@@ -9,6 +10,12 @@ const TICK_MS = 150;
 
 /** "Tempo!" comes before the words (TVPLAY-01 AC 10). */
 const TIME_UP_MS = 2_000;
+
+/** How many notes have reached the speakers after each cue of a round: each beep is a few notes, the whistle one. */
+const AFTER_START = BEEPS['round-start'].length;
+const AFTER_LAST_SECONDS = AFTER_START + BEEPS['last-seconds'].length;
+const AFTER_WHISTLE = AFTER_LAST_SECONDS + 1;
+const AFTER_WORDS_START = AFTER_WHISTLE + BEEPS['words-start'].length;
 
 const sounds = (page: Page) => page.evaluate(() => (window as unknown as { sounds: StartedSound[] }).sounds);
 
@@ -32,17 +39,17 @@ test('plays the cues of a round, each once', async ({ page }) => {
 
   await page.clock.runFor(500 + TICK_MS);
   await expect(page.getByTestId('round-screen')).toBeVisible();
-  await expect.poll(async () => (await heard(page)).length).toBe(1);
+  await expect.poll(async () => (await heard(page)).length).toBe(AFTER_START);
 
   await page.clock.fastForward(SAMPLE_SETTINGS.seconds * 1_000 - 10_000 - 500);
   await page.clock.runFor(1_000);
-  await expect.poll(async () => (await heard(page)).length).toBe(2);
+  await expect.poll(async () => (await heard(page)).length).toBe(AFTER_LAST_SECONDS);
 
   await page.clock.fastForward(8_000);
   await page.clock.runFor(1_500);
   await expect(page.getByTestId('time-up')).toBeVisible();
-  await expect.poll(async () => (await heard(page)).length).toBe(3);
-  const whistle = (await heard(page))[2]!;
+  await expect.poll(async () => (await heard(page)).length).toBe(AFTER_WHISTLE);
+  const whistle = (await heard(page))[AFTER_LAST_SECONDS]!;
   expect(whistle.frequencyHz).toBeGreaterThanOrEqual(2_000);
 
   room.push(sampleResults());
@@ -50,12 +57,12 @@ test('plays the cues of a round, each once', async ({ page }) => {
   await page.clock.runFor(TIME_UP_MS + TICK_MS);
   await expect(page.getByTestId('words-screen')).toBeVisible();
   // The start of the list, and the "check" of its first highlighted word (WORDCTL-01 AC 15).
-  await expect.poll(async () => (await heard(page)).length).toBe(4 + CHECK_SOUND.length);
+  await expect.poll(async () => (await heard(page)).length).toBe(AFTER_WORDS_START + CHECK_SOUND.length);
 
   await page.clock.runFor(500);
-  expect(await heard(page)).toHaveLength(4 + CHECK_SOUND.length);
+  expect(await heard(page)).toHaveLength(AFTER_WORDS_START + CHECK_SOUND.length);
   await page.clock.runFor(500);
-  await expect.poll(async () => (await heard(page)).length).toBe(4 + 2 * CHECK_SOUND.length);
+  await expect.poll(async () => (await heard(page)).length).toBe(AFTER_WORDS_START + 2 * CHECK_SOUND.length);
 });
 
 test('plays in the volume of the room, and nothing when it is muted', async ({ page }) => {
@@ -67,20 +74,22 @@ test('plays in the volume of the room, and nothing when it is muted', async ({ p
   await expect(page.getByTestId('countdown-number')).toHaveText('1');
 
   await page.clock.runFor(500 + TICK_MS);
-  await expect.poll(async () => (await heard(page)).length).toBe(1);
-  const atSampleVolume = (await heard(page))[0]!.peakGain;
+  await expect.poll(async () => (await heard(page)).length).toBe(AFTER_START);
+  // The peak of each beep's first note over its share of the gain: the peak of the effects at the room's volume.
+  const atSampleVolume = (await heard(page))[0]!.peakGain / BEEPS['round-start'][0]!.gain;
 
   room.push({ type: 'settings', settings: { ...SAMPLE_SETTINGS, volume: SAMPLE_SETTINGS.volume / 2 } });
   await page.clock.fastForward(SAMPLE_SETTINGS.seconds * 1_000 - 10_000 - 500);
   await page.clock.runFor(1_000);
-  await expect.poll(async () => (await heard(page)).length).toBe(2);
-  expect((await heard(page))[1]!.peakGain).toBeCloseTo(atSampleVolume / 2);
+  await expect.poll(async () => (await heard(page)).length).toBe(AFTER_LAST_SECONDS);
+  const atHalfVolume = (await heard(page))[AFTER_START]!.peakGain / BEEPS['last-seconds'][0]!.gain;
+  expect(atHalfVolume).toBeCloseTo(atSampleVolume / 2);
 
   room.push({ type: 'settings', settings: { ...SAMPLE_SETTINGS, muted: true } });
   await page.clock.fastForward(8_000);
   await page.clock.runFor(1_500);
   await expect(page.getByTestId('time-up')).toBeVisible();
-  expect(await heard(page)).toHaveLength(2);
+  expect(await heard(page)).toHaveLength(AFTER_LAST_SECONDS);
 });
 
 test('a reload in the middle of the round replays no cue', async ({ page }) => {

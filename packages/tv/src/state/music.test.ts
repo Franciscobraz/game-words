@@ -1,7 +1,7 @@
 import { CHECK_SOUND, DEFAULT_SETTINGS, type RoundInfo, type Settings } from '@bwords/core';
 import { signal } from '@preact/signals';
 import { describe, expect, test } from 'vitest';
-import { createAudio } from '../device/audio.ts';
+import { BEEPS, createAudio } from '../device/audio.ts';
 import { createMusicPlayer } from '../device/music.ts';
 import type { RevealPlan } from '../model/reveal.ts';
 import { INITIAL_VIEW, type RoomView } from '../model/room-view.ts';
@@ -16,6 +16,9 @@ const ENDS_AT = STARTS_AT + 120_000;
 const ROUND: RoundInfo = { id: 1, index: 0, board: [['A']], startsAt: STARTS_AT, endsAt: ENDS_AT };
 const IN_ROUND: RoomView = { ...INITIAL_VIEW, code: 'KBXT', phase: 'round', settings: DEFAULT_SETTINGS, round: ROUND };
 const IN_LOBBY: RoomView = { ...IN_ROUND, phase: 'lobby', round: null };
+
+/** The notes of the round's start, of the last seconds and of the whistle. */
+const ROUND_EFFECT_NOTES = BEEPS['round-start'].length + BEEPS['last-seconds'].length + 1;
 
 /** The TV's sounds and music over one fake context, on `screen`, with a real clock the test moves. */
 function setup(initial: RoomView, initialScreen: Screen) {
@@ -70,7 +73,7 @@ describe('createMusicStore', () => {
     sound.play('check');
 
     expect(musicNotes(context)).toEqual([]);
-    expect(effects(context).length).toBe(3 + CHECK_SOUND.length);
+    expect(effects(context).length).toBe(ROUND_EFFECT_NOTES + CHECK_SOUND.length);
 
     // The same round with the music on plays the match music beside the same sounds.
     const on = setup(IN_ROUND, 'countdown');
@@ -81,7 +84,7 @@ describe('createMusicStore', () => {
     on.advance(ENDS_AT);
     on.sound.play('check');
     expect(musicNotes(on.context).length).toBeGreaterThan(0);
-    expect(effects(on.context).length).toBe(3 + CHECK_SOUND.length);
+    expect(effects(on.context).length).toBe(ROUND_EFFECT_NOTES + CHECK_SOUND.length);
   });
 
   test('plays the song of the screen from its start', () => {

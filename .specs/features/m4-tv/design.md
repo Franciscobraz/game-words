@@ -160,7 +160,7 @@ sequenceDiagram
 
 - **Purpose**: Tocar os efeitos com Web Audio, sem arquivos.
 - **Interfaces**: `createAudio(factory)`: `play(cue, volume, muted)`, `isBlocked()`, `unlock()`. Sem `AudioContext`, tudo vira nada (TVAUDIO-01 AC 5).
-- **Cues**: `round-start`, `last-seconds`, `time-up` (apito: oscilador agudo com vibrato, cerca de 0,6 s; TVAUDIO-01 AC 6) e `words-start`.
+- **Cues**: `round-start`, `last-seconds`, `time-up` (apito: oscilador agudo com vibrato, cerca de 0,6 s; TVAUDIO-01 AC 6) e `words-start`. Desde o AD-032, os três bipes são notas chiptune tocadas por `playNotes`, como o "check": `round-start` Lá5 e Lá6 em square, `last-seconds` dois Lá4 curtos em square, `words-start` Mi5 e Lá5 em triangle.
 
 ### Celular
 
